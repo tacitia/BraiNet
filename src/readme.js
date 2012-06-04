@@ -5,15 +5,15 @@
     root: function(classes) {
       var map = {};
 
-      function find(name, data) {
+      function find(name, data, key) {
         var node = map[name], i;
         if (!node) {
           node = map[name] = data || {name: name, children: []};
           if (name.length) {
             node.parent = find(name.substring(0, i = name.lastIndexOf(".")));
-
             node.parent.children.push(node);
-            node.key = name.substring(i + 1);
+            node.key = key;
+            node.displayName = name.substring(i + 1);
             node.children = [];
           }
         }
@@ -21,10 +21,20 @@
       }
 
       classes.forEach(function(d) {
-        find(d.name, d);
+        find(d.name, d, d.key);
       });
 
       return map[""];
+    },
+    
+    evidence: function(connections) {
+    	var map = {};
+    	
+    	connections.forEach(function(d) {
+    		map[d.source, d.target] = d.PMID;
+    	})
+    	
+    	return map;
     },
 
     // Return a list of imports for the given array of nodes.
