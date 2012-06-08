@@ -1,2 +1,2 @@
-BrainCircuitsViz
-================
+Brain Circus
+============
