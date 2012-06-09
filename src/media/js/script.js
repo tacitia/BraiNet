@@ -37,7 +37,7 @@ var svg = d3.select("body")
     .attr("transform", "translate(600,480)");
 
 
-d3.json("../media/data/brainData.txt", function(data) {
+d3.json("../media/data/brainData.json", function(data) {
 
     var nodes = cluster.nodes(brainMap.root(data));
     links = brainMap.connections(nodes);
