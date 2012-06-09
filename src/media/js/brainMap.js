@@ -1,3 +1,10 @@
+/**
+ * brainMap.js
+ * 
+ * Author: Hua
+ * 
+ */
+
 (function() {
     brainMap = {
         // Lazily construct the brain hierarchy from brain region names.

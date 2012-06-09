@@ -1,3 +1,14 @@
+/**
+ * script.js
+ * 
+ * Creates d3 svg circular layout.
+ * 
+ * We should plan how we are going to organize the js.
+ * 
+ * Authors: Hua & Arthur
+ * 
+ */
+
 var w = 1440,
     h = 900,
     m0,
@@ -28,14 +39,12 @@ var line = d3.svg.line.radial()
     .radius(function(d) { return d.y; })
     .angle(function(d) { return d.x / 180 * Math.PI; });
 
-
 var svg = d3.select("body")
     .append("svg:svg")
     .attr("width", 1440)
     .attr("height", 900)
     .append("svg:g")
     .attr("transform", "translate(600,480)");
-
 
 d3.json("../media/data/brainData.json", function(data) {
 
