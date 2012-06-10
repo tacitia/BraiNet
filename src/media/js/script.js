@@ -16,8 +16,8 @@ var w = 1440,
     radius = Math.min(w, h) / 2,
     color = d3.scale.category20c();
 
-var selectedSources = [];
-var selectedTargets = [];
+var selectedSource;
+var selectedTarget;
 
 var splines = [];
 
@@ -46,6 +46,12 @@ var svg = d3.select("body")
     .append("svg:g")
     .attr("transform", "translate(600,480)");
 
+d3.select("#search")
+    .on("click", searchButtonClick);
+    
+d3.select("#clear")
+    .on("click", clearButtonClick);
+
 d3.json("../media/data/brainData.json", function(data) {
 
     var nodes = cluster.nodes(brainMap.root(data));
@@ -58,7 +64,7 @@ d3.json("../media/data/brainData.json", function(data) {
     .enter().append("svg:path")
     .attr("class", function(d) {return "link source-" + d.source.key + " target-" + d.target.key})
     .attr("d", function(d, i) { return line(splines[i]); })
-    .on("click", click);
+    .on("click", linkClick);
 
     var node = svg.selectAll("g.node")
     //      .data(nodes.filter(function(n) { return !n.children; }))
@@ -98,7 +104,6 @@ function mouseover(d) {
     svg.selectAll("path.link.source-" + d.key)
     .classed("source", true)
     .each(updateNodes("target", true));
-    console.log(d.name);
 }
 
 function mouseout(d) {
@@ -118,12 +123,41 @@ function updateNodes(name, value) {
     };
 }
 
-function click(d) {
+function linkClick(d) {
     var source = d.source.name;
     var target = d.target.name;
     window.location.href = 'http://www.ncbi.nlm.nih.gov/pubmed?term=' + conMap[source, target];
 }
 
 function nodeClick(d) {
+    d3.event.preventDefault();
+    if (selectedSource != undefined && selectedTarget != undefined) {
+        svg.selectAll("path.link.source-" + selectedSource.key
+            + ".target-" + selectedTarget.key)
+           .classed("selected", false);
+    }
+    if (d3.event.shiftKey == true) {
+        selectedTarget = d;
+    }
+    else {
+        selectedSource = d;
+    }
+
+}
+
+function searchButtonClick() {
+    if (selectedSource != undefined && selectedTarget != undefined) {
+        svg.selectAll("path.link.source-" + selectedSource.key
+            + ".target-" + selectedTarget.key)
+           .classed("selected", true);
+    }
+}
+
+function clearButtonClick() {
+    if (selectedSource != undefined && selectedTarget != undefined) {
+        svg.selectAll("path.link.source-" + selectedSource.key
+            + ".target-" + selectedTarget.key)
+           .classed("selected", false);
+    }
 }
 

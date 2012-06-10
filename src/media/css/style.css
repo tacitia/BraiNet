@@ -31,7 +31,14 @@ path.arc {
 .link.source {
 	stroke: #d62728;
 }
-.link.source, .link.target {
+
+/*
+    "Selected" is the class for connections selected by specifying both source and target nodes. It is a bad name but I don't know what'd be a better name yet..
+*/
+.link.selected {
+    stroke: #b45c1f;
+}
+.link.source, .link.target, .link.selected {
 	stroke-opacity: 1;
 	stroke-width: 2px;
 }
