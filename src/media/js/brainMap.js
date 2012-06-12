@@ -10,14 +10,13 @@
         // Lazily construct the brain hierarchy from brain region names.
         root: function(data) {
             var map = {};
-            function find(name, data, key) {
+            function find(name, data) {
                 var node = map[name], i;
                 if (!node) {
                     node = map[name] = data || {name: name, children: []};
                     if (name.length) {
                         node.parent = find(name.substring(0, i = name.lastIndexOf(".")));
                         node.parent.children.push(node);
-                        node.key = key;
                         node.displayName = name.substring(i + 1);
                         node.children = [];
                     }
@@ -27,8 +26,7 @@
 
 
             data.forEach(function(d) {
-
-                find(d.name, d, d.key);
+                find(d.name, d);
             }
             );
             return map[""];
@@ -69,6 +67,15 @@
                 });
             });
             return links;
+        },
+        
+        nameNodeMap: function(nodes) {
+            var map = {};
+            nodes.forEach(function(d) {
+                map[d.name] = d;
+            });
+            
+            return map;
         }
     };
 })();
