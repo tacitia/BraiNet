@@ -14,17 +14,36 @@ path.arc {
 .node {
 	font: 10px sans-serif;
 }
+
+/*blue - no connections*/
 .node:hover {
 	fill: #1f77b4;
 }
+
+/*red*/
 .node.target {
 	fill: #d62728 !important;
 }
+
+/*green*/
 .node.source {
 	fill: #2ca02c;
 }
+
 .node.selected {
     stroke: #b45c1f;
+}
+
+.text {
+    display: none;
+}
+
+.text.target {
+    display: block;
+}
+
+.text.source {
+    display: block;
 }
 
 .link {
