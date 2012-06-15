@@ -21,7 +21,10 @@ var selectedSource;
 var selectedTarget;
 var nameNodeMap;
 var linkRepo = [];
+var selectedNodes = [];
+var displayNameNodeMap;
 
+var nodes;
 var splines = [];
 
 var cluster = d3.layout.cluster()
@@ -58,13 +61,17 @@ d3.select("#clear")
 d3.select("#maxHop")
     .on("change", setMaxHop);
 
+d3.selectAll(".searchBox")
+    .on("input", searchInput);
+
 d3.json("../media/data/brainData.json", function(data) {
 
-    var nodes = cluster.nodes(brainMap.root(data));
+    nodes = cluster.nodes(brainMap.root(data));
     links = brainMap.connections(nodes);
     splines = bundle(links);
     conMap = brainMap.evidence(nodes);
     nameNodeMap = brainMap.nameNodeMap(nodes);
+    displayNameNodeMap = brainMap.displayNameNodeMap(nodes);
 
     var path = svg.selectAll("path.link")
     .data(links)
@@ -98,6 +105,9 @@ d3.json("../media/data/brainData.json", function(data) {
 
 d3.select(self.frameElement).style("height", "960px");
 
+/*
+====== UI Event Handlers ======
+*/
 
 function mouse(e) {
     return [e.pageX - rx, e.pageY - ry];
@@ -142,12 +152,17 @@ function nodeClick(d) {
         clearSelection();
     }
     if (d3.event.shiftKey == true) {
+        if (selectedTarget != undefined)
+            svg.select("#node-" + selectedTarget.key).classed("target", false);        
         selectedTarget = d;
+        svg.select("#node-" + d.key).classed("target", true);
     }
     else {
+        if (selectedSource != undefined)
+            svg.select("#node-" + selectedSource.key).classed("source", false);
         selectedSource = d;
-    }
-
+        svg.select("#node-" + d.key).classed("source", true);
+    } 
 }
 
 function searchButtonClick() {
@@ -166,6 +181,25 @@ function searchButtonClick() {
 
 function clearButtonClick() {
     clearSelection();
+    if (selectedSource != undefined)
+        svg.select("#node-" + selectedSource.key).classed("source", false);
+    if (selectedTarget != undefined)
+        svg.select("#node-" + selectedTarget.key).classed("target", false);
+}
+
+function searchInput() {
+    selectedNodes.forEach(function(d) {
+        svg.select("#node-" + d.key).classed("selected", false);
+    });
+    selectedNodes = [];
+    var inputRegion = this.value.toLowerCase();
+    maxKey = brainMap.maxKey(nodes);
+    displayNameNodeMap.forEach(function(d) {
+        if (d.name == inputRegion) {
+            selectedNodes.push(d.node);
+            svg.select("#node-" + d.node.key).classed("selected", true);
+        }
+    });
 }
 
 function setMaxHop() {
@@ -187,6 +221,10 @@ function clearSelection() {
     });
     linkRepo = [];
 }
+
+/*
+====== Backend functions ======
+*/
 
 function computeLinksForSelection(hop, source, target, currLink, linkRepo) {
     var augmentedLinks = [];
