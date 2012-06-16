@@ -33,10 +33,10 @@ var cluster = d3.layout.cluster()
     .sort(null)
     .value(function(d) { return d.size; });
 
-//var partition = d3.layout.partition()
-    //.sort(null)
-    //.size([2 * Math.PI, radius * radius])
-    //.value(function(d) { return 1; });
+var partition = d3.layout.partition()
+    .sort(null)
+    .size([2 * Math.PI, radius * radius])
+    .value(function(d) { return 1; });
 
 var bundle = d3.layout.bundle();
 
@@ -98,21 +98,21 @@ d3.json("../media/data/brainData.json", function(data) {
 
 
     //DEBUGGING - show nodesCopy nodes
-    var node = svg.selectAll("g.node")
-        .data(nodesCopy)
-        .enter()
-        .append("svg:g")
-        .attr("id", function(d) {return "nodeCopy-" + d.key;})
-        .attr("class", "nodeCopy") //target and source are added by the css
-        .attr("transform", function(d) {
-            return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; });
+    //var node = svg.selectAll("g.node")
+        //.data(nodesCopy)
+        //.enter()
+        //.append("svg:g")
+        //.attr("id", function(d) {return "nodeCopy-" + d.key;})
+        //.attr("class", "nodeCopy") //target and source are added by the css
+        //.attr("transform", function(d) {
+            //return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; });
 
-        //circle is part node
-        node.append("circle")
-            .attr("r", function(d) {return 3})
-            .on("mouseover", mouseover)
-            .on("mouseout", mouseout)
-            .on("click", nodeClick);
+        ////circle is part node
+        //node.append("circle")
+            //.attr("r", function(d) {return 3})
+            //.on("mouseover", mouseover)
+            //.on("mouseout", mouseout)
+            //.on("click", nodeClick);
     //END DEBUGGING
 
     var path = svg.selectAll("path.link")
@@ -122,6 +122,12 @@ d3.json("../media/data/brainData.json", function(data) {
             return "link source-" + d.source.key + " target-" + d.target.key})
         .attr("d", function(d, i) { return line(splines[i]); })
         .on("click", linkClick);
+
+    var arc = d3.svg.arc()
+        .innerRadius(function(d) {return Math.sqrt(d.y);})
+        .outerRadius(function(d) {return Math.sqrt(d.y + d.dy);})
+        .startAngle(function(d) {return d.x;})
+        .endAngle(function(d) {return d.x + d.dx;});
 
     var node = svg.selectAll("g.node")
         .data(nodes)
@@ -140,15 +146,9 @@ d3.json("../media/data/brainData.json", function(data) {
             .on("mouseout", mouseout)
             .on("click", nodeClick);
         */
-        var arc = d3.svg.arc()
-                    .innerRadius(function(d) {return Math.sqrt(d.y);})
-                    .outerRadius(function(d) {return Math.sqrt(d.y + d.dy);})
-                    .startAngle(function(d) {return d.x;})
-                    .endAngle(function(d) {return d.x + d.dx;});
-        
-                        
-        node.data(partition.nodes(brainMap.root(data)))
-            .append("path")
+
+        node.append("path")
+            .data(partition.nodes(brainMap.root(data)))
             .attr("d", arc)
             .attr("fill", "white")
             .attr("stroke", "black");
