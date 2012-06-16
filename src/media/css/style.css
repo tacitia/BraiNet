@@ -34,6 +34,29 @@ path.arc {
     stroke: #b45c1f;
 }
 
+.arc {
+	font: 12px sans-serif;
+}
+
+/*blue - no connections*/
+.arc:hover {
+	fill: #1f77b4;
+}
+
+/*red*/
+.arc.target {
+	fill: #d62728 !important;
+}
+
+/*green*/
+.arc.source {
+	fill: #2ca02c;
+}
+
+.arc.selected {
+    fill: #b45c1f;
+}
+
 .text {
     display: none;
 }

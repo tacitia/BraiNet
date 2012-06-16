@@ -93,9 +93,9 @@ d3.json("../media/data/brainData.json", function(data) {
     splines = bundle(links, linksCopy);
     
 
-    conMap = brainMap.evidence(nodes);
-    nameNodeMap = brainMap.nameNodeMap(nodes);
-    displayNameNodeMap = brainMap.displayNameNodeMap(nodes);
+    conMap = brainMap.evidence(nodesCopy);
+    nameNodeMap = brainMap.nameNodeMap(nodesCopy);
+    displayNameNodeMap = brainMap.displayNameNodeMap(nodesCopy);
 
 
     //DEBUGGING - show nodesCopy nodes
@@ -178,6 +178,8 @@ d3.json("../media/data/brainData.json", function(data) {
             .attr("d", arc)
             .attr("fill", "white")
             .attr("stroke", "black")
+            .attr("id", function(d) {return "arc-" + d.key;})
+            .attr("class", "arc")
             .on("mouseover", mouseover)
             .on("mouseout", mouseout)
             .on("click", nodeClick);            
@@ -211,7 +213,6 @@ function mouse(e) {
 }
 
 function mouseover(d) {
-    console.log(d);
     svg.selectAll("path.link.target-" + d.key)
     .classed("target", true)
     .each(updateNodes("source", true));
@@ -227,6 +228,7 @@ function mouseover(d) {
     svg.selectAll("text.source-" + d.key)
     .classed("source", true)
     .each(updateNodes("target", true));
+    
 }
 
 
@@ -246,6 +248,7 @@ function mouseout(d) {
     svg.selectAll("text.source-" + d.key)
     .classed("source", false)
     .each(updateNodes("target", false));
+
 }
 
 
@@ -254,10 +257,12 @@ function updateNodes(name, value) {
     return function(d) {
         if (d.target != undefined) {
             svg.select("#node-" + d.target.key).classed(name, value);
+            svg.select("#arc-" + d.target.key).classed(name, value);
             svg.select("text.target-" + d.target.key).classed(name, value);
         }
         if (d.source != undefined) {
             svg.select("#node-" + d.source.key).classed(name, value);
+            svg.select("#arc-" + d.source.key).classed(name, value);
             svg.select("text.source-" + d.source.key).classed(name, value);
         }
     };
@@ -266,8 +271,7 @@ function updateNodes(name, value) {
 function linkClick(d) {
     var source = d.source.name;
     var target = d.target.name;
-    //window.location.href = 'http://www.ncbi.nlm.nih.gov/pubmed?term=' + conMap[source, target];
-    console.log(this);
+    window.location.href = 'http://www.ncbi.nlm.nih.gov/pubmed?term=' + conMap[source, target];
 }
 
 function nodeClick(d) {
@@ -276,16 +280,22 @@ function nodeClick(d) {
         clearSelection();
     }
     if (d3.event.shiftKey == true) {
-        if (selectedTarget != undefined)
+        if (selectedTarget != undefined) {
             svg.select("#node-" + selectedTarget.key).classed("target", false);
+            svg.select("#arc-" + selectedTarget.key).classed("target", false);
+        }
         selectedTarget = d;
         svg.select("#node-" + d.key).classed("target", true);
+        svg.select("#arc-" + d.key).classed("target", true);
     }
     else {
-        if (selectedSource != undefined)
+        if (selectedSource != undefined) {
             svg.select("#node-" + selectedSource.key).classed("source", false);
+            svg.select("#arc-" + selectedSource.key).classed("source", false);
+        }
         selectedSource = d;
         svg.select("#node-" + d.key).classed("source", true);
+        svg.select("#arc-" + d.key).classed("source", true);
     }
 }
 
@@ -293,6 +303,9 @@ function searchButtonClick() {
     if (selectedSource != undefined && selectedTarget != undefined) {
         computeLinksForSelection(maxHop, selectedSource,
                             selectedTarget, [], linkRepo);
+        console.log(selectedSource);
+        console.log(selectedTarget);
+        console.log(linkRepo);
         linkRepo.forEach(function(d) {
             d.forEach(function(i) {
                 svg.selectAll("path.link.source-" + i.source.key
@@ -305,15 +318,20 @@ function searchButtonClick() {
 
 function clearButtonClick() {
     clearSelection();
-    if (selectedSource != undefined)
+    if (selectedSource != undefined) {
         svg.select("#node-" + selectedSource.key).classed("source", false);
-    if (selectedTarget != undefined)
+        svg.select("#arc-" + selectedSource.key).classed("source", false);
+    }
+    if (selectedTarget != undefined) {
         svg.select("#node-" + selectedTarget.key).classed("target", false);
+        svg.select("#arc-" + selectedTarget.key).classed("target", false);
+    }
 }
 
 function searchInput() {
     selectedNodes.forEach(function(d) {
         svg.select("#node-" + d.key).classed("selected", false);
+        svg.select("#arc-" + d.key).classed("selected", false);
     });
     selectedNodes = [];
     var inputRegion = this.value.toLowerCase();
@@ -322,6 +340,7 @@ function searchInput() {
         if (d.name == inputRegion) {
             selectedNodes.push(d.node);
             svg.select("#node-" + d.node.key).classed("selected", true);
+            svg.select("#arc-" + d.node.key).classed("selected", true);
         }
     });
 }
