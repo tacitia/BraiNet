@@ -52,7 +52,7 @@ var line = d3.svg.line.radial()
 var svg = d3.select("body")
     .append("svg:svg")
     .attr("width", w)
-    .attr("height", h)
+    .attr("height", h + 100)
     .append("svg:g")
     .attr("transform", "translate(" + w/2 + "," + h/2 + ")");
 
@@ -91,6 +91,7 @@ d3.json("../media/data/brainData.json", function(data) {
     links = brainMap.connections(nodes);
     linksCopy = brainMap.connections(nodesCopy);
     splines = bundle(links, linksCopy);
+    
 
     conMap = brainMap.evidence(nodes);
     nameNodeMap = brainMap.nameNodeMap(nodes);
@@ -124,10 +125,32 @@ d3.json("../media/data/brainData.json", function(data) {
         .on("click", linkClick);
 
     var arc = d3.svg.arc()
-        .innerRadius(function(d) {return Math.sqrt(d.y);})
-        .outerRadius(function(d) {return Math.sqrt(d.y + d.dy);})
-        .startAngle(function(d) {return d.x;})
-        .endAngle(function(d) {return d.x + d.dx;});
+        .innerRadius(function(d) {
+            if (d.depth >= 2) {
+                return Math.sqrt(d.y + 150000 - d.dy * (d.depth - 2) * 2);
+            }
+            return 0;
+        })
+        .outerRadius(function(d) {
+            if (d.depth >= 2) {
+                return Math.sqrt(d.y + 150000 - d.dy * (d.depth - 2) * 2 + d.dy);
+            }
+            return 0;
+
+        })
+        .startAngle(function(d) {
+            if (d.depth >= 2 || d.depth == 3) {
+                return d.x;
+            }
+            return 0;
+
+        })
+        .endAngle(function(d) {
+            if (d.depth >= 2 || d.depth == 3) {
+                return d.x + d.dx;
+            }
+            return 0;
+        });
 
     var node = svg.selectAll("g.node")
         .data(nodes)
@@ -135,24 +158,31 @@ d3.json("../media/data/brainData.json", function(data) {
         .append("svg:g")
         .attr("id", function(d) {return "node-" + d.key;})
         .attr("class", "node") //target and source are added by the css
-        .attr("transform", function(d) {
-            return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; });
+//        .attr("transform", function(d) {
+//            return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; });
 
         //circle is part node
+        
         /*
         node.append("circle")
-            .attr("r", function(d) {return 1})
+            .attr("r", function(d) {return d.depth == 3 ? 3 : 1})
             .on("mouseover", mouseover)
             .on("mouseout", mouseout)
-            .on("click", nodeClick);
+            .on("click", nodeClick)
+            .attr("transform", function(d) {
+                return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; });        
         */
-
+        
         node.append("path")
-            .data(partition.nodes(brainMap.root(data)))
+            .data(partition.nodes(nodesCopy[0]))
             .attr("d", arc)
             .attr("fill", "white")
-            .attr("stroke", "black");
-
+            .attr("stroke", "black")
+            .on("mouseover", mouseover)
+            .on("mouseout", mouseout)
+            .on("click", nodeClick);            
+        
+        
         //text is part of node
         node.append("svg:text")
             //set margin space
@@ -161,7 +191,9 @@ d3.json("../media/data/brainData.json", function(data) {
             .attr("class", function(d) {
                 return "text source-" + d.key + " target-" + d.key})
             .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
-            .attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
+//            .attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
+            .attr("transform", function(d) {
+                return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
             .text(function(d) { return d.displayName; })
             .on("mouseover", mouseover)
             .on("mouseout", mouseout)
@@ -179,6 +211,7 @@ function mouse(e) {
 }
 
 function mouseover(d) {
+    console.log(d);
     svg.selectAll("path.link.target-" + d.key)
     .classed("target", true)
     .each(updateNodes("source", true));
@@ -233,7 +266,8 @@ function updateNodes(name, value) {
 function linkClick(d) {
     var source = d.source.name;
     var target = d.target.name;
-    window.location.href = 'http://www.ncbi.nlm.nih.gov/pubmed?term=' + conMap[source, target];
+    //window.location.href = 'http://www.ncbi.nlm.nih.gov/pubmed?term=' + conMap[source, target];
+    console.log(this);
 }
 
 function nodeClick(d) {
