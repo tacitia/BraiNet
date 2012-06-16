@@ -99,6 +99,25 @@
             });
             
             return key;
+        }, 
+        
+        cloneNode: function(node) {
+            var newNode;
+            newNode.name = d.name;
+            newNode.key = d.key;
+            if (node.parent != undefined) {
+                newNode.parent = cloneNode(node.parent);
+            }
+            newNode.displayName = node.displayName;
+            newNode.links = cloneLink(node.links);
+            
+            return newNode;
+        }, 
+        
+        cloneLink: function(links) {
+            var newLinks = [];
+            return newLinks;
         }
+        
     };
 })();

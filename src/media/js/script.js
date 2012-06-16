@@ -91,11 +91,25 @@ d3.json("../media/data/brainData.json", function(data) {
             return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; });
 
         //circle is part node
+        /*
         node.append("circle")
             .attr("r", function(d) {return 2})
             .on("mouseover", mouseover)
             .on("mouseout", mouseout)
             .on("click", nodeClick);
+        */
+        var arc = d3.svg.arc()
+                    .innerRadius(function(d) {return Math.sqrt(d.y);})
+                    .outerRadius(function(d) {return Math.sqrt(d.y + d.dy);})
+                    .startAngle(function(d) {return d.x;})
+                    .endAngle(function(d) {return d.x + d.dx;});
+        
+                        
+        node.data(partition.nodes(brainMap.root(data)))
+            .append("path")
+            .attr("d", arc)
+            .attr("fill", "white")
+            .attr("stroke", "black");
 
         //text is part of node
         node.append("svg:text")
