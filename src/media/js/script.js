@@ -1,12 +1,12 @@
 /**
  * script.js
- * 
+ *
  * Creates d3 svg circular layout.
- * 
+ *
  * We should plan how we are going to organize the js.
- * 
+ *
  * Authors: Hua & Arthur
- * 
+ *
  */
 
 var w = 1440,
@@ -25,29 +25,32 @@ var linkRepo = [];
 var splines = [];
 
 var cluster = d3.layout.cluster()
-    .size([360, 960 / 2 - 120])
+    .size([360, h/2.5 ])
     .sort(null)
     .value(function(d) { return d.size; });
 
-var partition = d3.layout.partition()
-    .sort(null)
-    .size([2 * Math.PI, radius * radius])
-    .value(function(d) { return 1; });
+//var partition = d3.layout.partition()
+    //.sort(null)
+    //.size([2 * Math.PI, radius * radius])
+    //.value(function(d) { return 1; });
 
 var bundle = d3.layout.bundle();
 
 var line = d3.svg.line.radial()
     .interpolate("bundle")
-    .tension(.85)
+    .tension(0.9)
     .radius(function(d) { return d.y; })
-    .angle(function(d) { return d.x / 180 * Math.PI; });
+    .angle(function(d) {
+        return (d.x) * (Math.PI / 180);
+    });
 
+//create svg canvas
 var svg = d3.select("body")
     .append("svg:svg")
-    .attr("width", 1440)
-    .attr("height", 900)
+    .attr("width", w)
+    .attr("height", h)
     .append("svg:g")
-    .attr("transform", "translate(600,480)");
+    .attr("transform", "translate(" + w/2 + "," + h/2 + ")");
 
 d3.select("#search")
     .on("click", searchButtonClick);
@@ -59,10 +62,23 @@ d3.select("#maxHop")
     .on("change", setMaxHop);
 
 d3.json("../media/data/brainData.json", function(data) {
+    nodes = cluster.nodes(brainMap.root(data));
+    nodesCopy = cluster.nodes(brainMap.root(data));
 
-    var nodes = cluster.nodes(brainMap.root(data));
+    nodes.forEach(function(d) {
+        if (d.depth < 11) {
+           d.y = 24 * (20 - d.depth);
+        }
+    });
+
+    //console.log(data);
+    //console.log(links[1])
+    //console.log(linksCopy[1])
+
     links = brainMap.connections(nodes);
-    splines = bundle(links);
+    linksCopy = brainMap.connections(nodesCopy);
+    splines = bundle(links, linksCopy);
+
     conMap = brainMap.evidence(nodes);
     nameNodeMap = brainMap.nameNodeMap(nodes);
 
@@ -92,7 +108,8 @@ d3.json("../media/data/brainData.json", function(data) {
 
         //text is part of node
         node.append("svg:text")
-            .attr("dx", function(d) { return d.x < 180 ? 8 : -8; })
+            //set margin space
+            .attr("dx", function(d) { return d.x < 180 ? 15 : -15; })
             .attr("dy", ".31em")
             .attr("class", function(d) {
                 return "text source-" + d.key + " target-" + d.key})
@@ -150,10 +167,14 @@ function mouseout(d) {
 //mouseover and mouseout helper
 function updateNodes(name, value) {
     return function(d) {
-        svg.select("#node-" + d.target.key).classed(name, value);
-        svg.select("#node-" + d.source.key).classed(name, value);
-        svg.select("text.source-" + d.source.key).classed(name, value);
-        svg.select("text.target-" + d.target.key).classed(name, value);
+        if (d.target != undefined) {
+            svg.select("#node-" + d.target.key).classed(name, value);
+            svg.select("text.target-" + d.target.key).classed(name, value);
+        }
+        if (d.source != undefined) {
+            svg.select("#node-" + d.source.key).classed(name, value);
+            svg.select("text.source-" + d.source.key).classed(name, value);
+        }
     };
 }
 
