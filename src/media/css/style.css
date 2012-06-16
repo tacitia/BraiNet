@@ -2,6 +2,15 @@ path.arc {
 	cursor: move;
 	fill: #fff;
 }
+
+.visibleText {
+	font: 10px sans-serif;    
+}
+
+.hiddenText {
+    display:none;
+}
+
 .node {
 	font: 12px sans-serif;
 }
@@ -19,6 +28,10 @@ path.arc {
 /*green*/
 .node.source {
 	fill: #2ca02c;
+}
+
+.node.selected {
+    stroke: #b45c1f;
 }
 
 .text {
