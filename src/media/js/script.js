@@ -17,6 +17,7 @@ var w = 1440,
     color = d3.scale.category20c();
     maxHop = 1;
 
+var nodesCopy;
 var selectedSource;
 var selectedTarget;
 var nameNodeMap;
@@ -67,19 +68,25 @@ d3.select("#maxHop")
 d3.selectAll(".searchBox")
     .on("input", searchInput);
 
+
+d3.json("../media/data/brainData2.json", function(data) {
+    nodesCopy = cluster.nodes(brainMap.root(data));
+});
+
 d3.json("../media/data/brainData.json", function(data) {
     nodes = cluster.nodes(brainMap.root(data));
-    nodesCopy = cluster.nodes(brainMap.root(data));
 
     nodes.forEach(function(d) {
         if (d.depth < 11) {
-           d.y = 24 * (20 - d.depth);
+           d.y = 25 * (20 - d.depth);
         }
     });
 
-    //console.log(data);
-    //console.log(links[1])
-    //console.log(linksCopy[1])
+    nodesCopy.forEach(function(d) {
+        if (d.depth < 11) {
+            d.y -= 30;
+        }
+    });
 
     links = brainMap.connections(nodes);
     linksCopy = brainMap.connections(nodesCopy);
@@ -88,6 +95,25 @@ d3.json("../media/data/brainData.json", function(data) {
     conMap = brainMap.evidence(nodes);
     nameNodeMap = brainMap.nameNodeMap(nodes);
     displayNameNodeMap = brainMap.displayNameNodeMap(nodes);
+
+
+    //DEBUGGING - show nodesCopy nodes
+    var node = svg.selectAll("g.node")
+        .data(nodesCopy)
+        .enter()
+        .append("svg:g")
+        .attr("id", function(d) {return "nodeCopy-" + d.key;})
+        .attr("class", "nodeCopy") //target and source are added by the css
+        .attr("transform", function(d) {
+            return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; });
+
+        //circle is part node
+        node.append("circle")
+            .attr("r", function(d) {return 3})
+            .on("mouseover", mouseover)
+            .on("mouseout", mouseout)
+            .on("click", nodeClick);
+    //END DEBUGGING
 
     var path = svg.selectAll("path.link")
         .data(links)
@@ -108,7 +134,7 @@ d3.json("../media/data/brainData.json", function(data) {
 
         //circle is part node
         node.append("circle")
-            .attr("r", function(d) {return 2})
+            .attr("r", function(d) {return 1})
             .on("mouseover", mouseover)
             .on("mouseout", mouseout)
             .on("click", nodeClick);
@@ -203,7 +229,7 @@ function nodeClick(d) {
     }
     if (d3.event.shiftKey == true) {
         if (selectedTarget != undefined)
-            svg.select("#node-" + selectedTarget.key).classed("target", false);        
+            svg.select("#node-" + selectedTarget.key).classed("target", false);
         selectedTarget = d;
         svg.select("#node-" + d.key).classed("target", true);
     }
@@ -212,7 +238,7 @@ function nodeClick(d) {
             svg.select("#node-" + selectedSource.key).classed("source", false);
         selectedSource = d;
         svg.select("#node-" + d.key).classed("source", true);
-    } 
+    }
 }
 
 function searchButtonClick() {

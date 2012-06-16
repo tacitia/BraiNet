@@ -4933,19 +4933,20 @@ d3.layout.bundle = function() {
   };
 };
 
-function d3_layout_bundlePath(link, orig) {
-  var start = orig.source,
-      end = orig.target,
+function d3_layout_bundlePath(nodes, nodesCopy) {
+  var start = nodesCopy.source,
+      end = nodesCopy.target,
       lca = d3_layout_bundleLeastCommonAncestor(start, end),
-      points = [start];
+      points = [nodes.source];
   while (start !== lca) {
     start = start.parent;
     points.push(start);
   }
   var k = points.length;
+  points.splice(k, 0, nodes.target);
   while (end !== lca) {
-    points.splice(k, 0, end);
     end = end.parent;
+    points.splice(k, 0, end);
   }
   return points;
 }
