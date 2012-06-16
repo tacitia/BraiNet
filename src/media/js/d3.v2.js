@@ -4924,28 +4924,29 @@ d3.layout = {};
 // hierarchy to the least common ancestor, and then back down to the destination
 // node. Each path is simply an array of nodes.
 d3.layout.bundle = function() {
-  return function(links) {
+  return function(links, orig) {
     var paths = [],
         i = -1,
         n = links.length;
-    while (++i < n) paths.push(d3_layout_bundlePath(links[i]));
+    while (++i < n) paths.push(d3_layout_bundlePath(links[i], orig[i]));
     return paths;
   };
 };
 
-function d3_layout_bundlePath(link) {
-  var start = link.source,
-      end = link.target,
+function d3_layout_bundlePath(nodes, nodesCopy) {
+  var start = nodesCopy.source,
+      end = nodesCopy.target,
       lca = d3_layout_bundleLeastCommonAncestor(start, end),
-      points = [start];
+      points = [nodes.source];
   while (start !== lca) {
     start = start.parent;
     points.push(start);
   }
   var k = points.length;
+  points.splice(k, 0, nodes.target);
   while (end !== lca) {
-    points.splice(k, 0, end);
     end = end.parent;
+    points.splice(k, 0, end);
   }
   return points;
 }

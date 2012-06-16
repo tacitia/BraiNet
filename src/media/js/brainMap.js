@@ -1,8 +1,8 @@
 /**
  * brainMap.js
- * 
+ *
  * Author: Hua
- * 
+ *
  */
 
 (function() {
@@ -68,16 +68,13 @@
             });
             return links;
         },
-        
         nameNodeMap: function(nodes) {
             var map = {};
             nodes.forEach(function(d) {
                 map[d.name] = d;
             });
-            
             return map;
         },
-        
         displayNameNodeMap: function(nodes) {
             var map = [];
             nodes.forEach(function(d) {
@@ -85,19 +82,15 @@
                     map.push({name: d.displayName.toLowerCase(), node: d});
                     //map[d.displayName.toLowerCase()] = d;
             });
-            
             return map;
         },
-        
         maxKey: function(nodes) {
             key = 0;
-            
             nodes.forEach(function(d) {
                 if (d.key > key) {
                     key = d.key;
                 }
             });
-            
             return key;
         }, 
         
