@@ -29,7 +29,7 @@
 /* ==  Arc  ==  */
 
 .arc {
-    opacity: 0.1;
+    opacity: 0.2;
     fill: #000;
 	font: 12px sans-serif;
 }
@@ -46,6 +46,7 @@
 
 /*green*/
 .arc.source {
+    stroke: blue
 	fill: #2ca02c;
 }
 
@@ -55,6 +56,9 @@
 
 
 /* ==  Text  ==  */
+.arc.hidden {
+    visibility: hidden;
+}
 
 .text {
     display: none;
@@ -92,6 +96,13 @@
 	stroke: #d62728;
 }
 
+.link.hidden {
+    visibility: hidden;
+}
+
+/*
+    "Selected" is the class for connections selected by specifying both source and target nodes. It is a bad name but I don't know what'd be a better name yet..
+*/
 .link.selected {
     stroke: #b45c1f;
 }

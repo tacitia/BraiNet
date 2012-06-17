@@ -16,6 +16,7 @@ var w = 1440,
     radius = Math.min(w, h) / 2,
     color = d3.scale.category20c();
     maxHop = 1;
+    maxDepth = 1;
 
 var nodesCopy;
 var selectedSource;
@@ -64,6 +65,9 @@ d3.select("#clear")
 
 d3.select("#maxHop")
     .on("change", setMaxHop);
+    
+d3.select("#maxDepth")
+    .on("change", setMaxDepth);
 
 d3.selectAll(".searchBox")
     .on("input", searchInput);
@@ -210,18 +214,22 @@ function mouse(e) {
 function mouseover(d) {
     svg.selectAll("path.link.target-" + d.key)
     .classed("target", true)
+    .classed("hidden", false)
     .each(updateNodes("source", true));
 
     svg.selectAll("path.link.source-" + d.key)
     .classed("source", true)
+    .classed("hidden", false)
     .each(updateNodes("target", true));
 
     svg.selectAll("text.target-" + d.key)
     .classed("target", true)
+    .classed("hidden", false)
     .each(updateNodes("source", true));
 
     svg.selectAll("text.source-" + d.key)
     .classed("source", true)
+    .classed("hidden", false)
     .each(updateNodes("target", true));
 }
 
@@ -343,6 +351,29 @@ function setMaxHop() {
     maxHop = this.value;
     document.getElementById("maxHopValue").innerHTML=maxHop;
     clearSelection();
+}
+
+function setMaxDepth() {
+    maxDepth = this.value;
+    document.getElementById("maxDepthValue").innerHTML=maxDepth;
+//    console.log(nodes);
+//    console.log(nodesCopy);
+    nodesCopy.forEach(function(d) {
+        if (d.depth > parseInt(maxDepth) + 1) {
+            console.log(d.key);
+            svg.select("#arc-" + d.key).classed("hidden", true);
+            svg.selectAll("path.link.source-" + d.key)
+                .classed("hidden", true);        
+            svg.selectAll("path.link.target-" + d.key)
+                .classed("hidden", true);             }
+        else {
+            svg.select("#arc-" + d.key).classed("hidden", false);
+            svg.selectAll("path.link.source-" + d.key)
+                .classed("hidden", false);        
+            svg.selectAll("path.link.target-" + d.key)
+                .classed("hidden", false);          
+        }
+    });
 }
 
 /*
