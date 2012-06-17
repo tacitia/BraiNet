@@ -42,7 +42,7 @@ var bundle = d3.layout.bundle();
 
 var line = d3.svg.line.radial()
     .interpolate("bundle")
-    .tension(0.9)
+    .tension(0.85)
     .radius(function(d) { return d.y; })
     .angle(function(d) {
         return (d.x) * (Math.PI / 180);
@@ -68,7 +68,6 @@ d3.select("#maxHop")
 d3.selectAll(".searchBox")
     .on("input", searchInput);
 
-
 d3.json("../media/data/brainData2.json", function(data) {
     nodesCopy = cluster.nodes(brainMap.root(data));
 });
@@ -91,7 +90,6 @@ d3.json("../media/data/brainData.json", function(data) {
     links = brainMap.connections(nodes);
     linksCopy = brainMap.connections(nodesCopy);
     splines = bundle(links, linksCopy);
-    
 
     conMap = brainMap.evidence(nodesCopy);
     nameNodeMap = brainMap.nameNodeMap(nodesCopy);
@@ -158,42 +156,39 @@ d3.json("../media/data/brainData.json", function(data) {
         .append("svg:g")
         .attr("id", function(d) {return "node-" + d.key;})
         .attr("class", "node") //target and source are added by the css
-//        .attr("transform", function(d) {
-//            return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; });
+        //.attr("transform", function(d) {
+        //    return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; });
 
-        //circle is part node
-        
-        /*
-        node.append("circle")
-            .attr("r", function(d) {return d.depth == 3 ? 3 : 1})
-            .on("mouseover", mouseover)
-            .on("mouseout", mouseout)
-            .on("click", nodeClick)
-            .attr("transform", function(d) {
-                return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; });        
-        */
-        
+        //node.append("circle")
+            //.attr("r", function(d) {return Math.abs(d.depth - 12)})
+            //.on("mouseover", mouseover)
+            //.on("mouseout", mouseout)
+            //.on("click", nodeClick)
+
+        //
+        // ARCS
+        //
+
         node.append("path")
             .data(partition.nodes(nodesCopy[0]))
             .attr("d", arc)
             .attr("fill", "white")
-            .attr("stroke", "black")
+            .attr("stroke", "white")
             .attr("id", function(d) {return "arc-" + d.key;})
             .attr("class", "arc")
             .on("mouseover", mouseover)
             .on("mouseout", mouseout)
-            .on("click", nodeClick);            
-        
-        
+            .on("click", nodeClick);
+
         //text is part of node
         node.append("svg:text")
             //set margin space
-            .attr("dx", function(d) { return d.x < 180 ? 15 : -15; })
+            .attr("dx", function(d) { return d.x < 180 ? 15 : -20; })
             .attr("dy", ".31em")
             .attr("class", function(d) {
                 return "text source-" + d.key + " target-" + d.key})
             .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
-//            .attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
+            .attr("transform", function(d) { return d.x < 180 ? "rotate(180)": "rotate(-180)"; })
             .attr("transform", function(d) {
                 return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
             .text(function(d) { return d.displayName; })
@@ -228,7 +223,6 @@ function mouseover(d) {
     svg.selectAll("text.source-" + d.key)
     .classed("source", true)
     .each(updateNodes("target", true));
-    
 }
 
 

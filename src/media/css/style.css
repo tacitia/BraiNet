@@ -1,23 +1,14 @@
-path.arc {
-	cursor: move;
-	fill: #fff;
-}
 
-.visibleText {
-	font: 10px sans-serif;    
-}
 
-.hiddenText {
-    display:none;
-}
+/* == Node == */
 
 .node {
+	fill: #2d527c;
 	font: 12px sans-serif;
 }
 
-/*blue - no connections*/
+/*none - no connections*/
 .node:hover {
-	fill: #1f77b4;
 }
 
 /*red*/
@@ -34,7 +25,12 @@ path.arc {
     stroke: #b45c1f;
 }
 
+
+/* ==  Arc  ==  */
+
 .arc {
+    opacity: 0.1;
+    fill: #000;
 	font: 12px sans-serif;
 }
 
@@ -57,6 +53,9 @@ path.arc {
     fill: #b45c1f;
 }
 
+
+/* ==  Text  ==  */
+
 .text {
     display: none;
 }
@@ -69,17 +68,23 @@ path.arc {
     display: block;
 }
 
+
+
+/*  links (connections) */
+
 .link {
 	stroke: steelblue;
-	stroke-opacity: .4;
+	stroke-opacity: .1;
 	fill: none;
 }
+
 .link:hover {
-	stroke: #b45c1f;
-	stroke-opacity: 1;
-	stroke-width:2px;
-	fill: none;
+	/*stroke: #b45c1f;*/
+	/*stroke-opacity: 1;*/
+	/*stroke-width:2px;*/
+	/*fill: none;*/
 }
+
 .link.target {
 	stroke: #2ca02c;
 }
@@ -87,13 +92,10 @@ path.arc {
 	stroke: #d62728;
 }
 
-/*
-    "Selected" is the class for connections selected by specifying both source and target nodes. It is a bad name but I don't know what'd be a better name yet..
-*/
 .link.selected {
     stroke: #b45c1f;
 }
 .link.source, .link.target, .link.selected {
-	stroke-opacity: 1;
-	stroke-width: 2px;
+	stroke-opacity: .9;
+	stroke-width: 1.5px;
 }
