@@ -65,7 +65,7 @@ d3.select("#clear")
 
 d3.select("#maxHop")
     .on("change", setMaxHop);
-    
+
 d3.select("#maxDepth")
     .on("change", setMaxDepth);
 
@@ -187,14 +187,18 @@ d3.json("../media/data/brainData.json", function(data) {
         //text is part of node
         node.append("svg:text")
             //set margin space
-            .attr("dx", function(d) { return d.x < 180 ? 15 : -20; })
+
+//            .attr("dx", function(d) { return d.x < 180 ? 15 : -15; })
+            .data(partition.nodes(nodesCopy[0]))
             .attr("dy", ".31em")
             .attr("class", function(d) {
                 return "text source-" + d.key + " target-" + d.key})
-            .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
-            .attr("transform", function(d) { return d.x < 180 ? "rotate(180)": "rotate(-180)"; })
-            .attr("transform", function(d) {
-                return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
+            .attr("text-anchor", "middle")
+            .attr("transform", function(d) {return "translate(" + arc.centroid(d) + ")";})
+//            .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+//            .attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
+//            .attr("transform", function(d) {
+//                return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
             .text(function(d) { return d.displayName; })
             .on("mouseover", mouseover)
             .on("mouseout", mouseout)
