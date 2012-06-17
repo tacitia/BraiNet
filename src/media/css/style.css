@@ -50,11 +50,16 @@ path.arc {
 
 /*green*/
 .arc.source {
+    stroke: blue
 	fill: #2ca02c;
 }
 
 .arc.selected {
     fill: #b45c1f;
+}
+
+.arc.hidden {
+    visibility: hidden;
 }
 
 .text {
@@ -85,6 +90,10 @@ path.arc {
 }
 .link.source {
 	stroke: #d62728;
+}
+
+.link.hidden {
+    visibility: hidden;
 }
 
 /*
