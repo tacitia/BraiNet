@@ -92,8 +92,7 @@
                 }
             });
             return key;
-        }, 
-        
+        },
         cloneNode: function(node) {
             var newNode;
             newNode.name = d.name;
@@ -103,14 +102,11 @@
             }
             newNode.displayName = node.displayName;
             newNode.links = cloneLink(node.links);
-            
             return newNode;
-        }, 
-        
+        },
         cloneLink: function(links) {
             var newLinks = [];
             return newLinks;
         }
-        
     };
 })();

@@ -1,9 +1,8 @@
 /**
  * script.js
  *
- * Creates d3 svg circular layout.
- *
- * We should plan how we are going to organize the js.
+ * Brain Circus
+ * Heirararchical Edge Bundles
  *
  * Authors: Hua & Arthur
  *
@@ -55,7 +54,7 @@ var svg = d3.select("body")
     .attr("width", w)
     .attr("height", h + 100)
     .append("svg:g")
-    .attr("transform", "translate(" + w/2 + "," + h/2 + ")");
+    .attr("transform", "translate(" + ((w/2) - 150) + "," + ((h/2) + 50) + ")");
 
 d3.select("#search")
     .on("click", searchButtonClick);
@@ -76,6 +75,16 @@ d3.json("../media/data/brainData2.json", function(data) {
     nodesCopy = cluster.nodes(brainMap.root(data));
 });
 
+function filterRoot(element, index, array) {
+    if(element.depth > 1) {
+        return element;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Draw Bundle
+////////////////////////////////////////////////////////////////////////////////
+
 d3.json("../media/data/brainData.json", function(data) {
     nodes = cluster.nodes(brainMap.root(data));
 
@@ -91,8 +100,9 @@ d3.json("../media/data/brainData.json", function(data) {
         }
     });
 
-    links = brainMap.connections(nodes);
-    linksCopy = brainMap.connections(nodesCopy);
+    var links = brainMap.connections(nodes);
+    var linksCopy = brainMap.connections(nodesCopy);
+
     splines = bundle(links, linksCopy);
 
     conMap = brainMap.evidence(nodesCopy);
@@ -100,24 +110,9 @@ d3.json("../media/data/brainData.json", function(data) {
     displayNameNodeMap = brainMap.displayNameNodeMap(nodesCopy);
 
 
-    //DEBUGGING - show nodesCopy nodes
-    //var node = svg.selectAll("g.node")
-        //.data(nodesCopy)
-        //.enter()
-        //.append("svg:g")
-        //.attr("id", function(d) {return "nodeCopy-" + d.key;})
-        //.attr("class", "nodeCopy") //target and source are added by the css
-        //.attr("transform", function(d) {
-            //return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; });
-
-        ////circle is part node
-        //node.append("circle")
-            //.attr("r", function(d) {return 3})
-            //.on("mouseover", mouseover)
-            //.on("mouseout", mouseout)
-            //.on("click", nodeClick);
-    //END DEBUGGING
-
+    //
+    // Connections
+    //
     var path = svg.selectAll("path.link")
         .data(links)
         .enter().append("svg:path")
@@ -126,96 +121,91 @@ d3.json("../media/data/brainData.json", function(data) {
         .attr("d", function(d, i) { return line(splines[i]); })
         .on("click", linkClick);
 
-    var arc = d3.svg.arc()
-        .innerRadius(function(d) {
-            if (d.depth >= 2) {
-                return Math.sqrt(d.y + 150000 - d.dy * (d.depth - 2) * 2);
-            }
-            return 0;
-        })
-        .outerRadius(function(d) {
-            if (d.depth >= 2) {
-                return Math.sqrt(d.y + 150000 - d.dy * (d.depth - 2) * 2 + d.dy);
-            }
-            return 0;
-
-        })
-        .startAngle(function(d) {
-            if (d.depth >= 2 || d.depth == 3) {
-                return d.x;
-            }
-            return 0;
-
-        })
-        .endAngle(function(d) {
-            if (d.depth >= 2 || d.depth == 3) {
-                return d.x + d.dx;
-            }
-            return 0;
-        });
-
     var node = svg.selectAll("g.node")
-        .data(nodes)
+        .data(nodes.filter(filterRoot))
         .enter()
         .append("svg:g")
         .attr("id", function(d) {return "node-" + d.key;})
-        .attr("class", "node") //target and source are added by the css
+        .attr("class", "node"); //target and source are added by the css
         //.attr("transform", function(d) {
-        //    return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; });
+            //return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; });
 
-        //node.append("circle")
-            //.attr("r", function(d) {return Math.abs(d.depth - 12)})
-            //.on("mouseover", mouseover)
-            //.on("mouseout", mouseout)
-            //.on("click", nodeClick)
+    //
+    // ARCS
+    //
+    var arc = d3.svg.arc()
+        .innerRadius(function(d) {
+                return Math.sqrt(d.y + 150000 - d.dy * (d.depth - 2) * 2);
+        })
+        .outerRadius(function(d) {
+                return Math.sqrt(d.y + 150000 - d.dy * (d.depth - 2) * 2 + d.dy);
 
-        //
-        // ARCS
-        //
+        })
+        .startAngle(function(d) {
+                return d.x;
 
-        node.append("path")
-            .data(partition.nodes(nodesCopy[0]))
-            .attr("d", arc)
-            .attr("fill", "white")
-            .attr("stroke", "white")
-            .attr("id", function(d) {return "arc-" + d.key;})
-            .attr("class", "arc")
-            .on("mouseover", mouseover)
-            .on("mouseout", mouseout)
-            .on("click", nodeClick);
+        })
+        .endAngle(function(d) {
+                return d.x + d.dx;
+        });
 
-        //text is part of node
-        node.append("svg:text")
-            //set margin space
+    partition.nodes(nodesCopy[0]);
+    node.append("path")
+        .data(nodesCopy.filter(filterRoot))
+        .attr("d", arc)
+        .attr("fill", "white")
+        .attr("stroke", "white")
+        .attr("id", function(d) {return "arc-" + d.key;})
+        .attr("class", "arc")
+        .on("mouseover", mouseover)
+        .on("mouseout", mouseout)
+        .on("click", nodeClick);
 
-//            .attr("dx", function(d) { return d.x < 180 ? 15 : -15; })
-            .data(partition.nodes(nodesCopy[0]))
-            .attr("dy", ".31em")
-            .attr("class", function(d) {
-                return "text source-" + d.key + " target-" + d.key})
-            .attr("text-anchor", "middle")
-            .attr("transform", function(d) {return "translate(" + arc.centroid(d) + ")";})
-//            .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
-//            .attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
-//            .attr("transform", function(d) {
-//                return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
-            .text(function(d) { return d.displayName; })
-            .on("mouseover", mouseover)
-            .on("mouseout", mouseout)
-            .on("click", nodeClick);
+
+    //node.append("svg:text")
+        ////.attr("dx", function(d) { return d.x < 180 ? 15 : -15; })
+        //.data(nodesArc.filter(filterRoot))
+        //.attr("dy", ".31em")
+        //.attr("class", function(d) {
+            //return "text source-" + d.key + " target-" + d.key})
+        //.attr("text-anchor", "middle")
+        //.attr("transform", function(d) {return "translate(" + arc.centroid(d) + ")";})
+        ////.attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+        ////.attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
+        ////.attr("transform", function(d) {
+            ////return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
+        //.text(function(d) { return d.displayName; })
+        //.on("mouseover", mouseover)
+        //.on("mouseout", mouseout)
+        //.on("click", nodeClick);
+
+    //node.append("circle")
+        //.attr("r", function(d) {return 2})
+        //.attr("transform", function(d) {
+            //return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
+        //.on("mouseover", mouseover)
+        //.on("mouseout", mouseout)
+        //.on("click", nodeClick)
 });
 
-d3.select(self.frameElement).style("height", "960px");
+svg.selectAll("path").each(function(d){
+    var element = d.target;
+    element.parentNode.appendChild(element);
+});
 
-/*
-====== UI Event Handlers ======
-*/
+////////////////////////////////////////////////////////////////////////////////
+// Mouse & Click Events
+////////////////////////////////////////////////////////////////////////////////
 
 function mouse(e) {
     return [e.pageX - rx, e.pageY - ry];
 }
 
 function mouseover(d) {
+    //if(d.links.length == 0){ return; }
+
+    svg.selectAll("path").classed("non-selected", true);
+
     svg.selectAll("path.link.target-" + d.key)
     .classed("target", true)
     .classed("hidden", false)
@@ -239,6 +229,10 @@ function mouseover(d) {
 
 
 function mouseout(d) {
+    //if(d.links.length == 0){ return; }
+
+    svg.selectAll("path").classed("non-selected", false);
+
     svg.selectAll("path.link.source-" + d.key)
     .classed("source", false)
     .each(updateNodes("target", false));
@@ -261,23 +255,19 @@ function mouseout(d) {
 //mouseover and mouseout helper
 function updateNodes(name, value) {
     return function(d) {
-        if (d.target != undefined) {
-            svg.select("#node-" + d.target.key).classed(name, value);
-            svg.select("#arc-" + d.target.key).classed(name, value);
-            svg.select("text.target-" + d.target.key).classed(name, value);
-        }
-        if (d.source != undefined) {
-            svg.select("#node-" + d.source.key).classed(name, value);
-            svg.select("#arc-" + d.source.key).classed(name, value);
-            svg.select("text.source-" + d.source.key).classed(name, value);
-        }
+        svg.select("#node-" + d.target.key).classed(name, value);
+        svg.select("#arc-" + d.target.key).classed(name, value);
+        svg.select("#node-" + d.source.key).classed(name, value);
+        svg.select("#arc-" + d.source.key).classed(name, value);
+        svg.select("text.target-" + d.target.key).classed(name, value);
+        svg.select("text.source-" + d.source.key).classed(name, value);
     };
 }
 
 function linkClick(d) {
-    var source = d.source.name;
-    var target = d.target.name;
-    window.location.href = 'http://www.ncbi.nlm.nih.gov/pubmed?term=' + conMap[source, target];
+    //var source = d.source.name;
+    //var target = d.target.name;
+    //window.location.href = 'http://www.ncbi.nlm.nih.gov/pubmed?term=' + conMap[source, target];
 }
 
 function nodeClick(d) {
@@ -287,36 +277,33 @@ function nodeClick(d) {
     }
     if (d3.event.shiftKey == true) {
         if (selectedTarget != undefined) {
-            svg.select("#node-" + selectedTarget.key).classed("target", false);
-            svg.select("#arc-" + selectedTarget.key).classed("target", false);
+            svg.select("#arc-" + selectedTarget.key).classed("selected-target", false);
         }
         selectedTarget = d;
-        svg.select("#node-" + d.key).classed("target", true);
-        svg.select("#arc-" + d.key).classed("target", true);
+        svg.select("#arc-" + d.key).classed("selected-target", true);
     }
     else {
         if (selectedSource != undefined) {
-            svg.select("#node-" + selectedSource.key).classed("source", false);
-            svg.select("#arc-" + selectedSource.key).classed("source", false);
+            svg.select("#arc-" + selectedSource.key).classed("selected-source", false);
         }
         selectedSource = d;
-        svg.select("#node-" + d.key).classed("source", true);
-        svg.select("#arc-" + d.key).classed("source", true);
+        svg.select("#arc-" + d.key).classed("selected-source", true);
     }
 }
 
+
+//highlights search
 function searchButtonClick() {
     if (selectedSource != undefined && selectedTarget != undefined) {
         computeLinksForSelection(maxHop, selectedSource,
                             selectedTarget, [], linkRepo);
-        console.log(selectedSource);
-        console.log(selectedTarget);
-        console.log(linkRepo);
         linkRepo.forEach(function(d) {
             d.forEach(function(i) {
-                svg.selectAll("path.link.source-" + i.source.key
+                svg.select("path.link.source-" + i.source.key
                     + ".target-" + i.target.key)
                 .classed("selected", true);
+                svg.select("#arc-" + i.source.key).classed("selected", true);
+                svg.select("#arc-" + i.target.key).classed("selected", true);
             });
         });
     }
@@ -325,19 +312,16 @@ function searchButtonClick() {
 function clearButtonClick() {
     clearSelection();
     if (selectedSource != undefined) {
-        svg.select("#node-" + selectedSource.key).classed("source", false);
-        svg.select("#arc-" + selectedSource.key).classed("source", false);
+        svg.select("#arc-" + selectedSource.key).classed("selected-source", false);
     }
     if (selectedTarget != undefined) {
-        svg.select("#node-" + selectedTarget.key).classed("target", false);
-        svg.select("#arc-" + selectedTarget.key).classed("target", false);
+        svg.select("#arc-" + selectedTarget.key).classed("selected-target", false);
     }
 }
 
 function searchInput() {
     selectedNodes.forEach(function(d) {
-        svg.select("#node-" + d.key).classed("selected", false);
-        svg.select("#arc-" + d.key).classed("selected", false);
+        svg.select("#arc-" + d.key).classed("selected-source", false);
     });
     selectedNodes = [];
     var inputRegion = this.value.toLowerCase();
@@ -345,8 +329,7 @@ function searchInput() {
     displayNameNodeMap.forEach(function(d) {
         if (d.name == inputRegion) {
             selectedNodes.push(d.node);
-            svg.select("#node-" + d.node.key).classed("selected", true);
-            svg.select("#arc-" + d.node.key).classed("selected", true);
+            svg.select("#arc-" + d.node.key).classed("selected-source", true);
         }
     });
 }
@@ -364,18 +347,18 @@ function setMaxDepth() {
 //    console.log(nodesCopy);
     nodesCopy.forEach(function(d) {
         if (d.depth > parseInt(maxDepth) + 1) {
-            console.log(d.key);
+            //console.log(d.key);
             svg.select("#arc-" + d.key).classed("hidden", true);
             svg.selectAll("path.link.source-" + d.key)
-                .classed("hidden", true);        
+                .classed("hidden", true);
             svg.selectAll("path.link.target-" + d.key)
                 .classed("hidden", true);             }
         else {
             svg.select("#arc-" + d.key).classed("hidden", false);
             svg.selectAll("path.link.source-" + d.key)
-                .classed("hidden", false);        
+                .classed("hidden", false);
             svg.selectAll("path.link.target-" + d.key)
-                .classed("hidden", false);          
+                .classed("hidden", false);
         }
     });
 }
@@ -386,17 +369,20 @@ function setMaxDepth() {
 function clearSelection() {
     linkRepo.forEach(function(d) {
         d.forEach(function(i) {
-            svg.selectAll("path.link.source-" + i.source.key
+            svg.select("path.link.source-" + i.source.key
                 + ".target-" + i.target.key)
             .classed("selected", false);
+            svg.select("#arc-" + i.target.key).classed("selected", false);
+            svg.select("#arc-" + i.source.key).classed("selected", false);
         });
     });
     linkRepo = [];
 }
 
-/*
-====== Backend functions ======
-*/
+
+////////////////////////////////////////////////////////////////////////////////
+// Helper Functions
+////////////////////////////////////////////////////////////////////////////////
 
 function computeLinksForSelection(hop, source, target, currLink, linkRepo) {
     var augmentedLinks = [];

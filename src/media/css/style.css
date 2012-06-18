@@ -1,5 +1,4 @@
 
-
 /* == Node == */
 
 .node {
@@ -13,7 +12,7 @@
 
 /*red*/
 .node.target {
-	fill: #d62728 !important;
+	fill: #d62728;
 }
 
 /*green*/
@@ -21,39 +20,44 @@
 	fill: #2ca02c;
 }
 
-.node.selected {
-    stroke: #b45c1f;
-}
-
-
 /* ==  Arc  ==  */
 
 .arc {
-    opacity: 0.2;
-    fill: #000;
+    opacity: 0.15;
+    fill: #0D0D0D;
 	font: 12px sans-serif;
+    stroke: #FFF;
 }
 
 /*blue - no connections*/
 .arc:hover {
-	fill: #1f77b4;
+	fill: #ccc;
 }
 
 /*red*/
 .arc.target {
-	fill: #d62728 !important;
+	fill: #d62728;
 }
 
 /*green*/
 .arc.source {
-    stroke: blue
-	fill: #2ca02c;
+	fill: #2ca02c !important;
+}
+
+.arc.selected-source {
+    fill: #25fb3a;
+}
+.arc.selected-target {
+    fill: #fa0615;
 }
 
 .arc.selected {
     fill: #b45c1f;
 }
 
+.arc.target, .arc.source, .arc.selected {
+    opacity: 0.8;
+}
 
 /* ==  Text  ==  */
 .arc.hidden {
@@ -77,16 +81,20 @@
 /*  links (connections) */
 
 .link {
-	stroke: steelblue;
-	stroke-opacity: .1;
+    stroke: #95B1B8;
+	stroke-opacity: .25;
 	fill: none;
 }
 
-.link:hover {
-	/*stroke: #b45c1f;*/
-	/*stroke-opacity: 1;*/
-	/*stroke-width:2px;*/
-	/*fill: none;*/
+/*.link:hover {*/
+    /*stroke: #b45c1f;*/
+    /*stroke-opacity: 1;*/
+    /*stroke-width:2px;*/
+    /*fill: none;*/
+/*}*/
+
+.link.non-selected {
+    stroke: #C3DBE0;
 }
 
 .link.target {
@@ -100,9 +108,6 @@
     visibility: hidden;
 }
 
-/*
-    "Selected" is the class for connections selected by specifying both source and target nodes. It is a bad name but I don't know what'd be a better name yet..
-*/
 .link.selected {
     stroke: #b45c1f;
 }
