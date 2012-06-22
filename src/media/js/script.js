@@ -16,17 +16,17 @@ var w = 1440,
 
 //bundle graph
 var nodes,
-    conMap,
-    displayNameNodeMap,
-    nameNodeMap;
+    con_map,
+    display_node_map,
+    name_node_map;
 
 //ui
-var maxHop = 1,
-    maxDepth = 1,
-    selectedSource,
-    selectedTarget,
-    selectedLinks = [],
-    selectedNodes = [];
+var max_hop = 1,
+    max_depth = 1,
+    selected_source,
+    selected_target,
+    selected_links = [],
+    selected_nodes = [];
 
 var cluster = d3.layout.cluster()
     .size([360, h/2.5 ])
@@ -65,20 +65,20 @@ d3.json("../media/data/brainData.json", function(data) {
 
     nodes = cluster.nodes(brainMap.root(data));
 
-    var nodesInver = [];
+    var nodes_flip = [];
     for (var i = 0; i < nodes.length; i++){
-        nodesInver[i] = Object.create(nodes[i]); //nodesInver inherits from nodes
-        nodesInver[i].y = 25 * (20 - nodesInver[i].depth); //overrides y value
+        nodes_flip[i] = Object.create(nodes[i]); //nodes_flip inherits from nodes
+        nodes_flip[i].y = 25 * (20 - nodes_flip[i].depth); //overrides y value
         nodes[i].y -= 30;
     };
 
     var links = brainMap.connections(nodes);
-    var linksInver = brainMap.connections(nodesInver);
+    var linksInver = brainMap.connections(nodes_flip);
     var splines = bundle(links, linksInver);
 
-    //conMap = brainMap.evidence(nodes);
-    nameNodeMap = brainMap.nameNodeMap(nodes);
-    displayNameNodeMap = brainMap.displayNameNodeMap(nodes);
+    //con_map = brainMap.evidence(nodes);
+    name_node_map = brainMap.nameNodeMap(nodes);
+    display_node_map = brainMap.displayNameNodeMap(nodes);
 
     //
     // Connections
@@ -92,7 +92,7 @@ d3.json("../media/data/brainData.json", function(data) {
         .on("click", linkClick);
 
     var node = svg.selectAll("g.node")
-        .data(nodesInver.filter(filterRoot))
+        .data(nodes_flip.filter(filterRoot))
         .enter()
         .append("svg:g")
         .attr("id", function(d) {return "node-" + d.key;})
@@ -120,7 +120,7 @@ d3.json("../media/data/brainData.json", function(data) {
         });
 
     //node.append("circle")
-        //.data(nodesInver)
+        //.data(nodes_flip)
         //.attr("r", function(d) {return 2})
         //.attr("transform", function(d) {
             //return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
@@ -128,7 +128,7 @@ d3.json("../media/data/brainData.json", function(data) {
         //.on("mouseout", mouseout)
         //.on("click", nodeClick)
 
-    //WARNING - partition will destroy both nodesInver and nodes
+    //WARNING - partition will destroy both nodes_flip and nodes
     partition.nodes(nodes[0]);
 
     node.append("path")
@@ -267,7 +267,7 @@ function linkClick(d) {
     //var source = d.source.name;
     //var target = d.target.name;
     //window.location.href = 'http://www.ncbi.nlm.nih.gov/pubmed?term=' +
-    //conMap[source, target];
+    //con_map[source, target];
 }
 
 /*
@@ -276,21 +276,21 @@ function linkClick(d) {
  */
 function nodeClick(d) {
     d3.event.preventDefault();
-    if (selectedSource != undefined && selectedTarget != undefined) {
+    if (selected_source != undefined && selected_target != undefined) {
         clearSelection();
     }
     if (d3.event.shiftKey == true) {
-        if (selectedTarget != undefined) {
-            svg.select("#arc-" + selectedTarget.key).classed("selected-target", false);
+        if (selected_target != undefined) {
+            svg.select("#arc-" + selected_target.key).classed("selected-target", false);
         }
-        selectedTarget = d;
+        selected_target = d;
         svg.select("#arc-" + d.key).classed("selected-target", true);
     }
     else {
-        if (selectedSource != undefined) {
-            svg.select("#arc-" + selectedSource.key).classed("selected-source", false);
+        if (selected_source != undefined) {
+            svg.select("#arc-" + selected_source.key).classed("selected-source", false);
         }
-        selectedSource = d;
+        selected_source = d;
         svg.select("#arc-" + d.key).classed("selected-source", true);
     }
 }
@@ -301,10 +301,10 @@ function nodeClick(d) {
  *
  */
 function searchButtonClick() {
-    if (selectedSource != undefined && selectedTarget != undefined) {
-        computeLinksForSelection(maxHop, selectedSource,
-                            selectedTarget, [], selectedLinks);
-        selectedLinks.forEach(function(d) {
+    if (selected_source != undefined && selected_target != undefined) {
+        computeLinksForSelection(max_hop, selected_source,
+                            selected_target, [], selected_links);
+        selected_links.forEach(function(d) {
             d.forEach(function(i) {
                 svg.select("path.link.source-" + i.source.key
                     + ".target-" + i.target.key)
@@ -323,11 +323,11 @@ function searchButtonClick() {
  */
 function clearButtonClick() {
     clearSelection();
-    if (selectedSource != undefined) {
-        svg.select("#arc-" + selectedSource.key).classed("selected-source", false);
+    if (selected_source != undefined) {
+        svg.select("#arc-" + selected_source.key).classed("selected-source", false);
     }
-    if (selectedTarget != undefined) {
-        svg.select("#arc-" + selectedTarget.key).classed("selected-target", false);
+    if (selected_target != undefined) {
+        svg.select("#arc-" + selected_target.key).classed("selected-target", false);
     }
 }
 
@@ -337,15 +337,15 @@ function clearButtonClick() {
  *
  */
 function searchInput() {
-    selectedNodes.forEach(function(d) {
+    selected_nodes.forEach(function(d) {
         svg.select("#arc-" + d.key).classed("selected-source", false);
     });
-    selectedNodes = [];
+    selected_nodes = [];
     var inputRegion = this.value.toLowerCase();
     maxKey = brainMap.maxKey(nodes);
-    displayNameNodeMap.forEach(function(d) {
+    display_node_map.forEach(function(d) {
         if (d.name == inputRegion) {
-            selectedNodes.push(d.node);
+            selected_nodes.push(d.node);
             svg.select("#arc-" + d.node.key).classed("selected-source", true);
         }
     });
@@ -357,8 +357,8 @@ function searchInput() {
  *
  */
 function setMaxHop() {
-    maxHop = this.value;
-    document.getElementById("maxHopValue").innerHTML=maxHop;
+    max_hop = this.value;
+    document.getElementById("maxHopValue").innerHTML=max_hop;
     clearSelection();
 }
 
@@ -368,10 +368,10 @@ function setMaxHop() {
  *
  */
 function setMaxDepth() {
-    maxDepth = this.value;
-    document.getElementById("maxDepthValue").innerHTML=maxDepth;
+    max_depth = this.value;
+    document.getElementById("maxDepthValue").innerHTML=max_depth;
     nodes.forEach(function(d) {
-        if (d.depth > parseInt(maxDepth) + 1) {
+        if (d.depth > parseInt(max_depth) + 1) {
             svg.select("#arc-" + d.key).classed("hidden", true);
             svg.selectAll("path.link.source-" + d.key)
                 .classed("hidden", true);
@@ -391,11 +391,11 @@ function setMaxDepth() {
 /*
  * Clear Selection
  *
- * Clears selectedLinks
+ * Clears selected_links
  * Reverts selected arc and paths
  */
 function clearSelection() {
-    selectedLinks.forEach(function(d) {
+    selected_links.forEach(function(d) {
         d.forEach(function(i) {
             svg.select("path.link.source-" + i.source.key
                 + ".target-" + i.target.key)
@@ -404,7 +404,7 @@ function clearSelection() {
             svg.select("#arc-" + i.source.key).classed("selected", false);
         });
     });
-    selectedLinks = [];
+    selected_links = [];
 }
 
 
@@ -413,14 +413,14 @@ function clearSelection() {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-function computeLinksForSelection(hop, source, target, currLink, selectedLinks) {
+function computeLinksForSelection(hop, source, target, currLink, selected_links) {
     var augmentedLinks = [];
     var augmentedTargets = [];
-    source.links.forEach(function(d) {augmentedLinks.push({source: source, target: nameNodeMap[d.name]})});
+    source.links.forEach(function(d) {augmentedLinks.push({source: source, target: name_node_map[d.name]})});
     var decendants = [];
     getDecendants(source, decendants);
     decendants.forEach(function(d) {
-        d.links.forEach(function(i) {augmentedLinks.push({source: d, target: nameNodeMap[i.name]})});
+        d.links.forEach(function(i) {augmentedLinks.push({source: d, target: name_node_map[i.name]})});
     });
     augmentedTargets.push(target);
     getDecendants(target, augmentedTargets);
@@ -429,11 +429,11 @@ function computeLinksForSelection(hop, source, target, currLink, selectedLinks) 
         newLink.push({source: d.source, target: d.target});
         augmentedTargets.forEach(function(i) {
             if (d.target == i) {
-                selectedLinks.push(newLink);
+                selected_links.push(newLink);
             }
         });
         if (hop > 1) {
-            computeLinksForSelection(hop-1, d.target, target, newLink, selectedLinks);
+            computeLinksForSelection(hop-1, d.target, target, newLink, selected_links);
         }
     });
 }
