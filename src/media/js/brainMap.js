@@ -46,7 +46,7 @@
         // Return a list of connections for the given array of brain regions.
         connections: function(nodes) {
             var map = {},
-            links = [];
+                links = [];
 
             // Compute a map from name to node.
             nodes.forEach(function(d) {

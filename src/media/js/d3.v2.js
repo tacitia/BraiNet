@@ -4933,17 +4933,17 @@ d3.layout.bundle = function() {
   };
 };
 
-function d3_layout_bundlePath(nodes, nodesCopy) {
-  var start = nodesCopy.source,
-      end = nodesCopy.target,
+function d3_layout_bundlePath(links, linksInver) {
+  var start = links.source,
+      end = links.target,
       lca = d3_layout_bundleLeastCommonAncestor(start, end),
-      points = [nodes.source];
+      points = [linksInver.source];
   while (start !== lca) {
     start = start.parent;
     points.push(start);
   }
   var k = points.length;
-  points.splice(k, 0, nodes.target);
+  points.splice(k, 0, linksInver.target);
   while (end !== lca) {
     end = end.parent;
     points.splice(k, 0, end);
