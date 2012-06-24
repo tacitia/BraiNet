@@ -48,6 +48,7 @@ var line = d3.svg.line.radial()
     .radius(function (d) { return d.y; })
     .angle(function (d) {
         return (d.x) * (Math.PI / 180);
+//        return d.x;
     });
 
 var svg = d3.select("body")
@@ -65,44 +66,49 @@ var svg = d3.select("body")
 
 d3.json("../media/data/brainData.json", function (data) {
 
+    var data_forLink = [];
+    for (var i = 0; i < data.length; ++i) {
+        data_forLink[i] = Object.create(data[i]);
+    }
+    
     var nodes_flip,
+        nodes_forLink,
         links,
         links_flip,
+        links_visible,
         splines,
         path,
         node,
         arc,
         i;
+        
+        
+    nodes = partition.nodes(brainMap.root(data));
+    nodes_forLink = cluster.nodes(brainMap.root(data_forLink));
+    
+    node = svg.selectAll("g.node")
+              .data(nodes.filter(filterRoot))
+              .enter()
+              .append("svg:g")
+              .attr("class", "nodes");
+    
+            
+//    nodes = cluster.nodes(brainMap.root(data));
 
-    nodes = cluster.nodes(brainMap.root(data));
-
+    /*
     nodes_flip = [];
     for (i = 0; i < nodes.length; i += 1) {
         nodes_flip[i] = Object.create(nodes[i]); //nodes_flip inherits from nodes
         nodes_flip[i].y = 25 * (20 - nodes_flip[i].depth); //overrides y value
         nodes[i].y -= 30;
     }
-
-    links = brainMap.connections(nodes);
-    links_flip = brainMap.connections(nodes_flip);
-    splines = bundle(links, links_flip);
+    */
 
     //con_map = brainMap.evidence(nodes);
     name_node_map = brainMap.nameNodeMap(nodes);
     display_node_map = brainMap.displayNameNodeMap(nodes);
-
-    //
-    // Connections
-    //
-    path = svg.selectAll("path.link")
-        .data(links)
-        .enter().append("svg:path")
-        .attr("class", function (d) {
-            return "link source-" + d.source.key + " target-" + d.target.key;
-        })
-        .attr("d", function (d, i) { return line(splines[i]); })
-        .on("click", linkClick);
-
+    
+    /*
     node = svg.selectAll("g.node")
         .data(nodes_flip.filter(filterRoot))
         .enter()
@@ -111,25 +117,54 @@ d3.json("../media/data/brainData.json", function (data) {
         .attr("class", "node"); //target and source are added by the css
         //.attr("transform", function(d) {
             //return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; });
+    */
 
     //
     // ARCS
     //
+    
     arc = d3.svg.arc()
         .innerRadius(function (d) {
-            return Math.sqrt(d.y + 150000 - d.dy * (d.depth - 2) * 2);
+            return Math.sqrt(d.py + 150000 - d.dy * (d.depth - 2) * 2);
         })
         .outerRadius(function (d) {
-            return Math.sqrt(d.y + 150000 - d.dy * (d.depth - 2) * 2 + d.dy);
+            return Math.sqrt(d.py + 150000 - d.dy * (d.depth - 2) * 2 + d.dy);
 
         })
         .startAngle(function (d) {
-            return d.x;
+            return d.px;
 
         })
         .endAngle(function (d) {
-            return d.x + d.dx;
+            return d.px + d.dx;
         });
+    
+    
+    nodes.forEach(function(d) {
+        d.px = d.x;
+        d.py = d.y;
+        d.x = (d.px + d.dx / 2) * 180 / Math.PI;
+        d.y = Math.sqrt(d.py + 150000 - d.dy * (d.depth - 2) * 2 + d.dy / 2);
+    });
+    
+        
+    links = brainMap.connections(nodes);
+    links_visible = brainMap.connections(nodes_forLink);
+//    links_flip = brainMap.connections(nodes_flip);
+//    splines = bundle(links, links_flip);
+    splines = bundle(links_visible, links);
+
+    //
+    // Connections
+    // 
+    path = svg.selectAll("path.link")
+        .data(links)
+        .enter().append("svg:path")
+        .attr("class", function (d) {
+            return "link source-" + d.source.key + " target-" + d.target.key;
+        })
+        .attr("d", function (d, i) { return line(splines[i]); })
+        .on("click", linkClick);
 
     //node.append("circle")
         //.data(nodes_flip)
@@ -141,10 +176,13 @@ d3.json("../media/data/brainData.json", function (data) {
         //.on("click", nodeClick)
 
     //WARNING - partition will destroy both nodes_flip and nodes
+    
+    /*
     partition.nodes(nodes[0]);
+    */
 
     node.append("path")
-        .data(nodes.filter(filterRoot))
+//        .data(nodes.filter(filterRoot))
         .attr("d", arc)
         .attr("fill", "white")
         .attr("stroke", "white")
@@ -153,7 +191,7 @@ d3.json("../media/data/brainData.json", function (data) {
         .on("mouseover", mouseover)
         .on("mouseout", mouseout)
         .on("click", nodeClick);
-
+    
     //node.append("svg:text")
         ////.attr("dx", function(d) { return d.x < 180 ? 15 : -15; })
         //.data(nodesArc.filter(filterRoot))
