@@ -59,6 +59,7 @@ var svg = d3.select("body")
     .append("svg:g")
     .attr("transform", "translate(" + ((w / 2) - 150) + "," + ((h / 2) + 50) + ")");
 
+var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Draw Bundle
@@ -144,25 +145,27 @@ d3.json("../media/data/brainData.json", function (data) {
     //
     // Arcs
     //
-    node.append("svg:path")
-        //.data(nodes.filter(filterRoot))
-        .attr("d", arc)
-        .attr("id", function (d) { return "arc-" + d.key; })
-        .attr("class", "arc")
-        .attr("fill", "white")
-        .attr("stroke", "white")
-        .on("mouseover", mouseOver)
-        .on("mouseout", mouseOut)
-        .on("click", nodeClick);
-
-    //node.append("svg:circle")
-        //.attr("r", function (d) { return 2; })
-        //.attr("transform", function (d) {
-            //return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")";
-        //})
-        //.on("mouseover", mouseOver)
-        //.on("mouseout", mouseOut)
-        //.on("click", nodeClick);
+    if (!is_firefox) {
+        node.append("svg:path")
+            //.data(nodes.filter(filterRoot))
+            .attr("d", arc)
+            .attr("id", function (d) { return "arc-" + d.key; })
+            .attr("class", "arc")
+            .attr("fill", "white")
+            .attr("stroke", "white")
+            .on("mouseover", mouseOver)
+            .on("mouseout", mouseOut)
+            .on("click", nodeClick);
+    } else {
+        node.append("svg:circle")
+            .attr("r", function (d) { return 2; })
+            .attr("transform", function (d) {
+                return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")";
+            })
+            .on("mouseover", mouseOver)
+            .on("mouseout", mouseOut)
+            .on("click", nodeClick);
+    }
 
     node.append("svg:text")
         //.attr("dx", function(d) { return d.x < 180 ? 15 : -15; })
