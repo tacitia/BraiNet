@@ -1,14 +1,14 @@
 /**
- * brainMap.js
- *
- * Author: Hua
- *
- */
+* brainMap.js
+*
+* Author: Hua
+*
+*/
 
-(function() {
+(function () {
     brainMap = {
         // Lazily construct the brain hierarchy from brain region names.
-        root: function(data) {
+        root: function (data) {
             var map = {};
             function find(name, data) {
                 var node = map[name], i;
@@ -25,88 +25,93 @@
             }
 
 
-            data.forEach(function(d) {
+            data.forEach(function (d) {
                 find(d.name, d);
             }
             );
             return map[""];
         },
         // Generate the mapping from [source region name, target region name] to an ID of the associated literature
-        evidence: function(nodes) {
+        evidence: function (nodes) {
             var map = {};
 
-            nodes.forEach(function(d) {
-                if (d.links) d.links.forEach(function(i) {
-                    map[d.name, i.name] = i.PMID;
-                });
+            nodes.forEach(function (d) {
+                if (d.links) {
+                    d.links.forEach(function (i) {
+                        map[d.name, i.name] = i.PMID;
+                    });
+                }
             });
 
             return map;
         },
         // Return a list of connections for the given array of brain regions.
-        connections: function(nodes) {
+        connections: function (nodes) {
             var map = {},
-                links = [];
+            links = [];
 
             // Compute a map from name to node.
-            nodes.forEach(function(d) {
+            nodes.forEach(function (d) {
                 map[d.name] = d;
             });
 
             // Construct links
-            nodes.forEach(function(d) {
-                if (d.links) d.links.forEach(function(i) {
-                    // Debug code: map[i.name] will be undefined if the connectivity data is incorrect
-                    if (map[i.name] == undefined) {
-                        console.log(d.name);
-                        console.log(i.name);
-                    }
-                    else {
-                        links.push({source: map[d.name], target: map[i.name]});
-                    }
-                });
+            nodes.forEach(function (d) {
+                if (d.links) {
+                    d.links.forEach(function (i) {
+                        // Debug code: map[i.name] will be undefined if the connectivity data is incorrect
+                        if (map[i.name] === undefined) {
+                            console.log(d.name);
+                            console.log(i.name);
+                        }
+                        else {
+                            links.push({source: map[d.name], target: map[i.name]});
+                        }
+                    });
+                }
             });
             return links;
         },
-        nameNodeMap: function(nodes) {
+        nameNodeMap: function (nodes) {
             var map = {};
-            nodes.forEach(function(d) {
+            nodes.forEach(function (d) {
                 map[d.name] = d;
             });
             return map;
         },
-        displayNameNodeMap: function(nodes) {
+        displayNameNodeMap: function (nodes) {
             var map = [];
-            nodes.forEach(function(d) {
-                if (d.displayName != undefined)
+            nodes.forEach(function (d) {
+                if (d.displayName !== undefined) {
                     map.push({name: d.displayName.toLowerCase(), node: d});
                     //map[d.displayName.toLowerCase()] = d;
+                }
             });
             return map;
         },
-        maxKey: function(nodes) {
-            key = 0;
-            nodes.forEach(function(d) {
+        maxKey: function (nodes) {
+            var key = 0;
+            nodes.forEach(function (d) {
                 if (d.key > key) {
                     key = d.key;
                 }
             });
             return key;
-        },
-        cloneNode: function(node) {
-            var newNode;
-            newNode.name = d.name;
-            newNode.key = d.key;
-            if (node.parent != undefined) {
-                newNode.parent = cloneNode(node.parent);
-            }
-            newNode.displayName = node.displayName;
-            newNode.links = cloneLink(node.links);
-            return newNode;
-        },
-        cloneLink: function(links) {
-            var newLinks = [];
-            return newLinks;
         }
+        //cloneNode: function (node) {
+            //var newNode;
+            //newNode.name = d.name;
+            //newNode.key = d.key;
+            //if (node.parent != undefined) {
+                //newNode.parent = cloneNode(node.parent);
+            //}
+            //newNode.displayName = node.displayName;
+            //newNode.links = cloneLink(node.links);
+            //return newNode;
+        //},
+        //cloneLink: function(links) {
+            //var newLinks = [];
+            //return newLinks;
+        //}
     };
-})();
+}());
