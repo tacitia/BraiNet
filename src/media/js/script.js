@@ -8,6 +8,8 @@
  *
  */
 
+/*global brainMap: false, rx, ry */
+
 "use strict";
 
 //display
@@ -71,13 +73,12 @@ d3.json("../media/data/brainData.json", function (data) {
         splines,
         path,
         node,
-        arc,
-        i;
+        arc;
 
     nodes = cluster.nodes(brainMap.root(data));
 
     nodes_flip = [];
-    for (i = 0; i < nodes.length; i += 1) {
+    for (var i = 0; i < nodes.length; i += 1) {
         nodes_flip[i] = Object.create(nodes[i]); //nodes_flip inherits from nodes
         nodes_flip[i].y = 25 * (20 - nodes_flip[i].depth); //overrides y value
         nodes[i].y -= 30;
@@ -194,6 +195,10 @@ d3.select("#maxDepth")
 d3.selectAll(".searchBox")
     .on("input", searchInput);
 
+
+/*
+ * Mouse Position
+ */
 function mouse(e) {
     return [e.pageX - rx, e.pageY - ry];
 }
@@ -317,8 +322,8 @@ function searchButtonClick() {
                             selected_target, [], selected_links);
         selected_links.forEach(function (d) {
             d.forEach(function (i) {
-                svg.select("path.link.source-" + i.source.key
-                    + ".target-" + i.target.key)
+                svg.select("path.link.source-" + i.source.key +
+                    ".target-" + i.target.key)
                     .classed("selected", true);
                 svg.select("#arc-" + i.source.key).classed("selected", true);
                 svg.select("#arc-" + i.target.key).classed("selected", true);
@@ -407,8 +412,8 @@ function setMaxDepth() {
 function clearSelection() {
     selected_links.forEach(function (d) {
         d.forEach(function (i) {
-            svg.select("path.link.source-" + i.source.key
-                + ".target-" + i.target.key)
+            svg.select("path.link.source-" + i.source.key +
+                ".target-" + i.target.key)
                 .classed("selected", false);
             svg.select("#arc-" + i.target.key).classed("selected", false);
             svg.select("#arc-" + i.source.key).classed("selected", false);
