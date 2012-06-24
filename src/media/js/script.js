@@ -48,7 +48,6 @@ var line = d3.svg.line.radial()
     .radius(function (d) { return d.y; })
     .angle(function (d) {
         return (d.x) * (Math.PI / 180);
-//        return d.x;
     });
 
 var svg = d3.select("body")
@@ -65,11 +64,6 @@ var svg = d3.select("body")
 
 
 d3.json("../media/data/brainData.json", function (data) {
-
-    var data_forLink = [];
-    for (var i = 0; i < data.length; ++i) {
-        data_forLink[i] = Object.create(data[i]);
-    }
     
     var nodes_flip,
         nodes_forLink,
@@ -82,7 +76,11 @@ d3.json("../media/data/brainData.json", function (data) {
         arc,
         i;
         
-        
+    var data_forLink = [];
+    for (i = 0; i < data.length; ++i) {
+        data_forLink[i] = Object.create(data[i]);
+    }
+            
     nodes = partition.nodes(brainMap.root(data));
     nodes_forLink = cluster.nodes(brainMap.root(data_forLink));
     
