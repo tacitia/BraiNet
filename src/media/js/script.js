@@ -84,10 +84,13 @@ d3.json("../media/data/brainData.json", function (data) {
     nodes_for_link = cluster.nodes(brainMap.root(data_for_link));
 
     nodes = partition.nodes(brainMap.root(data));
+    nodes = nodes.filter(filterRoot);
+
     node = svg.selectAll("g.node")
-              .data(nodes.filter(filterRoot))
+              .data(nodes)
               .enter()
               .append("svg:g")
+              .attr("id", function (d) { return "node-" + d.key; })
               .attr("class", "nodes");
 
     //con_map = brainMap.evidence(nodes);
@@ -127,7 +130,8 @@ d3.json("../media/data/brainData.json", function (data) {
     //
     path = svg.selectAll("path.link")
         .data(links)
-        .enter().append("svg:path")
+        .enter()
+        .append("svg:path")
         .attr("class", function (d) {
             return "link source-" + d.source.key + " target-" + d.target.key;
         })
@@ -140,19 +144,18 @@ d3.json("../media/data/brainData.json", function (data) {
     //
     // Arcs
     //
-    node.append("path")
+    node.append("svg:path")
         //.data(nodes.filter(filterRoot))
         .attr("d", arc)
-        .attr("fill", "white")
-        .attr("stroke", "white")
         .attr("id", function (d) { return "arc-" + d.key; })
         .attr("class", "arc")
+        .attr("fill", "white")
+        .attr("stroke", "white")
         .on("mouseover", mouseOver)
         .on("mouseout", mouseOut)
         .on("click", nodeClick);
 
-    //node.append("circle")
-        //.data(nodes)
+    //node.append("svg:circle")
         //.attr("r", function (d) { return 2; })
         //.attr("transform", function (d) {
             //return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")";
@@ -161,22 +164,21 @@ d3.json("../media/data/brainData.json", function (data) {
         //.on("mouseout", mouseOut)
         //.on("click", nodeClick);
 
-    //node.append("svg:text")
-        ////.attr("dx", function(d) { return d.x < 180 ? 15 : -15; })
-        //.data(nodesArc.filter(filterRoot))
-        //.attr("dy", ".31em")
-        //.attr("class", function(d) {
-            //return "text source-" + d.key + " target-" + d.key})
-        //.attr("text-anchor", "middle")
-        //.attr("transform", function(d) {return "translate(" + arc.centroid(d) + ")";})
-        ////.attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
-        ////.attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
-        ////.attr("transform", function(d) {
-            ////return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
-        //.text(function(d) { return d.displayName; })
-        //.on("mouseover", mouseOver)
-        //.on("mouseout", mouseOut)
-        //.on("click", nodeClick);
+    node.append("svg:text")
+        //.attr("dx", function(d) { return d.x < 180 ? 15 : -15; })
+        .attr("id", function (d) { return "text-" + d.key; })
+        .attr("class", "text")
+        .attr("dy", ".31em")
+        .attr("text-anchor", "middle")
+        .attr("transform", function (d) { return "translate(" + arc.centroid(d) + ")"; })
+        //.attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+        //.attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
+        //.attr("transform", function(d) {
+            //return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
+        .text(function (d) { return d.displayName; })
+        .on("mouseover", mouseOver)
+        .on("mouseout", mouseOut)
+        .on("click", nodeClick);
 });
 
 
@@ -227,15 +229,6 @@ function mouseOver(d) {
         .classed("hidden", false)
         .each(highlightAll("target", true));
 
-    svg.selectAll("text.target-" + d.key)
-        .classed("target", true)
-        .classed("hidden", false)
-        .each(highlightAll("source", true));
-
-    svg.selectAll("text.source-" + d.key)
-        .classed("source", true)
-        .classed("hidden", false)
-        .each(highlightAll("target", true));
 }
 
 /*
@@ -253,15 +246,6 @@ function mouseOut(d) {
     svg.selectAll("path.link.target-" + d.key)
         .classed("target", false)
         .each(highlightAll("source", false));
-
-    svg.selectAll("text.target-" + d.key)
-        .classed("target", false)
-        .each(highlightAll("source", false));
-
-    svg.selectAll("text.source-" + d.key)
-        .classed("source", false)
-        .each(highlightAll("target", false));
-
 }
 
 /*
@@ -270,12 +254,12 @@ function mouseOut(d) {
  */
 function highlightAll(name, value) {
     return function (d) {
-        svg.select("#node-" + d.target.key).classed(name, value);
+        //svg.select("#node-" + d.target.key).classed(name, value);
+        //svg.select("#node-" + d.source.key).classed(name, value);
         svg.select("#arc-" + d.target.key).classed(name, value);
-        svg.select("#node-" + d.source.key).classed(name, value);
         svg.select("#arc-" + d.source.key).classed(name, value);
-        svg.select("text.target-" + d.target.key).classed(name, value);
-        svg.select("text.source-" + d.source.key).classed(name, value);
+        svg.select("#text-" + d.target.key).classed(name, value);
+        svg.select("#text-" + d.source.key).classed(name, value);
     };
 }
 
@@ -360,6 +344,7 @@ function clearButtonClick() {
 function searchInput() {
     selected_nodes.forEach(function (d) {
         svg.select("#arc-" + d.key).classed("selected-source", false);
+        svg.select("#text-" + d.key).classed("source", false);
     });
     selected_nodes = [];
     var inputRegion = this.value.toLowerCase();
@@ -367,6 +352,7 @@ function searchInput() {
         if (d.name == inputRegion) {
             selected_nodes.push(d.node);
             svg.select("#arc-" + d.node.key).classed("selected-source", true);
+            svg.select("#text-" + d.node.key).classed("source", true);
         }
     });
 }
@@ -472,7 +458,7 @@ function getDecendants(node, decendants) {
     });
 }
 
-function filterRoot(element, index, array) {
+function filterRoot(element) {
     if (element.depth > 1) {
         return element;
     }

@@ -59,12 +59,14 @@
     opacity: 0.8;
 }
 
-/* ==  Text  ==  */
 .arc.hidden {
     visibility: hidden;
 }
 
+/* ==  Text  ==  */
+
 .text {
+    font:12px arial,sans-serif;
     display: none;
 }
 
