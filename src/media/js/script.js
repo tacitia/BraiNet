@@ -13,7 +13,7 @@
 "use strict";
 
 //display
-var w = 1440,
+var w = 1000,
     h = 900,
     rotate = 0,
     radius = Math.min(w, h) / 2;
@@ -57,7 +57,7 @@ var svg = d3.select("body")
     .attr("width", w)
     .attr("height", h + 100)
     .append("svg:g")
-    .attr("transform", "translate(" + ((w / 2) - 150) + "," + ((h / 2) + 50) + ")");
+    .attr("transform", "translate(" + ((w / 2)) + "," + ((h / 2) + 50) + ")");
 
 var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
