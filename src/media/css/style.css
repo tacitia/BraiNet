@@ -117,3 +117,19 @@
 	stroke-opacity: .9;
 	stroke-width: 1.5px;
 }
+
+
+/* TEMP */
+
+
+#help {
+    font: 11px sans-serif;
+    width: 200px;
+	position: absolute;
+	left: 20px;
+	bottom: 20px;
+}
+
+#input {
+    width: 900px;
+}
