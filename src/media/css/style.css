@@ -70,6 +70,11 @@
     display: none;
 }
 
+.text_top {
+    font:12px arial,sans-serif;
+    display: block;
+}
+
 .text.target {
     display: block;
 }
@@ -78,6 +83,14 @@
     display: block;
 }
 
+/* These are for clicked nodes */
+.text.selected-target {
+    display: block;
+}
+
+.text.selected-source {
+    display: block;
+}
 
 
 /*  links (connections) */
@@ -125,11 +138,12 @@
 #help {
     font: 11px sans-serif;
     width: 200px;
-	position: absolute;
-	left: 20px;
+	position: fixed;
+	right: 20px;
 	bottom: 20px;
 }
 
 #input {
+    font: 11px sans-serif;
     width: 900px;
 }
