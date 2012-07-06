@@ -14,9 +14,9 @@
 
 //display
 var w = 1000,
-    h = 900,
+    h = w,
     rotate = 0,
-    radius = Math.min(w, h) / 2;
+    radius = Math.min(w, h) / 2.5;
 
 //bundle graph
 var nodes,
@@ -33,7 +33,7 @@ var max_hop = 1,
     selected_nodes = [];
 
 var cluster = d3.layout.cluster()
-    .size([360, h / 2.5 ])
+    .size([360, radius - 100])
     .sort(null)
     .value(function (d) { return d.size; });
 
@@ -53,11 +53,11 @@ var line = d3.svg.line.radial()
     });
 
 var svg = d3.select("body")
-    .append("svg:svg")
+    .append("svg")
     .attr("width", w)
-    .attr("height", h + 100)
-    .append("svg:g")
-    .attr("transform", "translate(" + ((w / 2)) + "," + ((h / 2) + 50) + ")");
+    .attr("height", h)
+    .append("g")
+    .attr("transform", "translate(" + (w / 2) + "," + (h / 2) + ")");
 
 var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
@@ -88,11 +88,11 @@ d3.json("../media/data/brainData.json", function (data) {
     nodes = nodes.filter(filterRoot);
 
     node = svg.selectAll("g.node")
-              .data(nodes)
-              .enter()
-              .append("svg:g")
-              .attr("id", function (d) { return "node-" + d.key; })
-              .attr("class", "nodes");
+      .data(nodes)
+      .enter()
+      .append("g")
+      .attr("id", function (d) { return "node-" + d.key; })
+      .attr("class", "nodes");
 
     //con_map = brainMap.evidence(nodes);
     name_node_map = brainMap.nameNodeMap(nodes);
@@ -103,7 +103,7 @@ d3.json("../media/data/brainData.json", function (data) {
         d.px = d.x;
         d.py = d.y;
         d.x = (d.px + d.dx / 2) * 180 / Math.PI;
-        d.y = Math.sqrt(d.py + 150000 - d.dy * (d.depth - 2) * 2 + d.dy / 2);
+        d.y = Math.sqrt(d.py + (radius * radius) - d.dy * (d.depth - 2) * 2 + d.dy / 2);
     }
 
     links = brainMap.connections(nodes);
@@ -112,10 +112,10 @@ d3.json("../media/data/brainData.json", function (data) {
 
     arc = d3.svg.arc()
         .innerRadius(function (d) {
-            return Math.sqrt(d.py + 150000 - d.dy * (d.depth - 2) * 2);
+            return Math.sqrt(d.py + (radius * radius) - d.dy * (d.depth - 2) * 2);
         })
         .outerRadius(function (d) {
-            return Math.sqrt(d.py + 150000 - d.dy * (d.depth - 2) * 2 + d.dy);
+            return Math.sqrt(d.py + (radius * radius) - d.dy * (d.depth - 2) * 2 + d.dy);
 
         })
         .startAngle(function (d) {
