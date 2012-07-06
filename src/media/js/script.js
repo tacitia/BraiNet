@@ -26,7 +26,7 @@ var nodes,
 
 //ui
 var max_hop = 1,
-    max_depth = 1,
+    max_depth = 8,
     selected_source,
     selected_target,
     selected_links = [],
@@ -138,8 +138,8 @@ d3.json("../media/data/brainData.json", function (data) {
         })
         .attr("d", function (d, i) { return line(splines[i]); })
         //TODO: make paths highlights source target arcs
-        .on("mouseover", mouseOver)
-        .on("mouseout", mouseOut)
+        .on("mouseover", linkMouseOver)
+        .on("mouseout", linkMouseOut)
         .on("click", linkClick);
 
     //
@@ -170,7 +170,7 @@ d3.json("../media/data/brainData.json", function (data) {
     node.append("svg:text")
         //.attr("dx", function(d) { return d.x < 180 ? 15 : -15; })
         .attr("id", function (d) { return "text-" + d.key; })
-        .attr("class", "text")
+        .attr("class", function(d) {if (d.depth == 2) {console.log(d); return "text_top";} else {return "text";}})
         .attr("dy", ".31em")
         .attr("text-anchor", "middle")
         .attr("transform", function (d) { return "translate(" + arc.centroid(d) + ")"; })
@@ -221,7 +221,9 @@ function mouse(e) {
 function mouseOver(d) {
 
     svg.selectAll("path").classed("non-selected", true);
-
+    
+    svg.select("#text-" + d.key).classed("target", true);
+    
     svg.selectAll("path.link.target-" + d.key)
         .classed("target", true)
         .classed("hidden", false)
@@ -234,6 +236,7 @@ function mouseOver(d) {
 
 }
 
+
 /*
  * Mouse Out
  *
@@ -242,6 +245,8 @@ function mouseOut(d) {
 
     svg.selectAll("path").classed("non-selected", false);
 
+    svg.select("#text-" + d.key).classed("target", false);
+
     svg.selectAll("path.link.source-" + d.key)
         .classed("source", false)
         .each(highlightAll("target", false));
@@ -249,6 +254,30 @@ function mouseOut(d) {
     svg.selectAll("path.link.target-" + d.key)
         .classed("target", false)
         .each(highlightAll("source", false));
+}
+
+/*
+ * Mouse out for link
+ */
+function linkMouseOut(d) {
+    svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key)
+       .classed("selected", false);
+    svg.select("#arc-" + d.target.key).classed("selected-target", false);
+    svg.select("#text-" + d.target.key).classed("selected-target", false);
+    svg.select("#arc-" + d.source.key).classed("selected-source", false);
+    svg.select("#text-" + d.source.key).classed("selected-source", false);   
+}
+
+/*
+ * Mouse over for link
+ */
+function linkMouseOver(d) {
+    svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key)
+       .classed("selected", true);
+    svg.select("#arc-" + d.target.key).classed("selected-target", true);
+    svg.select("#text-" + d.target.key).classed("selected-target", true);
+    svg.select("#arc-" + d.source.key).classed("selected-source", true);
+    svg.select("#text-" + d.source.key).classed("selected-source", true);    
 }
 
 /*
@@ -291,15 +320,19 @@ function nodeClick(d) {
     if (d3.event.shiftKey === true) {
         if (selected_target !== undefined) {
             svg.select("#arc-" + selected_target.key).classed("selected-target", false);
+            svg.select("#text-" + selected_target.key).classed("selected-target", false);
         }
         selected_target = d;
         svg.select("#arc-" + d.key).classed("selected-target", true);
+        svg.select("#text-" + d.key).classed("selected-target", true);
     } else {
         if (selected_source !== undefined) {
             svg.select("#arc-" + selected_source.key).classed("selected-source", false);
+            svg.select("#text-" + selected_source.key).classed("selected-source", false);
         }
         selected_source = d;
         svg.select("#arc-" + d.key).classed("selected-source", true);
+        svg.select("#text-" + d.key).classed("selected-source", true);
     }
 }
 
@@ -333,9 +366,11 @@ function clearButtonClick() {
     clearSelection();
     if (selected_source !== undefined) {
         svg.select("#arc-" + selected_source.key).classed("selected-source", false);
+        svg.select("#text-" + selected_source.key).classed("selected-source", false);
     }
     if (selected_target !== undefined) {
         svg.select("#arc-" + selected_target.key).classed("selected-target", false);
+        svg.select("#text-" + selected_target.key).classed("selected-target", false);
     }
 }
 
@@ -380,18 +415,21 @@ function setMaxDepth() {
     max_depth = this.value;
     document.getElementById("maxDepthValue").innerHTML = max_depth;
     nodes.forEach(function (d) {
+        if (d.depth <= parseInt(max_depth, 10) + 1) {
+            svg.select("#arc-" + d.key).classed("hidden", false);
+            svg.selectAll("path.link.source-" + d.key)
+                .classed("hidden", false);
+            svg.selectAll("path.link.target-" + d.key)
+                .classed("hidden", false);
+        }
+    });
+    nodes.forEach(function (d) {
         if (d.depth > parseInt(max_depth, 10) + 1) {
             svg.select("#arc-" + d.key).classed("hidden", true);
             svg.selectAll("path.link.source-" + d.key)
                 .classed("hidden", true);
             svg.selectAll("path.link.target-" + d.key)
                 .classed("hidden", true);
-        } else {
-            svg.select("#arc-" + d.key).classed("hidden", false);
-            svg.selectAll("path.link.source-" + d.key)
-                .classed("hidden", false);
-            svg.selectAll("path.link.target-" + d.key)
-                .classed("hidden", false);
         }
     });
 }
