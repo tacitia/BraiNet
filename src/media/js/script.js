@@ -147,7 +147,6 @@ d3.json("../media/data/brainData.json", function (data) {
     //
     if (!is_firefox) {
         node.append("svg:path")
-            //.data(nodes.filter(filterRoot))
             .attr("d", arc)
             .attr("id", function (d) { return "arc-" + d.key; })
             .attr("class", "arc")
@@ -221,9 +220,9 @@ function mouse(e) {
 function mouseOver(d) {
 
     svg.selectAll("path").classed("non-selected", true);
-    
+
     svg.select("#text-" + d.key).classed("target", true);
-    
+
     svg.selectAll("path.link.target-" + d.key)
         .classed("target", true)
         .classed("hidden", false)
@@ -256,17 +255,6 @@ function mouseOut(d) {
         .each(highlightAll("source", false));
 }
 
-/*
- * Mouse out for link
- */
-function linkMouseOut(d) {
-    svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key)
-       .classed("selected", false);
-    svg.select("#arc-" + d.target.key).classed("selected-target", false);
-    svg.select("#text-" + d.target.key).classed("selected-target", false);
-    svg.select("#arc-" + d.source.key).classed("selected-source", false);
-    svg.select("#text-" + d.source.key).classed("selected-source", false);   
-}
 
 /*
  * Mouse over for link
@@ -274,10 +262,26 @@ function linkMouseOut(d) {
 function linkMouseOver(d) {
     svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key)
        .classed("selected", true);
-    svg.select("#arc-" + d.target.key).classed("selected-target", true);
-    svg.select("#text-" + d.target.key).classed("selected-target", true);
-    svg.select("#arc-" + d.source.key).classed("selected-source", true);
-    svg.select("#text-" + d.source.key).classed("selected-source", true);    
+    svg.select("#arc-" + d.target.key).classed("target", true);
+    svg.select("#arc-" + d.source.key).classed("source", true);
+    svg.select("#text-" + d.target.key).classed("target", true);
+    svg.select("#text-" + d.source.key).classed("target", true);
+}
+
+
+/*
+ * Mouse out for link
+ *
+ *
+ *
+ */
+function linkMouseOut(d) {
+    svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key)
+       .classed("selected", false);
+    svg.select("#arc-" + d.target.key).classed("target", false);
+    svg.select("#arc-" + d.source.key).classed("source", false);
+    svg.select("#text-" + d.target.key).classed("target", false);
+    svg.select("#text-" + d.source.key).classed("target", false);
 }
 
 /*
