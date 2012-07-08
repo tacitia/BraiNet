@@ -319,6 +319,7 @@ function nodeClick(d) {
     }
     if (d3.event.shiftKey === true) {
         if (selected_target !== undefined) {
+            piwikTracker.trackPageView('SelectTarget');
             svg.select("#arc-" + selected_target.key).classed("selected-target", false);
             svg.select("#text-" + selected_target.key).classed("selected-target", false);
         }
@@ -327,6 +328,7 @@ function nodeClick(d) {
         svg.select("#text-" + d.key).classed("selected-target", true);
     } else {
         if (selected_source !== undefined) {
+            piwikTracker.trackPageView('SelectSource');
             svg.select("#arc-" + selected_source.key).classed("selected-source", false);
             svg.select("#text-" + selected_source.key).classed("selected-source", false);
         }
@@ -342,6 +344,8 @@ function nodeClick(d) {
  *
  */
 function searchButtonClick() {
+    piwikTracker.trackPageView('SearchConnection');
+    console.log("custom variable logged");
     if (selected_source !== undefined && selected_target !== undefined) {
         computeLinksForSelection(max_hop, selected_source,
                             selected_target, [], selected_links);
@@ -401,6 +405,7 @@ function searchInput() {
  *
  */
 function setMaxHop() {
+    piwikTracker.trackPageView('SetMaxHop');
     max_hop = this.value;
     document.getElementById("maxHopValue").innerHTML = max_hop;
     clearSelection();
@@ -412,6 +417,7 @@ function setMaxHop() {
  *
  */
 function setMaxDepth() {
+    piwikTracker.trackPageView('SetMaxDepth');
     max_depth = this.value;
     document.getElementById("maxDepthValue").innerHTML = max_depth;
     nodes.forEach(function (d) {
