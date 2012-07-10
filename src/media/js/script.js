@@ -201,8 +201,26 @@ d3.select("#maxHop")
 d3.select("#maxDepth")
     .on("change", setMaxDepth);
 
-d3.selectAll(".searchBox")
-    .on("input", searchInput);
+//d3.select("#search")
+//    .on("input", searchInput);
+
+// Ok I don't want to mix jquery and d3, but somehow I just cannot use d3 to respond to an event from the select element
+$('.chzn-select').change(function() {
+    selected_nodes.forEach(function (d) {
+        svg.select("#arc-" + d.key).classed("selected-source", false);
+        svg.select("#text-" + d.key).classed("source", false);
+    });
+    selected_nodes = [];
+    var inputRegion = this.value.toLowerCase();
+    console.log(inputRegion);
+    display_node_map.forEach(function (d) {
+        if (d.name == inputRegion) {
+            selected_nodes.push(d.node);
+            svg.select("#arc-" + d.node.key).classed("selected-source", true);
+            svg.select("#text-" + d.node.key).classed("source", true);
+        }
+    });
+});
 
 
 /*
@@ -372,6 +390,10 @@ function searchButtonClick() {
  */
 function clearButtonClick() {
     clearSelection();
+    selected_nodes.forEach(function (d) {
+        svg.select("#arc-" + d.key).classed("selected-source", false);
+        svg.select("#text-" + d.key).classed("source", false);
+    });
     if (selected_source !== undefined) {
         svg.select("#arc-" + selected_source.key).classed("selected-source", false);
         svg.select("#text-" + selected_source.key).classed("selected-source", false);
@@ -388,6 +410,8 @@ function clearButtonClick() {
  *
  */
 function searchInput() {
+    console.log("called");
+    console.log(this);
     selected_nodes.forEach(function (d) {
         svg.select("#arc-" + d.key).classed("selected-source", false);
         svg.select("#text-" + d.key).classed("source", false);
