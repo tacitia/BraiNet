@@ -1,12 +1,22 @@
 
 /* == Node == */
 
+body {
+    /*make everything not selectable*/
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
 .node {
 	fill: #2d527c;
 	font: 12px sans-serif;
 }
 
-/*none - no connections*/
+/*hidden - no connections*/
 .node:hover {
 }
 
@@ -66,32 +76,43 @@
 /* ==  Text  ==  */
 
 .text {
+    pointer-events: none;
     font:12px arial,sans-serif;
-    display: none;
+    visibility: hidden;
 }
 
-.text_top {
-    font:12px arial,sans-serif;
-    display: block;
+.text.visible {
+    visibility: visible;
 }
 
 .text.target {
-    display: block;
+    fill: #fff;
+    visibility: visible;
 }
 
 .text.source {
-    display: block;
+    visibility: visible;
 }
 
 /* These are for clicked nodes */
 .text.selected-target {
-    display: block;
+    visibility: visible;
 }
 
 .text.selected-source {
-    display: block;
+    visibility: visible;
 }
 
+
+/* tooltip */
+.tooltip.hidden {
+    visibility: hidden;
+}
+.tooltip {
+    visibility: visible;
+    pointer-events: none;
+    fill: #000;
+}
 
 /*  links (connections) */
 
@@ -105,7 +126,7 @@
     /*stroke: #b45c1f;*/
     /*stroke-opacity: 1;*/
     /*stroke-width:2px;*/
-    /*fill: none;*/
+    /*fill: hidden;*/
 /*}*/
 
 .link.non-selected {

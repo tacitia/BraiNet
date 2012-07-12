@@ -3226,6 +3226,13 @@ d3.svg.arc = function() {
     return [Math.cos(a) * r, Math.sin(a) * r];
   };
 
+  arc.outerCenter = function() {
+    var r = outerRadius.apply(this, arguments),
+        a = (startAngle.apply(this, arguments)
+        + endAngle.apply(this, arguments)) / 2 + d3_svg_arcOffset;
+    return [Math.cos(a) * r, Math.sin(a) * r];
+  };
+
   return arc;
 };
 

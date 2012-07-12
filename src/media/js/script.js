@@ -13,10 +13,10 @@
 "use strict";
 
 //display
-var w = 1000,
-    h = w,
+var w = 1200,
+    h = 900,
     rotate = 0,
-    radius = Math.min(w, h) / 2.5;
+    radius = Math.min(w, h) / 2.7;
 
 //bundle graph
 var nodes,
@@ -54,10 +54,14 @@ var line = d3.svg.line.radial()
 
 var svg = d3.select("body")
     .append("svg")
-    .attr("width", w)
-    .attr("height", h)
+    .attr("width", "100%")
+    .attr("height", "100%")
     .append("g")
     .attr("transform", "translate(" + (w / 2) + "," + (h / 2) + ")");
+
+var tooltip = function (w, h) {
+    return "M 0 0 L 10 -5 L 20 " + -h + " L " + (w + 55) + " " + -h + " L " + (w + 55) + " " + h + " L 20 " + h + " L 10 5 Z";
+};
 
 var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
@@ -137,7 +141,6 @@ d3.json("../media/data/brainData.json", function (data) {
             return "link source-" + d.source.key + " target-" + d.target.key;
         })
         .attr("d", function (d, i) { return line(splines[i]); })
-        //TODO: make paths highlights source target arcs
         .on("mouseover", linkMouseOver)
         .on("mouseout", linkMouseOut)
         .on("click", linkClick);
@@ -166,21 +169,48 @@ d3.json("../media/data/brainData.json", function (data) {
             .on("click", nodeClick);
     }
 
-    node.append("svg:text")
-        //.attr("dx", function(d) { return d.x < 180 ? 15 : -15; })
+    var tooltips = svg.selectAll("tooltips")
+        .data(nodes)
+        .enter()
+        .append("g")
+        .attr("class", "tooltips");
+
+    //text
+    tooltips.append("svg:text")
         .attr("id", function (d) { return "text-" + d.key; })
-        .attr("class", function(d) {if (d.depth == 2) {console.log(d); return "text_top";} else {return "text";}})
+        .attr("class", function (d) {
+            return (d.depth === 2 ? "text visible" : "text");
+        })
         .attr("dy", ".31em")
-        .attr("text-anchor", "middle")
-        .attr("transform", function (d) { return "translate(" + arc.centroid(d) + ")"; })
+        .attr("dx", function (d) { return d.x < 180 ? 35 : -35; })
+        .attr("text-anchor", function (d) { return d.x < 180 ? "start" : "end"; })
+        .attr("transform", function (d) {
+            var trans = "translate(" + arc.outerCenter(d) + ")",
+                rotation = (d.x < 180 ? "rotate(" + (d.x - 90) + ")" : "rotate(" + (d.x + 90) + ")");
+            return trans + rotation;
+        })
+        .text(function (d) { return d.displayName; });
+
+        //.attr("transform", function (d) { return "translate(" + arc.outerCenter(d) + ")"; })
+        //.attr("text-anchor", "middle")
         //.attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
         //.attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
         //.attr("transform", function(d) {
             //return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
-        .text(function (d) { return d.displayName; })
-        .on("mouseover", mouseOver)
-        .on("mouseout", mouseOut)
-        .on("click", nodeClick);
+
+    //tooltip
+    tooltips.insert("svg:path", "text")
+        .attr("id", function (d) { return "tooltip-" + d.key; })
+        .attr("class", "tooltip hidden")
+        .attr("d", function (d) {
+            var text = svg.select("#text-" + d.key)[0][0],
+                w = text.scrollWidth,
+                h = text.scrollHeight;
+            return tooltip(w, h);
+        })
+        .attr("transform", function (d) { return "translate(" + arc.outerCenter(d) + ")rotate(" + (d.x - 90) + ")"; });
+        //.attr("transform", "translate(0,0)");
+
 });
 
 
@@ -204,8 +234,9 @@ d3.select("#maxDepth")
 //d3.select("#search")
 //    .on("input", searchInput);
 
-// Ok I don't want to mix jquery and d3, but somehow I just cannot use d3 to respond to an event from the select element
-$('.chzn-select').change(function() {
+// Ok I don't want to mix jquery and d3, but somehow I just cannot use d3
+// to respond to an event from the select element
+$('.chzn-select').change(function () {
     selected_nodes.forEach(function (d) {
         svg.select("#arc-" + d.key).classed("selected-source", false);
         svg.select("#text-" + d.key).classed("source", false);
@@ -214,7 +245,7 @@ $('.chzn-select').change(function() {
     var inputRegion = this.value.toLowerCase();
     console.log(inputRegion);
     display_node_map.forEach(function (d) {
-        if (d.name == inputRegion) {
+        if (d.name === inputRegion) {
             selected_nodes.push(d.node);
             svg.select("#arc-" + d.node.key).classed("selected-source", true);
             svg.select("#text-" + d.node.key).classed("source", true);
@@ -236,10 +267,15 @@ function mouse(e) {
  *
  */
 function mouseOver(d) {
+    //svg.select("#node-" + d.key).append("svg:path")
+        //.attr("d", tooltip())
+        //.attr("transform", function (d) { return "translate(" + arc.centroid(d) + ")"; });
 
     svg.selectAll("path").classed("non-selected", true);
 
     svg.select("#text-" + d.key).classed("target", true);
+
+    svg.select("#tooltip-" + d.key).classed("hidden", false);
 
     svg.selectAll("path.link.target-" + d.key)
         .classed("target", true)
@@ -263,6 +299,8 @@ function mouseOut(d) {
     svg.selectAll("path").classed("non-selected", false);
 
     svg.select("#text-" + d.key).classed("target", false);
+
+    svg.select("#tooltip-" + d.key).classed("hidden", true);
 
     svg.selectAll("path.link.source-" + d.key)
         .classed("source", false)
