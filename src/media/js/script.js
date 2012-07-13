@@ -13,8 +13,8 @@
 "use strict";
 
 //display
-var w = 1200,
-    h = 900,
+var w = 800,
+    h = 800,
     rotate = 0,
     radius = Math.min(w, h) / 2.7;
 
@@ -52,12 +52,26 @@ var line = d3.svg.line.radial()
         return (d.x) * (Math.PI / 180);
     });
 
-var svg = d3.select("body")
+var svg = d3.select("#canvas")
     .append("svg")
-    .attr("width", "100%")
-    .attr("height", "100%")
-    .append("g")
-    .attr("transform", "translate(" + (w / 2) + "," + (h / 2) + ")");
+      .attr("width", "100%")
+      .attr("height", "100%")
+      .attr("viewBox", "0 0 " + w + " " + h)
+    .append('g')
+      .attr("transform", "translate(" + (w / 2) + "," + (h / 2) + ")")
+      .call(d3.behavior.zoom().on("zoom", redraw))
+    .append('g');
+
+//background for zoom
+svg.append('rect')
+    .attr('width', w)
+    .attr('height', h)
+    .attr('fill', 'white')
+    .attr("transform", "translate(" + (-w / 2) + "," + (-h / 2) + ")");
+
+function redraw() {
+    svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
+}
 
 var tooltip = function (w, h) {
     return "M 0 0 L 10 -5 L 20 " + -h + " L " + (w + 55) + " " + -h + " L " + (w + 55) + " " + h + " L 20 " + h + " L 10 5 Z";
@@ -264,11 +278,12 @@ function mouse(e) {
  *
  */
 function mouseOver(d) {
+
     //svg.select("#node-" + d.key).append("svg:path")
         //.attr("d", tooltip())
         //.attr("transform", function (d) { return "translate(" + arc.centroid(d) + ")"; });
 
-    svg.selectAll("path.link").classed("non-selected", true);
+    //svg.selectAll("path.link").classed("non-selected", true);
 
     svg.select("#text-" + d.key).classed("target", true);
 
@@ -295,7 +310,7 @@ function mouseOver(d) {
  */
 function mouseOut(d) {
 
-    svg.selectAll("path.link").classed("non-selected", false);
+    //svg.selectAll("path.link").classed("non-selected", false);
 
     svg.select("#text-" + d.key).classed("target", false);
 

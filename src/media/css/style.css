@@ -9,11 +9,11 @@ body {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+	font: 12px sans-serif;
 }
 
 .node {
 	fill: #2d527c;
-	font: 12px sans-serif;
 }
 
 /*hidden - no connections*/
@@ -35,7 +35,6 @@ body {
 .arc {
     opacity: 0.15;
     fill: #0D0D0D;
-	font: 12px sans-serif;
     stroke: #FFF;
 }
 
@@ -76,10 +75,9 @@ body {
 /* ==  Text  ==  */
 
 .text {
-    pointer-events: none;
-    font:12px arial,sans-serif;
-    visibility: hidden;
-    fill: #fff;
+	pointer-events: none;
+	visibility: hidden;
+	fill: #FFF;
 }
 
 .text.visible {
@@ -103,22 +101,22 @@ body {
     visibility: visible;
 }
 
-
-/* tooltip */
-.tooltip.hidden {
-    visibility: hidden;
-}
 .tooltip {
     visibility: visible;
     pointer-events: none;
     fill: #000;
 }
+/* tooltip */
+.tooltip.hidden {
+    visibility: hidden;
+}
+
 
 /*  links (connections) */
 
 .link {
-    stroke: #AAA;
-	stroke-opacity: .25;
+	stroke: #AAA;
+	stroke-opacity: .1;
 	fill: none;
 }
 

@@ -1,3 +1,12 @@
+//.append("svg")
+//.attr("width", w)
+//.attr("height", h)
+//.attr("width", "100%")
+//.attr("height", "100%")
+//.attr("viewBox", "0 0 " + w + " " + h)
+//.append("g")
+//.call(d3.behavior.zoom().on("zoom", redraw));
+
 //DEBUGGING - show nodesCopy nodes
 //var node = svg.selectAll("g.node")
     //.data(nodesCopy)
