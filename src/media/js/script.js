@@ -24,6 +24,7 @@ var nodes,
     display_node_map,
     name_node_map;
 
+var tooltips;
 //ui
 var max_hop = 1,
     max_depth = 8,
@@ -71,6 +72,15 @@ svg.append('rect')
 
 function redraw() {
     svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
+    if (d3.event.sourceEvent.type !== "mousemove") {
+        tooltips.selectAll(".text").style("font-size", (10 / d3.event.scale));
+        tooltips.selectAll(".tooltip").attr("d", function (d) {
+            var text = svg.select("#text-" + d.key)[0][0],
+            w = text.scrollWidth,
+            h = text.scrollHeight;
+            return tooltip(w, h);
+        });
+    }
 }
 
 var tooltip = function (w, h) {
@@ -180,14 +190,14 @@ d3.json("../media/data/brainData.json", function (data) {
             .on("click", nodeClick);
     }
 
-    var tooltips = svg.selectAll("tooltext")
+    tooltips = svg.selectAll("tooltext")
         .data(nodes)
         .enter()
         .append("g")
         .attr("class", "tooltext");
 
     //text
-    tooltips.append("svg:text")
+    tooltips.append("text")
         .attr("id", function (d) { return "text-" + d.key; })
         .attr("class", function (d) {
             return (d.depth === 2 ? "text visible" : "text");
@@ -210,7 +220,7 @@ d3.json("../media/data/brainData.json", function (data) {
             //return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
 
     //tooltip
-    tooltips.insert("svg:path", "text")
+    tooltips.insert("path", "text")
         .attr("id", function (d) { return "tooltip-" + d.key; })
         .attr("class", "tooltip hidden")
         .attr("d", function (d) {
@@ -221,7 +231,6 @@ d3.json("../media/data/brainData.json", function (data) {
         })
         .attr("transform", function (d) { return "translate(" + arc.outerCenter(d) + ")rotate(" + (d.x - 90) + ")"; });
         //.attr("transform", "translate(0,0)");
-
 });
 
 
