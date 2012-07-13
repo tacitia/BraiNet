@@ -79,6 +79,7 @@ body {
     pointer-events: none;
     font:12px arial,sans-serif;
     visibility: hidden;
+    fill: #fff;
 }
 
 .text.visible {
@@ -86,7 +87,6 @@ body {
 }
 
 .text.target {
-    fill: #fff;
     visibility: visible;
 }
 
@@ -117,7 +117,7 @@ body {
 /*  links (connections) */
 
 .link {
-    stroke: #95B1B8;
+    stroke: #AAA;
 	stroke-opacity: .25;
 	fill: none;
 }
@@ -130,7 +130,7 @@ body {
 /*}*/
 
 .link.non-selected {
-    stroke: #C3DBE0;
+    opacity: 0.1;
 }
 
 .link.target {

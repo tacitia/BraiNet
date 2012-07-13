@@ -91,12 +91,9 @@ d3.json("../media/data/brainData.json", function (data) {
     nodes = partition.nodes(brainMap.root(data));
     nodes = nodes.filter(filterRoot);
 
-    node = svg.selectAll("g.node")
+    node = svg.selectAll("path.link")
       .data(nodes)
-      .enter()
-      .append("g")
-      .attr("id", function (d) { return "node-" + d.key; })
-      .attr("class", "nodes");
+      .enter();
 
     //con_map = brainMap.evidence(nodes);
     name_node_map = brainMap.nameNodeMap(nodes);
@@ -169,11 +166,11 @@ d3.json("../media/data/brainData.json", function (data) {
             .on("click", nodeClick);
     }
 
-    var tooltips = svg.selectAll("tooltips")
+    var tooltips = svg.selectAll("tooltext")
         .data(nodes)
         .enter()
         .append("g")
-        .attr("class", "tooltips");
+        .attr("class", "tooltext");
 
     //text
     tooltips.append("svg:text")
@@ -271,7 +268,7 @@ function mouseOver(d) {
         //.attr("d", tooltip())
         //.attr("transform", function (d) { return "translate(" + arc.centroid(d) + ")"; });
 
-    svg.selectAll("path").classed("non-selected", true);
+    svg.selectAll("path.link").classed("non-selected", true);
 
     svg.select("#text-" + d.key).classed("target", true);
 
@@ -280,11 +277,13 @@ function mouseOver(d) {
     svg.selectAll("path.link.target-" + d.key)
         .classed("target", true)
         .classed("hidden", false)
+        .classed("non-selected", false)
         .each(highlightAll("source", true));
 
     svg.selectAll("path.link.source-" + d.key)
         .classed("source", true)
         .classed("hidden", false)
+        .classed("non-selected", false)
         .each(highlightAll("target", true));
 
 }
@@ -296,7 +295,7 @@ function mouseOver(d) {
  */
 function mouseOut(d) {
 
-    svg.selectAll("path").classed("non-selected", false);
+    svg.selectAll("path.link").classed("non-selected", false);
 
     svg.select("#text-" + d.key).classed("target", false);
 
@@ -322,6 +321,8 @@ function linkMouseOver(d) {
     svg.select("#arc-" + d.source.key).classed("source", true);
     svg.select("#text-" + d.target.key).classed("target", true);
     svg.select("#text-" + d.source.key).classed("target", true);
+    svg.select("#tooltip-" + d.target.key).classed("hidden", false);
+    svg.select("#tooltip-" + d.source.key).classed("hidden", false);
 }
 
 
@@ -338,6 +339,8 @@ function linkMouseOut(d) {
     svg.select("#arc-" + d.source.key).classed("source", false);
     svg.select("#text-" + d.target.key).classed("target", false);
     svg.select("#text-" + d.source.key).classed("target", false);
+    svg.select("#tooltip-" + d.target.key).classed("hidden", true);
+    svg.select("#tooltip-" + d.source.key).classed("hidden", true);
 }
 
 /*
@@ -352,6 +355,8 @@ function highlightAll(name, value) {
         svg.select("#arc-" + d.source.key).classed(name, value);
         svg.select("#text-" + d.target.key).classed(name, value);
         svg.select("#text-" + d.source.key).classed(name, value);
+        svg.select("#tooltip-" + d.target.key).classed("hidden", !value);
+        svg.select("#tooltip-" + d.source.key).classed("hidden", !value);
     };
 }
 
