@@ -20,6 +20,8 @@ var w = 800,
 
 //bundle graph
 var nodes,
+    path,
+    splines,
     con_map,
     display_node_map,
     name_node_map;
@@ -99,8 +101,8 @@ d3.json("../media/data/brainData.json", function (data) {
     var nodes_for_link,
         links_visible,
         links,
-        splines,
-        path,
+//        splines,
+//        path,
         node,
         arc;
 
@@ -250,6 +252,9 @@ d3.select("#maxHop")
 
 d3.select("#maxDepth")
     .on("change", setMaxDepth);
+    
+d3.select("#tension")
+    .on("change", setTension);
 
 //d3.select("#search")
 //    .on("input", searchInput);
@@ -535,6 +540,11 @@ function setMaxDepth() {
     });
 }
 
+
+function setTension() {
+    line.tension(this.value/100);
+    path.attr("d", function(d,i) {return line(splines[i]);});
+}
 
 /*
  * Clear Selection
