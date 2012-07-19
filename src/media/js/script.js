@@ -73,6 +73,9 @@ svg.append('rect')
     .attr("transform", "translate(" + (-w / 2) + "," + (-h / 2) + ")");
 
 
+// let's not mix the graph with other elements
+// this should be in the html - not necessary for it to be in svg
+
 //legend
 svg.append('rect')
     .attr('x', -600)
@@ -92,7 +95,7 @@ svg.append('rect')
     .attr('width', 20)
     .attr('height', 20)
     .attr('fill', '#d62728');
-    
+
 svg.append('text')
     .attr('x', -560)
     .attr('y', -250)
@@ -310,7 +313,7 @@ d3.select("#maxHop")
 
 d3.select("#maxDepth")
     .on("change", setMaxDepth);
-    
+
 d3.select("#tension")
     .on("change", setTension);
 
@@ -332,6 +335,7 @@ $('.chzn-select').change(function () {
             selected_nodes.push(d.node);
             svg.select("#arc-" + d.node.key).classed("selected-source", true);
             svg.select("#text-" + d.node.key).classed("source", true);
+            svg.select("#tooltip-" + d.node.key).classed("hidden", false);
         }
     });
 });
@@ -548,25 +552,27 @@ function clearButtonClick() {
 /*
  * Search Input
  *
- *
+ * NOT USED
  */
-function searchInput() {
-    console.log("called");
-    console.log(this);
-    selected_nodes.forEach(function (d) {
-        svg.select("#arc-" + d.key).classed("selected-source", false);
-        svg.select("#text-" + d.key).classed("source", false);
-    });
-    selected_nodes = [];
-    var inputRegion = this.value.toLowerCase();
-    display_node_map.forEach(function (d) {
-        if (d.name == inputRegion) {
-            selected_nodes.push(d.node);
-            svg.select("#arc-" + d.node.key).classed("selected-source", true);
-            svg.select("#text-" + d.node.key).classed("source", true);
-        }
-    });
-}
+//function searchInput() {
+    //console.log("called");
+    //console.log(this);
+    //selected_nodes.forEach(function (d) {
+        //svg.select("#arc-" + d.key).classed("selected-source", false);
+        //svg.select("#text-" + d.key).classed("source", false);
+        //svg.select("#tooltip-" + d.key).classed("hidden", false);
+    //});
+    //selected_nodes = [];
+    //var inputRegion = this.value.toLowerCase();
+    //display_node_map.forEach(function (d) {
+        //if (d.name == inputRegion) {
+            //selected_nodes.push(d.node);
+            //svg.select("#arc-" + d.node.key).classed("selected-source", true);
+            //svg.select("#text-" + d.node.key).classed("source", true);
+            //svg.select("#tooltip-" + d.node.key).classed("hidden", false);
+        //}
+    //});
+//}
 
 /*
  * Set Max Hop
