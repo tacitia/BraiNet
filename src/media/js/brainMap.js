@@ -33,12 +33,12 @@
         },
         // Generate the mapping from [source region name, target region name] to an ID of the associated literature
         evidence: function (nodes) {
-            var map = {};
+            var map = [];
 
             nodes.forEach(function (d) {
                 if (d.links) {
                     d.links.forEach(function (i) {
-                        map[d.name, i.name] = i.PMID;
+                        map.push({source:d.name, target:i.name, detail:i.detail});
                     });
                 }
             });
@@ -65,7 +65,7 @@
                             console.log(i.name);
                         }
                         else {
-                            links.push({source: map[d.name], target: map[i.name]});
+                            links.push({source: map[d.name], target: map[i.name], detail: i.detail});
                         }
                     });
                 }
