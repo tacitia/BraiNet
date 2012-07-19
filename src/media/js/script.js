@@ -72,6 +72,64 @@ svg.append('rect')
     .attr('fill', 'white')
     .attr("transform", "translate(" + (-w / 2) + "," + (-h / 2) + ")");
 
+
+//legend
+svg.append('rect')
+    .attr('x', -600)
+    .attr('y', -300)
+    .attr('width', 20)
+    .attr('height', 20)
+    .attr('fill', '#2ca02c');
+
+svg.append('text')
+    .attr('x', -560)
+    .attr('y', -290)
+    .text("source");
+
+svg.append('rect')
+    .attr('x', -600)
+    .attr('y', -260)
+    .attr('width', 20)
+    .attr('height', 20)
+    .attr('fill', '#d62728');
+    
+svg.append('text')
+    .attr('x', -560)
+    .attr('y', -250)
+    .text("target");
+
+//link details
+var detail = [];
+
+    detail[0] = svg.append('text')
+        .attr("x", -600)
+       .attr("y", 100)
+       .text("Strength: ");
+    detail[1] = svg.append('text')
+       .attr("x", -600)
+       .attr("y", 120)
+       .text("Technique: ");
+    detail[2] = svg.append('text')
+       .attr("x", -600)
+       .attr("y", 140)
+       .text("Reference: ");
+    detail[3] = svg.append('text')
+       .attr("x", -600)
+       .attr("y", 160)
+       .text("BAMS link: ");    
+    detail[4] = svg.append('text')
+       .attr("x", -600)
+       .attr("y", 180)
+       .text("Pubmed link: ");
+    detail[5] = svg.append('text')
+       .attr("x", -540)
+       .attr("y", 160)
+       .text("");  
+    detail[6] = svg.append('text')
+       .attr("x", -530)
+       .attr("y", 180)
+       .text("");  
+
 function redraw() {
     svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
     if (d3.event.sourceEvent.type !== "mousemove") {
@@ -96,7 +154,7 @@ var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 ////////////////////////////////////////////////////////////////////////////////
 
 
-d3.json("../media/data/brainData.json", function (data) {
+d3.json("../media/data/bamsBrainData.json", function (data) {
 
     var nodes_for_link,
         links_visible,
@@ -121,7 +179,7 @@ d3.json("../media/data/brainData.json", function (data) {
       .data(nodes)
       .enter();
 
-    //con_map = brainMap.evidence(nodes);
+//    con_map = brainMap.evidence(nodes);
     name_node_map = brainMap.nameNodeMap(nodes);
     display_node_map = brainMap.displayNameNodeMap(nodes);
 
@@ -278,6 +336,11 @@ $('.chzn-select').change(function () {
     });
 });
 
+d3.json("../media/data/options.json", function(data) {
+    data.forEach(function(d) {
+        $('#regionSelect').append(new Option(d.name, d.name, false, false));
+    });
+});
 
 /*
  * Mouse Position
@@ -400,6 +463,12 @@ function linkClick(d) {
     //var target = d.target.name;
     //window.location.href = 'http://www.ncbi.nlm.nih.gov/pubmed?term=' +
     //con_map[source, target];
+    console.log(d.detail);
+    detail[0].text("Strength: " + d.detail.strength);
+    detail[1].text("Technique: " + d.detail.technique);
+    detail[2].text("Reference: " + d.detail.ref);
+    detail[5].text(d.detail.bams_link)
+    detail[6].text(d.detail.pubmed_link);
 }
 
 /*
