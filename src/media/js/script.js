@@ -540,7 +540,7 @@ function clearButtonClick() {
 /*
  * Search Input
  *
- * NOT USED
+ *
  */
 function searchInput() {
     selected_nodes.forEach(function (d) {
