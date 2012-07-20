@@ -73,6 +73,9 @@ svg.append('rect')
     .attr("transform", "translate(" + (-w / 2) + "," + (-h / 2) + ")");
 
 
+// let's not mix the graph with other elements
+// this should be in the html - not necessary for it to be in svg
+
 //legend
 svg.append('rect')
     .attr('x', -600)
@@ -92,7 +95,7 @@ svg.append('rect')
     .attr('width', 20)
     .attr('height', 20)
     .attr('fill', '#d62728');
-    
+
 svg.append('text')
     .attr('x', -560)
     .attr('y', -250)
@@ -159,6 +162,17 @@ var tooltip = function (w, h) {
 };
 
 var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+
+/**
+ * Appends options to selection ui
+ *
+ */
+d3.json("../media/data/options.json", function(data) {
+    data.forEach(function(d) {
+        $('#regionSelect').append(new Option(d.name, d.name, false, false));
+    });
+});
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Draw Bundle
@@ -321,37 +335,15 @@ d3.select("#maxHop")
 
 d3.select("#maxDepth")
     .on("change", setMaxDepth);
-    
+
 d3.select("#tension")
     .on("change", setTension);
 
+//TODO: convert to D3 selector if possible
+$('.chzn-select').change(searchInput);
+
 //d3.select("#search")
 //    .on("input", searchInput);
-
-// Ok I don't want to mix jquery and d3, but somehow I just cannot use d3
-// to respond to an event from the select element
-$('.chzn-select').change(function () {
-    selected_nodes.forEach(function (d) {
-        svg.select("#arc-" + d.key).classed("selected-source", false);
-        svg.select("#text-" + d.key).classed("source", false);
-    });
-    selected_nodes = [];
-    var inputRegion = this.value.toLowerCase();
-    console.log(inputRegion);
-    display_node_map.forEach(function (d) {
-        if (d.name === inputRegion) {
-            selected_nodes.push(d.node);
-            svg.select("#arc-" + d.node.key).classed("selected-source", true);
-            svg.select("#text-" + d.node.key).classed("source", true);
-        }
-    });
-});
-
-d3.json("../media/data/options.json", function(data) {
-    data.forEach(function(d) {
-        $('#regionSelect').append(new Option(d.name, d.name, false, false));
-    });
-});
 
 /*
  * Mouse Position
@@ -565,11 +557,10 @@ function clearButtonClick() {
  *
  */
 function searchInput() {
-    console.log("called");
-    console.log(this);
     selected_nodes.forEach(function (d) {
         svg.select("#arc-" + d.key).classed("selected-source", false);
         svg.select("#text-" + d.key).classed("source", false);
+        svg.select("#tooltip-" + d.key).classed("hidden", true);
     });
     selected_nodes = [];
     var inputRegion = this.value.toLowerCase();
@@ -578,6 +569,7 @@ function searchInput() {
             selected_nodes.push(d.node);
             svg.select("#arc-" + d.node.key).classed("selected-source", true);
             svg.select("#text-" + d.node.key).classed("source", true);
+            svg.select("#tooltip-" + d.node.key).classed("hidden", false);
         }
     });
 }

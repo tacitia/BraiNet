@@ -40,3 +40,22 @@
     //nodes_flip[i].y = 25 * (20 - nodes_flip[i].depth); overrides y value
     //nodes[i].y -= 30;
 //}
+//
+
+//function () {
+    //selected_nodes.forEach(function (d) {
+        //svg.select("#arc-" + d.key).classed("selected-source", false);
+        //svg.select("#text-" + d.key).classed("source", false);
+    //});
+    //selected_nodes = [];
+    //var inputRegion = this.value.toLowerCase();
+    //console.log(inputRegion);
+    //display_node_map.forEach(function (d) {
+        //if (d.name === inputRegion) {
+            //selected_nodes.push(d.node);
+            //svg.select("#arc-" + d.node.key).classed("selected-source", true);
+            //svg.select("#text-" + d.node.key).classed("source", true);
+            //svg.select("#tooltip-" + d.node.key).classed("hidden", false);
+        //}
+    //});
+//}
