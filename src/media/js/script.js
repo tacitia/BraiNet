@@ -99,7 +99,9 @@ svg.append('text')
     .text("target");
 
 //link details
-var detail = [];
+var detail = [],
+    bams_link = "",
+    pubmed_link = "";
 
     detail[0] = svg.append('text')
         .attr("x", -600)
@@ -124,12 +126,21 @@ var detail = [];
     detail[5] = svg.append('text')
        .attr("x", -540)
        .attr("y", 160)
-       .text("");  
+       .text("")
+       .on("click", function(){window.open(bams_link);});  
     detail[6] = svg.append('text')
        .attr("x", -530)
        .attr("y", 180)
        .text("");  
-
+    detail[7] = svg.append('text')
+       .attr("x", -600)
+       .attr("y", 60)
+       .text("Source: ");
+    detail[8] = svg.append('text')
+       .attr("x", -600)
+       .attr("y", 80)
+       .text("Target: ");
+       
 function redraw() {
     svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
     if (d3.event.sourceEvent.type !== "mousemove") {
@@ -463,12 +474,15 @@ function linkClick(d) {
     //var target = d.target.name;
     //window.location.href = 'http://www.ncbi.nlm.nih.gov/pubmed?term=' +
     //con_map[source, target];
-    console.log(d.detail);
     detail[0].text("Strength: " + d.detail.strength);
     detail[1].text("Technique: " + d.detail.technique);
     detail[2].text("Reference: " + d.detail.ref);
     detail[5].text(d.detail.bams_link)
     detail[6].text(d.detail.pubmed_link);
+    detail[7].text("Source: " + d.source.displayName);
+    detail[8].text("Target: " + d.target.displayName);
+    bams_link = d.detail.bams_link;
+    pubmed_link = d.detail.pubmed_link;
 }
 
 /*
