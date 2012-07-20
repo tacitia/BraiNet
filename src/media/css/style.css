@@ -161,7 +161,7 @@ body {
 .link.selected {
     stroke: #b45c1f;
 }
-.link.source, .link.target, .link.selected {
+.link.source, .link.target, .link.selected, .link.bidirectional {
 	stroke-opacity: .9;
 	stroke-width: 1.5px;
 }

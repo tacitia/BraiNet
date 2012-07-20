@@ -140,14 +140,15 @@ var detail = [],
        .attr("y", 180)
        .text("Pubmed link: ");
     detail[5] = svg.append('text')
-       .attr("x", -540)
+       .attr("x", -520)
        .attr("y", 160)
        .text("")
        .on("click", function(){window.open(bams_link);});  
     detail[6] = svg.append('text')
-       .attr("x", -530)
+       .attr("x", -510)
        .attr("y", 180)
-       .text("");  
+       .text("")
+       .on("click", function(){window.open(pubmed_link);});  
     detail[7] = svg.append('text')
        .attr("x", -600)
        .attr("y", 60)
@@ -156,6 +157,9 @@ var detail = [],
        .attr("x", -600)
        .attr("y", 80)
        .text("Target: ");
+       
+var selected_link_texts = [];
+       
        
 function redraw() {
     svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
@@ -180,11 +184,13 @@ var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
  * Appends options to selection ui
  *
  */
+ /*
 d3.json("../media/data/options.json", function(data) {
     data.forEach(function(d) {
         $('#regionSelect').append(new Option(d.name, d.name, false, false));
     });
 });
+*/
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -453,13 +459,15 @@ function mouseOut(d) {
  * Mouse over for link
  */
 function linkMouseOver(d) {
-    svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key)
-       .classed("selected", true);
-    if (d.bidirectional) {
+    if (d.bidirectional == "true") {
+        svg.select("path.link.bi-" + d.source.key + ".bi-" + d.target.key)
+            .classed("selected", true);
         svg.select("#arc-" + d.target.key).classed("bidirectional", true);
         svg.select("#arc-" + d.source.key).classed("bidirectional", true);        
     }
     else {
+        svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key)
+            .classed("selected", true);
         svg.select("#arc-" + d.target.key).classed("target", true);
         svg.select("#arc-" + d.source.key).classed("source", true);
     }
@@ -477,9 +485,11 @@ function linkMouseOver(d) {
  *
  */
 function linkMouseOut(d) {
+    svg.select("path.link.bi-" + d.source.key + ".bi-" + d.target.key)
+        .classed("selected", false);
     svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key)
-       .classed("selected", false);
-    if (d.bidirectional) {
+        .classed("selected", false);
+    if (d.bidirectional == "true") {
         svg.select("#arc-" + d.target.key).classed("bidirectional", false);
         svg.select("#arc-" + d.source.key).classed("bidirectional", false);        
     }
@@ -489,8 +499,10 @@ function linkMouseOut(d) {
     }
     svg.select("#text-" + d.target.key).classed("target", false);
     svg.select("#text-" + d.source.key).classed("source", false);
-    svg.select("#tooltip-" + d.target.key).classed("hidden", true);
-    svg.select("#tooltip-" + d.source.key).classed("hidden", true);
+    if (d.target != selected_source && d.target != selected_target) 
+        svg.select("#tooltip-" + d.target.key).classed("hidden", true);
+    if (d.source != selected_source && d.source != selected_target) 
+        svg.select("#tooltip-" + d.source.key).classed("hidden", true);
 }
 
 /*
@@ -604,15 +616,33 @@ function searchButtonClick() {
     if (selected_source !== undefined && selected_target !== undefined) {
         computeLinksForSelection(max_hop, selected_source,
                             selected_target, [], selected_links);
+        var counter = 0;
         selected_links.forEach(function (d) {
             d.forEach(function (i) {
-                svg.select("path.link.source-" + i.source.key +
-                    ".target-" + i.target.key)
-                    .classed("selected", true);
-                svg.select("#arc-" + i.source.key).classed("selected", true);
-                svg.select("#arc-" + i.target.key).classed("selected", true);
+                    svg.select("path.link.source-" + i.source.key +
+                        ".target-" + i.target.key)
+                        .classed("selected", true);
+                    svg.select("path.link.bi-" + i.source.key +
+                        ".bi-" + i.target.key)
+                        .classed("selected", true);
+                    svg.select("#arc-" + i.source.key).classed("selected-source", true);
+                    svg.select("#arc-" + i.target.key).classed("selected-target", true);
+                    svg.select("#text-" + i.source.key).classed("selected-source", true);
+                    svg.select("#text-" + i.target.key).classed("selected-target", true);
+                    svg.select("#tooltip-" + i.source.key).classed("selected-hidden", false);        
+                    svg.select("#tooltip-" + i.target.key).classed("selected-hidden", false);                
+                    svg.select("#tooltip-" + i.source.key).classed("hidden", false);        
+                    svg.select("#tooltip-" + i.target.key).classed("hidden", false);
+                    selected_link_texts[counter] = svg.append('text')
+                        .attr('x', 400)
+                        .attr('y', -300 + counter * 20)
+                        .text(i.source.displayName + "-" + i.target.displayName)
+                        .on('click', function() {linkClick(i);});
+                    ++counter;
             });
         });
+        
+        
     }
 }
 
@@ -630,14 +660,14 @@ function clearButtonClick() {
     if (selected_source !== undefined) {
         svg.select("#arc-" + selected_source.key).classed("selected-source", false);
         svg.select("#text-" + selected_source.key).classed("selected-source", false);
-        svg.select("#tooltip-" + d.key).classed("selected-hidden", true);        
-        svg.select("#tooltip-" + d.key).classed("hidden", true);        
+        svg.select("#tooltip-" + selected_source.key).classed("selected-hidden", true);        
+        svg.select("#tooltip-" + selected_source.key).classed("hidden", true);        
     }
     if (selected_target !== undefined) {
         svg.select("#arc-" + selected_target.key).classed("selected-target", false);
         svg.select("#text-" + selected_target.key).classed("selected-target", false);
-        svg.select("#tooltip-" + d.key).classed("selected-hidden", true);        
-        svg.select("#tooltip-" + d.key).classed("hidden", true);        
+        svg.select("#tooltip-" + selected_target.key).classed("selected-hidden", true);        
+        svg.select("#tooltip-" + selected_target.key).classed("hidden", true);        
     }
 }
 
@@ -674,6 +704,12 @@ function setMaxHop() {
     max_hop = this.value;
     document.getElementById("maxHopValue").innerHTML = max_hop;
     clearSelection();
+    svg.select("#arc-" + selected_source.key).classed("selected-source", true);
+    svg.select("#text-" + selected_source.key).classed("selected-source", true);
+    svg.select("#tooltip-" + selected_source.key).classed("selected-hidden", false);  
+    svg.select("#arc-" + selected_target.key).classed("selected-target", true);
+    svg.select("#text-" + selected_target.key).classed("selected-target", true);
+    svg.select("#tooltip-" + selected_target.key).classed("selected-hidden", false);   
 }
 
 /*
@@ -718,13 +754,26 @@ function setTension() {
  * Reverts selected arc and paths
  */
 function clearSelection() {
+    var counter = 0;
     selected_links.forEach(function (d) {
         d.forEach(function (i) {
-            svg.select("path.link.source-" + i.source.key +
-                ".target-" + i.target.key)
-                .classed("selected", false);
-            svg.select("#arc-" + i.target.key).classed("selected", false);
-            svg.select("#arc-" + i.source.key).classed("selected", false);
+                    svg.select("path.link.source-" + i.source.key +
+                        ".target-" + i.target.key)
+                        .classed("selected", false);
+                    svg.select("path.link.bi-" + i.source.key +
+                        ".bi-" + i.target.key)
+                        .classed("selected", false);
+                    svg.select("#arc-" + i.source.key).classed("selected-source", false);
+                    svg.select("#arc-" + i.target.key).classed("selected-target", false);
+                    svg.select("#text-" + i.source.key).classed("selected-source", false);
+                    svg.select("#text-" + i.target.key).classed("selected-target", false);
+                    svg.select("#tooltip-" + i.source.key).classed("selected-hidden", true);        
+                    svg.select("#tooltip-" + i.target.key).classed("selected-hidden", true);                
+                    svg.select("#tooltip-" + i.source.key).classed("hidden", true);        
+                    svg.select("#tooltip-" + i.target.key).classed("hidden", true);  
+                    selected_link_texts[counter].text("");
+                    ++counter;
+                    
         });
     });
     selected_links = [];
@@ -742,21 +791,21 @@ function computeLinksForSelection(hop, source, target, currLink, selected_links)
         descendants = [];
 
     source.links.forEach(function (d) {
-        augmentedLinks.push({source: source, target: name_node_map[d.name]});
+        augmentedLinks.push({source: source, target: name_node_map[d.name], detail: d.detail});
     });
 
     getDecendants(source, descendants);
 
     descendants.forEach(function (d) {
         d.links.forEach(function (i) {
-            augmentedLinks.push({source: d, target: name_node_map[i.name]});
+            augmentedLinks.push({source: d, target: name_node_map[i.name], detail: i.detail});
         });
     });
     augmentedTargets.push(target);
     getDecendants(target, augmentedTargets);
     augmentedLinks.forEach(function (d) {
         var newLink = currLink.slice();
-        newLink.push({source: d.source, target: d.target});
+        newLink.push({source: d.source, target: d.target, detail: d.detail});
         augmentedTargets.forEach(function (i) {
             if (d.target === i) {
                 selected_links.push(newLink);
