@@ -86,6 +86,7 @@ body {
 }
 
 .text.visible {
+    fill: #000;
     visibility: visible;
 }
 
