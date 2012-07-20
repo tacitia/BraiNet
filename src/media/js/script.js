@@ -87,7 +87,7 @@ svg.append('rect')
 svg.append('text')
     .attr('x', -560)
     .attr('y', -290)
-    .text("source");
+    .text("Source region / Outgoing connection");
 
 svg.append('rect')
     .attr('x', -600)
@@ -99,7 +99,20 @@ svg.append('rect')
 svg.append('text')
     .attr('x', -560)
     .attr('y', -250)
-    .text("target");
+    .text("Target region / Incoming connection");
+    
+svg.append('rect')
+    .attr('x', -600)
+    .attr('y', -220)
+    .attr('width', 20)
+    .attr('height', 20)
+    .attr('fill', '#062db8');
+
+svg.append('text')
+    .attr('x', -560)
+    .attr('y', -210)
+    .text("Bidirectional connection");    
+    
 
 //link details
 var detail = [],
@@ -244,7 +257,12 @@ d3.json("../media/data/bamsBrainData.json", function (data) {
         .enter()
         .append("svg:path")
         .attr("class", function (d) {
-            return "link source-" + d.source.key + " target-" + d.target.key;
+            if (d.bidirectional == "false") {
+                return "link source-" + d.source.key + " target-" + d.target.key;
+            }
+            else {
+                return "link bi-" + d.source.key + " bi-" + d.target.key;
+            }
         })
         .attr("d", function (d, i) { return line(splines[i]); })
         .on("mouseover", linkMouseOver)
@@ -363,7 +381,7 @@ function mouseOver(d) {
         //.attr("d", tooltip())
         //.attr("transform", function (d) { return "translate(" + arc.centroid(d) + ")"; });
 
-    //svg.selectAll("path.link").classed("non-selected", true);
+    //svg.selectAll("path.link").classed("non-selected", true)
 
     svg.select("#text-" + d.key).classed("target", true);
 
@@ -373,13 +391,24 @@ function mouseOver(d) {
         .classed("target", true)
         .classed("hidden", false)
         .classed("non-selected", false)
-        .each(highlightAll("source", true));
+//        .each(highlightAll("source", true));
+        .each(highlightAllSource(true));
 
     svg.selectAll("path.link.source-" + d.key)
         .classed("source", true)
         .classed("hidden", false)
         .classed("non-selected", false)
-        .each(highlightAll("target", true));
+//        .each(highlightAll("target", true));
+        .each(highlightAllTarget(true));
+
+    svg.selectAll("path.link.bi-" + d.key)
+        .classed("bidirectional", true)
+        .classed("hidden", false)
+        .classed("non-selected", false)
+        .each(highlightAllBi(true));
+
+    svg.select("arc-" +d.key)
+        .classed("selected", true);
 
 }
 
@@ -392,17 +421,31 @@ function mouseOut(d) {
 
     //svg.selectAll("path.link").classed("non-selected", false);
 
-    svg.select("#text-" + d.key).classed("target", false);
-
-    svg.select("#tooltip-" + d.key).classed("hidden", true);
-
     svg.selectAll("path.link.source-" + d.key)
         .classed("source", false)
-        .each(highlightAll("target", false));
+        .each(highlightAllTarget(false));
 
     svg.selectAll("path.link.target-" + d.key)
         .classed("target", false)
-        .each(highlightAll("source", false));
+        .each(highlightAllSource(false));
+    
+    svg.selectAll("path.link.bi-" + d.key)
+        .classed("bidirectional", false)
+        .each(highlightAllBi(false));
+        
+    svg.select("arc-" +d.key)
+        .classed("selected", false);
+        
+        
+    svg.select("#text-" + d.key).classed("target", false);
+    
+    if (d != selected_target && d != selected_source) {
+        svg.select("#tooltip-" + d.key).classed("hidden", true);
+    }
+    else {
+        svg.select("#tooltip-" + d.key).classed("hidden", false);
+    }
+
 }
 
 
@@ -412,10 +455,16 @@ function mouseOut(d) {
 function linkMouseOver(d) {
     svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key)
        .classed("selected", true);
-    svg.select("#arc-" + d.target.key).classed("target", true);
-    svg.select("#arc-" + d.source.key).classed("source", true);
+    if (d.bidirectional) {
+        svg.select("#arc-" + d.target.key).classed("bidirectional", true);
+        svg.select("#arc-" + d.source.key).classed("bidirectional", true);        
+    }
+    else {
+        svg.select("#arc-" + d.target.key).classed("target", true);
+        svg.select("#arc-" + d.source.key).classed("source", true);
+    }
     svg.select("#text-" + d.target.key).classed("target", true);
-    svg.select("#text-" + d.source.key).classed("target", true);
+    svg.select("#text-" + d.source.key).classed("source", true);
     svg.select("#tooltip-" + d.target.key).classed("hidden", false);
     svg.select("#tooltip-" + d.source.key).classed("hidden", false);
 }
@@ -430,10 +479,16 @@ function linkMouseOver(d) {
 function linkMouseOut(d) {
     svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key)
        .classed("selected", false);
-    svg.select("#arc-" + d.target.key).classed("target", false);
-    svg.select("#arc-" + d.source.key).classed("source", false);
+    if (d.bidirectional) {
+        svg.select("#arc-" + d.target.key).classed("bidirectional", false);
+        svg.select("#arc-" + d.source.key).classed("bidirectional", false);        
+    }
+    else {
+        svg.select("#arc-" + d.target.key).classed("target", false);
+        svg.select("#arc-" + d.source.key).classed("source", false);
+    }
     svg.select("#text-" + d.target.key).classed("target", false);
-    svg.select("#text-" + d.source.key).classed("target", false);
+    svg.select("#text-" + d.source.key).classed("source", false);
     svg.select("#tooltip-" + d.target.key).classed("hidden", true);
     svg.select("#tooltip-" + d.source.key).classed("hidden", true);
 }
@@ -453,6 +508,34 @@ function highlightAll(name, value) {
         svg.select("#tooltip-" + d.target.key).classed("hidden", !value);
         svg.select("#tooltip-" + d.source.key).classed("hidden", !value);
     };
+}
+
+function highlightAllSource(value) {
+    return function(d) {
+        svg.select("#arc-" + d.source.key).classed("source", value);    
+        svg.select("#text-" + d.source.key).classed("source", value);
+        svg.select("#tooltip-" + d.source.key).classed("hidden", !value);
+    }
+}
+
+function highlightAllTarget(value) {
+    return function(d) {
+        svg.select("#arc-" + d.target.key).classed("target", value);    
+        svg.select("#text-" + d.target.key).classed("target", value);
+        svg.select("#tooltip-" + d.target.key).classed("hidden", !value);
+    }
+}
+
+function highlightAllBi(value) {
+    return function(d) {
+        svg.select("#arc-" + d.source.key).classed("bidirectional", value);    
+        svg.select("#arc-" + d.target.key).classed("bidirectional", value);    
+        svg.select("#text-" + d.source.key).classed("source", value);
+        svg.select("#text-" + d.target.key).classed("target", value);
+        svg.select("#tooltip-" + d.source.key).classed("hidden", !value);
+        svg.select("#tooltip-" + d.target.key).classed("hidden", !value);
+
+    }
 }
 
 /*
@@ -491,19 +574,23 @@ function nodeClick(d) {
             piwikTracker.trackPageView('SelectTarget');
             svg.select("#arc-" + selected_target.key).classed("selected-target", false);
             svg.select("#text-" + selected_target.key).classed("selected-target", false);
+            svg.select("#tooltip-" + selected_target.key).classed("selected-hidden", true);        
         }
         selected_target = d;
         svg.select("#arc-" + d.key).classed("selected-target", true);
         svg.select("#text-" + d.key).classed("selected-target", true);
+        svg.select("#tooltip-" + d.key).classed("selected-hidden", false);        
     } else {
         if (selected_source !== undefined) {
             piwikTracker.trackPageView('SelectSource');
             svg.select("#arc-" + selected_source.key).classed("selected-source", false);
             svg.select("#text-" + selected_source.key).classed("selected-source", false);
+            svg.select("#tooltip-" + selected_source.key).classed("selected-hidden", true);        
         }
         selected_source = d;
         svg.select("#arc-" + d.key).classed("selected-source", true);
         svg.select("#text-" + d.key).classed("selected-source", true);
+        svg.select("#tooltip-" + d.key).classed("selected-hidden", false);        
     }
 }
 
@@ -514,7 +601,6 @@ function nodeClick(d) {
  */
 function searchButtonClick() {
     piwikTracker.trackPageView('SearchConnection');
-    console.log("custom variable logged");
     if (selected_source !== undefined && selected_target !== undefined) {
         computeLinksForSelection(max_hop, selected_source,
                             selected_target, [], selected_links);
@@ -539,15 +625,19 @@ function clearButtonClick() {
     clearSelection();
     selected_nodes.forEach(function (d) {
         svg.select("#arc-" + d.key).classed("selected-source", false);
-        svg.select("#text-" + d.key).classed("source", false);
+        svg.select("#text-" + d.key).classed("selected-source", false);
     });
     if (selected_source !== undefined) {
         svg.select("#arc-" + selected_source.key).classed("selected-source", false);
         svg.select("#text-" + selected_source.key).classed("selected-source", false);
+        svg.select("#tooltip-" + d.key).classed("selected-hidden", true);        
+        svg.select("#tooltip-" + d.key).classed("hidden", true);        
     }
     if (selected_target !== undefined) {
         svg.select("#arc-" + selected_target.key).classed("selected-target", false);
         svg.select("#text-" + selected_target.key).classed("selected-target", false);
+        svg.select("#tooltip-" + d.key).classed("selected-hidden", true);        
+        svg.select("#tooltip-" + d.key).classed("hidden", true);        
     }
 }
 

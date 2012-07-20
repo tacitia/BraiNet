@@ -64,6 +64,11 @@ body {
     fill: #b45c1f;
 }
 
+/*blue*/
+.arc.bidirectional {
+    fill: #062db8;
+}
+
 .arc.target, .arc.source, .arc.selected {
     opacity: 0.8;
 }
@@ -92,6 +97,10 @@ body {
     visibility: visible;
 }
 
+.text.bidirectional {
+    visibility: visible;
+}
+
 /* These are for clicked nodes */
 .text.selected-target {
     visibility: visible;
@@ -110,7 +119,9 @@ body {
 .tooltip.hidden {
     visibility: hidden;
 }
-
+.tooltip.selected-hidden {
+    visibility: hidden;
+}
 
 /*  links (connections) */
 
@@ -131,11 +142,16 @@ body {
     opacity: 0.1;
 }
 
+/*red*/
 .link.target {
+	stroke: #d62728;
+}
+/*green*/
+.link.source {
 	stroke: #2ca02c;
 }
-.link.source {
-	stroke: #d62728;
+.link.bidirectional {
+    stroke: #062db8;
 }
 
 .link.hidden {
