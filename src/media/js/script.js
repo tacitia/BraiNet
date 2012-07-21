@@ -159,7 +159,6 @@ detail[8] = svg.append('text')
 
 var selected_link_texts = [];
 
-
 function redraw() {
     svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
     if (d3.event.sourceEvent.type !== "mousemove") {
@@ -187,6 +186,7 @@ d3.json("../media/data/options.json", function (data) {
     data.forEach(function (d) {
         $('#regionSelect').append(new Option(d.name, d.name, false, false));
     });
+    $('.chzn-select').chosen();
 });
 
 
@@ -221,7 +221,7 @@ d3.json("../media/data/bamsBrainData.json", function (data) {
       .data(nodes)
       .enter();
 
-//    con_map = brainMap.evidence(nodes);
+    //con_map = brainMap.evidence(nodes);
     name_node_map = brainMap.nameNodeMap(nodes);
     display_node_map = brainMap.displayNameNodeMap(nodes);
 
