@@ -100,7 +100,7 @@ svg.append('text')
     .attr('x', -560)
     .attr('y', -250)
     .text("Target region / Incoming connection");
-    
+
 svg.append('rect')
     .attr('x', -600)
     .attr('y', -220)
@@ -111,56 +111,55 @@ svg.append('rect')
 svg.append('text')
     .attr('x', -560)
     .attr('y', -210)
-    .text("Bidirectional connection");    
-    
+    .text("Bidirectional connection");
 
 //link details
 var detail = [],
     bams_link = "",
     pubmed_link = "";
 
-    detail[0] = svg.append('text')
-        .attr("x", -600)
-       .attr("y", 100)
-       .text("Strength: ");
-    detail[1] = svg.append('text')
-       .attr("x", -600)
-       .attr("y", 120)
-       .text("Technique: ");
-    detail[2] = svg.append('text')
-       .attr("x", -600)
-       .attr("y", 140)
-       .text("Reference: ");
-    detail[3] = svg.append('text')
-       .attr("x", -600)
-       .attr("y", 160)
-       .text("BAMS link: ");    
-    detail[4] = svg.append('text')
-       .attr("x", -600)
-       .attr("y", 180)
-       .text("Pubmed link: ");
-    detail[5] = svg.append('text')
-       .attr("x", -520)
-       .attr("y", 160)
-       .text("")
-       .on("click", function(){window.open(bams_link);});  
-    detail[6] = svg.append('text')
-       .attr("x", -510)
-       .attr("y", 180)
-       .text("")
-       .on("click", function(){window.open(pubmed_link);});  
-    detail[7] = svg.append('text')
-       .attr("x", -600)
-       .attr("y", 60)
-       .text("Source: ");
-    detail[8] = svg.append('text')
-       .attr("x", -600)
-       .attr("y", 80)
-       .text("Target: ");
-       
+detail[0] = svg.append('text')
+    .attr("x", -600)
+   .attr("y", 100)
+   .text("Strength: ");
+detail[1] = svg.append('text')
+   .attr("x", -600)
+   .attr("y", 120)
+   .text("Technique: ");
+detail[2] = svg.append('text')
+   .attr("x", -600)
+   .attr("y", 140)
+   .text("Reference: ");
+detail[3] = svg.append('text')
+   .attr("x", -600)
+   .attr("y", 160)
+   .text("BAMS link: ");
+detail[4] = svg.append('text')
+   .attr("x", -600)
+   .attr("y", 180)
+   .text("Pubmed link: ");
+detail[5] = svg.append('text')
+   .attr("x", -520)
+   .attr("y", 160)
+   .text("")
+   .on("click", function () { window.open(bams_link); });
+detail[6] = svg.append('text')
+   .attr("x", -510)
+   .attr("y", 180)
+   .text("")
+   .on("click", function () { window.open(pubmed_link); });
+detail[7] = svg.append('text')
+   .attr("x", -600)
+   .attr("y", 60)
+   .text("Source: ");
+detail[8] = svg.append('text')
+   .attr("x", -600)
+   .attr("y", 80)
+   .text("Target: ");
+
 var selected_link_texts = [];
-       
-       
+
+
 function redraw() {
     svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
     if (d3.event.sourceEvent.type !== "mousemove") {
@@ -184,13 +183,12 @@ var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
  * Appends options to selection ui
  *
  */
- /*
-d3.json("../media/data/options.json", function(data) {
-    data.forEach(function(d) {
+d3.json("../media/data/options.json", function (data) {
+    data.forEach(function (d) {
         $('#regionSelect').append(new Option(d.name, d.name, false, false));
     });
 });
-*/
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -413,7 +411,7 @@ function mouseOver(d) {
         .classed("non-selected", false)
         .each(highlightAllBi(true));
 
-    svg.select("arc-" +d.key)
+    svg.select("arc-" + d.key)
         .classed("selected", true);
 
 }
@@ -434,18 +432,18 @@ function mouseOut(d) {
     svg.selectAll("path.link.target-" + d.key)
         .classed("target", false)
         .each(highlightAllSource(false));
-    
+
     svg.selectAll("path.link.bi-" + d.key)
         .classed("bidirectional", false)
         .each(highlightAllBi(false));
-        
-    svg.select("arc-" +d.key)
+
+    svg.select("arc-" + d.key)
         .classed("selected", false);
-        
-        
+
+
     svg.select("#text-" + d.key).classed("target", false);
-    
-    if (d != selected_target && d != selected_source) {
+
+    if (d !== selected_target && d !== selected_source) {
         svg.select("#tooltip-" + d.key).classed("hidden", true);
     }
     else {
@@ -463,7 +461,7 @@ function linkMouseOver(d) {
         svg.select("path.link.bi-" + d.source.key + ".bi-" + d.target.key)
             .classed("selected", true);
         svg.select("#arc-" + d.target.key).classed("bidirectional", true);
-        svg.select("#arc-" + d.source.key).classed("bidirectional", true);        
+        svg.select("#arc-" + d.source.key).classed("bidirectional", true);
     }
     else {
         svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key)
@@ -491,7 +489,7 @@ function linkMouseOut(d) {
         .classed("selected", false);
     if (d.bidirectional == "true") {
         svg.select("#arc-" + d.target.key).classed("bidirectional", false);
-        svg.select("#arc-" + d.source.key).classed("bidirectional", false);        
+        svg.select("#arc-" + d.source.key).classed("bidirectional", false);
     }
     else {
         svg.select("#arc-" + d.target.key).classed("target", false);
@@ -499,10 +497,12 @@ function linkMouseOut(d) {
     }
     svg.select("#text-" + d.target.key).classed("target", false);
     svg.select("#text-" + d.source.key).classed("source", false);
-    if (d.target != selected_source && d.target != selected_target) 
+    if (d.target !== selected_source && d.target !== selected_target) {
         svg.select("#tooltip-" + d.target.key).classed("hidden", true);
-    if (d.source != selected_source && d.source != selected_target) 
+    }
+    if (d.source !== selected_source && d.source !== selected_target) {
         svg.select("#tooltip-" + d.source.key).classed("hidden", true);
+    }
 }
 
 /*
@@ -523,31 +523,30 @@ function highlightAll(name, value) {
 }
 
 function highlightAllSource(value) {
-    return function(d) {
-        svg.select("#arc-" + d.source.key).classed("source", value);    
+    return function (d) {
+        svg.select("#arc-" + d.source.key).classed("source", value);
         svg.select("#text-" + d.source.key).classed("source", value);
         svg.select("#tooltip-" + d.source.key).classed("hidden", !value);
-    }
+    };
 }
 
 function highlightAllTarget(value) {
-    return function(d) {
-        svg.select("#arc-" + d.target.key).classed("target", value);    
+    return function (d) {
+        svg.select("#arc-" + d.target.key).classed("target", value);
         svg.select("#text-" + d.target.key).classed("target", value);
         svg.select("#tooltip-" + d.target.key).classed("hidden", !value);
-    }
+    };
 }
 
 function highlightAllBi(value) {
-    return function(d) {
-        svg.select("#arc-" + d.source.key).classed("bidirectional", value);    
-        svg.select("#arc-" + d.target.key).classed("bidirectional", value);    
+    return function (d) {
+        svg.select("#arc-" + d.source.key).classed("bidirectional", value);
+        svg.select("#arc-" + d.target.key).classed("bidirectional", value);
         svg.select("#text-" + d.source.key).classed("source", value);
         svg.select("#text-" + d.target.key).classed("target", value);
         svg.select("#tooltip-" + d.source.key).classed("hidden", !value);
         svg.select("#tooltip-" + d.target.key).classed("hidden", !value);
-
-    }
+    };
 }
 
 /*
@@ -564,7 +563,7 @@ function linkClick(d) {
     detail[0].text("Strength: " + d.detail.strength);
     detail[1].text("Technique: " + d.detail.technique);
     detail[2].text("Reference: " + d.detail.ref);
-    detail[5].text(d.detail.bams_link)
+    detail[5].text(d.detail.bams_link);
     detail[6].text(d.detail.pubmed_link);
     detail[7].text("Source: " + d.source.displayName);
     detail[8].text("Target: " + d.target.displayName);
@@ -586,23 +585,23 @@ function nodeClick(d) {
             piwikTracker.trackPageView('SelectTarget');
             svg.select("#arc-" + selected_target.key).classed("selected-target", false);
             svg.select("#text-" + selected_target.key).classed("selected-target", false);
-            svg.select("#tooltip-" + selected_target.key).classed("selected-hidden", true);        
+            svg.select("#tooltip-" + selected_target.key).classed("selected-hidden", true);
         }
         selected_target = d;
         svg.select("#arc-" + d.key).classed("selected-target", true);
         svg.select("#text-" + d.key).classed("selected-target", true);
-        svg.select("#tooltip-" + d.key).classed("selected-hidden", false);        
+        svg.select("#tooltip-" + d.key).classed("selected-hidden", false);
     } else {
         if (selected_source !== undefined) {
             piwikTracker.trackPageView('SelectSource');
             svg.select("#arc-" + selected_source.key).classed("selected-source", false);
             svg.select("#text-" + selected_source.key).classed("selected-source", false);
-            svg.select("#tooltip-" + selected_source.key).classed("selected-hidden", true);        
+            svg.select("#tooltip-" + selected_source.key).classed("selected-hidden", true);
         }
         selected_source = d;
         svg.select("#arc-" + d.key).classed("selected-source", true);
         svg.select("#text-" + d.key).classed("selected-source", true);
-        svg.select("#tooltip-" + d.key).classed("selected-hidden", false);        
+        svg.select("#tooltip-" + d.key).classed("selected-hidden", false);
     }
 }
 
@@ -613,36 +612,30 @@ function nodeClick(d) {
  */
 function searchButtonClick() {
     piwikTracker.trackPageView('SearchConnection');
+
     if (selected_source !== undefined && selected_target !== undefined) {
-        computeLinksForSelection(max_hop, selected_source,
-                            selected_target, [], selected_links);
+        computeLinksForSelection(max_hop, selected_source, selected_target, [], selected_links);
         var counter = 0;
         selected_links.forEach(function (d) {
             d.forEach(function (i) {
-                    svg.select("path.link.source-" + i.source.key +
-                        ".target-" + i.target.key)
-                        .classed("selected", true);
-                    svg.select("path.link.bi-" + i.source.key +
-                        ".bi-" + i.target.key)
-                        .classed("selected", true);
-                    svg.select("#arc-" + i.source.key).classed("selected-source", true);
-                    svg.select("#arc-" + i.target.key).classed("selected-target", true);
-                    svg.select("#text-" + i.source.key).classed("selected-source", true);
-                    svg.select("#text-" + i.target.key).classed("selected-target", true);
-                    svg.select("#tooltip-" + i.source.key).classed("selected-hidden", false);        
-                    svg.select("#tooltip-" + i.target.key).classed("selected-hidden", false);                
-                    svg.select("#tooltip-" + i.source.key).classed("hidden", false);        
-                    svg.select("#tooltip-" + i.target.key).classed("hidden", false);
-                    selected_link_texts[counter] = svg.append('text')
-                        .attr('x', 400)
-                        .attr('y', -300 + counter * 20)
-                        .text(i.source.displayName + "-" + i.target.displayName)
-                        .on('click', function() {linkClick(i);});
-                    ++counter;
+                svg.select("path.link.source-" + i.source.key + ".target-" + i.target.key).classed("selected", true);
+                svg.select("path.link.bi-" + i.source.key + ".bi-" + i.target.key).classed("selected", true);
+                svg.select("#arc-" + i.source.key).classed("selected-source", true);
+                svg.select("#arc-" + i.target.key).classed("selected-target", true);
+                svg.select("#text-" + i.source.key).classed("selected-source", true);
+                svg.select("#text-" + i.target.key).classed("selected-target", true);
+                svg.select("#tooltip-" + i.source.key).classed("selected-hidden", false);
+                svg.select("#tooltip-" + i.target.key).classed("selected-hidden", false);
+                svg.select("#tooltip-" + i.source.key).classed("hidden", false);
+                svg.select("#tooltip-" + i.target.key).classed("hidden", false);
+                selected_link_texts[counter] = svg.append('text')
+                    .attr('x', 400)
+                    .attr('y', -300 + counter * 20)
+                    .text(i.source.displayName + "-" + i.target.displayName)
+                    .on('click', function () { linkClick(i); });
+                ++counter;
             });
         });
-        
-        
     }
 }
 
@@ -660,14 +653,14 @@ function clearButtonClick() {
     if (selected_source !== undefined) {
         svg.select("#arc-" + selected_source.key).classed("selected-source", false);
         svg.select("#text-" + selected_source.key).classed("selected-source", false);
-        svg.select("#tooltip-" + selected_source.key).classed("selected-hidden", true);        
-        svg.select("#tooltip-" + selected_source.key).classed("hidden", true);        
+        svg.select("#tooltip-" + selected_source.key).classed("selected-hidden", true);
+        svg.select("#tooltip-" + selected_source.key).classed("hidden", true);
     }
     if (selected_target !== undefined) {
         svg.select("#arc-" + selected_target.key).classed("selected-target", false);
         svg.select("#text-" + selected_target.key).classed("selected-target", false);
-        svg.select("#tooltip-" + selected_target.key).classed("selected-hidden", true);        
-        svg.select("#tooltip-" + selected_target.key).classed("hidden", true);        
+        svg.select("#tooltip-" + selected_target.key).classed("selected-hidden", true);
+        svg.select("#tooltip-" + selected_target.key).classed("hidden", true);
     }
 }
 
@@ -706,10 +699,10 @@ function setMaxHop() {
     clearSelection();
     svg.select("#arc-" + selected_source.key).classed("selected-source", true);
     svg.select("#text-" + selected_source.key).classed("selected-source", true);
-    svg.select("#tooltip-" + selected_source.key).classed("selected-hidden", false);  
+    svg.select("#tooltip-" + selected_source.key).classed("selected-hidden", false);
     svg.select("#arc-" + selected_target.key).classed("selected-target", true);
     svg.select("#text-" + selected_target.key).classed("selected-target", true);
-    svg.select("#tooltip-" + selected_target.key).classed("selected-hidden", false);   
+    svg.select("#tooltip-" + selected_target.key).classed("selected-hidden", false);
 }
 
 /*
@@ -743,8 +736,8 @@ function setMaxDepth() {
 
 
 function setTension() {
-    line.tension(this.value/100);
-    path.attr("d", function(d,i) {return line(splines[i]);});
+    line.tension(this.value / 100);
+    path.attr("d", function (d, i) { return line(splines[i]); });
 }
 
 /*
@@ -757,23 +750,22 @@ function clearSelection() {
     var counter = 0;
     selected_links.forEach(function (d) {
         d.forEach(function (i) {
-                    svg.select("path.link.source-" + i.source.key +
-                        ".target-" + i.target.key)
-                        .classed("selected", false);
-                    svg.select("path.link.bi-" + i.source.key +
-                        ".bi-" + i.target.key)
-                        .classed("selected", false);
-                    svg.select("#arc-" + i.source.key).classed("selected-source", false);
-                    svg.select("#arc-" + i.target.key).classed("selected-target", false);
-                    svg.select("#text-" + i.source.key).classed("selected-source", false);
-                    svg.select("#text-" + i.target.key).classed("selected-target", false);
-                    svg.select("#tooltip-" + i.source.key).classed("selected-hidden", true);        
-                    svg.select("#tooltip-" + i.target.key).classed("selected-hidden", true);                
-                    svg.select("#tooltip-" + i.source.key).classed("hidden", true);        
-                    svg.select("#tooltip-" + i.target.key).classed("hidden", true);  
-                    selected_link_texts[counter].text("");
-                    ++counter;
-                    
+            svg.select("path.link.source-" + i.source.key +
+                ".target-" + i.target.key)
+                .classed("selected", false);
+            svg.select("path.link.bi-" + i.source.key +
+                ".bi-" + i.target.key)
+                .classed("selected", false);
+            svg.select("#arc-" + i.source.key).classed("selected-source", false);
+            svg.select("#arc-" + i.target.key).classed("selected-target", false);
+            svg.select("#text-" + i.source.key).classed("selected-source", false);
+            svg.select("#text-" + i.target.key).classed("selected-target", false);
+            svg.select("#tooltip-" + i.source.key).classed("selected-hidden", true);
+            svg.select("#tooltip-" + i.target.key).classed("selected-hidden", true);
+            svg.select("#tooltip-" + i.source.key).classed("hidden", true);
+            svg.select("#tooltip-" + i.target.key).classed("hidden", true);
+            selected_link_texts[counter].text("");
+            ++counter;
         });
     });
     selected_links = [];
