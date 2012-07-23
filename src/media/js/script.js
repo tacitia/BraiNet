@@ -65,6 +65,24 @@ var svg = d3.select("#canvas")
       .call(d3.behavior.zoom().on("zoom", redraw))
     .append('g');
 
+/*
+var gradient = svg.append("defs")
+                .append("linearGradient")
+                .attr("id", "gradient")
+                .attr("x1", "0%")
+                .attr("y1", "0%")
+                .attr("x2", "100%")
+                .attr("y2", "100%")
+    gradient.append("stop")
+            .attr("offset", "0%")
+            .attr("stop-color", "#0c0")
+            .attr("stop-opacity", 1);
+    gradient.append("stop")
+            .attr("offset", "100%")
+            .attr("stop-color", "#c00")
+            .attr("stop-opacity", 1);
+*/            
+
 //background for zoom
 svg.append('rect')
     .attr('width', w)
@@ -118,44 +136,8 @@ var detail = [],
     bams_link = "",
     pubmed_link = "";
 
-detail[0] = svg.append('text')
-    .attr("x", -600)
-   .attr("y", 100)
-   .text("Strength: ");
-detail[1] = svg.append('text')
-   .attr("x", -600)
-   .attr("y", 120)
-   .text("Technique: ");
-detail[2] = svg.append('text')
-   .attr("x", -600)
-   .attr("y", 140)
-   .text("Reference: ");
-detail[3] = svg.append('text')
-   .attr("x", -600)
-   .attr("y", 160)
-   .text("BAMS link: ");
-detail[4] = svg.append('text')
-   .attr("x", -600)
-   .attr("y", 180)
-   .text("Pubmed link: ");
-detail[5] = svg.append('text')
-   .attr("x", -520)
-   .attr("y", 160)
-   .text("")
-   .on("click", function () { window.open(bams_link); });
-detail[6] = svg.append('text')
-   .attr("x", -510)
-   .attr("y", 180)
-   .text("")
-   .on("click", function () { window.open(pubmed_link); });
-detail[7] = svg.append('text')
-   .attr("x", -600)
-   .attr("y", 60)
-   .text("Source: ");
-detail[8] = svg.append('text')
-   .attr("x", -600)
-   .attr("y", 80)
-   .text("Target: ");
+//var detailPanel = document.getElementById("detail");
+
 
 var selected_link_texts = [];
 
@@ -556,17 +538,15 @@ function highlightAllBi(value) {
  *
  */
 function linkClick(d) {
-    //var source = d.source.name;
-    //var target = d.target.name;
-    //window.location.href = 'http://www.ncbi.nlm.nih.gov/pubmed?term=' +
-    //con_map[source, target];
-    detail[0].text("Strength: " + d.detail.strength);
-    detail[1].text("Technique: " + d.detail.technique);
-    detail[2].text("Reference: " + d.detail.ref);
-    detail[5].text(d.detail.bams_link);
-    detail[6].text(d.detail.pubmed_link);
-    detail[7].text("Source: " + d.source.displayName);
-    detail[8].text("Target: " + d.target.displayName);
+    document.getElementById("strength").innerHTML = "Strength: " + d.detail.strength;
+    document.getElementById("technique").innerHTML = "Technique: " + d.detail.technique;
+    document.getElementById("reference").innerHTML = "Reference: " + d.detail.ref;
+    document.getElementById("bams_link").href = d.detail.bams_link;
+    document.getElementById("bams_link").innerHTML = "Click";
+    document.getElementById("pubmed_link").href = d.detail.pubmed_link;
+    document.getElementById("pubmed_link").innerHTML = "Click";
+    document.getElementById("source").innerHTML = "Source: " + d.source.displayName;
+    document.getElementById("target").innerHTML = "Target: " + d.target.displayName;
     bams_link = d.detail.bams_link;
     pubmed_link = d.detail.pubmed_link;
 }

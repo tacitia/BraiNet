@@ -183,3 +183,11 @@ body {
     font: 11px sans-serif;
     width: 900px;
 }
+
+#detail {
+    font: 13px sans-serif;
+    width: 300px;
+	position: fixed;
+	left: 20px;
+	bottom: 20px;
+}
