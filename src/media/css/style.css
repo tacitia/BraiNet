@@ -65,7 +65,7 @@ body {
 }
 
 /*blue*/
-.arc.bidirectional {
+.arc.bi {
     fill: #062db8;
 }
 
@@ -98,7 +98,11 @@ body {
     visibility: visible;
 }
 
-.text.bidirectional {
+.text.bi {
+    visibility: visible;
+}
+
+.text.selected {
     visibility: visible;
 }
 
@@ -126,7 +130,7 @@ body {
 
 /*  links (connections) */
 
-.link {
+ .link {
 	stroke: #AAA;
 	stroke-opacity: .1;
 	fill: none;
@@ -151,7 +155,7 @@ body {
 .link.source {
 	stroke: #2ca02c;
 }
-.link.bidirectional {
+.link.bi {
     stroke: #062db8;
 }
 
@@ -162,7 +166,7 @@ body {
 .link.selected {
     stroke: #b45c1f;
 }
-.link.source, .link.target, .link.selected, .link.bidirectional {
+.link.source, .link.target, .link.selected, .link.bi {
 	stroke-opacity: .9;
 	stroke-width: 1.5px;
 }

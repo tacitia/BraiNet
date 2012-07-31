@@ -25,6 +25,8 @@ var nodes,
     con_map,
     display_node_map,
     name_node_map;
+    
+var attrRange = {};
 
 var tooltips;
 //ui
@@ -96,40 +98,60 @@ svg.append('rect')
 
 //legend
 svg.append('rect')
-    .attr('x', -600)
+    .attr('x', -800)
     .attr('y', -300)
     .attr('width', 20)
     .attr('height', 20)
     .attr('fill', '#2ca02c');
 
 svg.append('text')
-    .attr('x', -560)
+    .attr('x', -760)
     .attr('y', -290)
     .text("Source region / Outgoing connection");
 
 svg.append('rect')
-    .attr('x', -600)
+    .attr('x', -800)
     .attr('y', -260)
     .attr('width', 20)
     .attr('height', 20)
     .attr('fill', '#d62728');
 
 svg.append('text')
-    .attr('x', -560)
+    .attr('x', -760)
     .attr('y', -250)
     .text("Target region / Incoming connection");
 
 svg.append('rect')
-    .attr('x', -600)
+    .attr('x', -800)
     .attr('y', -220)
     .attr('width', 20)
     .attr('height', 20)
     .attr('fill', '#062db8');
 
 svg.append('text')
-    .attr('x', -560)
+    .attr('x', -760)
     .attr('y', -210)
-    .text("Bidirectional connection");
+    .text("bi connection");
+    
+
+for (var i = 0; i < 9; ++i) {
+    svg.append('line')
+        .attr('x1', 600)
+        .attr('x2', 650)
+        .attr('y1', -300 + i * 20)
+        .attr('y2', -300 + i * 20)
+        .attr('class', 'q' + i + '-9');
+    
+    svg.append('text')
+        .attr('x', 675)
+        .attr('y', -295 + i * 20)
+        .attr('id', 'color' + i)
+        .text("TBD");
+}
+
+
+
+
 
 //link details
 var detail = [],
@@ -164,12 +186,14 @@ var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
  * Appends options to selection ui
  *
  */
+/*
 d3.json("../media/data/options.json", function (data) {
     data.forEach(function (d) {
         $('#regionSelect').append(new Option(d.name, d.name, false, false));
     });
-    $('.chzn-select').chosen({allow_single_deselect: true});
+//    $('.chzn-select').chosen({allow_single_deselect: true});
 });
+*/
 
 
 
@@ -178,7 +202,7 @@ d3.json("../media/data/options.json", function (data) {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-d3.json("../media/data/bamsBrainData.json", function (data) {
+d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
 
     var nodes_for_link,
         links_visible,
@@ -237,24 +261,31 @@ d3.json("../media/data/bamsBrainData.json", function (data) {
 
     //
     // Connections
-    //
+    //    
     path = svg.selectAll("path.link")
         .data(links)
         .enter()
         .append("svg:path")
         .attr("class", function (d) {
-            if (d.bidirectional == "false") {
-                return "link source-" + d.source.key + " target-" + d.target.key;
-            }
-            else {
-                return "link bi-" + d.source.key + " bi-" + d.target.key;
-            }
+            console.log(d);
+            console.log(d.bi);
+            return (d.bi == false) 
+                    ? "link source-" + d.source.key + " target-" + d.target.key
+                    : "link bi-" + d.source.key + " bi-" + d.target.key;
         })
         .attr("d", function (d, i) { return line(splines[i]); })
         .on("mouseover", linkMouseOver)
         .on("mouseout", linkMouseOut)
         .on("click", linkClick);
 
+    //
+    // Set UI input options
+    computeAttrRange(attrRange, links);
+    appendAttrsAsOptions(links);
+    appendNodesAsOptions(nodes);
+    $('.chzn-select').chosen({allow_single_deselect: true});
+
+    
     //
     // Arcs
     //
@@ -344,7 +375,10 @@ d3.select("#tension")
     .on("change", setTension);
 
 //TODO: convert to D3 selector if possible
-$('.chzn-select').change(searchInput);
+$('#regionSelect').change(regionSearchInput);
+$('#attrSelect').change(attrSearchInput);
+
+
 
 //d3.select("#search")
 //    .on("input", searchInput);
@@ -368,34 +402,27 @@ function mouseOver(d) {
         //.attr("transform", function (d) { return "translate(" + arc.centroid(d) + ")"; });
 
     //svg.selectAll("path.link").classed("non-selected", true)
-
-    svg.select("#text-" + d.key).classed("target", true);
-
-    svg.select("#tooltip-" + d.key).classed("hidden", false);
-
+    
     svg.selectAll("path.link.target-" + d.key)
         .classed("target", true)
         .classed("hidden", false)
         .classed("non-selected", false)
-//        .each(highlightAll("source", true));
-        .each(highlightAllSource(true));
+        .each(function(d) {highlightNode(d.source, "source", true, false)});
 
     svg.selectAll("path.link.source-" + d.key)
         .classed("source", true)
         .classed("hidden", false)
         .classed("non-selected", false)
-//        .each(highlightAll("target", true));
-        .each(highlightAllTarget(true));
+        .each(function(d) {highlightNode(d.target, "target", true, false)});
 
     svg.selectAll("path.link.bi-" + d.key)
-        .classed("bidirectional", true)
+        .classed("bi", true)
         .classed("hidden", false)
         .classed("non-selected", false)
-        .each(highlightAllBi(true));
+        .each(function(d) {highlightNode(d.source, "bi", true, false);
+                            highlightNode(d.target, "bi", true, false);});
 
-    svg.select("arc-" + d.key)
-        .classed("selected", true);
-
+    highlightNode(d, "selected", true);
 }
 
 
@@ -409,29 +436,18 @@ function mouseOut(d) {
 
     svg.selectAll("path.link.source-" + d.key)
         .classed("source", false)
-        .each(highlightAllTarget(false));
+        .each(function(d) {highlightNode(d.target, "target", false, false)});
 
     svg.selectAll("path.link.target-" + d.key)
         .classed("target", false)
-        .each(highlightAllSource(false));
+        .each(function(d) {highlightNode(d.source, "source", false, false)});
 
     svg.selectAll("path.link.bi-" + d.key)
-        .classed("bidirectional", false)
-        .each(highlightAllBi(false));
+        .classed("bi", false)
+        .each(function(d) {highlightNode(d.source, "bi", false, false);
+                            highlightNode(d.target, "bi", false, false);});
 
-    svg.select("arc-" + d.key)
-        .classed("selected", false);
-
-
-    svg.select("#text-" + d.key).classed("target", false);
-
-    if (d !== selected_target && d !== selected_source) {
-        svg.select("#tooltip-" + d.key).classed("hidden", true);
-    }
-    else {
-        svg.select("#tooltip-" + d.key).classed("hidden", false);
-    }
-
+    highlightNode(d, "selected", false, false);
 }
 
 
@@ -439,22 +455,18 @@ function mouseOut(d) {
  * Mouse over for link
  */
 function linkMouseOver(d) {
-    if (d.bidirectional == "true") {
+    if (d.bi == true) {
         svg.select("path.link.bi-" + d.source.key + ".bi-" + d.target.key)
             .classed("selected", true);
-        svg.select("#arc-" + d.target.key).classed("bidirectional", true);
-        svg.select("#arc-" + d.source.key).classed("bidirectional", true);
+        highlightNode(d.source, "bi", true, false);
+        highlightNode(d.target, "bi", true, false);
     }
     else {
         svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key)
             .classed("selected", true);
-        svg.select("#arc-" + d.target.key).classed("target", true);
-        svg.select("#arc-" + d.source.key).classed("source", true);
+        highlightNode(d.source, "source", true, false);
+        highlightNode(d.target, "target", true, false);
     }
-    svg.select("#text-" + d.target.key).classed("target", true);
-    svg.select("#text-" + d.source.key).classed("source", true);
-    svg.select("#tooltip-" + d.target.key).classed("hidden", false);
-    svg.select("#tooltip-" + d.source.key).classed("hidden", false);
 }
 
 
@@ -469,67 +481,16 @@ function linkMouseOut(d) {
         .classed("selected", false);
     svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key)
         .classed("selected", false);
-    if (d.bidirectional == "true") {
-        svg.select("#arc-" + d.target.key).classed("bidirectional", false);
-        svg.select("#arc-" + d.source.key).classed("bidirectional", false);
+    if (d.bi == true) {
+        highlightNode(d.source, "bi", false, false);
+        highlightNode(d.target, "bi", false, false);
     }
     else {
-        svg.select("#arc-" + d.target.key).classed("target", false);
-        svg.select("#arc-" + d.source.key).classed("source", false);
-    }
-    svg.select("#text-" + d.target.key).classed("target", false);
-    svg.select("#text-" + d.source.key).classed("source", false);
-    if (d.target !== selected_source && d.target !== selected_target) {
-        svg.select("#tooltip-" + d.target.key).classed("hidden", true);
-    }
-    if (d.source !== selected_source && d.source !== selected_target) {
-        svg.select("#tooltip-" + d.source.key).classed("hidden", true);
+        highlightNode(d.source, "source", false, false);
+        highlightNode(d.target, "target", false, false);
     }
 }
 
-/*
- * Highlight All
- *
- */
-function highlightAll(name, value) {
-    return function (d) {
-        //svg.select("#node-" + d.target.key).classed(name, value);
-        //svg.select("#node-" + d.source.key).classed(name, value);
-        svg.select("#arc-" + d.target.key).classed(name, value);
-        svg.select("#arc-" + d.source.key).classed(name, value);
-        svg.select("#text-" + d.target.key).classed(name, value);
-        svg.select("#text-" + d.source.key).classed(name, value);
-        svg.select("#tooltip-" + d.target.key).classed("hidden", !value);
-        svg.select("#tooltip-" + d.source.key).classed("hidden", !value);
-    };
-}
-
-function highlightAllSource(value) {
-    return function (d) {
-        svg.select("#arc-" + d.source.key).classed("source", value);
-        svg.select("#text-" + d.source.key).classed("source", value);
-        svg.select("#tooltip-" + d.source.key).classed("hidden", !value);
-    };
-}
-
-function highlightAllTarget(value) {
-    return function (d) {
-        svg.select("#arc-" + d.target.key).classed("target", value);
-        svg.select("#text-" + d.target.key).classed("target", value);
-        svg.select("#tooltip-" + d.target.key).classed("hidden", !value);
-    };
-}
-
-function highlightAllBi(value) {
-    return function (d) {
-        svg.select("#arc-" + d.source.key).classed("bidirectional", value);
-        svg.select("#arc-" + d.target.key).classed("bidirectional", value);
-        svg.select("#text-" + d.source.key).classed("source", value);
-        svg.select("#text-" + d.target.key).classed("target", value);
-        svg.select("#tooltip-" + d.source.key).classed("hidden", !value);
-        svg.select("#tooltip-" + d.target.key).classed("hidden", !value);
-    };
-}
 
 /*
  * Link Click
@@ -538,6 +499,7 @@ function highlightAllBi(value) {
  *
  */
 function linkClick(d) {
+/*
     document.getElementById("strength").innerHTML = "Strength: " + d.detail.strength;
     document.getElementById("technique").innerHTML = "Technique: " + d.detail.technique;
     document.getElementById("reference").innerHTML = "Reference: " + d.detail.ref;
@@ -549,6 +511,7 @@ function linkClick(d) {
     document.getElementById("target").innerHTML = "Target: " + d.target.displayName;
     bams_link = d.detail.bams_link;
     pubmed_link = d.detail.pubmed_link;
+*/
 }
 
 /*
@@ -563,25 +526,17 @@ function nodeClick(d) {
     if (d3.event.shiftKey === true) {
         if (selected_target !== undefined) {
             piwikTracker.trackPageView('SelectTarget');
-            svg.select("#arc-" + selected_target.key).classed("selected-target", false);
-            svg.select("#text-" + selected_target.key).classed("selected-target", false);
-            svg.select("#tooltip-" + selected_target.key).classed("selected-hidden", true);
+            highlightNode(selected_target, "selected-target", false, true);
         }
         selected_target = d;
-        svg.select("#arc-" + d.key).classed("selected-target", true);
-        svg.select("#text-" + d.key).classed("selected-target", true);
-        svg.select("#tooltip-" + d.key).classed("selected-hidden", false);
+        highlightNode(selected_target, "selected-target", true, true);
     } else {
         if (selected_source !== undefined) {
             piwikTracker.trackPageView('SelectSource');
-            svg.select("#arc-" + selected_source.key).classed("selected-source", false);
-            svg.select("#text-" + selected_source.key).classed("selected-source", false);
-            svg.select("#tooltip-" + selected_source.key).classed("selected-hidden", true);
+            highlightNode(selected_source, "selected-source", false, true);
         }
         selected_source = d;
-        svg.select("#arc-" + d.key).classed("selected-source", true);
-        svg.select("#text-" + d.key).classed("selected-source", true);
-        svg.select("#tooltip-" + d.key).classed("selected-hidden", false);
+        highlightNode(selected_source, "selected-source", true, true);
     }
 }
 
@@ -600,14 +555,8 @@ function searchButtonClick() {
             d.forEach(function (i) {
                 svg.select("path.link.source-" + i.source.key + ".target-" + i.target.key).classed("selected", true);
                 svg.select("path.link.bi-" + i.source.key + ".bi-" + i.target.key).classed("selected", true);
-                svg.select("#arc-" + i.source.key).classed("selected-source", true);
-                svg.select("#arc-" + i.target.key).classed("selected-target", true);
-                svg.select("#text-" + i.source.key).classed("selected-source", true);
-                svg.select("#text-" + i.target.key).classed("selected-target", true);
-                svg.select("#tooltip-" + i.source.key).classed("selected-hidden", false);
-                svg.select("#tooltip-" + i.target.key).classed("selected-hidden", false);
-                svg.select("#tooltip-" + i.source.key).classed("hidden", false);
-                svg.select("#tooltip-" + i.target.key).classed("hidden", false);
+                highlightNode(i.source, "selected-source", true, true);
+                highlightNode(i.target, "selected-target", true, true);
                 selected_link_texts[counter] = svg.append('text')
                     .attr('x', 400)
                     .attr('y', -300 + counter * 20)
@@ -627,20 +576,13 @@ function searchButtonClick() {
 function clearButtonClick() {
     clearSelection();
     selected_nodes.forEach(function (d) {
-        svg.select("#arc-" + d.key).classed("selected-source", false);
-        svg.select("#text-" + d.key).classed("selected-source", false);
+        highlightNode(d, "selected-source", false);
     });
     if (selected_source !== undefined) {
-        svg.select("#arc-" + selected_source.key).classed("selected-source", false);
-        svg.select("#text-" + selected_source.key).classed("selected-source", false);
-        svg.select("#tooltip-" + selected_source.key).classed("selected-hidden", true);
-        svg.select("#tooltip-" + selected_source.key).classed("hidden", true);
+        highlightNode(selected_source, "selected-source", false, true);
     }
     if (selected_target !== undefined) {
-        svg.select("#arc-" + selected_target.key).classed("selected-target", false);
-        svg.select("#text-" + selected_target.key).classed("selected-target", false);
-        svg.select("#tooltip-" + selected_target.key).classed("selected-hidden", true);
-        svg.select("#tooltip-" + selected_target.key).classed("hidden", true);
+        highlightNode(selected_target, "selected-target", false, true);
     }
 }
 
@@ -649,22 +591,44 @@ function clearButtonClick() {
  *
  *
  */
-function searchInput() {
+function regionSearchInput() {
     selected_nodes.forEach(function (d) {
-        svg.select("#arc-" + d.key).classed("selected-source", false);
-        svg.select("#text-" + d.key).classed("source", false);
-        svg.select("#tooltip-" + d.key).classed("hidden", true);
+        highlightNode(d.node, "selected-source", false, true);
     });
     selected_nodes = [];
     var inputRegion = this.value.toLowerCase();
     display_node_map.forEach(function (d) {
         if (d.name == inputRegion) {
             selected_nodes.push(d.node);
-            svg.select("#arc-" + d.node.key).classed("selected-source", true);
-            svg.select("#text-" + d.node.key).classed("source", true);
-            svg.select("#tooltip-" + d.node.key).classed("hidden", false);
+            highlightNode(d.node, "selected-source", true, true);
         }
     });
+}
+
+function attrSearchInput() {
+    var attrName = this.value;    
+    var quantile = d3.scale.quantile().domain(attrRange[attrName]).range(d3.range(9));
+    
+    path = svg.selectAll("path.link")
+        .attr("class", function (d) {
+            return (d.bi == false) 
+                    ? "link source-" + d.source.key + " target-" + d.target.key + " q" + quantile(d.detail[attrName]) + "-9"
+                    : "link bi-" + d.source.key + " bi-" + d.target.key + " q" + quantile(d.detail[attrName]) + "-9";
+        })
+    
+    var ticks = quantile.quantiles();
+    
+    svg.select("#color0")
+        .text("[" + round(attrRange[attrName][0]) + ", " + round(ticks[0]) + "]");
+                
+    for (var i = 1; i < 8; ++i) {
+        svg.select("#color" + i)
+            .text("[" + round(ticks[i-1]) + ", " + round(ticks[i]) + "]");
+    }
+    
+    svg.select("#color8")
+        .text("[" + round(ticks[7]) + ", " + round(attrRange[attrName][1]) + "]");
+                
 }
 
 /*
@@ -677,12 +641,8 @@ function setMaxHop() {
     max_hop = this.value;
     document.getElementById("maxHopValue").innerHTML = max_hop;
     clearSelection();
-    svg.select("#arc-" + selected_source.key).classed("selected-source", true);
-    svg.select("#text-" + selected_source.key).classed("selected-source", true);
-    svg.select("#tooltip-" + selected_source.key).classed("selected-hidden", false);
-    svg.select("#arc-" + selected_target.key).classed("selected-target", true);
-    svg.select("#text-" + selected_target.key).classed("selected-target", true);
-    svg.select("#tooltip-" + selected_target.key).classed("selected-hidden", false);
+    highlightNode(selected_source, "selected-source", true, true);
+    highlightNode(selected_target, "selected-target", true, true);
 }
 
 /*
@@ -736,14 +696,8 @@ function clearSelection() {
             svg.select("path.link.bi-" + i.source.key +
                 ".bi-" + i.target.key)
                 .classed("selected", false);
-            svg.select("#arc-" + i.source.key).classed("selected-source", false);
-            svg.select("#arc-" + i.target.key).classed("selected-target", false);
-            svg.select("#text-" + i.source.key).classed("selected-source", false);
-            svg.select("#text-" + i.target.key).classed("selected-target", false);
-            svg.select("#tooltip-" + i.source.key).classed("selected-hidden", true);
-            svg.select("#tooltip-" + i.target.key).classed("selected-hidden", true);
-            svg.select("#tooltip-" + i.source.key).classed("hidden", true);
-            svg.select("#tooltip-" + i.target.key).classed("hidden", true);
+            highlightNode(i.source, "selected-source", false, true);
+            highlightNode(i.target, "selected-target", false, true);
             selected_link_texts[counter].text("");
             ++counter;
         });
@@ -800,4 +754,53 @@ function filterRoot(element) {
     if (element.depth > 1) {
         return element;
     }
+}
+
+function computeAttrRange(attrRange, links) {
+    for (var key in links[0].detail) {
+        attrRange[key] = [500, -500];
+    }
+    links.forEach(function(d) {
+        for (var key in d.detail) {
+            attrRange[key][0] = attrRange[key][0] < d.detail[key] ? attrRange[key][0] : d.detail[key];
+            attrRange[key][1] = attrRange[key][1] > d.detail[key] ? attrRange[key][1] : d.detail[key];
+        }
+    });
+}
+
+function appendAttrsAsOptions(links) {
+    for (var key in links[0].detail) {
+        $('#attrSelect').append(new Option(key, key, false, false));
+    }
+}
+
+function appendNodesAsOptions(nodes) {
+    nodes.forEach(function(d) {
+        $('#regionSelect').append(new Option(d.displayName, d.displayName, false, false));
+    });
+}
+
+function round(num) {
+    return Math.round(num * 100) / 100;
+}
+
+function highlightNode(node, className, value, selected) {
+    svg.select("#arc-" + node.key).classed(className, value);
+        
+    if (node.depth > 2) {
+        svg.select("#text-" + node.key).classed(className, value);
+        if (selected) {
+            svg.select("#tooltip-" + node.key).classed("selected-hidden", !value);
+        }
+        else {
+            if (!isSelected(node)) {
+                svg.select("#tooltip-" + node.key).classed("hidden", !value);
+            }
+        }
+    }    
+}
+
+function isSelected(node) {
+    selected_nodes.forEach(function(d) {if (node == d) return true});
+    return (node == selected_source) || (node == selected_target); 
 }

@@ -65,7 +65,7 @@
                             console.log(i.name);
                         }
                         else {
-                            links.push({source: map[d.name], target: map[i.name], detail: i.detail, bidirectional: i.bidirectional});
+                            links.push({source: map[d.name], target: map[i.name], detail: i.detail, bi: i.bi});
                         }
                     });
                 }

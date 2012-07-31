@@ -9,6 +9,7 @@
   <script type="text/javascript" src="media/lib/jquery.js"></script>
   <script type="text/javascript" src="media/lib/chosen.jquery.js"></script>
   <link rel="stylesheet" href="media/css/style.css" type="text/css" charset="utf-8">
+  <link rel="stylesheet" href="media/css/colors.css" type="text/css" charset="utf-8">
 </head>
 <body>
   <div id="input">
@@ -22,6 +23,9 @@
     <span id="maxDepthValue">8</span>
     <span>Tension:</span>
     <input id="tension" type="range" min=0 max=100 value=85 step=1>
+    <select data-placeholder="Choose an attribute to be color coded" class="chzn-select" style="width:350px;" id="attrSelect">
+        <option></option>
+    </select>
     <select data-placeholder="Choose a brain area" class="chzn-select" style="width:350px;" id="regionSelect">
         <option></option>
     </select>
