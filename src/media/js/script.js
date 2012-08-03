@@ -267,8 +267,6 @@ d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
         .enter()
         .append("svg:path")
         .attr("class", function (d) {
-            console.log(d);
-            console.log(d.bi);
             return (d.bi == false) 
                     ? "link source-" + d.source.key + " target-" + d.target.key
                     : "link bi-" + d.source.key + " bi-" + d.target.key;
@@ -315,8 +313,17 @@ d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
         .enter()
         .append("g")
         .attr("class", "tooltext");
+    
+    /*
+    node.append("text")
+        .attr("class", "text visible")
+        .attr("transform", function(d) {return "translate(" + arc.outerCenter(d) + ")";})
+        .attr("textPath", function(d) {console.log(arc(d)); return arc(d)})
+        .text(function(d) {return d.displayName});
+    */    
 
     //text
+    
     tooltips.append("text")
         .attr("id", function (d) { return "text-" + d.key; })
         .attr("class", function (d) {
@@ -338,6 +345,7 @@ d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
         //.attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
         //.attr("transform", function(d) {
             //return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
+    
 
     //tooltip
     tooltips.insert("path", "text")
@@ -512,6 +520,9 @@ function linkClick(d) {
     bams_link = d.detail.bams_link;
     pubmed_link = d.detail.pubmed_link;
 */
+    d.detail.forEach(function(e) {
+        console.log(e);
+    });
 }
 
 /*
@@ -757,14 +768,16 @@ function filterRoot(element) {
 }
 
 function computeAttrRange(attrRange, links) {
-    for (var key in links[0].detail) {
+    for (var key in links[0].detail[0]) {
         attrRange[key] = [500, -500];
     }
     links.forEach(function(d) {
-        for (var key in d.detail) {
-            attrRange[key][0] = attrRange[key][0] < d.detail[key] ? attrRange[key][0] : d.detail[key];
-            attrRange[key][1] = attrRange[key][1] > d.detail[key] ? attrRange[key][1] : d.detail[key];
-        }
+        d.detail.forEach(function(e) {
+            for (var key in e) {
+                attrRange[key][0] = attrRange[key][0] < e[key] ? attrRange[key][0] : e[key];
+                attrRange[key][1] = attrRange[key][1] > e[key] ? attrRange[key][1] : e[key];
+            }
+        });
     });
 }
 
@@ -790,6 +803,7 @@ function highlightNode(node, className, value, selected) {
     if (node.depth > 2) {
         svg.select("#text-" + node.key).classed(className, value);
         if (selected) {
+            svg.select("#tooltip-" + node.key).classed("hidden", false);
             svg.select("#tooltip-" + node.key).classed("selected-hidden", !value);
         }
         else {
