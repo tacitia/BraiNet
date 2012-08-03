@@ -55,6 +55,10 @@ var line = d3.svg.line.radial()
         return (d.x) * (Math.PI / 180);
     });
 
+var zoom = d3.behavior.zoom()
+    .scaleExtent([0.8, 3])
+    .on("zoom", redraw);
+
 var svg = d3.select("#canvas")
     .append("svg")
       .attr("width", "100%")
@@ -62,7 +66,7 @@ var svg = d3.select("#canvas")
       .attr("viewBox", "0 0 " + w + " " + h)
     .append('g')
       .attr("transform", "translate(" + (w / 2) + "," + (h / 2) + ")")
-      .call(d3.behavior.zoom().on("zoom", redraw))
+      .call(zoom)
     .append('g');
 
 //background for zoom
@@ -160,6 +164,10 @@ detail[8] = svg.append('text')
 var selected_link_texts = [];
 
 function redraw() {
+    //if (d3.event.scale > 2.5 || d3.event.scale < 0.9) {
+        //return;
+    //}
+    console.log(d3.event.scale);
     svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
     if (d3.event.sourceEvent.type !== "mousemove") {
         tooltips.selectAll(".text").style("font-size", (10 / d3.event.scale));
@@ -173,7 +181,8 @@ function redraw() {
 }
 
 var tooltip = function (w, h) {
-    return "M 0 0 L 10 -5 L 20 " + -h + " L " + (w + 55) + " " + -h + " L " + (w + 55) + " " + h + " L 20 " + h + " L 10 5 Z";
+    return "M 0 0 L 10 -5 L 20 " + -h + " L " + (w + 55) + " " + -h + " L " +
+    (w + 55) + " " + h + " L 20 " + h + " L 10 5 Z";
 };
 
 var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
@@ -188,6 +197,7 @@ d3.json("../media/data/options.json", function (data) {
     });
     $('.chzn-select').chosen({allow_single_deselect: true});
 });
+
 
 
 
@@ -770,6 +780,20 @@ function clearSelection() {
     });
     selected_links = [];
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// UTILITIES & NAVIGATION
+////////////////////////////////////////////////////////////////////////////////
+
+$('#util-search').click(
+    function () {
+        if ($('#search').hasClass('hidden')) {
+            $('#search').removeClass('hidden');
+        } else {
+            $('#search').addClass('hidden');
+        }
+    }
+);
 
 
 ////////////////////////////////////////////////////////////////////////////////

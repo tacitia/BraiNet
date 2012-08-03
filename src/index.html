@@ -11,7 +11,15 @@
   <link rel="stylesheet" href="media/css/style.css" type="text/css" charset="utf-8">
 </head>
 <body>
-  <div id="input">
+  <header>
+    <ul id="util">
+      <li id="util-search">Search</li>
+      <li id="util-opt">Options</li>
+      <li id="util-help">Help</li>
+    </ul>
+  </header>
+
+  <div id="search" class="hidden">
     <span>Max Hop:</span>
     <input id="maxHop" type="range" min=1 max=5 value=1 step=1>
     <span id="maxHopValue">1</span>
@@ -25,10 +33,10 @@
     <select data-placeholder="Choose a brain area" class="chzn-select" style="width:350px;" id="regionSelect">
         <option></option>
     </select>
-    <button id="search">Show connectivity for selected regions</button>
-    <button id="clear">Clear</button>
+    <button id="bt-search">Show connectivity for selected regions</button>
+    <button id="bt-clear">Clear</button>
   </div>
-  <div id="help">
+  <div id="help" class="hidden">
     Tips: <br/>
     1. To locate a brain region: type in its name in the "Search for a region"
         text box and it will be highlighted in the visualization <br/><br/>
@@ -39,8 +47,10 @@
         or click clear to clear the highlighted connections <br/><br/>
     3. To adjust the level of details: use the "Max depth" slider
   </div>
+
   <div id="canvas"></div>
   <script type="text/javascript" src="media/js/script.js"></script>
+
   <!-- Piwik -->
   <script type="text/javascript">
   var pkBaseURL = (("https:" == document.location.protocol) ? "https://hivizexplorer.com/piwik/" : "http://hivizexplorer.com/piwik/");
