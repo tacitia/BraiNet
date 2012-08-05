@@ -1,55 +1,64 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="utf-8">
   <title>brainCircuits</title>
-  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-  <link rel="stylesheet" href="media/lib/chosen.css" />
-  <script type="text/javascript" src="media/js/d3.v2.js"></script>
-  <script type="text/javascript" src="media/js/brainMap.js"></script>
-  <script type="text/javascript" src="media/lib/jquery.js"></script>
-  <script type="text/javascript" src="media/lib/chosen.jquery.js"></script>
+
+  <!--Stylesheets-->
+  <link rel="stylesheet" href="media/lib/bootstrap/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="media/lib/chosen/chosen.css" />
   <link rel="stylesheet" href="media/css/style.css" type="text/css" charset="utf-8">
   <link rel="stylesheet" href="media/css/colors.css" type="text/css" charset="utf-8">
+
+  <!-- HTML5 shim, IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
 </head>
 <body>
-  <header>
-    <ul id="util">
-      <li id="util-search">Search</li>
-      <li id="util-opt">Options</li>
-      <li id="util-help">Help</li>
+  <!--Utilities-->
+  <div id="util">
+    <ul class="nav nav-tabs">
+      <li class="active"><a href="#search" data-toggle="tab">Search</a></li>
+      <li><a href="#options" data-toggle="tab">Options</a></li>
+      <li><a href="#help" data-toggle="tab">Help</a></li>
     </ul>
-  </header>
+    <div id="util-content" class="tab-content">
+      <div id="search" class="tab-pane fade in active">
+        <span>Max Hop:</span>
+        <input id="maxHop" type="range" min=1 max=5 value=1 step=1>
+        <span id="maxHopValue">1</span>
+        <!--Search for a region:-->
+        <!--input id="regionInput" type="text" class="searchBox"-->
+        <span>Max Depth:</span>
+        <input id="maxDepth" type="range" min=1 max=8 value=8 step=-1>
+        <span id="maxDepthValue">8</span>
+        <span>Tension:</span>
+        <input id="tension" type="range" min=0 max=100 value=85 step=1>
+        <select data-placeholder="Choose an attribute to be color coded" class="chzn-select" style="width:350px;" id="attrSelect">
+            <option></option>
+        </select>
+        <select data-placeholder="Choose a brain area" class="chzn-select" style="width:350px;" id="regionSelect">
+            <option></option>
+        </select>
+        <button id="bt-search" class="btn">Show connectivity for selected regions</button>
+        <button id="bt-clear" class="btn btn-warning">Clear</button>
+      </div>
 
-  <div id="search" class="hidden">
-    <span>Max Hop:</span>
-    <input id="maxHop" type="range" min=1 max=5 value=1 step=1>
-    <span id="maxHopValue">1</span>
-    <!--Search for a region:-->
-    <!--input id="regionInput" type="text" class="searchBox"-->
-    <span>Max Depth:</span>
-    <input id="maxDepth" type="range" min=1 max=8 value=8 step=-1>
-    <span id="maxDepthValue">8</span>
-    <span>Tension:</span>
-    <input id="tension" type="range" min=0 max=100 value=85 step=1>
-    <select data-placeholder="Choose an attribute to be color coded" class="chzn-select" style="width:350px;" id="attrSelect">
-        <option></option>
-    </select>
-    <select data-placeholder="Choose a brain area" class="chzn-select" style="width:350px;" id="regionSelect">
-        <option></option>
-    </select>
-    <button id="bt-search">Show connectivity for selected regions</button>
-    <button id="bt-clear">Clear</button>
-  </div>
-  <div id="help" class="hidden">
-    Tips: <br/>
-    1. To locate a brain region: type in its name in the "Search for a region"
-        text box and it will be highlighted in the visualization <br/><br/>
-    2. To search for connections between two regions: left click to set a region
-        to be the source and shift + left click to set a region to be the target;
-        then set the level for indirect connections using the "Max hop" slider.
-        Click search to highlight the connections between the selected regions, 
-        or click clear to clear the highlighted connections <br/><br/>
-    3. To adjust the level of details: use the "Max depth" slider
+      <div id="help" class="tab-pane">
+        <p>
+        Tips: <br/>
+        1. To locate a brain region: type in its name in the "Search for a region"
+            text box and it will be highlighted in the visualization <br/><br/>
+        2. To search for connections between two regions: left click to set a region
+            to be the source and shift + left click to set a region to be the target;
+            then set the level for indirect connections using the "Max hop" slider.
+            Click search to highlight the connections between the selected regions, 
+            or click clear to clear the highlighted connections <br/><br/>
+        3. To adjust the level of details: use the "Max depth" slider
+        </p>
+      </div>
+    </div>
   </div>
 
   <div id="canvas"></div>
@@ -65,19 +74,31 @@
     Pubmed link:
     <a id="pubmed_link" target="_blank"></a><br/>
   </div>
+
+  <!--JAVASCRIPT-->
+
+  <!--Libraries-->
+  <script type="text/javascript" src="media/lib/jquery-1.7.2.min.js"></script>
+  <script type="text/javascript" src="media/lib/bootstrap/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="media/lib/d3.v2.js"></script>
+  <script type="text/javascript" src="media/lib/chosen/chosen.jquery.js"></script>
+
+  <!--TODO: brainmap and script should be compressed as one file-->
   <script type="text/javascript" src="media/js/script.js"></script>
+  <script type="text/javascript" src="media/js/brainMap.js"></script>
+
 
   <!-- Piwik -->
   <script type="text/javascript">
-  var pkBaseURL = (("https:" == document.location.protocol) ? "https://hivizexplorer.com/piwik/" : "http://hivizexplorer.com/piwik/");
-  document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+    var pkBaseURL = (("https:" == document.location.protocol) ? "https://hivizexplorer.com/piwik/" : "http://hivizexplorer.com/piwik/");
+    document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
   </script>
   <script type="text/javascript">
-  try {
-    var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 2);
-    piwikTracker.trackPageView();
-    piwikTracker.enableLinkTracking();
-  } catch( err ) {}
+    try {
+      var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 2);
+      piwikTracker.trackPageView();
+      piwikTracker.enableLinkTracking();
+    } catch( err ) {}
   </script><noscript><p><img src="http://hivizexplorer.com/piwik/piwik.php?idsite=2" style="border:0" alt="" /></p></noscript>
   <!-- End Piwik Tracking Code -->
 </body>

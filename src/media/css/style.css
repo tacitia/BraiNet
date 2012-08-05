@@ -1,6 +1,3 @@
-/* Eric Meyer's Reset CSS v2.0 - http://cssreset.com */
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{border:0;font-size:100%;font:inherit;vertical-align:baseline;margin:0;padding:0}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:none}table{border-collapse:collapse;border-spacing:0}
-
 /*  Node  */
 
 body {
@@ -11,56 +8,58 @@ body {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-	font: 13px sans-serif;
+    font: 13px sans-serif;
 }
 
 /* Navigation */
 
 #util {
-    list-style-type:none;
-    margin:0;
-    padding:0;
+	padding: 20px;
+	background-color: rgba(255,255,255,0.9);
+	position: absolute;
+	width: 350px;
+	height: 100%;
+}
+.tab-content {
+	height: 100%;
 }
 
-#util li {
-    float:left;
-    display:block;
-    background-color: #EEE;
-    border: 1px solid #ddd;
-    width:100px;
-    height:50px;
-}
+/*#util li {*/
+    /*float:left;*/
+    /*display:block;*/
+    /*background-color: #EEE;*/
+    /*border: 1px solid #ddd;*/
+    /*width:100px;*/
+    /*height:50px;*/
+/*}*/
 
 .hidden {
     display: none;
 }
 
-#search {
-    position: absolute;
-    top: 52px;
-    left: 0px;
-    max-width: 400px;
-    background-color: #DDD;
-}
+/*#search {*/
+    /*position: absolute;*/
+    /*top: 52px;*/
+    /*left: 0px;*/
+    /*max-width: 400px;*/
+    /*background-color: #DDD;*/
+/*}*/
 
 
 
 /*.node {*/
-	/*fill: #2d527c;*/
+/*fill: #2d527c;*/
 /*}*/
 
-/*[>hidden - no connections<]*/
 /*.node:hover {*/
 /*}*/
 
-/*[>red<]*/
 /*.node.target {*/
-	/*fill: #d62728;*/
+/*fill: #d62728;*/
 /*}*/
 
-/*[>green<]*/
 /*.node.source {*/
-	/*fill: #2ca02c;*/
+/*fill: #2ca02c;*/
 /*}*/
 
 /*   Arc    */
@@ -73,17 +72,17 @@ body {
 
 /*blue - no connections*/
 .arc:hover {
-	fill: #ccc;
+    fill: #ccc;
 }
 
 /*red*/
 .arc.target {
-	fill: #d62728;
+    fill: #d62728;
 }
 
 /*green*/
 .arc.source {
-	fill: #2ca02c !important;
+    fill: #2ca02c !important;
 }
 
 .arc.selected-source {
@@ -117,9 +116,9 @@ body {
 
 
 .text {
-	pointer-events: none;
-	visibility: hidden;
-	fill: #FFF;
+    pointer-events: none;
+    visibility: hidden;
+    fill: #FFF;
 }
 
 .text.visible {
@@ -168,17 +167,17 @@ body {
 
 /*  links (connections) */
 
- .link {
-	stroke: #AAA;
-	stroke-opacity: .1;
-	fill: none;
+.link {
+    stroke: #AAA;
+    stroke-opacity: .1;
+    fill: none;
 }
 
 /*.link:hover {*/
-    /*stroke: #b45c1f;*/
-    /*stroke-opacity: 1;*/
-    /*stroke-width:2px;*/
-    /*fill: hidden;*/
+/*stroke: #b45c1f;*/
+/*stroke-opacity: 1;*/
+/*stroke-width:2px;*/
+/*fill: hidden;*/
 /*}*/
 
 .link.non-selected {
@@ -187,11 +186,11 @@ body {
 
 /*red*/
 .link.target {
-	stroke: #d62728;
+    stroke: #d62728;
 }
 /*green*/
 .link.source {
-	stroke: #2ca02c;
+    stroke: #2ca02c;
 }
 .link.bi {
     stroke: #062db8;
@@ -205,21 +204,21 @@ body {
     stroke: #b45c1f;
 }
 .link.source, .link.target, .link.selected, .link.bi {
-	stroke-opacity: .9;
-	stroke-width: 1.5px;
+    stroke-opacity: .9;
+    stroke-width: 1.5px;
 }
 
 
 /* TEMP */
 
 
-#help {
-    font: 11px sans-serif;
-    width: 200px;
-	position: fixed;
-	right: 20px;
-	bottom: 20px;
-}
+/*#help {*/
+    /*font: 11px sans-serif;*/
+    /*width: 200px;*/
+    /*position: fixed;*/
+    /*right: 20px;*/
+    /*bottom: 20px;*/
+/*}*/
 
 #input {
     font: 11px sans-serif;
@@ -229,7 +228,7 @@ body {
 #detail {
     font: 13px sans-serif;
     width: 300px;
-	position: fixed;
-	left: 20px;
-	bottom: 20px;
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
 }
