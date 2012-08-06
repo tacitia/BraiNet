@@ -35,7 +35,7 @@ var nodes,
     con_map,
     display_node_map,
     name_node_map;
-    
+
 var attrRange = {};
 
 var tooltips;
@@ -94,7 +94,7 @@ var gradient = svg.append("defs")
             .attr("offset", "100%")
             .attr("stop-color", "#c00")
             .attr("stop-opacity", 1);
-*/            
+*/
 
 //background for zoom
 svg.append('rect')
@@ -102,7 +102,6 @@ svg.append('rect')
     .attr('height', h)
     .attr('fill', 'white')
     .attr("transform", "translate(" + (-w / 2) + "," + (-h / 2) + ")");
-
 
 // let's not mix the graph with other elements
 // this should be in the html - not necessary for it to be in svg
@@ -143,7 +142,7 @@ svg.append('text')
     .attr('x', -760)
     .attr('y', -210)
     .text("bi connection");
-    
+
 
 for (var i = 0; i < 9; ++i) {
     svg.append('line')
@@ -152,7 +151,7 @@ for (var i = 0; i < 9; ++i) {
         .attr('y1', -300 + i * 20)
         .attr('y2', -300 + i * 20)
         .attr('class', 'q' + i + '-9');
-    
+
     svg.append('text')
         .attr('x', 675)
         .attr('y', -295 + i * 20)
@@ -162,15 +161,13 @@ for (var i = 0; i < 9; ++i) {
 
 
 
-
-
 //link details
 var detail = [],
     bams_link = "",
     pubmed_link = "";
+var selected_link_texts = [];
 
 //var detailPanel = document.getElementById("detail");
-
 
 
 function redraw() {
@@ -178,15 +175,15 @@ function redraw() {
         //return;
     //}
     svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
-    if (d3.event.sourceEvent.type !== "mousemove") {
-        tooltips.selectAll(".text").style("font-size", (10 / d3.event.scale));
-        tooltips.selectAll(".tooltip").attr("d", function (d) {
-            var text = svg.select("#text-" + d.key)[0][0],
-            w = text.scrollWidth,
-            h = text.scrollHeight;
-            return tooltip(w, h);
-        });
-    }
+    //if (d3.event.sourceEvent.type !== "mousemove") {
+        //tooltips.selectAll(".text").style("font-size", (10 / d3.event.scale));
+        //tooltips.selectAll(".tooltip").attr("d", function (d) {
+            //var text = svg.select("#text-" + d.key)[0][0],
+            //w = text.scrollWidth,
+            //h = text.scrollHeight;
+            //return tooltip(w, h);
+        //});
+    //}
 }
 
 var tooltip = function (w, h) {
@@ -276,13 +273,13 @@ d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
 
     //
     // Connections
-    //    
+    //
     path = svg.selectAll("path.link")
         .data(links)
         .enter()
         .append("svg:path")
         .attr("class", function (d) {
-            return (d.bi == false) 
+            return (d.bi == false)
                     ? "link source-" + d.source.key + " target-" + d.target.key
                     : "link bi-" + d.source.key + " bi-" + d.target.key;
         })
@@ -298,7 +295,7 @@ d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
     appendNodesAsOptions(nodes);
     $('.chzn-select').chosen({allow_single_deselect: true});
 
-    
+
     //
     // Arcs
     //
@@ -328,17 +325,17 @@ d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
         .enter()
         .append("g")
         .attr("class", "tooltext");
-    
+
     /*
     node.append("text")
         .attr("class", "text visible")
         .attr("transform", function(d) {return "translate(" + arc.outerCenter(d) + ")";})
         .attr("textPath", function(d) {console.log(arc(d)); return arc(d)})
         .text(function(d) {return d.displayName});
-    */    
+    */
 
     //text
-    
+
     tooltips.append("text")
         .attr("id", function (d) { return "text-" + d.key; })
         .attr("class", function (d) {
@@ -360,7 +357,7 @@ d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
         //.attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
         //.attr("transform", function(d) {
             //return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
-    
+
 
     //tooltip
     tooltips.insert("path", "text")
@@ -420,12 +417,39 @@ function mouse(e) {
  */
 function mouseOver(d) {
 
+<<<<<<< HEAD
     //svg.select("#node-" + d.key).append("svg:path")
         //.attr("d", tooltip())
         //.attr("transform", function (d) { return "translate(" + arc.centroid(d) + ")"; });
     if (selected_singleNode != d) {
         focusOnNodeTemp(d, true);
     }
+=======
+    //svg.selectAll("path.link").classed("non-selected", true);
+
+    svg.selectAll("path.link.target-" + d.key)
+        .classed("target", true)
+        .classed("hidden", false)
+        .classed("non-selected", false)
+        .each(function (d) { highlightNode(d.source, "source", true, false); });
+
+    svg.selectAll("path.link.source-" + d.key)
+        .classed("source", true)
+        .classed("hidden", false)
+        .classed("non-selected", false)
+        .each(function (d) { highlightNode(d.target, "target", true, false); });
+
+    svg.selectAll("path.link.bi-" + d.key)
+        .classed("bi", true)
+        .classed("hidden", false)
+        .classed("non-selected", false)
+        .each(function (d) {
+            highlightNode(d.source, "bi", true, false);
+            highlightNode(d.target, "bi", true, false);
+        });
+
+    highlightNode(d, "selected", true);
+>>>>>>> 3fd0cef64a94a63d66f5b77facf44c4f1118dac9
 }
 
 
@@ -627,29 +651,29 @@ function regionSearchInput() {
 }
 
 function attrSearchInput() {
-    var attrName = this.value;    
+    var attrName = this.value;
     var quantile = d3.scale.quantile().domain(attrRange[attrName]).range(d3.range(9));
-    
+
     path = svg.selectAll("path.link")
         .attr("class", function (d) {
-            return (d.bi == false) 
+            return (d.bi == false)
                     ? "link source-" + d.source.key + " target-" + d.target.key + " q" + quantile(d.detail[attrName]) + "-9"
                     : "link bi-" + d.source.key + " bi-" + d.target.key + " q" + quantile(d.detail[attrName]) + "-9";
         })
-    
+
     var ticks = quantile.quantiles();
-    
+
     svg.select("#color0")
         .text("[" + round(attrRange[attrName][0]) + ", " + round(ticks[0]) + "]");
-                
+
     for (var i = 1; i < 8; ++i) {
         svg.select("#color" + i)
             .text("[" + round(ticks[i-1]) + ", " + round(ticks[i]) + "]");
     }
-    
+
     svg.select("#color8")
         .text("[" + round(ticks[7]) + ", " + round(attrRange[attrName][1]) + "]");
-                
+
 }
 
 /*
@@ -730,15 +754,6 @@ function clearSelection() {
 // UTILITIES & NAVIGATION
 ////////////////////////////////////////////////////////////////////////////////
 
-$('#util-search').click(
-    function () {
-        if ($('#search').hasClass('hidden')) {
-            $('#search').removeClass('hidden');
-        } else {
-            $('#search').addClass('hidden');
-        }
-    }
-);
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -823,7 +838,7 @@ function round(num) {
 
 function highlightNode(node, className, value, fixed) {
     svg.select("#arc-" + node.key).classed(className, value);
-        
+
     if (node.depth > 2) {
         svg.select("#text-" + node.key).classed(className, value);
         if (fixed) {
@@ -835,7 +850,7 @@ function highlightNode(node, className, value, fixed) {
                 svg.select("#tooltip-" + node.key).classed("hidden", !value);
             }
         }
-    }    
+    }
 }
 
 function focusOnNode(node, value, fixed) {
@@ -925,5 +940,5 @@ function highlightNodeFixed(node, className, value) {
 
 function isSelected(node) {
     selected_nodes.forEach(function(d) {if (node == d) return true});
-    return (node == selected_source) || (node == selected_target); 
+    return (node == selected_source) || (node == selected_target);
 }
