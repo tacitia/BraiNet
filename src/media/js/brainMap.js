@@ -19,6 +19,7 @@
                         node.parent.children.push(node);
                         node.displayName = name.substring(i + 1);
                         node.children = [];
+                        node.fixed = false;
                     }
                 }
                 return node;

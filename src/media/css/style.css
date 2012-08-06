@@ -97,6 +97,9 @@ body {
     fill: #b45c1f;
 }
 
+.arc.fixed {
+}
+
 /*blue*/
 .arc.bi {
     fill: #062db8;
@@ -153,6 +156,9 @@ body {
     visibility: visible;
 }
 
+.text.fixed {
+}
+
 .tooltip {
     visibility: visible;
     pointer-events: none;
@@ -166,12 +172,16 @@ body {
     visibility: hidden;
 }
 
+.tooltip.fixed {
+}
+
 /*  links (connections) */
 
  .link {
 	stroke: #AAA;
 	stroke-opacity: .1;
 	fill: none;
+    stroke-width: 1.5px;
 }
 
 /*.link:hover {*/
@@ -181,7 +191,7 @@ body {
     /*fill: hidden;*/
 /*}*/
 
-.link.non-selected {
+.link.dimmed {
     opacity: 0.1;
 }
 
@@ -206,7 +216,10 @@ body {
 }
 .link.source, .link.target, .link.selected, .link.bi {
 	stroke-opacity: .9;
-	stroke-width: 1.5px;
+	stroke-width: 3px;
+}
+
+.link.fixed {
 }
 
 
