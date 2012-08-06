@@ -174,7 +174,7 @@ body {
 /*  links (connections) */
 
  .link {
-	stroke: #AAA;
+	/*stroke: #AAA;*/
 	stroke-opacity: .1;
 	fill: none;
     stroke-width: 1.5px;
@@ -193,14 +193,14 @@ body {
 
 /*red*/
 .link.target {
-    stroke: #d62728;
+    /*stroke: #d62728;*/
 }
 /*green*/
 .link.source {
-    stroke: #2ca02c;
+    /*stroke: #2ca02c;*/
 }
 .link.bi {
-    stroke: #062db8;
+    /*stroke: #062db8;*/
 }
 
 .link.hidden {
@@ -208,7 +208,7 @@ body {
 }
 
 .link.selected {
-    stroke: #b45c1f;
+    /*stroke: #b45c1f;*/
 }
 .link.source, .link.target, .link.selected, .link.bi {
 	stroke-opacity: .9;

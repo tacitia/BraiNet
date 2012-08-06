@@ -25,7 +25,7 @@ var mode = 1, // 1: exploration mode, 2: search mode
     selected_target,
     selected_singleNode = null,
     selected_links = [],
-    selected_nodes = [];    
+    selected_nodes = [];
 
 
 //bundle graph
@@ -78,23 +78,16 @@ var svg = d3.select("#canvas")
       .call(zoom)
     .append('g');
 
-/*
 var gradient = svg.append("defs")
-                .append("linearGradient")
-                .attr("id", "gradient")
-                .attr("x1", "0%")
-                .attr("y1", "0%")
-                .attr("x2", "100%")
-                .attr("y2", "100%")
-    gradient.append("stop")
-            .attr("offset", "0%")
-            .attr("stop-color", "#0c0")
-            .attr("stop-opacity", 1);
-    gradient.append("stop")
-            .attr("offset", "100%")
-            .attr("stop-color", "#c00")
-            .attr("stop-opacity", 1);
-*/
+        .append("linearGradient")
+        .attr("id", "gradient");
+
+gradient.append("stop")
+    .attr("offset", "3%")
+    .attr("stop-color", "#33E31B");
+gradient.append("stop")
+    .attr("offset", "97%")
+    .attr("stop-color", "#DB1D33");
 
 //background for zoom
 svg.append('rect')
@@ -284,6 +277,7 @@ d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
                     : "link bi-" + d.source.key + " bi-" + d.target.key;
         })
         .attr("d", function (d, i) { return line(splines[i]); })
+        .attr("stroke", "url(#gradient)")
         .on("mouseover", linkMouseOver)
         .on("mouseout", linkMouseOut)
         .on("click", linkClick);
@@ -893,21 +887,21 @@ function highlightNodeTemp(node, className, value) {
         return;
     }
     svg.select("#arc-" + node.key).classed(className, value);
-        
+
     if (node.depth > 2) {
         svg.select("#text-" + node.key).classed(className, value);
         svg.select("#tooltip-" + node.key).classed("hidden", !value);
-    }   
+    }
 }
 
 function highlightNodeFixed(node, className, value) {
     svg.select("#arc-" + node.key).classed(className, value);
     node.fixed = true;
-        
+
     if (node.depth > 2) {
         svg.select("#text-" + node.key).classed(className, value);
         svg.select("#tooltip-" + node.key).classed("selected-hidden", !value);
-    }  
+    }
 }
 
 function isSelected(node) {
