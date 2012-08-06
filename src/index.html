@@ -19,30 +19,85 @@
   <!--Utilities-->
   <div id="util">
     <ul class="nav nav-tabs">
-      <li class="active"><a href="#search" data-toggle="tab">Search</a></li>
-      <li><a href="#options" data-toggle="tab">Options</a></li>
+      <li class="active"><a href="#options" data-toggle="tab">Options</a></li>
+      <li><a href="#search" data-toggle="tab">Search</a></li>
       <li><a href="#help" data-toggle="tab">Help</a></li>
     </ul>
     <div id="util-content" class="tab-content">
-      <div id="search" class="tab-pane fade in active">
-        <span>Max Hop:</span>
-        <input id="maxHop" type="range" min=1 max=5 value=1 step=1>
-        <span id="maxHopValue">1</span>
+      <div id="search" class="tab-pane">
+        <table>
+            <tr>
+                <td class="tab-column-1">Source</td>
+                <td class="tab-column-2">        
+                    <select data-placeholder="Choose a brain area" class="chzn-select" style="width:250px;" id="sourceSelect">
+                        <option></option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="tab-column-1">Target</td>
+                <td class="tab-column-2">        
+                    <select data-placeholder="Choose a brain area" class="chzn-select" style="width:250px;" id="targetSelect">
+                        <option></option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="tab-column-1">Level of indirection</td>
+                <td class="tab-column-2">        
+                    <input id="maxHop" type="range" min=1 max=5 value=1 step=1>
+                    <span id="maxHopValue">1</span>
+                </td>
+            </tr>
+        </table>
+        </br>
+        <table>
+            <tr>
+                <td style="width:350px"><button id="bt-search" class="btn">Show connectivity for selected regions</button></td>
+                <td style="width:50px;"><button id="bt-clear" class="btn btn-warning">Clear</button></td>
+            </tr>
+        </table>
         <!--Search for a region:-->
         <!--input id="regionInput" type="text" class="searchBox"-->
-        <span>Max Depth:</span>
-        <input id="maxDepth" type="range" min=1 max=8 value=8 step=-1>
-        <span id="maxDepthValue">8</span>
-        <span>Tension:</span>
-        <input id="tension" type="range" min=0 max=100 value=85 step=1>
-        <select data-placeholder="Choose an attribute to be color coded" class="chzn-select" style="width:350px;" id="attrSelect">
-            <option></option>
-        </select>
-        <select data-placeholder="Choose a brain area" class="chzn-select" style="width:350px;" id="regionSelect">
-            <option></option>
-        </select>
-        <button id="bt-search" class="btn">Show connectivity for selected regions</button>
-        <button id="bt-clear" class="btn btn-warning">Clear</button>
+      </div>
+      
+      <div id="options" class="tab-pane fade in active">
+        <table>
+            <tr><td class="tab-column-1"><h4>Edge color</h4></td></tr>
+            <tr>
+                <td class="tab-column-1">Feature</td>
+                <td class="tab-column-2">
+                    <select data-placeholder="Choose an attribute" class="chzn-select" style="width:250px;" id="attrSelect">
+                        <option></option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="tab-column-1">Scale</td>
+                <td class="tab-column-2">
+                    <select data-placeholder="Choose a scale" class="chzn-select" style="width:250px;" id="scaleSelect">
+                        <option></option>
+                </select>
+                </td>
+            </tr>
+        </table>
+        <br/>
+        <table>
+            <tr><td class="tab-column-1"><h4>General</h4></td></tr>
+            <tr>
+                <td class="tab-column-1">Level of detail</td>
+                <td class="tab-column-2"><select data-placeholder="Choose a level" class="chzn-select" style="width:250px;" id="lodSelect">
+                        <option></option>
+                        <option>Region</option>
+                        <option>Cell</option>
+                    </select></td>
+            </tr>
+            <tr>
+                <td class="tab-column-1">Tension</td>
+                <td class="tab-column-2"><input id="tension" type="range" min=0 max=100 value=85 step=1>
+                    <span id="tensionValue">0.85</span>
+                </td>
+        </tr></table>
       </div>
 
       <div id="help" class="tab-pane">
@@ -61,6 +116,7 @@
     </div>
   </div>
 
+  <div id="legend"></div>
   <div id="canvas"></div>
   <div id="detail">
     <span id="source">Source:</span><br/>

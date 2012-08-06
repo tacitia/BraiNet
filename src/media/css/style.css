@@ -23,6 +23,13 @@ body {
 .tab-content {
 	height: 100%;
 }
+.tab-column-1 {
+    height: 30px;
+    width: 100px;
+}
+.tab-column-2 {
+    height: 30px;
+}
 
 /*#util li {*/
     /*float:left;*/

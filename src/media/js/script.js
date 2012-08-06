@@ -416,40 +416,12 @@ function mouse(e) {
  *
  */
 function mouseOver(d) {
-
-<<<<<<< HEAD
     //svg.select("#node-" + d.key).append("svg:path")
         //.attr("d", tooltip())
         //.attr("transform", function (d) { return "translate(" + arc.centroid(d) + ")"; });
     if (selected_singleNode != d) {
         focusOnNodeTemp(d, true);
     }
-=======
-    //svg.selectAll("path.link").classed("non-selected", true);
-
-    svg.selectAll("path.link.target-" + d.key)
-        .classed("target", true)
-        .classed("hidden", false)
-        .classed("non-selected", false)
-        .each(function (d) { highlightNode(d.source, "source", true, false); });
-
-    svg.selectAll("path.link.source-" + d.key)
-        .classed("source", true)
-        .classed("hidden", false)
-        .classed("non-selected", false)
-        .each(function (d) { highlightNode(d.target, "target", true, false); });
-
-    svg.selectAll("path.link.bi-" + d.key)
-        .classed("bi", true)
-        .classed("hidden", false)
-        .classed("non-selected", false)
-        .each(function (d) {
-            highlightNode(d.source, "bi", true, false);
-            highlightNode(d.target, "bi", true, false);
-        });
-
-    highlightNode(d, "selected", true);
->>>>>>> 3fd0cef64a94a63d66f5b77facf44c4f1118dac9
 }
 
 
@@ -821,7 +793,7 @@ function computeAttrRange(attrRange, links) {
 }
 
 function appendAttrsAsOptions(links) {
-    for (var key in links[0].detail) {
+    for (var key in links[0].detail[0]) {
         $('#attrSelect').append(new Option(key, key, false, false));
     }
 }
