@@ -169,7 +169,12 @@ body {
 .tooltip.selected-hidden {
     visibility: hidden;
 }
-
+.tooltip.selected-source {
+    visibility: hidden;
+}
+.tooltip.selected-target {
+    visibility: hidden;
+}
 
 /*  links (connections) */
 

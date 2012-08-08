@@ -379,10 +379,10 @@ d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-d3.select("#search")
+d3.select("#bt-search")
     .on("click", searchButtonClick);
 
-d3.select("#clear")
+d3.select("#bt-clear")
     .on("click", clearButtonClick);
 
 d3.select("#maxHop")
@@ -395,7 +395,8 @@ d3.select("#tension")
     .on("change", setTension);
 
 //TODO: convert to D3 selector if possible
-$('#regionSelect').change(regionSearchInput);
+$('#sourceSelect').change(sourceSearchInput);
+$('#targetSelect').change(targetSearchInput);
 $('#attrSelect').change(attrSearchInput);
 
 
@@ -564,24 +565,14 @@ function nodeClick(d) {
  */
 function searchButtonClick() {
     piwikTracker.trackPageView('SearchConnection');
-
+//    console.log(selected_source);
+//    console.log(selected_target);
     if (selected_source !== undefined && selected_target !== undefined) {
         computeLinksForSelection(max_hop, selected_source, selected_target, [], selected_links);
-        var counter = 0;
-        selected_links.forEach(function (d) {
-            d.forEach(function (i) {
-                svg.select("path.link.source-" + i.source.key + ".target-" + i.target.key).classed("selected", true);
-                svg.select("path.link.bi-" + i.source.key + ".bi-" + i.target.key).classed("selected", true);
-                highlightNode(i.source, "selected-source", true, true);
-                highlightNode(i.target, "selected-target", true, true);
-                selected_link_texts[counter] = svg.append('text')
-                    .attr('x', 400)
-                    .attr('y', -300 + counter * 20)
-                    .text(i.source.displayName + "-" + i.target.displayName)
-                    .on('click', function () { linkClick(i); });
-                ++counter;
-            });
-        });
+        if (selected_links.length > 1) {
+            path.classed("dimmed", true);
+        }
+        highlightSelectedLinks(true);
     }
 }
 
@@ -593,31 +584,38 @@ function searchButtonClick() {
 function clearButtonClick() {
     clearSelection();
     selected_nodes.forEach(function (d) {
-        highlightNode(d, "selected-source", false);
+        highlightNodeFixed(d, "selected-source", false);
     });
     if (selected_source !== undefined) {
-        highlightNode(selected_source, "selected-source", false, true);
+        highlightNodeFixed(selected_source, "selected-source", false);
     }
     if (selected_target !== undefined) {
-        highlightNode(selected_target, "selected-target", false, true);
+        highlightNodeFixed(selected_target, "selected-target", false);
     }
 }
 
-/*
- * Search Input
- *
- *
- */
-function regionSearchInput() {
-    selected_nodes.forEach(function (d) {
-        highlightNode(d.node, "selected-source", false, true);
-    });
-    selected_nodes = [];
+function sourceSearchInput() {
+    if (selected_source != undefined) {
+        highlightNodeFixed(selected_source, "selected-source", false);
+    }
     var inputRegion = this.value.toLowerCase();
     display_node_map.forEach(function (d) {
         if (d.name == inputRegion) {
-            selected_nodes.push(d.node);
-            highlightNode(d.node, "selected-source", true, true);
+            selected_source = d.node;
+            highlightNodeFixed(d.node, "selected-source", true);
+        }
+    });
+}
+
+function targetSearchInput() {
+    if (selected_target != undefined) {
+        highlightNodeFixed(selected_target, "selected-target", false);
+    }
+    var inputRegion = this.value.toLowerCase();
+    display_node_map.forEach(function (d) {
+        if (d.name == inputRegion) {
+            selected_target = d.node;
+            highlightNodeFixed(d.node, "selected-target", true);
         }
     });
 }
@@ -657,9 +655,9 @@ function setMaxHop() {
     piwikTracker.trackPageView('SetMaxHop');
     max_hop = this.value;
     document.getElementById("maxHopValue").innerHTML = max_hop;
-    clearSelection();
-    highlightNode(selected_source, "selected-source", true, true);
-    highlightNode(selected_target, "selected-target", true, true);
+    path.classed("dimmed", false);
+    highlightSelectedLinks(false);
+    selected_links = [];
 }
 
 /*
@@ -705,21 +703,15 @@ function setTension() {
  */
 function clearSelection() {
     var counter = 0;
-    selected_links.forEach(function (d) {
-        d.forEach(function (i) {
-            svg.select("path.link.source-" + i.source.key +
-                ".target-" + i.target.key)
-                .classed("selected", false);
-            svg.select("path.link.bi-" + i.source.key +
-                ".bi-" + i.target.key)
-                .classed("selected", false);
-            highlightNode(i.source, "selected-source", false, true);
-            highlightNode(i.target, "selected-target", false, true);
-            selected_link_texts[counter].text("");
-            ++counter;
-        });
-    });
+    path.classed("dimmed", false);
+    highlightSelectedLinks(false);
     selected_links = [];
+    focusOnNodeFixed(selected_singleNode, false, false);
+    highlightNodeFixed(selected_source, "selected-source", false);
+    highlightNodeFixed(selected_target, "selected-target", false);
+    selected_singleNode = null;
+    selected_source = null;
+    selected_target = null;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -731,6 +723,120 @@ function clearSelection() {
 ////////////////////////////////////////////////////////////////////////////////
 // Helper Functions
 ////////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////
+// Node and link highlighting
+/////////////////////////////////////
+function focusOnNodeTemp(node, value) {
+    svg.selectAll("path.link.target-" + node.key)
+        .classed("target", value)
+        .each(function(d) {highlightNodeTemp(d.source, "source", value)});
+
+    svg.selectAll("path.link.source-" + node.key)
+        .classed("source", value)
+        .each(function(d) {highlightNodeTemp(d.target, "target", value)});
+
+    svg.selectAll("path.link.bi-" + node.key)
+        .classed("bi", value)
+        .each(function(d) {highlightNodeTemp(d.source, "bi", value);
+                            highlightNodeTemp(d.target, "bi", value);});
+
+    highlightNodeTemp(node, "selected", value);
+}
+
+function focusOnNodeFixed(node, value, dimmed) {
+    if (node == undefined || node == null) return;
+    svg.selectAll("path.link.target-" + node.key)
+        .classed("target", value)
+        .classed("dimmed", dimmed)
+        .classed("fixed", value)
+        .each(function(d) {highlightNodeFixed(d.source, "source", value)});
+
+    svg.selectAll("path.link.source-" + node.key)
+        .classed("source", value)
+        .classed("dimmed", dimmed)
+        .classed("fixed", value)
+        .each(function(d) {highlightNodeFixed(d.target, "target", value)});
+
+    svg.selectAll("path.link.bi-" + node.key)
+        .classed("bi", value)
+        .classed("dimmed", dimmed)
+        .classed("fixed", value)
+        .each(function(d) {highlightNodeFixed(d.source, "bi", value);
+                            highlightNodeFixed(d.target, "bi", value);});
+
+    highlightNodeFixed(node, "selected", value);
+}
+
+function highlightNodeTemp(node, className, value) {
+    if (node.fixed == true) return;
+    svg.select("#arc-" + node.key).classed(className, value);
+        
+    if (node.depth > 2) {
+        svg.select("#text-" + node.key).classed(className, value);
+        svg.select("#tooltip-" + node.key).classed("hidden", !value);
+    }   
+}
+
+function highlightNodeFixed(node, className, value) {
+    if (node == undefined) return;
+    svg.select("#arc-" + node.key).classed(className, value);
+    node.fixed = value;
+        
+    if (node.depth > 2) {
+        svg.select("#text-" + node.key).classed(className, value);
+        svg.select("#tooltip-" + node.key).classed("hidden", !value);
+        svg.select("#tooltip-" + node.key).classed("selected-hidden", !value);
+    }  
+}
+
+function highlightSelectedLinks(value) {
+    var counter = 0;
+    selected_links.forEach(function (d) {
+        d.forEach(function (i) {
+            svg.select("path.link.source-" + i.source.key + ".target-" + i.target.key).classed("selected", value);
+            svg.select("path.link.bi-" + i.source.key + ".bi-" + i.target.key).classed("selected", value);
+            highlightNodeFixed(i.source, "source", value);
+            highlightNodeFixed(i.target, "target", value);
+            if (value) {
+                selected_link_texts[counter] = svg.append('text')
+                    .attr('x', 400)
+                    .attr('y', -300 + counter * 20)
+                    .text(i.source.displayName + "-" + i.target.displayName)
+                    .on('click', function () { linkClick(i); });
+            }
+            else {
+                selected_link_texts[counter].text("");
+            }
+            ++counter;
+
+        });
+    });    
+    
+}
+
+/////////////////////////////////////
+// UI element content population
+/////////////////////////////////////
+
+function appendAttrsAsOptions(links) {
+    for (var key in links[0].detail[0]) {
+        $('#attrSelect').append(new Option(key, key, false, false));
+    }
+}
+
+function appendNodesAsOptions(nodes) {
+    nodes.forEach(function(d) {
+        $('#sourceSelect').append(new Option(d.displayName, d.displayName, false, false));
+        $('#targetSelect').append(new Option(d.displayName, d.displayName, false, false));
+    });
+}
+
+
+/////////////////////////////////////
+// Backend Computation
+/////////////////////////////////////
 
 
 function computeLinksForSelection(hop, source, target, currLink, selected_links) {
@@ -759,6 +865,7 @@ function computeLinksForSelection(hop, source, target, currLink, selected_links)
                 selected_links.push(newLink);
             }
         });
+        console.log(d.target);
         if (hop > 1) {
             computeLinksForSelection(hop - 1, d.target, target, newLink, selected_links);
         }
@@ -792,122 +899,9 @@ function computeAttrRange(attrRange, links) {
     });
 }
 
-function appendAttrsAsOptions(links) {
-    for (var key in links[0].detail[0]) {
-        $('#attrSelect').append(new Option(key, key, false, false));
-    }
-}
-
-function appendNodesAsOptions(nodes) {
-    nodes.forEach(function(d) {
-        $('#regionSelect').append(new Option(d.displayName, d.displayName, false, false));
-    });
-}
 
 function round(num) {
     return Math.round(num * 100) / 100;
-}
-
-function highlightNode(node, className, value, fixed) {
-    svg.select("#arc-" + node.key).classed(className, value);
-
-    if (node.depth > 2) {
-        svg.select("#text-" + node.key).classed(className, value);
-        if (fixed) {
-            svg.select("#tooltip-" + node.key).classed("hidden", false);
-            svg.select("#tooltip-" + node.key).classed("selected-hidden", !value);
-        }
-        else {
-            if (!isSelected(node)) {
-                svg.select("#tooltip-" + node.key).classed("hidden", !value);
-            }
-        }
-    }
-}
-
-function focusOnNode(node, value, fixed) {
-    svg.selectAll("path.link.target-" + node.key)
-        .classed("target", value)
-        .classed("dimmed", fixed ? value : false)
-        .classed("fixed", fixed ? value : false)
-        .each(function(d) {highlightNode(d.source, "source", value, fixed)});
-
-    svg.selectAll("path.link.source-" + node.key)
-        .classed("source", value)
-        .classed("dimmed", fixed ? value : false)
-        .classed("fixed", fixed ? value : false)
-        .each(function(d) {highlightNode(d.target, "target", value, fixed)});
-
-    svg.selectAll("path.link.bi-" + node.key)
-        .classed("bi", value)
-        .classed("dimmed", fixed ? value : false)
-        .classed("fixed", fixed ? value : false)
-        .each(function(d) {highlightNode(d.source, "bi", value, fixed);
-                            highlightNode(d.target, "bi", value, fixed);});
-
-    highlightNode(node, "selected", value, fixed);
-}
-
-function focusOnNodeTemp(node, value) {
-    svg.selectAll("path.link.target-" + node.key)
-        .classed("target", value)
-        .each(function(d) {highlightNodeTemp(d.source, "source", value)});
-
-    svg.selectAll("path.link.source-" + node.key)
-        .classed("source", value)
-        .each(function(d) {highlightNodeTemp(d.target, "target", value)});
-
-    svg.selectAll("path.link.bi-" + node.key)
-        .classed("bi", value)
-        .each(function(d) {highlightNodeTemp(d.source, "bi", value);
-                            highlightNodeTemp(d.target, "bi", value);});
-
-    highlightNodeTemp(node, "selected", value);
-}
-
-function focusOnNodeFixed(node, value, dimmed) {
-    svg.selectAll("path.link.target-" + node.key)
-        .classed("target", value)
-        .classed("dimmed", dimmed)
-        .classed("fixed", value)
-        .each(function(d) {highlightNodeFixed(d.source, "source", value)});
-
-    svg.selectAll("path.link.source-" + node.key)
-        .classed("source", value)
-        .classed("dimmed", dimmed)
-        .classed("fixed", value)
-        .each(function(d) {highlightNodeFixed(d.target, "target", value)});
-
-    svg.selectAll("path.link.bi-" + node.key)
-        .classed("bi", value)
-        .classed("dimmed", dimmed)
-        .classed("fixed", value)
-        .each(function(d) {highlightNodeFixed(d.source, "bi", value);
-                            highlightNodeFixed(d.target, "bi", value);});
-
-    highlightNodeFixed(node, "selected", value);
-}
-
-function highlightNodeTemp(node, className, value) {
-    if (node.fixed == true) {
-        return;
-    }
-    svg.select("#arc-" + node.key).classed(className, value);
-        
-    if (node.depth > 2) {
-        svg.select("#text-" + node.key).classed(className, value);
-        svg.select("#tooltip-" + node.key).classed("hidden", !value);
-    }   
-}
-
-function highlightNodeFixed(node, className, value) {
-    svg.select("#arc-" + node.key).classed(className, value);
-    node.fixed = true;
-        
-    if (node.depth > 2) {
-        svg.select("#text-" + node.key).classed(className, value);
-        svg.select("#tooltip-" + node.key).classed("selected-hidden", !value);
-    }  
 }
 
 function isSelected(node) {
