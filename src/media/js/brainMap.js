@@ -62,8 +62,8 @@
                     d.links.forEach(function (i) {
                         // Debug code: map[i.name] will be undefined if the connectivity data is incorrect
                         if (map[i.name] === undefined) {
-                            console.log(d.name);
-                            console.log(i.name);
+//                            console.log(d.name);
+//                            console.log(i.name);
                         }
                         else {
                             links.push({source: map[d.name], target: map[i.name], detail: i.detail, bi: i.bi});

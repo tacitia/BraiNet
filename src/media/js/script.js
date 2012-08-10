@@ -25,6 +25,7 @@ var mode = 1, // 1: exploration mode, 2: search mode
     selected_target,
     selected_singleNode = null,
     selected_links = [],
+    grouped_selected_links = [],
     selected_nodes = [];
 
 
@@ -200,8 +201,6 @@ d3.json("../media/data/options.json", function (data) {
 */
 
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
 // Draw Bundle
 ////////////////////////////////////////////////////////////////////////////////
@@ -277,7 +276,10 @@ d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
                     : "link bi-" + d.source.key + " bi-" + d.target.key;
         })
         .attr("d", function (d, i) { return line(splines[i]); })
-        .attr("stroke", "url(#gradient)")
+//        .attr("stroke", "url(#gradient)")
+//        .attr("stroke", function (d) {
+//            return (d.bi == false) ? "url(#gradient)" : "blue";
+//        })
         .on("mouseover", linkMouseOver)
         .on("mouseout", linkMouseOut)
         .on("click", linkClick);
@@ -368,6 +370,8 @@ d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
 });
 
 
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // Mouse & Click Events
 ////////////////////////////////////////////////////////////////////////////////
@@ -392,7 +396,6 @@ d3.select("#tension")
 $('#sourceSelect').change(sourceSearchInput);
 $('#targetSelect').change(targetSearchInput);
 $('#attrSelect').change(attrSearchInput);
-
 
 
 //d3.select("#search")
@@ -558,15 +561,16 @@ function nodeClick(d) {
  *
  */
 function searchButtonClick() {
+    selected_links = [];
     piwikTracker.trackPageView('SearchConnection');
-//    console.log(selected_source);
-//    console.log(selected_target);
     if (selected_source !== undefined && selected_target !== undefined) {
         computeLinksForSelection(max_hop, selected_source, selected_target, [], selected_links);
+        groupSelectedLinks();
         if (selected_links.length > 1) {
             path.classed("dimmed", true);
         }
         highlightSelectedLinks(true);
+        displayConnections();
     }
 }
 
@@ -786,13 +790,14 @@ function highlightNodeFixed(node, className, value) {
 }
 
 function highlightSelectedLinks(value) {
-    var counter = 0;
+//    var counter = 0;
     selected_links.forEach(function (d) {
         d.forEach(function (i) {
             svg.select("path.link.source-" + i.source.key + ".target-" + i.target.key).classed("selected", value);
             svg.select("path.link.bi-" + i.source.key + ".bi-" + i.target.key).classed("selected", value);
             highlightNodeFixed(i.source, "source", value);
             highlightNodeFixed(i.target, "target", value);
+            /*
             if (value) {
                 selected_link_texts[counter] = svg.append('text')
                     .attr('x', 400)
@@ -803,7 +808,9 @@ function highlightSelectedLinks(value) {
             else {
                 selected_link_texts[counter].text("");
             }
+            
             ++counter;
+            */
 
         });
     });    
@@ -827,11 +834,35 @@ function appendNodesAsOptions(nodes) {
     });
 }
 
+function displayConnections() {
+    var connectionPanel = document.getElementById("connections");
+    for (var i = 0; i < grouped_selected_links.length; ++i) {
+        var currPanel = $('<div id=conn-hop' + (i+1) + '" class="conn-level1' + '">test</div>').appendTo(connectionPanel);
+        var currLinks = grouped_selected_links[i];
+        for (var j = 0; j < currLinks.length; ++j) {
+            // i+1 is the max number of hops == the max number of items in each link array-1
+            for (var k = 0; k < i+1; ++k) {
+                $(currPanel).append(currLinks[j][k].source.displayName + "-" + currLinks[j][k].target.displayName + "<br/>");                    
+            } 
+        }
+    }
+}
+
 
 /////////////////////////////////////
 // Backend Computation
 /////////////////////////////////////
 
+function groupSelectedLinks() {
+    for (var i = 0; i < max_hop; ++i) {
+        grouped_selected_links[i] = [];
+    }
+    for (var i = 0; i < selected_links.length; ++i) {
+        var hop = selected_links[i].length;
+        grouped_selected_links[hop-1].push(selected_links[i]);
+    }
+    console.log(grouped_selected_links);
+}
 
 function computeLinksForSelection(hop, source, target, currLink, selected_links) {
     var augmentedLinks = [],
@@ -839,14 +870,18 @@ function computeLinksForSelection(hop, source, target, currLink, selected_links)
         descendants = [];
 
     source.links.forEach(function (d) {
-        augmentedLinks.push({source: source, target: name_node_map[d.name], detail: d.detail});
+        if (name_node_map[d.name] != undefined) {
+            augmentedLinks.push({source: source, target: name_node_map[d.name], detail: d.detail});
+        }
     });
 
     getDecendants(source, descendants);
 
     descendants.forEach(function (d) {
         d.links.forEach(function (i) {
-            augmentedLinks.push({source: d, target: name_node_map[i.name], detail: i.detail});
+            if (name_node_map[i.name] != undefined) {
+                augmentedLinks.push({source: d, target: name_node_map[i.name], detail: i.detail});
+            }
         });
     });
     augmentedTargets.push(target);
@@ -859,7 +894,6 @@ function computeLinksForSelection(hop, source, target, currLink, selected_links)
                 selected_links.push(newLink);
             }
         });
-        console.log(d.target);
         if (hop > 1) {
             computeLinksForSelection(hop - 1, d.target, target, newLink, selected_links);
         }
