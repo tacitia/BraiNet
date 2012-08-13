@@ -35,14 +35,23 @@ body {
     position: absolute;
     left: 1200px;
     top: 300px;
-    background-color: #b5ac5f;
-    stroke: black;
+    width: 350px;
+    max-height: 600px;
 }
 
 .conn-level1 {
-    left: 40px;
-    background-color: #E0D78C;
-    stroke: black;
+    position: absolute;
+    left: 20px;
+    width: 330px;
+    border: 1px solid #dddddd;
+    max-height: 200px;
+    overflow-y: scroll;
+}
+
+.legend {
+    position: absolute;
+    top: 320px;
+    left: 20px;
 }
 
 /*#util li {*/

@@ -101,40 +101,46 @@ svg.append('rect')
 // this should be in the html - not necessary for it to be in svg
 
 //legend
-svg.append('rect')
-    .attr('x', -800)
-    .attr('y', -300)
+var legend = d3.select("#legend")
+                .append("svg")
+                .attr("width", "350px")
+                .attr("height", "100px")
+                .append("g");
+
+legend.append('rect')
+    .attr('x', 0)
+    .attr('y', 0)
     .attr('width', 20)
     .attr('height', 20)
     .attr('fill', '#2ca02c');
 
-svg.append('text')
-    .attr('x', -760)
-    .attr('y', -290)
+legend.append('text')
+    .attr('x', 40)
+    .attr('y', 10)
     .text("Source region / Outgoing connection");
 
-svg.append('rect')
-    .attr('x', -800)
-    .attr('y', -260)
+legend.append('rect')
+    .attr('x', 0)
+    .attr('y', 30)
     .attr('width', 20)
     .attr('height', 20)
     .attr('fill', '#d62728');
 
-svg.append('text')
-    .attr('x', -760)
-    .attr('y', -250)
+legend.append('text')
+    .attr('x', 40)
+    .attr('y', 40)
     .text("Target region / Incoming connection");
 
-svg.append('rect')
-    .attr('x', -800)
-    .attr('y', -220)
+legend.append('rect')
+    .attr('x', 0)
+    .attr('y', 60)
     .attr('width', 20)
     .attr('height', 20)
     .attr('fill', '#062db8');
 
-svg.append('text')
-    .attr('x', -760)
-    .attr('y', -210)
+legend.append('text')
+    .attr('x', 40)
+    .attr('y', 70)
     .text("bi connection");
 
 
@@ -491,23 +497,26 @@ function linkMouseOut(d) {
  */
 function linkClick(d) {
     if (!$(this).is(".dimmed")) {
-        d.detail.forEach(function(e) {
-            console.log(e);
-        });
+        var detail_tab = $("#detail-tab");
+        var detail_content_pane = $("#detail-content-pane");        
+        detail_tab.empty();
+        detail_content_pane.empty();
+        for (var i = 0; i < d.detail.length; ++i) {
+            if (i == 0) {
+                detail_tab.append('<li class="active"><a href="#tab1" data-toggle="tab">Reference 1</a></li>');
+                detail_content_pane.append('<div class="tab-pane active" id="tab1"></div>');
+            }
+            else {
+                detail_tab.append('<li><a href="#tab' + (i+1) + '" data-toggle="tab">Reference ' + (i+1) + '</a></li>');
+                detail_content_pane.append('<div class="tab-pane" id="tab' + (i+1) + '"></div>');
+            }
+            $("#tab" + (i+1)).append('<p>Source:' + d.source.displayName + '<br/>Target: ' + d.target.displayName + 
+            '<br/>Strength: ' + d.detail[i].strength + '<br/>Technique: ' + d.detail[i].technique + '<br/>Reference: ' + d.detail[i].ref + 
+            '<br/>BAMS record: <a href="' + d.detail[i].bams_link + '" target="_blank">Click</a><br/>Pubmed link: <a href="' + 
+            d.detail[i].pubmed_link +'" target="_blank">Click</a><br/></p>');
+        }
+
     }
-/*
-    document.getElementById("strength").innerHTML = "Strength: " + d.detail.strength;
-    document.getElementById("technique").innerHTML = "Technique: " + d.detail.technique;
-    document.getElementById("reference").innerHTML = "Reference: " + d.detail.ref;
-    document.getElementById("bams_link").href = d.detail.bams_link;
-    document.getElementById("bams_link").innerHTML = "Click";
-    document.getElementById("pubmed_link").href = d.detail.pubmed_link;
-    document.getElementById("pubmed_link").innerHTML = "Click";
-    document.getElementById("source").innerHTML = "Source: " + d.source.displayName;
-    document.getElementById("target").innerHTML = "Target: " + d.target.displayName;
-    bams_link = d.detail.bams_link;
-    pubmed_link = d.detail.pubmed_link;
-*/
 }
 
 /*
@@ -570,7 +579,7 @@ function searchButtonClick() {
             path.classed("dimmed", true);
         }
         highlightSelectedLinks(true);
-        displayConnections();
+        displayConnections(true);
     }
 }
 
@@ -656,6 +665,7 @@ function setMaxHop() {
     path.classed("dimmed", false);
     highlightSelectedLinks(false);
     selected_links = [];
+    displayConnections(false);
 }
 
 /*
@@ -705,11 +715,8 @@ function clearSelection() {
     highlightSelectedLinks(false);
     selected_links = [];
     focusOnNodeFixed(selected_singleNode, false, false);
-    highlightNodeFixed(selected_source, "selected-source", false);
-    highlightNodeFixed(selected_target, "selected-target", false);
     selected_singleNode = null;
-    selected_source = null;
-    selected_target = null;
+    displayConnections(false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -817,6 +824,7 @@ function highlightSelectedLinks(value) {
     
 }
 
+
 /////////////////////////////////////
 // UI element content population
 /////////////////////////////////////
@@ -834,17 +842,26 @@ function appendNodesAsOptions(nodes) {
     });
 }
 
-function displayConnections() {
-    var connectionPanel = document.getElementById("connections");
-    for (var i = 0; i < grouped_selected_links.length; ++i) {
-        var currPanel = $('<div id=conn-hop' + (i+1) + '" class="conn-level1' + '">test</div>').appendTo(connectionPanel);
-        var currLinks = grouped_selected_links[i];
-        for (var j = 0; j < currLinks.length; ++j) {
-            // i+1 is the max number of hops == the max number of items in each link array-1
-            for (var k = 0; k < i+1; ++k) {
-                $(currPanel).append(currLinks[j][k].source.displayName + "-" + currLinks[j][k].target.displayName + "<br/>");                    
-            } 
+function displayConnections(value) {
+    var connectionPanel = $("#connections");
+    if (value) {
+        for (var i = 0; i < grouped_selected_links.length; ++i) {
+            var currPanel = $('<div id=conn-hop' + (i+1) + '" class="conn-level1' + '" style="top:' + (20 + 200 * i) + 'px"></div>').appendTo(connectionPanel);
+            var currLinks = grouped_selected_links[i];
+            $('<table id = "table' + (i+1) + '" class="table table-condensed"><thead><tr><td><h4>Level of indirection: ' + i + 
+            '</h4></td></tr></thead><tbody></tbody></table>').appendTo(currPanel);
+            for (var j = 0; j < currLinks.length; ++j) {
+                // i+1 is the max number of hops == the max number of items in each link array-1
+                for (var k = 0; k < i+1; ++k) {
+//                    currTable.append('<tr>' + currLinks[j][k].source.displayName + "-" + currLinks[j][k].target.displayName + "</tr>"); 
+                    $('#table' + (i+1)).append('<tr><td>' + currLinks[j][k].source.displayName + '<br/>' + currLinks[j][k].target.displayName + '</td></tr>');
+                } 
+            }
         }
+    }
+    else {
+        connectionPanel.empty();
+        connectionPanel.append('<h3>Search Results</h3>');
     }
 }
 
