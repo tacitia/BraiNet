@@ -101,7 +101,7 @@ svg.append('rect')
 // this should be in the html - not necessary for it to be in svg
 
 //legend
-var legend = d3.select("#legend")
+var legend = d3.select("#legend1")
                 .append("svg")
                 .attr("width", "350px")
                 .attr("height", "100px")
@@ -142,19 +142,25 @@ legend.append('text')
     .attr('x', 40)
     .attr('y', 70)
     .text("bi connection");
+    
+    
+legend = d3.select("#legend2")
+                .append("svg")
+                .attr("width", "350px")
+                .attr("height", "100px")
+                .append("g");
 
+for (var i = 0; i < 4; ++i) {
+    legend.append('line')
+        .attr('x1', 0)
+        .attr('x2', 50)
+        .attr('y1', 10 + i * 20)
+        .attr('y2', 10 + i * 20)
+        .attr('class', 'q' + i + '-4');
 
-for (var i = 0; i < 9; ++i) {
-    svg.append('line')
-        .attr('x1', 600)
-        .attr('x2', 650)
-        .attr('y1', -300 + i * 20)
-        .attr('y2', -300 + i * 20)
-        .attr('class', 'q' + i + '-9');
-
-    svg.append('text')
-        .attr('x', 675)
-        .attr('y', -295 + i * 20)
+    legend.append('text')
+        .attr('x', 75)
+        .attr('y', 15 + i * 20)
         .attr('id', 'color' + i)
         .text("TBD");
 }
@@ -519,6 +525,31 @@ function linkClick(d) {
     }
 }
 
+function linkClick(source, target, detail) {
+    if (!$(this).is(".dimmed")) {
+        var detail_tab = $("#detail-tab");
+        var detail_content_pane = $("#detail-content-pane");        
+        detail_tab.empty();
+        detail_content_pane.empty();
+        for (var i = 0; i < d.detail.length; ++i) {
+            if (i == 0) {
+                detail_tab.append('<li class="active"><a href="#tab1" data-toggle="tab">Reference 1</a></li>');
+                detail_content_pane.append('<div class="tab-pane active" id="tab1"></div>');
+            }
+            else {
+                detail_tab.append('<li><a href="#tab' + (i+1) + '" data-toggle="tab">Reference ' + (i+1) + '</a></li>');
+                detail_content_pane.append('<div class="tab-pane" id="tab' + (i+1) + '"></div>');
+            }
+            $("#tab" + (i+1)).append('<p>Source:' + source.displayName + '<br/>Target: ' + target.displayName + 
+            '<br/>Strength: ' + detail[i].strength + '<br/>Technique: ' + detail[i].technique + '<br/>Reference: ' + detail[i].ref + 
+            '<br/>BAMS record: <a href="' + detail[i].bams_link + '" target="_blank">Click</a><br/>Pubmed link: <a href="' + 
+            detail[i].pubmed_link +'" target="_blank">Click</a><br/></p>');
+        }
+
+    }
+}
+
+
 /*
  * Node Click - for selection
  *
@@ -629,28 +660,65 @@ function targetSearchInput() {
 
 function attrSearchInput() {
     var attrName = this.value;
-    var quantile = d3.scale.quantile().domain(attrRange[attrName]).range(d3.range(9));
+    console.log(attrName);
+    if (attrName != "strength") {
+        return;
+    }
+    var quantile = d3.scale.quantile().domain(attrRange[attrName]).range(d3.range(4));
 
     path = svg.selectAll("path.link")
         .attr("class", function (d) {
+            var attrValue = 0;
+            console.log(d.detail[attrName]);
+            if (d.detail[0][attrName] == "Weak") {
+                attrValue = 1;
+            }
+            else if (d.detail[0][attrName] == "Moderate") {
+                attrValue = 2;
+            }
+            else if (d.detail[0][attrName] == "Heavy") {
+                attrValue = 3;
+            }
             return (d.bi == false)
-                    ? "link source-" + d.source.key + " target-" + d.target.key + " q" + quantile(d.detail[attrName]) + "-9"
-                    : "link bi-" + d.source.key + " bi-" + d.target.key + " q" + quantile(d.detail[attrName]) + "-9";
+                    ? "link source-" + d.source.key + " target-" + d.target.key + " q" + quantile(attrValue) + "-4"
+                    : "link bi-" + d.source.key + " bi-" + d.target.key + " q" + quantile(attrValue) + "-4";
         })
+        
+    /*
+    path = svg.selectAll("path.link")
+        .attr("class", function (d) {
+            return (d.bi == false)
+                    ? "link source-" + d.source.key + " target-" + d.target.key + " q" + quantile(d.detail[attrName]) + "-4"
+                    : "link bi-" + d.source.key + " bi-" + d.target.key + " q" + quantile(d.detail[attrName]) + "-4";
+        })
+    */
 
     var ticks = quantile.quantiles();
 
+    /*
     svg.select("#color0")
         .text("[" + round(attrRange[attrName][0]) + ", " + round(ticks[0]) + "]");
 
-    for (var i = 1; i < 8; ++i) {
+    for (var i = 1; i < 3; ++i) {
         svg.select("#color" + i)
             .text("[" + round(ticks[i-1]) + ", " + round(ticks[i]) + "]");
     }
 
-    svg.select("#color8")
-        .text("[" + round(ticks[7]) + ", " + round(attrRange[attrName][1]) + "]");
+    svg.select("#color3")
+        .text("[" + round(ticks[2]) + ", " + round(attrRange[attrName][1]) + "]");
+    */
+    
+    svg.select("#color0")
+        .text("Exists");
 
+    svg.select("#color1")
+        .text("Weak");
+        
+    svg.select("#color2")
+        .text("Moderate");
+    
+    svg.select("#color3")
+        .text("Heavy");
 }
 
 /*
@@ -804,21 +872,6 @@ function highlightSelectedLinks(value) {
             svg.select("path.link.bi-" + i.source.key + ".bi-" + i.target.key).classed("selected", value);
             highlightNodeFixed(i.source, "source", value);
             highlightNodeFixed(i.target, "target", value);
-            /*
-            if (value) {
-                selected_link_texts[counter] = svg.append('text')
-                    .attr('x', 400)
-                    .attr('y', -300 + counter * 20)
-                    .text(i.source.displayName + "-" + i.target.displayName)
-                    .on('click', function () { linkClick(i); });
-            }
-            else {
-                selected_link_texts[counter].text("");
-            }
-            
-            ++counter;
-            */
-
         });
     });    
     
@@ -846,15 +899,16 @@ function displayConnections(value) {
     var connectionPanel = $("#connections");
     if (value) {
         for (var i = 0; i < grouped_selected_links.length; ++i) {
-            var currPanel = $('<div id=conn-hop' + (i+1) + '" class="conn-level1' + '" style="top:' + (20 + 200 * i) + 'px"></div>').appendTo(connectionPanel);
+            connectionPanel.append('<h4 style="position:absolute; left:20px; top:' + (30 + 340 * i) + 'px">Level of indirection: ' + i + '</h4></br>');
+            var currPanel = $('<div id=conn-hop' + (i+1) + '" class="conn-level1' + '" style="top:' + (50 + 340 * i) + 'px"></div>').appendTo(connectionPanel);
             var currLinks = grouped_selected_links[i];
-            $('<table id = "table' + (i+1) + '" class="table table-condensed"><thead><tr><td><h4>Level of indirection: ' + i + 
-            '</h4></td></tr></thead><tbody></tbody></table>').appendTo(currPanel);
+            $('<table id = "table' + (i+1) + '" class="table table-condensed"><tbody></tbody></table>').appendTo(currPanel);
             for (var j = 0; j < currLinks.length; ++j) {
                 // i+1 is the max number of hops == the max number of items in each link array-1
                 for (var k = 0; k < i+1; ++k) {
 //                    currTable.append('<tr>' + currLinks[j][k].source.displayName + "-" + currLinks[j][k].target.displayName + "</tr>"); 
-                    $('#table' + (i+1)).append('<tr><td>' + currLinks[j][k].source.displayName + '<br/>' + currLinks[j][k].target.displayName + '</td></tr>');
+                    console.log(currLinks[j][k]);
+                    $('#table' + (i+1)).append('<tr><td onClick="linkClick(' + currLinks[j][k] + ')">' + currLinks[j][k].source.displayName + '<br/>' + currLinks[j][k].target.displayName + '</td></tr>');
                 } 
             }
         }
@@ -930,7 +984,10 @@ function filterRoot(element) {
     }
 }
 
+// Need to make this more general
 function computeAttrRange(attrRange, links) {
+    attrRange["strength"] = [0, 3];
+    /*
     for (var key in links[0].detail[0]) {
         attrRange[key] = [500, -500];
     }
@@ -942,6 +999,7 @@ function computeAttrRange(attrRange, links) {
             }
         });
     });
+    */
 }
 
 

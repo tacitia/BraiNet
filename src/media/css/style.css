@@ -34,9 +34,9 @@ body {
 .conn-level0 {
     position: absolute;
     left: 1200px;
-    top: 300px;
+    top: 20px;
     width: 350px;
-    max-height: 600px;
+    max-height: 800px;
 }
 
 .conn-level1 {
@@ -44,7 +44,7 @@ body {
     left: 20px;
     width: 330px;
     border: 1px solid #dddddd;
-    max-height: 200px;
+    max-height: 300px;
     overflow-y: scroll;
 }
 
@@ -52,6 +52,7 @@ body {
     position: absolute;
     top: 320px;
     left: 20px;
+    font: 13px sans-serif;
 }
 
 /*#util li {*/

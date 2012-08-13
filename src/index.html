@@ -20,7 +20,8 @@
   <!--Utilities-->
   <div id="util">
     <ul class="nav nav-tabs">
-      <li class="active"><a href="#options" data-toggle="tab">Options</a></li>
+      <li class="active"><a href="#legend" data-toggle="tab">Legend</a></li>
+      <li><a href="#options" data-toggle="tab">Options</a></li>
       <li><a href="#search" data-toggle="tab">Search</a></li>
       <li><a href="#help" data-toggle="tab">Help</a></li>
     </ul>
@@ -62,7 +63,7 @@
         <!--input id="regionInput" type="text" class="searchBox"-->
       </div>
       
-      <div id="options" class="tab-pane fade in active">
+      <div id="options" class="tab-pane">
         <table>
             <tr><td class="tab-column-1"><h4>Edge color</h4></td></tr>
             <tr>
@@ -114,12 +115,21 @@
         3. To adjust the level of details: use the "Max depth" slider
         </p>
       </div>
+      <div id="legend" class="tab-pane fade in active">
+        <h4>Primary</h4></br>
+        <div id="legend1"></div>
+        <h4>Feature Color</h4></br>
+        <div id="legend2"></div>
+      </div>
     </div>
   </div>
-
+    
+  <!--  
   <div id="legend" class="legend">
     <h3>Legend</h3>
   </div>
+  -->
+  
   <div id="canvas"></div>
   
 
