@@ -294,7 +294,7 @@ d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
 //        })
         .on("mouseover", linkMouseOver)
         .on("mouseout", linkMouseOut)
-        .on("click", linkClick);
+        .on("click", function(d) {linkClick(d, 0);});
 
     //
     // Set UI input options
@@ -501,7 +501,14 @@ function linkMouseOut(d) {
  * TODO: to be implemented as separate gui element
  *
  */
-function linkClick(d) {
+function linkClick(d, value) {
+    if (value == 0) {
+        piwikTracker.trackPageView('Click a link');
+    }
+    else {
+        piwikTracker.trackPageView('Click a table link entry');
+
+    }
     if (!$(this).is(".dimmed")) {
         var detail_tab = $("#detail-tab");
         var detail_content_pane = $("#detail-content-pane");        
@@ -525,30 +532,6 @@ function linkClick(d) {
     }
 }
 
-function linkClick(source, target, detail) {
-    if (!$(this).is(".dimmed")) {
-        var detail_tab = $("#detail-tab");
-        var detail_content_pane = $("#detail-content-pane");        
-        detail_tab.empty();
-        detail_content_pane.empty();
-        for (var i = 0; i < d.detail.length; ++i) {
-            if (i == 0) {
-                detail_tab.append('<li class="active"><a href="#tab1" data-toggle="tab">Reference 1</a></li>');
-                detail_content_pane.append('<div class="tab-pane active" id="tab1"></div>');
-            }
-            else {
-                detail_tab.append('<li><a href="#tab' + (i+1) + '" data-toggle="tab">Reference ' + (i+1) + '</a></li>');
-                detail_content_pane.append('<div class="tab-pane" id="tab' + (i+1) + '"></div>');
-            }
-            $("#tab" + (i+1)).append('<p>Source:' + source.displayName + '<br/>Target: ' + target.displayName + 
-            '<br/>Strength: ' + detail[i].strength + '<br/>Technique: ' + detail[i].technique + '<br/>Reference: ' + detail[i].ref + 
-            '<br/>BAMS record: <a href="' + detail[i].bams_link + '" target="_blank">Click</a><br/>Pubmed link: <a href="' + 
-            detail[i].pubmed_link +'" target="_blank">Click</a><br/></p>');
-        }
-
-    }
-}
-
 
 /*
  * Node Click - for selection
@@ -557,6 +540,7 @@ function linkClick(source, target, detail) {
 function nodeClick(d) {
     d3.event.preventDefault();
     if (mode == 1) {
+        piwikTracker.trackPageView('Fix a node');
         if (selected_singleNode == d) {
             focusOnNodeFixed(d, false, false);
             path.classed("dimmed", false);
@@ -601,6 +585,7 @@ function nodeClick(d) {
  *
  */
 function searchButtonClick() {
+    piwikTracker.trackPageView('Click search button');
     selected_links = [];
     piwikTracker.trackPageView('SearchConnection');
     if (selected_source !== undefined && selected_target !== undefined) {
@@ -620,6 +605,7 @@ function searchButtonClick() {
  *
  */
 function clearButtonClick() {
+    piwikTracker.trackPageView('Click clear button');
     clearSelection();
     selected_nodes.forEach(function (d) {
         highlightNodeFixed(d, "selected-source", false);
@@ -633,6 +619,7 @@ function clearButtonClick() {
 }
 
 function sourceSearchInput() {
+    piwikTracker.trackPageView('Set source for search');
     if (selected_source != undefined) {
         highlightNodeFixed(selected_source, "selected-source", false);
     }
@@ -646,6 +633,7 @@ function sourceSearchInput() {
 }
 
 function targetSearchInput() {
+    piwikTracker.trackPageView('Set target for search');
     if (selected_target != undefined) {
         highlightNodeFixed(selected_target, "selected-target", false);
     }
@@ -659,17 +647,27 @@ function targetSearchInput() {
 }
 
 function attrSearchInput() {
+    piwikTracker.trackPageView('Set attr for edge color coding');
     var attrName = this.value;
-    console.log(attrName);
-    if (attrName != "strength") {
-        return;
+
+
+    if (attrName == "") {
+        path = svg.selectAll("path.link")
+        .classed("q0-4", false)
+        .classed("q1-4", false)
+        .classed("q2-4", false)
+        .classed("q3-4", false);
     }
+    if (attrName != "strength") {
+        return ;
+    }
+    
     var quantile = d3.scale.quantile().domain(attrRange[attrName]).range(d3.range(4));
+
 
     path = svg.selectAll("path.link")
         .attr("class", function (d) {
             var attrValue = 0;
-            console.log(d.detail[attrName]);
             if (d.detail[0][attrName] == "Weak") {
                 attrValue = 1;
             }
@@ -708,16 +706,20 @@ function attrSearchInput() {
         .text("[" + round(ticks[2]) + ", " + round(attrRange[attrName][1]) + "]");
     */
     
-    svg.select("#color0")
-        .text("Exists");
+    var featureLegend = d3.select("#legend")
+    .select("#legend2")
+    .select("svg")
+    
+    featureLegend.select("#color0")
+    .text("Exists");
 
-    svg.select("#color1")
+    featureLegend.select("#color1")
         .text("Weak");
         
-    svg.select("#color2")
+    featureLegend.select("#color2")
         .text("Moderate");
     
-    svg.select("#color3")
+    featureLegend.select("#color3")
         .text("Heavy");
 }
 
@@ -727,7 +729,7 @@ function attrSearchInput() {
  *
  */
 function setMaxHop() {
-    piwikTracker.trackPageView('SetMaxHop');
+    piwikTracker.trackPageView('Set max hop');
     max_hop = this.value;
     document.getElementById("maxHopValue").innerHTML = max_hop;
     path.classed("dimmed", false);
@@ -742,7 +744,7 @@ function setMaxHop() {
  *
  */
 function setMaxDepth() {
-    piwikTracker.trackPageView('SetMaxDepth');
+    piwikTracker.trackPageView('Set max depth');
     max_depth = this.value;
     document.getElementById("maxDepthValue").innerHTML = max_depth;
     nodes.forEach(function (d) {
@@ -767,6 +769,7 @@ function setMaxDepth() {
 
 
 function setTension() {
+    piwikTracker.trackPageView('Set tension');
     line.tension(this.value / 100);
     path.attr("d", function (d, i) { return line(splines[i]); });
 }
@@ -905,10 +908,26 @@ function displayConnections(value) {
             $('<table id = "table' + (i+1) + '" class="table table-condensed"><tbody></tbody></table>').appendTo(currPanel);
             for (var j = 0; j < currLinks.length; ++j) {
                 // i+1 is the max number of hops == the max number of items in each link array-1
+                $('#table' + (i+1)).append('<tr><td id="linkCell' + i + '' + j + '"></td><td id="detailCell' + i + '' + j + '"></td></tr>');
+                var linkCell = $('#linkCell' + i + '' + j);
                 for (var k = 0; k < i+1; ++k) {
-//                    currTable.append('<tr>' + currLinks[j][k].source.displayName + "-" + currLinks[j][k].target.displayName + "</tr>"); 
-                    console.log(currLinks[j][k]);
-                    $('#table' + (i+1)).append('<tr><td onClick="linkClick(' + currLinks[j][k] + ')">' + currLinks[j][k].source.displayName + '<br/>' + currLinks[j][k].target.displayName + '</td></tr>');
+                    var button;
+                    if (k == i) {
+                        linkCell.append('<img src="media/css/sourceIcon.png" height="16px" width="16px"/> ' 
+                        + currLinks[j][k].source.displayName + '<br/>' 
+                        + '<img src="media/css/targetIcon.png" height="16px" width="16px"/> '
+                        + currLinks[j][k].target.displayName);
+                        button = $('<button type="button" class="btn btn-info btn-mini">Detail</button><br/>').appendTo('#detailCell' + i + '' + j);                        
+                    }
+                    else {
+                        linkCell.append('<img src="media/css/sourceIcon.png" height="16px" width="16px"/> ' 
+                        + currLinks[j][k].source.displayName + '<br/>' 
+                        + '<img src="media/css/targetIcon.png" height="16px" width="16px"/> '
+                        + currLinks[j][k].target.displayName + '<br/>');
+                        button = $('<button type="button" class="btn btn-info btn-mini">Detail</button><br/><br/>').appendTo('#detailCell' + i + '' + j);
+                    }
+                    button.data(currLinks[j][k]);
+                    button.on("click", function() {linkClick($(this).data(), 1);});
                 } 
             }
         }
@@ -936,6 +955,9 @@ function groupSelectedLinks() {
 }
 
 function computeLinksForSelection(hop, source, target, currLink, selected_links) {
+    if (selected_links.length > 200) {
+        return;
+    }  
     var augmentedLinks = [],
         augmentedTargets = [],
         descendants = [];
