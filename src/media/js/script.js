@@ -606,10 +606,13 @@ function searchButtonClick() {
  */
 function clearButtonClick() {
     piwikTracker.trackPageView('Click clear button');
-    clearSelection();
+    clearSearchResult();
+    clearSingleSelection();
+    /*
     selected_nodes.forEach(function (d) {
         highlightNodeFixed(d, "selected-source", false);
     });
+    */
     if (selected_source !== undefined) {
         highlightNodeFixed(selected_source, "selected-source", false);
     }
@@ -622,6 +625,7 @@ function sourceSearchInput() {
     piwikTracker.trackPageView('Set source for search');
     if (selected_source != undefined) {
         highlightNodeFixed(selected_source, "selected-source", false);
+        clearSearchResult();
     }
     var inputRegion = this.value.toLowerCase();
     display_node_map.forEach(function (d) {
@@ -636,6 +640,7 @@ function targetSearchInput() {
     piwikTracker.trackPageView('Set target for search');
     if (selected_target != undefined) {
         highlightNodeFixed(selected_target, "selected-target", false);
+        clearSearchResult();
     }
     var inputRegion = this.value.toLowerCase();
     display_node_map.forEach(function (d) {
@@ -780,14 +785,17 @@ function setTension() {
  * Clears selected_links
  * Reverts selected arc and paths
  */
-function clearSelection() {
-    var counter = 0;
+function clearSearchResult() {
     path.classed("dimmed", false);
     highlightSelectedLinks(false);
     selected_links = [];
+    displayConnections(false);
+}
+
+function clearSingleSelection() {
+    path.classed("dimmed", false);
     focusOnNodeFixed(selected_singleNode, false, false);
     selected_singleNode = null;
-    displayConnections(false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -944,6 +952,7 @@ function displayConnections(value) {
 /////////////////////////////////////
 
 function groupSelectedLinks() {
+    grouped_selected_links = [];
     for (var i = 0; i < max_hop; ++i) {
         grouped_selected_links[i] = [];
     }
@@ -955,7 +964,7 @@ function groupSelectedLinks() {
 }
 
 function computeLinksForSelection(hop, source, target, currLink, selected_links) {
-    if (selected_links.length > 200) {
+    if (selected_links.length > 1000) {
         return;
     }  
     var augmentedLinks = [],
