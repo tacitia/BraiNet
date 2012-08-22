@@ -56,6 +56,13 @@ body {
     font: 13px sans-serif;
 }
 
+.ref {
+    position: absolute;
+    bottom: 200px;
+    width: 350px;
+    height: 300px;
+}
+
 /*#util li {*/
     /*float:left;*/
     /*display:block;*/
