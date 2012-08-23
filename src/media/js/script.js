@@ -18,34 +18,42 @@ var w = 800,
     rotate = 0,
     radius = Math.min(w, h) / 2.7;
 
-//state variables
-var mode = 1, // 1: exploration mode, 2: search mode
-    selected_link_texts = [],
-    selected_source,
-    selected_target,
+//ineraction state variables
+var mode = 1; // 1: exploration mode, 2: search mode
+
+//user selected data variables
+var selected_source = null,
+    selected_target = null,
     selected_singleNode = null,
     selected_links = [],
     grouped_selected_links = [],
     selected_nodes = [],
     interParents = [];
 
+//user selected svg variables
+var highlighted_elems = {};
 
-//bundle graph
-var nodes,
-    path,
-    splines,
-    con_map,
+//maps
+var con_map,
     display_node_map,
-    name_node_map;
+    name_node_map,
+    node_nghbr_map = {};
 
+
+//other data-specific parameters
 var attrRange = {};
 
-var tooltips;
 
-//ui
+//user specified parameters
 var max_hop = 1,
     max_depth = 8;
 
+//svg elements
+var nodes,
+    path,
+    splines,
+    tooltips;
+    
 var cluster = d3.layout.cluster()
     .size([360, radius - 100])
     .sort(null)
@@ -167,16 +175,6 @@ for (var i = 0; i < 4; ++i) {
 }
 
 
-
-//link details
-var detail = [],
-    bams_link = "",
-    pubmed_link = "";
-var selected_link_texts = [];
-
-//var detailPanel = document.getElementById("detail");
-
-
 function redraw() {
     //if (d3.event.scale > 2.5 || d3.event.scale < 0.9) {
         //return;
@@ -200,19 +198,6 @@ var tooltip = function (w, h) {
 
 var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
-/**
- * Appends options to selection ui
- *
- */
-/*
-d3.json("../media/data/options.json", function (data) {
-    data.forEach(function (d) {
-        $('#regionSelect').append(new Option(d.name, d.name, false, false));
-    });
-//    $('.chzn-select').chosen({allow_single_deselect: true});
-});
-*/
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // Draw Bundle
@@ -224,8 +209,6 @@ d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
     var nodes_for_link,
         links_visible,
         links,
-//        splines,
-//        path,
         node,
         arc;
 
@@ -315,8 +298,8 @@ d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
             .attr("class", "arc")
             .attr("fill", "white")
             .attr("stroke", "white")
-            .on("mouseover", mouseOver)
-            .on("mouseout", mouseOut)
+            .on("mouseover", nodeMouseOver)
+            .on("mouseout", nodeMouseOut)
             .on("click", nodeClick);
     } else {
         node.append("svg:circle")
@@ -380,6 +363,9 @@ d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
         })
         .attr("transform", function (d) { return "translate(" + arc.outerCenter(d) + ")rotate(" + (d.x - 90) + ")"; });
         //.attr("transform", "translate(0,0)");
+        
+    createNodeNghbrMap();
+    console.log(node_nghbr_map);
 });
 
 
@@ -426,7 +412,7 @@ function mouse(e) {
  *
  *
  */
-function mouseOver(d) {
+function nodeMouseOver(d) {
     //svg.select("#node-" + d.key).append("svg:path")
         //.attr("d", tooltip())
         //.attr("transform", function (d) { return "translate(" + arc.centroid(d) + ")"; });
@@ -440,8 +426,7 @@ function mouseOver(d) {
  * Mouse Out
  *
  */
-function mouseOut(d) {
-
+function nodeMouseOut(d) {
     //svg.selectAll("path.link").classed("non-selected", false);
     if (selected_singleNode != d) {
         focusOnNodeTemp(d, false);
@@ -719,21 +704,12 @@ function attrSearchInput() {
         .text("[" + round(ticks[2]) + ", " + round(attrRange[attrName][1]) + "]");
     */
     
-    var featureLegend = d3.select("#legend")
-    .select("#legend2")
-    .select("svg")
+    var featureLegend = d3.select("#legend").select("#legend2").select("svg")
     
-    featureLegend.select("#color0")
-    .text("Exists");
-
-    featureLegend.select("#color1")
-        .text("Weak");
-        
-    featureLegend.select("#color2")
-        .text("Moderate");
-    
-    featureLegend.select("#color3")
-        .text("Heavy");
+    featureLegend.select("#color0").text("Exists");
+    featureLegend.select("#color1").text("Weak");
+    featureLegend.select("#color2").text("Moderate");
+    featureLegend.select("#color3").text("Heavy");
 }
 
 /*
@@ -821,7 +797,37 @@ function clearSingleSelection() {
 /////////////////////////////////////
 // Node and link highlighting
 /////////////////////////////////////
+function createNodeNghbrMap() {
+    for (var i = 0; i < nodes.length; ++i) {
+        var node = nodes[i];
+        node_nghbr_map[node.key + " selected arc"] = svg.select("#arc-" + node.key);
+        node_nghbr_map[node.key + " target link"] = svg.selectAll("path.link.target-" + node.key);
+        node_nghbr_map[node.key + " source link"] = svg.selectAll("path.link.source-" + node.key);
+        node_nghbr_map[node.key + " bi link"] = svg.selectAll("path.link.bi-" + node.key);    
+        node_nghbr_map[node.key + " text"] = [];
+        node_nghbr_map[node.key + " tooltip"] = [];
+        node_nghbr_map[node.key + " target arc"] = [];
+        node_nghbr_map[node.key + " source arc"] = [];
+        node_nghbr_map[node.key + " bi arc"] = [];
+        if (node.depth > 2) node_nghbr_map[node.key + " text"].push(svg.select("#text-" + node.key));
+        if (node.depth > 2) node_nghbr_map[node.key + " tooltip"].push(svg.select("#tooltip-" + node.key));
+        node_nghbr_map[node.key + " target link"].each(function(d) {addNghborNodes(d.source, node.key, node_nghbr_map[node.key + " source arc"]);});
+        node_nghbr_map[node.key + " source link"].each(function(d) {addNghborNodes(d.target, node.key, node_nghbr_map[node.key + " target arc"]);});
+        node_nghbr_map[node.key + " bi link"].each(function(d) {addNghborNodes(d.source, node.key, node_nghbr_map[node.key + " bi arc"]);});
+        node_nghbr_map[node.key + " bi link"].each(function(d) {addNghborNodes(d.target, node.key, node_nghbr_map[node.key + " bi arc"]);});
+    }
+}
+
+function addNghborNodes(node, i, array) {
+    if (node.depth > 2) {
+        node_nghbr_map[i + " text"].push(svg.select("#text-" + node.key));
+        node_nghbr_map[i + " tooltip"].push(svg.select("#tooltip-" + node.key));
+    }
+    array.push(svg.select("#arc-" + node.key));
+}
+
 function focusOnNodeTemp(node, value) {
+    /*
     svg.selectAll("path.link.target-" + node.key)
         .classed("target", value)
         .each(function(d) {highlightNodeTemp(d.source, "source", value)});
@@ -836,9 +842,25 @@ function focusOnNodeTemp(node, value) {
                             highlightNodeTemp(d.target, "bi", value);});
 
     highlightNodeTemp(node, "selected", value);
+    */
+    /*
+    highlighted_elems["temp target link"] = svg.selectAll("path.link.target-" + node.key);
+    highlighted_elems["temp source link"] = svg.selectAll("path.link.source-" + node.key);
+    highlighted_elems["temp bi link"] = svg.selectAll("path.link.bi-" + node.key);
+    */
+    node_nghbr_map[node.key + " selected arc"].classed("selected", function(d) {!value && d.fixed ? true : value});
+    node_nghbr_map[node.key + " target link"].classed("target", value);
+    node_nghbr_map[node.key + " source link"].classed("source", value);
+    node_nghbr_map[node.key + " bi link"].classed("bi", value);
+    node_nghbr_map[node.key + " text"].forEach(function(d) {d.fixed ? null : d.classed("selected", value);});
+    node_nghbr_map[node.key + " tooltip"].forEach(function(d) {d.fixed ? null : d.classed("hidden", !value);});
+    node_nghbr_map[node.key + " target arc"].forEach(function(d) {d.fixed ? null : d.classed("target", value);});
+    node_nghbr_map[node.key + " source arc"].forEach(function(d) {d.fixed ? null : d.classed("source", value);});   
+    node_nghbr_map[node.key + " bi arc"].forEach(function(d) {d.fixed ? null : d.classed("bi", value);}); 
 }
 
 function focusOnNodeFixed(node, value, dimmed) {
+    /*
     if (node == undefined || node == null) return;
     svg.selectAll("path.link.target-" + node.key)
         .classed("target", value)
@@ -860,6 +882,16 @@ function focusOnNodeFixed(node, value, dimmed) {
                             highlightNodeFixed(d.target, "bi", value, true);});
 
     highlightNodeFixed(node, "selected", value, true);
+    */
+    node_nghbr_map[node.key + " selected arc"].classed("selected", value).each(function(d) {d.fixed = value;});
+    node_nghbr_map[node.key + " target link"].classed("target", value).classed("dimmed", dimmed);
+    node_nghbr_map[node.key + " source link"].classed("source", value).classed("dimmed", dimmed);
+    node_nghbr_map[node.key + " bi link"].classed("bi", value).classed("dimmed", dimmed);
+    node_nghbr_map[node.key + " text"].forEach(function(d) {d.fixed = value; d.classed("selected", value);});
+    node_nghbr_map[node.key + " tooltip"].forEach(function(d) {d.fixed = value; d.classed("hidden", !value);});
+    node_nghbr_map[node.key + " target arc"].forEach(function(d) {d.fixed = value; d.classed("target", value);});
+    node_nghbr_map[node.key + " source arc"].forEach(function(d) {d.fixed = value; d.classed("source", value);});   
+    node_nghbr_map[node.key + " bi arc"].forEach(function(d) {d.fixed = value; d.classed("bi", value);}); 
 }
 
 function highlightNodeTemp(node, className, value) {
