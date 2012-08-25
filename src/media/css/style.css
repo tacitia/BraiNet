@@ -31,6 +31,38 @@ body {
     height: 30px;
 }
 
+.conn-level0 {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    width: 350px;
+    height: 100%;
+    background-color: rgba(255,255,255,0.9);
+}
+
+.conn-level1 {
+    position: absolute;
+    left: 20px;
+    width: 330px;
+    border: 1px solid #dddddd;
+    max-height: 300px;
+    overflow-y: scroll;
+}
+
+.legend {
+    position: absolute;
+    top: 320px;
+    left: 20px;
+    font: 13px sans-serif;
+}
+
+.ref {
+    position: absolute;
+    bottom: 200px;
+    width: 350px;
+    height: 300px;
+}
+
 /*#util li {*/
     /*float:left;*/
     /*display:block;*/
@@ -169,12 +201,17 @@ body {
 .tooltip.selected-hidden {
     visibility: hidden;
 }
-
+.tooltip.selected-source {
+    visibility: hidden;
+}
+.tooltip.selected-target {
+    visibility: hidden;
+}
 
 /*  links (connections) */
 
  .link {
-	/*stroke: #AAA;*/
+	stroke: #AAA;
 	stroke-opacity: .1;
 	fill: none;
     stroke-width: 1.5px;
@@ -193,14 +230,14 @@ body {
 
 /*red*/
 .link.target {
-    /*stroke: #d62728;*/
+    stroke: #d62728;
 }
 /*green*/
 .link.source {
-    /*stroke: #2ca02c;*/
+    stroke: #2ca02c;
 }
 .link.bi {
-	stroke: #062db8;
+    stroke: #062db8;
 }
 
 .link.hidden {
@@ -208,7 +245,7 @@ body {
 }
 
 .link.selected {
-    /*stroke: #b45c1f;*/
+    stroke: #b45c1f;
 }
 .link.source, .link.target, .link.selected, .link.bi {
 	stroke-opacity: .9;

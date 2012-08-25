@@ -59,3 +59,65 @@
         //}
     //});
 //}
+
+
+/*
+ * Search Input
+ * Deprecated
+ *
+function regionSearchInput() {
+    selected_nodes.forEach(function (d) {
+        highlightNode(d.node, "selected-source", false, true);
+    });
+    selected_nodes = [];
+    var inputRegion = this.value.toLowerCase();
+    display_node_map.forEach(function (d) {
+        if (d.name == inputRegion) {
+            selected_nodes.push(d.node);
+            highlightNode(d.node, "selected-source", true, true);
+        }
+    });
+}
+*/
+
+/*
+function highlightNode(node, className, value, fixed) {
+    svg.select("#arc-" + node.key).classed(className, value);
+
+    if (node.depth > 2) {
+        svg.select("#text-" + node.key).classed(className, value);
+        if (fixed) {
+            svg.select("#tooltip-" + node.key).classed("hidden", false);
+            svg.select("#tooltip-" + node.key).classed("selected-hidden", !value);
+        }
+        else {
+            if (!isSelected(node)) {
+                svg.select("#tooltip-" + node.key).classed("hidden", !value);
+            }
+        }
+    }
+}
+
+function focusOnNode(node, value, fixed) {
+    svg.selectAll("path.link.target-" + node.key)
+        .classed("target", value)
+        .classed("dimmed", fixed ? value : false)
+        .classed("fixed", fixed ? value : false)
+        .each(function(d) {highlightNode(d.source, "source", value, fixed)});
+
+    svg.selectAll("path.link.source-" + node.key)
+        .classed("source", value)
+        .classed("dimmed", fixed ? value : false)
+        .classed("fixed", fixed ? value : false)
+        .each(function(d) {highlightNode(d.target, "target", value, fixed)});
+
+    svg.selectAll("path.link.bi-" + node.key)
+        .classed("bi", value)
+        .classed("dimmed", fixed ? value : false)
+        .classed("fixed", fixed ? value : false)
+        .each(function(d) {highlightNode(d.source, "bi", value, fixed);
+                            highlightNode(d.target, "bi", value, fixed);});
+
+    highlightNode(node, "selected", value, fixed);
+}
+*/

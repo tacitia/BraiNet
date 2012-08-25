@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="media/lib/chosen/chosen.css" />
   <link rel="stylesheet" href="media/css/style.css" type="text/css" charset="utf-8">
   <link rel="stylesheet" href="media/css/colors.css" type="text/css" charset="utf-8">
+  <link rel="stylesheet" href="media/lib/jquery-ui/css/redmond/jquery-ui.css" />
 
   <!-- HTML5 shim, IE6-8 support of HTML5 elements -->
   <!--[if lt IE 9]>
@@ -19,7 +20,8 @@
   <!--Utilities-->
   <div id="util">
     <ul class="nav nav-tabs">
-      <li class="active"><a href="#options" data-toggle="tab">Options</a></li>
+      <li class="active"><a href="#legend" data-toggle="tab">Legend</a></li>
+      <li><a href="#options" data-toggle="tab">Options</a></li>
       <li><a href="#search" data-toggle="tab">Search</a></li>
       <li><a href="#help" data-toggle="tab">Help</a></li>
     </ul>
@@ -68,8 +70,13 @@
         <!--Search for a region:-->
         <!--input id="regionInput" type="text" class="searchBox"-->
       </div>
+<<<<<<< HEAD
 
       <div id="options" class="tab-pane fade in active">
+=======
+      
+      <div id="options" class="tab-pane">
+>>>>>>> 512f7b74fc86207e93e71f73bb0a3ee7dd784e03
         <table>
             <tr><td class="tab-column-1"><h4>Edge color</h4></td></tr>
             <tr>
@@ -121,24 +128,63 @@
         3. To adjust the level of details: use the "Max depth" slider
         </p>
       </div>
+      <div id="legend" class="tab-pane fade in active">
+        <h4>Primary</h4></br>
+        <div id="legend1"></div>
+        <h4>Feature Color</h4></br>
+        <div id="legend2"></div>
+      </div>
     </div>
   </div>
-
-  <div id="legend"></div>
-  <div id="canvas"></div>
-  <div id="detail">
-    <span id="source">Source:</span><br/>
-    <span id="target">Target:</span><br/>
-    <span id="direction">Bidirectional:</span><br/>
-    <span id="strength">Strength:</span><br/>
-    <span id="technique">Technique:</span><br/>
-    <span id="reference">Reference:</span><br/>
-    BAMS link:
-    <a id="bams_link" target="_blank"></a><br/>
-    Pubmed link:
-    <a id="pubmed_link" target="_blank"></a><br/>
+    
+  <!--  
+  <div id="legend" class="legend">
+    <h3>Legend</h3>
   </div>
+  -->
+  
+  <div id="canvas"></div>
+  
 
+  <div id="connections" class="conn-level0">
+    <h3>Search Results</h3>
+  </div>
+  
+<!--
+  <div id="detail">
+	<h3><a href="#">Section 1</a></h3>
+	<div>
+		<p>
+		Mauris mauris ante, blandit et, ultrices a, suscipit eget, quam. Integer
+		ut neque. Vivamus nisi metus, molestie vel, gravida in, condimentum sit
+		amet, nunc. Nam a nibh. Donec suscipit eros. Nam mi. Proin viverra leo ut
+		odio. Curabitur malesuada. Vestibulum a velit eu ante scelerisque vulputate.
+		</p>
+	</div>
+	<h3><a href="#">Section 2</a></h3>
+	<div>
+		<p>
+		Sed non urna. Donec et ante. Phasellus eu ligula. Vestibulum sit amet
+		purus. Vivamus hendrerit, dolor at aliquet laoreet, mauris turpis porttitor
+		velit, faucibus interdum tellus libero ac justo. Vivamus non quam. In
+		suscipit faucibus urna.
+		</p>
+	</div>
+  </div>
+-->
+  
+
+  <div id="detail" class="tabbable tabs-top ref">
+    <h3>References</h3>
+    <span id="ref-src">Source: no selection </span><br/>
+    <span id="ref-tgt">Target: no selection </span><br/>
+    <i>Click on a link to see the references</i>
+    <ul id="detail-tab" class="nav nav-tabs">
+    </ul>
+    <div id="detail-content-pane" class="tab-content">
+    </div>
+  </div>
+  
   <!--JAVASCRIPT-->
 
   <!--Libraries-->
@@ -146,11 +192,20 @@
   <script type="text/javascript" src="media/lib/bootstrap/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="media/lib/d3.v2.js"></script>
   <script type="text/javascript" src="media/lib/chosen/chosen.jquery.js"></script>
+  <script type="text/javascript" src="media/lib/jquery-ui/js/jquery-ui.js"></script>
 
   <!--TODO: brainmap and script should be compressed as one file-->
   <script type="text/javascript" src="media/js/script.js"></script>
   <script type="text/javascript" src="media/js/brainMap.js"></script>
 
+
+ <!--
+  <script>
+	$(function() {
+		$("#detail").accordion();
+	});
+  </script>
+  -->
 
   <!-- Piwik -->
   <script type="text/javascript">
