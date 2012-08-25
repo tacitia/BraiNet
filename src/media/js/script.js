@@ -78,6 +78,7 @@ var svg = d3.select("#canvas")
       .call(zoom)
     .append('g');
 
+//I left it under g but the defs should be preferably higher in the svg.
 var gradient = svg.append("defs")
         .append("linearGradient")
         .attr("id", "gradient");
@@ -413,6 +414,7 @@ function mouseOver(d) {
     //svg.select("#node-" + d.key).append("svg:path")
         //.attr("d", tooltip())
         //.attr("transform", function (d) { return "translate(" + arc.centroid(d) + ")"; });
+
     if (selected_singleNode != d) {
         focusOnNodeTemp(d, true);
     }
@@ -425,7 +427,8 @@ function mouseOver(d) {
  */
 function mouseOut(d) {
 
-    //svg.selectAll("path.link").classed("non-selected", false);
+    //svg.selectAll("path.link").classed("dimmed", false);
+
     if (selected_singleNode != d) {
         focusOnNodeTemp(d, false);
     }

@@ -28,23 +28,25 @@
         <table>
             <tr>
                 <td class="tab-column-1">Source</td>
-                <td class="tab-column-2">        
-                    <select data-placeholder="Choose a brain area" class="chzn-select" style="width:250px;" id="sourceSelect">
-                        <option></option>
-                    </select>
+                <td class="tab-column-2">
+                  <select data-placeholder="Choose a brain area"
+                    class="chzn-select" style="width:250px;" id="sourceSelect">
+                    <option></option>
+                  </select>
                 </td>
             </tr>
             <tr>
                 <td class="tab-column-1">Target</td>
-                <td class="tab-column-2">        
-                    <select data-placeholder="Choose a brain area" class="chzn-select" style="width:250px;" id="targetSelect">
+                <td class="tab-column-2">
+                  <select data-placeholder="Choose a brain area"
+                    class="chzn-select" style="width:250px;" id="targetSelect">
                         <option></option>
                     </select>
                 </td>
             </tr>
             <tr>
                 <td class="tab-column-1">Level of indirection</td>
-                <td class="tab-column-2">        
+                <td class="tab-column-2">
                     <input id="maxHop" type="range" min=1 max=5 value=1 step=1>
                     <span id="maxHopValue">1</span>
                 </td>
@@ -52,15 +54,21 @@
         </table>
         </br>
         <table>
-            <tr>
-                <td style="width:350px"><button id="bt-search" class="btn">Show connectivity for selected regions</button></td>
-                <td style="width:50px;"><button id="bt-clear" class="btn btn-warning">Clear</button></td>
-            </tr>
+          <tr>
+            <td style="width:350px">
+              <button id="bt-search" class="btn">
+                Show connectivity for selected regions
+              </button>
+            </td>
+            <td style="width:50px;">
+              <button id="bt-clear" class="btn btn-warning">Clear</button>
+            </td>
+          </tr>
         </table>
         <!--Search for a region:-->
         <!--input id="regionInput" type="text" class="searchBox"-->
       </div>
-      
+
       <div id="options" class="tab-pane fade in active">
         <table>
             <tr><td class="tab-column-1"><h4>Edge color</h4></td></tr>
