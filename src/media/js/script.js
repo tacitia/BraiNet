@@ -19,7 +19,7 @@ var w = 800,
     radius = Math.min(w, h) / 2.7;
 
 //state variables
-var mode = 1, // 1: exploration mode, 2: search mode
+var mode = 1, // 1: exploration mode, 2: search mode, 3: fixation mode
     selected_link_texts = [],
     selected_source,
     selected_target,
@@ -27,6 +27,8 @@ var mode = 1, // 1: exploration mode, 2: search mode
     selected_links = [],
     grouped_selected_links = [],
     selected_nodes = [],
+    old_focused_source = null,
+    old_focused_target = null,
     interParents = [];
 
 
@@ -100,6 +102,8 @@ svg.append('rect')
 
 // let's not mix the graph with other elements
 // this should be in the html - not necessary for it to be in svg
+
+var highlight_text = svg.append("text").attr("id", "highlight_text").attr("x", -400).attr("y", 350).text("");
 
 //legend
 var legend = d3.select("#legend1")
@@ -427,11 +431,14 @@ function mouse(e) {
  *
  */
 function mouseOver(d) {
+    highlight_text.text(d.displayName);
     //svg.select("#node-" + d.key).append("svg:path")
         //.attr("d", tooltip())
         //.attr("transform", function (d) { return "translate(" + arc.centroid(d) + ")"; });
-    if (selected_singleNode != d) {
-        focusOnNodeTemp(d, true);
+    console.log(mode);
+    if (mode == 1) {
+//        focusOnNodeTemp(d, true);
+        focusOnNode(d, true);
     }
 }
 
@@ -441,10 +448,11 @@ function mouseOver(d) {
  *
  */
 function mouseOut(d) {
-
+    highlight_text.text("");
     //svg.selectAll("path.link").classed("non-selected", false);
-    if (selected_singleNode != d) {
-        focusOnNodeTemp(d, false);
+    if (mode == 1) {
+//        focusOnNodeTemp(d, false);
+        focusOnNode(d, false);
     }
 }
 
@@ -459,14 +467,18 @@ function linkMouseOver(d) {
     if (d.bi == true) {
         svg.select("path.link.bi-" + d.source.key + ".bi-" + d.target.key)
             .classed("selected", true);
-        highlightNodeTemp(d.source, "bi", true);
-        highlightNodeTemp(d.target, "bi", true);
+//        highlightNodeTemp(d.source, "bi", true);
+//        highlightNodeTemp(d.target, "bi", true);
+        highlightNode(d.source, "bi", true, true);
+        highlightNode(d.target, "bi", true, true);
     }
     else {
         svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key)
             .classed("selected", true);
-        highlightNodeTemp(d.source, "source", true);
-        highlightNodeTemp(d.target, "target", true);
+//        highlightNodeTemp(d.source, "source", true);
+//        highlightNodeTemp(d.target, "target", true);
+        highlightNode(d.source, "source", true, true);
+        highlightNode(d.target, "target", true, true);
     }
 }
 
@@ -486,12 +498,16 @@ function linkMouseOut(d) {
     svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key)
         .classed("selected", false);
     if (d.bi == true) {
-        highlightNodeTemp(d.source, "bi", false);
-        highlightNodeTemp(d.target, "bi", false);
+//        highlightNodeTemp(d.source, "bi", false);
+//        highlightNodeTemp(d.target, "bi", false);
+        highlightNode(d.source, "bi", false, true);
+        highlightNode(d.target, "bi", false, true);
     }
     else {
-        highlightNodeTemp(d.source, "source", false);
-        highlightNodeTemp(d.target, "target", false);
+//        highlightNodeTemp(d.source, "source", false);
+//        highlightNodeTemp(d.target, "target", false);
+        highlightNode(d.source, "source", false, true);
+        highlightNode(d.target, "target", false, true);
     }
 }
 
@@ -544,22 +560,27 @@ function linkClick(d, value) {
  */
 function nodeClick(d) {
     d3.event.preventDefault();
-    if (mode == 1) {
+    if (mode == 1 || 3) {
         piwikTracker.trackPageView('Fix a node');
         if (selected_singleNode == d) {
-            focusOnNodeFixed(d, false, false);
+//            focusOnNodeFixed(d, false, false);
+            focusOnNode(d, false);
             path.classed("dimmed", false);
             selected_singleNode = null;
+            mode = 1;
         }
         else {
             if (selected_singleNode == null) {
                 path.classed("dimmed", true);
             }
             else {
-                focusOnNodeFixed(selected_singleNode, false, true);
+//                focusOnNodeFixed(selected_singleNode, false, true);
+                focusOnNode(selected_singleNode, false);
             }
             selected_singleNode = d;
-            focusOnNodeFixed(d, true, false);
+//            focusOnNodeFixed(d, true, false);
+            focusOnNode(d, true);
+            mode = 3;
         }
     }
     else {
@@ -613,33 +634,36 @@ function searchButtonClick() {
  */
 function clearButtonClick() {
     piwikTracker.trackPageView('Click clear button');
-    clearSearchResult();
-    clearSingleSelection();
+    if (mode == 2) {
+        clearSearchResult();
+        if (selected_source !== undefined) highlightNode(selected_source, "selected-source", false, true);
+        if (selected_target !== undefined) highlightNode(selected_target, "selected-target", false, true);
+    }
+    else if (mode == 3) {
+        clearSingleSelection();
+    }
     /*
     selected_nodes.forEach(function (d) {
         highlightNodeFixed(d, "selected-source", false);
     });
     */
-    if (selected_source !== undefined) {
-        highlightNodeFixed(selected_source, "selected-source", false, true);
-    }
-    if (selected_target !== undefined) {
-        highlightNodeFixed(selected_target, "selected-target", false, true);
-    }
+
     mode = 1;
 }
 
 function sourceSearchInput() {
     piwikTracker.trackPageView('Set source for search');
     if (selected_source != undefined) {
-        highlightNodeFixed(selected_source, "selected-source", false, true);
+//        highlightNodeFixed(selected_source, "selected-source", false, true);
+        highlightNode(selected_source, "selected-source", false, true);
         clearSearchResult();
     }
     var inputRegion = this.value.toLowerCase();
     display_node_map.forEach(function (d) {
         if (d.name == inputRegion) {
             selected_source = d.node;
-            highlightNodeFixed(d.node, "selected-source", true, true);
+//            highlightNodeFixed(d.node, "selected-source", true, true);
+            highlightNode(d.node, "selected-source", true, true);
         }
     });
 }
@@ -647,14 +671,16 @@ function sourceSearchInput() {
 function targetSearchInput() {
     piwikTracker.trackPageView('Set target for search');
     if (selected_target != undefined) {
-        highlightNodeFixed(selected_target, "selected-target", false, true);
+//        highlightNodeFixed(selected_target, "selected-target", false, true);
+        highlightNode(selected_target, "selected-target", false, true);
         clearSearchResult();
     }
     var inputRegion = this.value.toLowerCase();
     display_node_map.forEach(function (d) {
         if (d.name == inputRegion) {
             selected_target = d.node;
-            highlightNodeFixed(d.node, "selected-target", true, true);
+//            highlightNodeFixed(d.node, "selected-target", true, true);
+            highlightNode(d.node, "selected-target", true, true);
         }
     });
 }
@@ -799,11 +825,13 @@ function clearSearchResult() {
     selected_links = [];
     displayConnections(false);
     displayInterParents(false);
+    if (old_focused_source != null) svg.select("#arc-" + old_focused_source.key).classed("highlighted", false);
+    if (old_focused_target != null) svg.select("#arc-" + old_focused_target.key).classed("highlighted", false);
 }
 
 function clearSingleSelection() {
     path.classed("dimmed", false);
-    focusOnNodeFixed(selected_singleNode, false, false);
+    focusOnNode(selected_singleNode, false);
     selected_singleNode = null;
 }
 
@@ -821,6 +849,7 @@ function clearSingleSelection() {
 /////////////////////////////////////
 // Node and link highlighting
 /////////////////////////////////////
+/*
 function focusOnNodeTemp(node, value) {
     svg.selectAll("path.link.target-" + node.key)
         .classed("target", value)
@@ -861,7 +890,45 @@ function focusOnNodeFixed(node, value, dimmed) {
 
     highlightNodeFixed(node, "selected", value, true);
 }
+*/
 
+function focusOnNode(node, value) {
+    if (node == undefined || node == null) return;
+    svg.selectAll("path.link.target-" + node.key)
+        .classed("target", value)
+        .classed("dimmed", false)
+        .each(function(d) {highlightNode(d.source, "source", value, true)});
+
+    svg.selectAll("path.link.source-" + node.key)
+        .classed("source", value)
+        .classed("dimmed", false)
+        .classed("fixed", value)
+        .each(function(d) {highlightNode(d.target, "target", value, true)});
+
+    svg.selectAll("path.link.bi-" + node.key)
+        .classed("bi", value)
+        .classed("dimmed", false)
+        .classed("fixed", value)
+        .each(function(d) {highlightNode(d.source, "bi", value, true);
+                            highlightNode(d.target, "bi", value, true);});
+
+    highlightNode(node, "selected", value, true);    
+}
+
+
+function highlightNode(node, className, value, showName) {
+    if (node == undefined) return;
+    svg.select("#arc-" + node.key).classed(className, value);
+        
+    if (node.depth > 2 && showName) {
+        svg.select("#text-" + node.key).classed("selected", value);
+        svg.select("#tooltip-" + node.key).classed("hidden", !value);
+//        svg.select("#tooltip-" + node.key).classed("selected-hidden", !value);
+//        node.showName = showName;
+    }  
+}
+
+/*
 function highlightNodeTemp(node, className, value) {
     if (node.fixed == true && node.showName == true) return;
     svg.select("#arc-" + node.key).classed(className, value);
@@ -884,6 +951,7 @@ function highlightNodeFixed(node, className, value, showName) {
         node.showName = showName;
     }  
 }
+*/
 
 function highlightSelectedLinks(value) {
     selected_links.forEach(function (d) {
@@ -892,8 +960,10 @@ function highlightSelectedLinks(value) {
             svg.select("path.link.bi-" + i.source.key + ".bi-" + i.target.key).classed("dimmed", value);
             svg.select("path.link.source-" + i.source.key + ".target-" + i.target.key).classed("selected", value);
             svg.select("path.link.bi-" + i.source.key + ".bi-" + i.target.key).classed("selected", value);
-            highlightNodeFixed(i.source, "source", value, false);
-            highlightNodeFixed(i.target, "target", value, false);
+            if (i.source != selected_source && i.source != selected_target)
+                highlightNode(i.source, "selected-secondary", value, false);
+            if (i.target != selected_source && i.target != selected_target)
+                highlightNode(i.target, "selected-secondary", value, false);
         });
     });    
     
@@ -901,11 +971,18 @@ function highlightSelectedLinks(value) {
 
 function displayInterParents(value) {
     if (mode != 2) return;
-    var parentLevel = Math.min(selected_source.depth, selected_target.depth);
-    getInterParents(parentLevel);
+    if (value) {
+        var parentLevel = Math.max(selected_source.depth, selected_target.depth);
+        parentLevel = Math.min(parentLevel, 4);
+        getInterParents(parentLevel);
+    }
     interParents.forEach(function(d) {
-        if (d != selected_source && d != selected_target) {
-            highlightNodeFixed(d, "selected", value, true);
+        var sourceDec = [],
+            targetDec = [];
+        getDecendants(selected_source, sourceDec);
+        getDecendants(selected_target, targetDec);
+        if (d != selected_source && d != selected_target && $.inArray(d, sourceDec) < 0 && $.inArray(d, targetDec) < 0) {
+            highlightNode(d, "selected", value, true);
         }
     });
 }
@@ -929,6 +1006,7 @@ function appendNodesAsOptions(nodes) {
 }
 
 function displayConnections(value) {
+    console.log("called");
     var connectionPanel = $("#connections");
     if (value) {
         for (var i = 0; i < grouped_selected_links.length; ++i) {
@@ -957,7 +1035,15 @@ function displayConnections(value) {
                         button = $('<button type="button" class="btn btn-info btn-mini">Detail</button><br/><br/>').appendTo('#detailCell' + i + '' + j);
                     }
                     button.data(currLinks[j][k]);
-                    button.on("click", function() {linkClick($(this).data(), 1);});
+                    button.on("click", function() {
+                        linkClick($(this).data(), 1);
+                        if (old_focused_source != null) svg.select("#arc-" + old_focused_source.key).classed("highlighted", false);
+                        if (old_focused_target != null) svg.select("#arc-" + old_focused_target.key).classed("highlighted", false);
+                        svg.select("#arc-" + $(this).data().source.key).classed("highlighted", true);
+                        svg.select("#arc-" + $(this).data().target.key).classed("highlighted", true);
+                        old_focused_source = $(this).data().source;
+                        old_focused_target = $(this).data().target;
+                    });
                 } 
             }
         }
@@ -973,6 +1059,7 @@ function displayConnections(value) {
 // Backend Computation
 /////////////////////////////////////
 function getInterParents(depth) {
+    interParents = [];
     selected_links.forEach(function(d) {
         for (var i = 0; i < d.length; ++i) {
             interParents.push(findParentAtDepth(d[i].source, depth));
@@ -982,8 +1069,9 @@ function getInterParents(depth) {
 }
 
 function findParentAtDepth(node, depth) {
+    if (node == selected_source || node == selected_target) return;
     var parent = node;
-    while (parent.depth > depth) {
+    while (parent.depth > depth && parent.parent != selected_source.parent && parent.parent != selected_target.parent) {
         parent = parent.parent;
     }
     return parent;
@@ -998,7 +1086,6 @@ function groupSelectedLinks() {
         var hop = selected_links[i].length;
         grouped_selected_links[hop-1].push(selected_links[i]);
     }
-    console.log(grouped_selected_links);
 }
 
 function computeLinksForSelection(hop, source, target, currLink, selected_links) {
@@ -1019,7 +1106,7 @@ function computeLinksForSelection(hop, source, target, currLink, selected_links)
 
     descendants.forEach(function (d) {
         d.links.forEach(function (i) {
-            if (name_node_map[i.name] != undefined) {
+            if (name_node_map[i.name] != undefined && $.inArray(name_node_map[i.name], descendants) < 0) {
                 augmentedLinks.push({source: d, target: name_node_map[i.name], detail: i.detail});
             }
         });
@@ -1034,7 +1121,7 @@ function computeLinksForSelection(hop, source, target, currLink, selected_links)
                 selected_links.push(newLink);
             }
         });
-        if (hop > 1) {
+        if (hop > 1 && $.inArray(d.target, augmentedTargets) < 0) {
             computeLinksForSelection(hop - 1, d.target, target, newLink, selected_links);
         }
     });
