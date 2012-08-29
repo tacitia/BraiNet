@@ -49,6 +49,11 @@ body {
     overflow-y: scroll;
 }
 
+.nav-tabs-add {
+    max-height: 100px;
+    overflow-y: scroll;
+}
+
 .legend {
     position: absolute;
     top: 320px;
@@ -135,6 +140,11 @@ body {
     fill: #b45c1f;
 }
 
+.arc.selected-secondary {
+    fill: #b45c1f;
+    opacity: 0.5;
+}
+
 /*blue*/
 .arc.bi {
     fill: #062db8;
@@ -148,6 +158,10 @@ body {
     visibility: hidden;
 }
 
+.arc.highlighted {
+    stroke: red;
+    stroke-width: 3px;
+}
 
 /*   Text    */
 
