@@ -82,17 +82,6 @@ var svg = d3.select("#canvas")
       .call(zoom)
     .append('g');
 
-var gradient = svg.append("defs")
-        .append("linearGradient")
-        .attr("id", "gradient");
-
-gradient.append("stop")
-    .attr("offset", "3%")
-    .attr("stop-color", "#33E31B");
-gradient.append("stop")
-    .attr("offset", "97%")
-    .attr("stop-color", "#DB1D33");
-
 //background for zoom
 svg.append('rect')
     .attr('width', w)
@@ -105,7 +94,14 @@ svg.append('rect')
 
 var highlight_text = svg.append("text").attr("id", "highlight_text").attr("x", -400).attr("y", 350).text("");
 
-//legend
+
+//
+//
+// THE LEGEND SHOULD NOT BE A SVG
+//
+// TODO: convert this to a simple div/css inside the hmtl
+//
+//
 var legend = d3.select("#legend1")
                 .append("svg")
                 .attr("width", "350px")
@@ -147,8 +143,6 @@ legend.append('text')
     .attr('x', 40)
     .attr('y', 70)
     .text("bi connection");
-    
-    
 legend = d3.select("#legend2")
                 .append("svg")
                 .attr("width", "350px")
@@ -169,7 +163,6 @@ for (var i = 0; i < 4; ++i) {
         .attr('id', 'color' + i)
         .text("TBD");
 }
-
 
 
 //link details
@@ -202,7 +195,6 @@ var tooltip = function (w, h) {
     (w + 55) + " " + h + " L 20 " + h + " L 10 5 Z";
 };
 
-var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
 /**
  * Appends options to selection ui
@@ -288,21 +280,20 @@ d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
         .enter()
         .append("svg:path")
         .attr("class", function (d) {
-            return (d.bi == false)
-                    ? "link source-" + d.source.key + " target-" + d.target.key
-                    : "link bi-" + d.source.key + " bi-" + d.target.key;
+            return (d.bi === false) ?
+                "link source-" + d.source.key +
+                " target-" + d.target.key :
+                "link bi-" + d.source.key +
+                " bi-" + d.target.key;
         })
         .attr("d", function (d, i) { return line(splines[i]); })
-//        .attr("stroke", "url(#gradient)")
-//        .attr("stroke", function (d) {
-//            return (d.bi == false) ? "url(#gradient)" : "blue";
-//        })
         .on("mouseover", linkMouseOver)
         .on("mouseout", linkMouseOut)
-        .on("click", function(d) {linkClick(d, 0);});
+        .on("click", function (d) { linkClick(d, 0); });
 
     //
     // Set UI input options
+    //
     computeAttrRange(attrRange, links);
     appendAttrsAsOptions(links);
     appendNodesAsOptions(nodes);
@@ -312,26 +303,15 @@ d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
     //
     // Arcs
     //
-    if (!is_firefox) {
-        node.append("svg:path")
-            .attr("d", arc)
-            .attr("id", function (d) { return "arc-" + d.key; })
-            .attr("class", "arc")
-            .attr("fill", "white")
-            .attr("stroke", "white")
-            .on("mouseover", mouseOver)
-            .on("mouseout", mouseOut)
-            .on("click", nodeClick);
-    } else {
-        node.append("svg:circle")
-            .attr("r", function (d) { return 2; })
-            .attr("transform", function (d) {
-                return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")";
-            })
-            .on("mouseover", mouseOver)
-            .on("mouseout", mouseOut)
-            .on("click", nodeClick);
-    }
+    node.append("svg:path")
+        .attr("d", arc)
+        .attr("id", function (d) { return "arc-" + d.key; })
+        .attr("class", "arc")
+        .attr("fill", "white")
+        .attr("stroke", "white")
+        .on("mouseover", mouseOver)
+        .on("mouseout", mouseOut)
+        .on("click", nodeClick);
 
     tooltips = svg.selectAll("tooltext")
         .data(nodes)
@@ -348,7 +328,6 @@ d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
     */
 
     //text
-
     tooltips.append("text")
         .attr("id", function (d) { return "text-" + d.key; })
         .attr("class", function (d) {
@@ -383,7 +362,6 @@ d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
             return tooltip(w, h);
         })
         .attr("transform", function (d) { return "translate(" + arc.outerCenter(d) + ")rotate(" + (d.x - 90) + ")"; });
-        //.attr("transform", "translate(0,0)");
 });
 
 
@@ -459,6 +437,7 @@ function mouseOut(d) {
 
 /*
  * Mouse over for link
+ *
  */
 function linkMouseOver(d) {
     if ($(this).is(".dimmed")) {
@@ -485,8 +464,6 @@ function linkMouseOver(d) {
 
 /*
  * Mouse out for link
- *
- *
  *
  */
 function linkMouseOut(d) {
@@ -528,26 +505,36 @@ function linkClick(d, value) {
     }
     if (!$(this).is(".dimmed")) {
         var detail_tab = $("#detail-tab");
-        var detail_content_pane = $("#detail-content-pane");        
+        var detail_content_pane = $("#detail-content-pane");
         detail_tab.empty();
         detail_content_pane.empty();
         for (var i = 0; i < d.detail.length; ++i) {
-            if (i == 0) {
+            if (i === 0) {
                 detail_tab.append('<li class="active"><a href="#tab1" data-toggle="tab">Ref 1</a></li>');
                 detail_content_pane.append('<div class="tab-pane active" id="tab1"></div>');
             }
             else {
-                detail_tab.append('<li><a href="#tab' + (i+1) + '" data-toggle="tab">Ref ' + (i+1) + '</a></li>');
+                detail_tab.append('<li><a href="#tab' + (i + 1) + 
+                                  '" data-toggle="tab">Ref ' + (i+1) + 
+                                  '</a></li>');
                 detail_content_pane.append('<div class="tab-pane" id="tab' + (i+1) + '"></div>');
             }
+
             $("#ref-src").text("Source: " + d.source.displayName);
-            $("#ref-tgt").text("Target: " + d.target.displayName);            
-/*            $("#tab" + (i+1)).append('<p>Source:' + d.source.displayName + '<br/>Target: ' + d.target.displayName + 
-            '<br/>Strength: ' + d.detail[i].strength + '<br/>Technique: ' + d.detail[i].technique + '<br/>Reference: ' + d.detail[i].ref + 
-            '<br/>BAMS record: <a href="' + d.detail[i].bams_link + '" target="_blank">Click</a><br/>Pubmed link: <a href="' + 
-            d.detail[i].pubmed_link +'" target="_blank">Click</a><br/></p>');
-*/
-            $("#tab" + (i+1)).append('<p>Strength: ' + d.detail[i].strength + '<br/>Technique: ' + d.detail[i].technique + '<br/>Ref: ' + d.detail[i].ref + '<br/>BAMS record: <a href="' + d.detail[i].bams_link + '" target="_blank">Click</a><br/>Pubmed link: <a href="' + d.detail[i].pubmed_link +'" target="_blank">Click</a><br/></p>');
+            $("#ref-tgt").text("Target: " + d.target.displayName);
+
+            //$("#tab" + (i+1)).append('<p>Source:' + d.source.displayName + '<br/>Target: ' + d.target.displayName +
+            //'<br/>Strength: ' + d.detail[i].strength + '<br/>Technique: ' + d.detail[i].technique + '<br/>Reference: ' + d.detail[i].ref +
+            //'<br/>BAMS record: <a href="' + d.detail[i].bams_link + '" target="_blank">Click</a><br/>Pubmed link: <a href="' +
+            //d.detail[i].pubmed_link +'" target="_blank">Click</a><br/></p>');
+
+            $("#tab" + (i + 1)).append('<p>Strength: ' + d.detail[i].strength +
+                                     '<br/>Technique: ' + d.detail[i].technique +
+                                     '<br/>Ref: ' + d.detail[i].ref +
+                                     '<br/>BAMS record: <a href="' + d.detail[i].bams_link +
+                                     '" target="_blank">Click</a><br/>Pubmed link: <a href="' +
+                                     d.detail[i].pubmed_link +
+                                     '" target="_blank">Click</a><br/></p>');
         }
 
     }
@@ -651,6 +638,10 @@ function clearButtonClick() {
     mode = 1;
 }
 
+/*
+ * Please Comment
+ *
+ */
 function sourceSearchInput() {
     piwikTracker.trackPageView('Set source for search');
     if (selected_source != undefined) {
@@ -668,6 +659,10 @@ function sourceSearchInput() {
     });
 }
 
+/*
+ * Please Comment
+ *
+ */
 function targetSearchInput() {
     piwikTracker.trackPageView('Set target for search');
     if (selected_target != undefined) {
@@ -685,10 +680,14 @@ function targetSearchInput() {
     });
 }
 
+
+/*
+ * Please Comment
+ *
+ */
 function attrSearchInput() {
     piwikTracker.trackPageView('Set attr for edge color coding');
     var attrName = this.value;
-
 
     if (attrName == "") {
         path = svg.selectAll("path.link")
@@ -697,30 +696,41 @@ function attrSearchInput() {
         .classed("q2-4", false)
         .classed("q3-4", false);
     }
+
     if (attrName != "strength") {
-        return ;
+        return;
     }
-    
+
+
+    //
+    //
+    // TODO: remove legend - should be in html
+    //
+    //
     var quantile = d3.scale.quantile().domain(attrRange[attrName]).range(d3.range(4));
 
 
     path = svg.selectAll("path.link")
         .attr("class", function (d) {
             var attrValue = 0;
-            if (d.detail[0][attrName] == "Weak") {
+            if (d.detail[0][attrName] === "Weak") {
                 attrValue = 1;
             }
-            else if (d.detail[0][attrName] == "Moderate") {
+            else if (d.detail[0][attrName] === "Moderate") {
                 attrValue = 2;
             }
-            else if (d.detail[0][attrName] == "Heavy") {
+            else if (d.detail[0][attrName] === "Heavy") {
                 attrValue = 3;
             }
-            return (d.bi == false)
-                    ? "link source-" + d.source.key + " target-" + d.target.key + " q" + quantile(attrValue) + "-4"
-                    : "link bi-" + d.source.key + " bi-" + d.target.key + " q" + quantile(attrValue) + "-4";
-        })
-        
+
+            return (d.bi === false) ?
+                "link source-" + d.source.key + " target-" + d.target.key +
+                " q" + quantile(attrValue) + "-4"
+                :
+                "link bi-" + d.source.key + " bi-" + d.target.key +
+                " q" + quantile(attrValue) + "-4";
+        });
+
     /*
     path = svg.selectAll("path.link")
         .attr("class", function (d) {
@@ -744,20 +754,20 @@ function attrSearchInput() {
     svg.select("#color3")
         .text("[" + round(ticks[2]) + ", " + round(attrRange[attrName][1]) + "]");
     */
-    
+
     var featureLegend = d3.select("#legend")
-    .select("#legend2")
-    .select("svg")
-    
+        .select("#legend2")
+        .select("svg");
+
     featureLegend.select("#color0")
-    .text("Exists");
+        .text("Exists");
 
     featureLegend.select("#color1")
         .text("Weak");
-        
+
     featureLegend.select("#color2")
         .text("Moderate");
-    
+
     featureLegend.select("#color3")
         .text("Heavy");
 }
@@ -892,8 +902,19 @@ function focusOnNodeFixed(node, value, dimmed) {
 }
 */
 
+
+/*
+ * THIS NEEDS MAJOR FIX
+ *
+ *
+ */
 function focusOnNode(node, value) {
-    if (node == undefined || node == null) return;
+
+    //THIS IS NOT GOOD!
+    if (node == undefined || node == null) {
+        return;
+    }
+
     svg.selectAll("path.link.target-" + node.key)
         .classed("target", value)
         .classed("dimmed", false)
@@ -912,44 +933,43 @@ function focusOnNode(node, value) {
         .each(function(d) {highlightNode(d.source, "bi", value, true);
                             highlightNode(d.target, "bi", value, true);});
 
-    highlightNode(node, "selected", value, true);    
+    highlightNode(node, "selected", value, true);
 }
 
 
 function highlightNode(node, className, value, showName) {
     if (node == undefined) return;
     svg.select("#arc-" + node.key).classed(className, value);
-        
+
     if (node.depth > 2 && showName) {
         svg.select("#text-" + node.key).classed("selected", value);
         svg.select("#tooltip-" + node.key).classed("hidden", !value);
 //        svg.select("#tooltip-" + node.key).classed("selected-hidden", !value);
 //        node.showName = showName;
-    }  
+    }
 }
 
 /*
 function highlightNodeTemp(node, className, value) {
     if (node.fixed == true && node.showName == true) return;
     svg.select("#arc-" + node.key).classed(className, value);
-        
     if (node.depth > 2) {
         svg.select("#text-" + node.key).classed(className, value);
         svg.select("#tooltip-" + node.key).classed("hidden", !value);
-    }   
+    }
 }
 
 function highlightNodeFixed(node, className, value, showName) {
     if (node == undefined) return;
     svg.select("#arc-" + node.key).classed(className, value);
     node.fixed = value;
-        
+
     if (node.depth > 2 && showName) {
         svg.select("#text-" + node.key).classed(className, value);
         svg.select("#tooltip-" + node.key).classed("hidden", !value);
         svg.select("#tooltip-" + node.key).classed("selected-hidden", !value);
         node.showName = showName;
-    }  
+    }
 }
 */
 
@@ -965,8 +985,7 @@ function highlightSelectedLinks(value) {
             if (i.target != selected_source && i.target != selected_target)
                 highlightNode(i.target, "selected-secondary", value, false);
         });
-    });    
-    
+    });
 }
 
 function displayInterParents(value) {
@@ -1005,11 +1024,13 @@ function appendNodesAsOptions(nodes) {
     });
 }
 
+
 function displayConnections(value) {
     console.log("called");
     var connectionPanel = $("#connections");
     if (value) {
         for (var i = 0; i < grouped_selected_links.length; ++i) {
+            //do not style h4 inline
             connectionPanel.append('<h4 style="position:absolute; left:20px; top:' + (30 + 340 * i) + 'px">Level of indirection: ' + i + '</h4></br>');
             var currPanel = $('<div id=conn-hop' + (i+1) + '" class="conn-level1' + '" style="top:' + (50 + 340 * i) + 'px"></div>').appendTo(connectionPanel);
             var currLinks = grouped_selected_links[i];
@@ -1021,15 +1042,15 @@ function displayConnections(value) {
                 for (var k = 0; k < i+1; ++k) {
                     var button;
                     if (k == i) {
-                        linkCell.append('<img src="media/css/sourceIcon.png" height="16px" width="16px"/> ' 
-                        + currLinks[j][k].source.displayName + '<br/>' 
+                        linkCell.append('<img src="media/css/sourceIcon.png" height="16px" width="16px"/> '
+                        + currLinks[j][k].source.displayName + '<br/>'
                         + '<img src="media/css/targetIcon.png" height="16px" width="16px"/> '
                         + currLinks[j][k].target.displayName);
-                        button = $('<button type="button" class="btn btn-info btn-mini">Detail</button><br/>').appendTo('#detailCell' + i + '' + j);                        
+                        button = $('<button type="button" class="btn btn-info btn-mini">Detail</button><br/>').appendTo('#detailCell' + i + '' + j);
                     }
                     else {
-                        linkCell.append('<img src="media/css/sourceIcon.png" height="16px" width="16px"/> ' 
-                        + currLinks[j][k].source.displayName + '<br/>' 
+                        linkCell.append('<img src="media/css/sourceIcon.png" height="16px" width="16px"/> '
+                        + currLinks[j][k].source.displayName + '<br/>'
                         + '<img src="media/css/targetIcon.png" height="16px" width="16px"/> '
                         + currLinks[j][k].target.displayName + '<br/>');
                         button = $('<button type="button" class="btn btn-info btn-mini">Detail</button><br/><br/>').appendTo('#detailCell' + i + '' + j);
@@ -1044,7 +1065,7 @@ function displayConnections(value) {
                         old_focused_source = $(this).data().source;
                         old_focused_target = $(this).data().target;
                     });
-                } 
+                }
             }
         }
     }
@@ -1091,7 +1112,8 @@ function groupSelectedLinks() {
 function computeLinksForSelection(hop, source, target, currLink, selected_links) {
     if (selected_links.length > 1000) {
         return;
-    }  
+    }
+
     var augmentedLinks = [],
         augmentedTargets = [],
         descendants = [];
