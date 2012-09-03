@@ -17,7 +17,7 @@
   <![endif]-->
 </head>
 <body>
-  <!--Utilities-->
+  <!--UTIL TAB RIGHT-->
   <div id="util">
     <ul class="nav nav-tabs">
       <li class="active"><a href="#legend" data-toggle="tab">Legend</a></li>
@@ -26,43 +26,14 @@
       <li><a href="#help" data-toggle="tab">Help</a></li>
     </ul>
     <div id="util-content" class="tab-content">
-      <div id="search" class="tab-pane">
-        <table>
-            <tr>
-                <td class="tab-column-1">Source</td>
-                <td class="tab-column-2">        
-                    <select data-placeholder="Choose a brain area" class="chzn-select" style="width:250px;" id="sourceSelect">
-                        <option></option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td class="tab-column-1">Target</td>
-                <td class="tab-column-2">        
-                    <select data-placeholder="Choose a brain area" class="chzn-select" style="width:250px;" id="targetSelect">
-                        <option></option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td class="tab-column-1">Number of intermediate connections</td>
-                <td class="tab-column-2">        
-                    <input id="maxHop" type="range" min=1 max=5 value=1 step=1>
-                    <span id="maxHopValue">1</span>
-                </td>
-            </tr>
-        </table>
-        </br>
-        <table>
-            <tr>
-                <td style="width:350px"><button id="bt-search" class="btn">Show connectivity for selected regions</button></td>
-                <td style="width:50px;"><button id="bt-clear" class="btn btn-warning">Clear</button></td>
-            </tr>
-        </table>
-        <!--Search for a region:-->
-        <!--input id="regionInput" type="text" class="searchBox"-->
+      <!--LEGEND-->
+      <div id="legend" class="tab-pane fade in active">
+        <h4>Primary</h4></br>
+        <div id="legend1"></div>
+        <h4>Feature Color</h4></br>
+        <div id="legend2"></div>
       </div>
-      
+      <!--OPTIONS-->
       <div id="options" class="tab-pane">
         <table>
             <tr><td class="tab-column-1"><h4>Edge color</h4></td></tr>
@@ -85,23 +56,59 @@
         </table>
         <br/>
         <table>
-            <tr><td class="tab-column-1"><h4>General</h4></td></tr>
-            <tr>
-                <td class="tab-column-1">Level of detail</td>
-                <td class="tab-column-2"><select data-placeholder="Choose a level" class="chzn-select" style="width:250px;" id="lodSelect">
-                        <option></option>
-                        <option>Region</option>
-                        <option>Cell</option>
-                    </select></td>
-            </tr>
-            <tr>
-                <td class="tab-column-1">Tension</td>
-                <td class="tab-column-2"><input id="tension" type="range" min=0 max=100 value=85 step=1>
-                    <span id="tensionValue">0.85</span>
-                </td>
-        </tr></table>
-      </div>
-
+          <tr><td class="tab-column-1"><h4>General</h4></td></tr>
+          <tr>
+            <td class="tab-column-1">Level of detail</td>
+            <td class="tab-column-2"><select data-placeholder="Choose a level" class="chzn-select" style="width:250px;" id="lodSelect">
+                <option></option>
+                <option>Region</option>
+                <option>Cell</option>
+            </select></td>
+          </tr>
+          <tr>
+            <td class="tab-column-1">Tension</td>
+            <td class="tab-column-2"><input id="tension" type="range" min=0 max=100 value=85 step=1>
+              <span id="tensionValue">0.85</span>
+            </td>
+          </tr>
+        </table>
+      </div><!--END OPTIONS-->
+      <!--SEARCH-->
+      <div id="search" class="tab-pane">
+        <table>
+          <tr>
+            <td class="tab-column-1">Source</td>
+            <td class="tab-column-2">
+              <select data-placeholder="Choose a brain area" class="chzn-select" style="width:250px;" id="sourceSelect">
+                <option></option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="tab-column-1">Target</td>
+            <td class="tab-column-2">
+              <select data-placeholder="Choose a brain area" class="chzn-select" style="width:250px;" id="targetSelect">
+                <option></option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="tab-column-1">Number of intermediate connections</td>
+            <td class="tab-column-2">
+              <input id="maxHop" type="range" min=1 max=5 value=1 step=1>
+              <span id="maxHopValue">1</span>
+            </td>
+          </tr>
+        </table>
+        </br>
+        <table>
+          <tr>
+            <td style="width:350px"><button id="bt-search" class="btn">Show connectivity for selected regions</button></td>
+            <td style="width:50px;"><button id="bt-clear" class="btn btn-warning">Clear</button></td>
+          </tr>
+        </table>
+      </div><!--END SEARCH-->
+      <!--HELP-->
       <div id="help" class="tab-pane">
         <p>
         Tips: <br/>
@@ -110,33 +117,39 @@
         2. To search for connections between two regions: left click to set a region
             to be the source and shift + left click to set a region to be the target;
             then set the level for indirect connections using the "Max hop" slider.
-            Click search to highlight the connections between the selected regions, 
+            Click search to highlight the connections between the selected regions,
             or click clear to clear the highlighted connections <br/><br/>
         3. To adjust the level of details: use the "Max depth" slider
         </p>
-      </div>
-      <div id="legend" class="tab-pane fade in active">
-        <h4>Primary</h4></br>
-        <div id="legend1"></div>
-        <h4>Feature Color</h4></br>
-        <div id="legend2"></div>
-      </div>
+      </div><!--END HELP-->
     </div>
-  </div>
-    
-  <!--  
+  </div><!--END UTIL RIGHT-->
+
+  <!--
   <div id="legend" class="legend">
     <h3>Legend</h3>
   </div>
   -->
-  
-  <div id="canvas"></div>
-  
+
+
+  <div id="detail" class="tabbable tabs-top ref">
+    <h3>References</h3>
+    <span id="ref-src">Source: no selection </span>
+    <span id="ref-tgt">Target: no selection </span>
+    <i>Click on a link to see the references</i>
+    <ul id="detail-tab" class="nav nav-tabs nav-tabs-add">
+    </ul>
+    <div id="detail-content-pane" class="tab-content">
+    </div>
+  </div>
+
 
   <div id="connections" class="conn-level0">
     <h3>Search Results</h3>
   </div>
-  
+
+  <div id="canvas"></div>
+
 <!--
   <div id="detail">
 	<h3><a href="#">Section 1</a></h3>
@@ -159,22 +172,10 @@
 	</div>
   </div>
 -->
-  
 
-  <div id="detail" class="tabbable tabs-top ref">
-    <h3>References</h3>
-    <span id="ref-src">Source: no selection </span><br/>
-    <span id="ref-tgt">Target: no selection </span><br/>
-    <i>Click on a link to see the references</i>
-    <ul id="detail-tab" class="nav nav-tabs nav-tabs-add">
-    </ul>
-    <div id="detail-content-pane" class="tab-content">
-    </div>
-  </div>
-  
   <!--JAVASCRIPT-->
 
-  <!--Libraries-->
+  <!--LIBRARIES-->
   <script type="text/javascript" src="media/lib/jquery-1.7.2.min.js"></script>
   <script type="text/javascript" src="media/lib/bootstrap/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="media/lib/d3.v2.js"></script>
@@ -184,15 +185,6 @@
   <!--TODO: brainmap and script should be compressed as one file-->
   <script type="text/javascript" src="media/js/script.js"></script>
   <script type="text/javascript" src="media/js/brainMap.js"></script>
-
-
- <!--
-  <script>
-	$(function() {
-		$("#detail").accordion();
-	});
-  </script>
-  -->
 
   <!-- Piwik -->
   <script type="text/javascript">

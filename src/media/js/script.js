@@ -19,6 +19,7 @@ var w = 800,
     radius = Math.min(w, h) / 2.7;
 
 //state variables
+// PLEASE USE AN OBJECT FOR MODES
 var mode = 1, // 1: exploration mode, 2: search mode, 3: fixation mode
     selected_link_texts = [],
     selected_source,
@@ -143,6 +144,7 @@ legend.append('text')
     .attr('x', 40)
     .attr('y', 70)
     .text("bi connection");
+
 legend = d3.select("#legend2")
                 .append("svg")
                 .attr("width", "350px")
@@ -835,7 +837,7 @@ function clearSearchResult() {
     selected_links = [];
     displayConnections(false);
     displayInterParents(false);
-    if (old_focused_source != null) svg.select("#arc-" + old_focused_source.key).classed("highlighted", false);
+    if (old_focused_source === null) svg.select("#arc-" + old_focused_source.key).classed("highlighted", false);
     if (old_focused_target != null) svg.select("#arc-" + old_focused_target.key).classed("highlighted", false);
 }
 
