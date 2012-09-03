@@ -31,16 +31,33 @@ body {
     height: 30px;
 }
 
-.conn-level0 {
+.localCon {
     position: absolute;
     right: 20px;
     top: 20px;
+    height: 50%;
     width: 350px;
-    height: 100%;
+}
+
+.conn-level0 {
+    position: absolute;
+    right: 20px;
+    top: 400px;
+    width: 350px;
+    height: 50%;
     background-color: rgba(255,255,255,0.9);
+    max-height: 300px;
+    overflow-y: scroll;
 }
 
 .conn-level1 {
+    position: absolute;
+    left: 20px;
+    width: 330px;
+    border: 1px solid #dddddd;
+}
+
+.table-custom {
     position: absolute;
     left: 20px;
     width: 330px;
@@ -224,7 +241,18 @@ body {
 
 /*  links (connections) */
 
- .link {
+.local_link {
+	stroke: #AAA;
+	stroke-opacity: 1;
+	fill: none;
+    stroke-width: 1.5px;    
+}
+
+.local_link:hover {
+    stroke: #b45c1f;
+}
+
+.link {
 	stroke: #AAA;
 	stroke-opacity: .1;
 	fill: none;
@@ -264,6 +292,12 @@ body {
 .link.source, .link.target, .link.selected, .link.bi {
 	stroke-opacity: .9;
 	stroke-width: 3px;
+}
+
+.local_node {
+    fill: #555;
+    stroke: #FFF;
+    stroke-width: 3px;
 }
 
 /* TEMP */

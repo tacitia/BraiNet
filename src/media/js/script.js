@@ -12,16 +12,14 @@
 
 "use strict";
 
-//display
+// Display parameters
 var w = 800,
     h = 800,
     rotate = 0,
     radius = Math.min(w, h) / 2.7;
 
-//state variables
-// PLEASE USE AN OBJECT FOR MODES
+// State variables
 var mode = 1, // 1: exploration mode, 2: search mode, 3: fixation mode
-    selected_link_texts = [],
     selected_source,
     selected_target,
     selected_singleNode = null,
@@ -30,10 +28,13 @@ var mode = 1, // 1: exploration mode, 2: search mode, 3: fixation mode
     selected_nodes = [],
     old_focused_source = null,
     old_focused_target = null,
-    interParents = [];
+    interParents = [],
+    interLinks = [];
 
+var local_vis = d3.select("#localCon").append("svg").attr("width", 300).attr("height", 300).attr("id", "localConVisual");
+var attrRange = {};
 
-//bundle graph
+// Graph elements
 var nodes,
     path,
     splines,
@@ -41,13 +42,8 @@ var nodes,
     display_node_map,
     name_node_map;
 
-var attrRange = {};
 
 var tooltips;
-
-//ui
-var max_hop = 1,
-    max_depth = 8;
 
 var cluster = d3.layout.cluster()
     .size([360, radius - 100])
@@ -90,11 +86,17 @@ svg.append('rect')
     .attr('fill', 'white')
     .attr("transform", "translate(" + (-w / 2) + "," + (-h / 2) + ")");
 
-// let's not mix the graph with other elements
-// this should be in the html - not necessary for it to be in svg
 
+// Other UI elements
+var max_hop = 1,
+    max_depth = 8;
 var highlight_text = svg.append("text").attr("id", "highlight_text").attr("x", -400).attr("y", 350).text("");
 
+// User goal state variables
+var previousTask;
+var externalWorkingTime = [];
+var startTime;
+var endTime;
 
 //
 //
@@ -103,49 +105,8 @@ var highlight_text = svg.append("text").attr("id", "highlight_text").attr("x", -
 // TODO: convert this to a simple div/css inside the hmtl
 //
 //
-var legend = d3.select("#legend1")
-                .append("svg")
-                .attr("width", "350px")
-                .attr("height", "100px")
-                .append("g");
 
-legend.append('rect')
-    .attr('x', 0)
-    .attr('y', 0)
-    .attr('width', 20)
-    .attr('height', 20)
-    .attr('fill', '#2ca02c');
-
-legend.append('text')
-    .attr('x', 40)
-    .attr('y', 10)
-    .text("Source region / Outgoing connection");
-
-legend.append('rect')
-    .attr('x', 0)
-    .attr('y', 30)
-    .attr('width', 20)
-    .attr('height', 20)
-    .attr('fill', '#d62728');
-
-legend.append('text')
-    .attr('x', 40)
-    .attr('y', 40)
-    .text("Target region / Incoming connection");
-
-legend.append('rect')
-    .attr('x', 0)
-    .attr('y', 60)
-    .attr('width', 20)
-    .attr('height', 20)
-    .attr('fill', '#062db8');
-
-legend.append('text')
-    .attr('x', 40)
-    .attr('y', 70)
-    .text("bi connection");
-
-legend = d3.select("#legend2")
+var legend = d3.select("#legend-feature")
                 .append("svg")
                 .attr("width", "350px")
                 .attr("height", "100px")
@@ -165,15 +126,6 @@ for (var i = 0; i < 4; ++i) {
         .attr('id', 'color' + i)
         .text("TBD");
 }
-
-
-//link details
-var detail = [],
-    bams_link = "",
-    pubmed_link = "";
-var selected_link_texts = [];
-
-//var detailPanel = document.getElementById("detail");
 
 
 function redraw() {
@@ -393,10 +345,26 @@ d3.select("#tension")
 $('#sourceSelect').change(sourceSearchInput);
 $('#targetSelect').change(targetSearchInput);
 $('#attrSelect').change(attrSearchInput);
+$(window).focus(windowGainsFocus);
+$(window).blur(windowLosesFocus);
 
+/*
+    When the window gains focus:
+    1) End the citation count timer and records its value
+    2) Highlight the trigger for the next task
+*/
+function windowGainsFocus() {
+    console.log("windowGainsFocus");
+}
 
-//d3.select("#search")
-//    .on("input", searchInput);
+/* 
+    When the window loses focus:
+    1) Start a citation count timer to record the time it takes for the user to check the citation count for a single reference
+    2) Record the next task
+*/
+function windowLosesFocus() {
+    console.log("windowLosesFocus");
+}
 
 /*
  * Mouse Position
@@ -436,6 +404,14 @@ function mouseOut(d) {
     }
 }
 
+function localNodeMouseOver(d) {
+    svg.select("#localText-" + d.key).classed("text visible", true);
+}
+
+function localNodeMouseOut(d) {
+    svg.select("#localText-" + d.key).classed("text visible", false);
+}
+
 
 /*
  * Mouse over for link
@@ -469,22 +445,16 @@ function linkMouseOver(d) {
  *
  */
 function linkMouseOut(d) {
-    if ($(this).is(".dimmed")) {
-        return;
-    }
+    if ($(this).is(".dimmed")) return;
     svg.select("path.link.bi-" + d.source.key + ".bi-" + d.target.key)
         .classed("selected", false);
     svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key)
         .classed("selected", false);
     if (d.bi == true) {
-//        highlightNodeTemp(d.source, "bi", false);
-//        highlightNodeTemp(d.target, "bi", false);
         highlightNode(d.source, "bi", false, true);
         highlightNode(d.target, "bi", false, true);
     }
     else {
-//        highlightNodeTemp(d.source, "source", false);
-//        highlightNodeTemp(d.target, "target", false);
         highlightNode(d.source, "source", false, true);
         highlightNode(d.target, "target", false, true);
     }
@@ -498,47 +468,33 @@ function linkMouseOut(d) {
  *
  */
 function linkClick(d, value) {
-    if (value == 0) {
-        piwikTracker.trackPageView('Click a link');
-    }
-    else {
-        piwikTracker.trackPageView('Click a table link entry');
-
-    }
-    if (!$(this).is(".dimmed")) {
-        var detail_tab = $("#detail-tab");
-        var detail_content_pane = $("#detail-content-pane");
-        detail_tab.empty();
-        detail_content_pane.empty();
-        for (var i = 0; i < d.detail.length; ++i) {
-            if (i === 0) {
-                detail_tab.append('<li class="active"><a href="#tab1" data-toggle="tab">Ref 1</a></li>');
-                detail_content_pane.append('<div class="tab-pane active" id="tab1"></div>');
-            }
-            else {
-                detail_tab.append('<li><a href="#tab' + (i + 1) + 
-                                  '" data-toggle="tab">Ref ' + (i+1) + 
-                                  '</a></li>');
-                detail_content_pane.append('<div class="tab-pane" id="tab' + (i+1) + '"></div>');
-            }
-
-            $("#ref-src").text("Source: " + d.source.displayName);
-            $("#ref-tgt").text("Target: " + d.target.displayName);
-
-            //$("#tab" + (i+1)).append('<p>Source:' + d.source.displayName + '<br/>Target: ' + d.target.displayName +
-            //'<br/>Strength: ' + d.detail[i].strength + '<br/>Technique: ' + d.detail[i].technique + '<br/>Reference: ' + d.detail[i].ref +
-            //'<br/>BAMS record: <a href="' + d.detail[i].bams_link + '" target="_blank">Click</a><br/>Pubmed link: <a href="' +
-            //d.detail[i].pubmed_link +'" target="_blank">Click</a><br/></p>');
-
-            $("#tab" + (i + 1)).append('<p>Strength: ' + d.detail[i].strength +
-                                     '<br/>Technique: ' + d.detail[i].technique +
-                                     '<br/>Ref: ' + d.detail[i].ref +
-                                     '<br/>BAMS record: <a href="' + d.detail[i].bams_link +
-                                     '" target="_blank">Click</a><br/>Pubmed link: <a href="' +
-                                     d.detail[i].pubmed_link +
-                                     '" target="_blank">Click</a><br/></p>');
+    if (!d.bi && svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key).classed("dimmed")) return;
+    if (d.bi && svg.select("path.link.bi-" + d.source.key + ".bi-" + d.target.key).classed("dimmed")) return;s
+    if (value == 0) piwikTracker.trackPageView('Click a link');
+    else piwikTracker.trackPageView('Click a table link entry');
+    var detail_tab = $("#detail-tab");
+    var detail_content_pane = $("#detail-content-pane");
+    detail_tab.empty();
+    detail_content_pane.empty();
+    // Iterate through all the details
+    for (var i = 0; i < d.detail.length; ++i) {
+        // Append the container
+        if (i === 0) {
+            detail_tab.append('<li class="active"><a href="#tab1" data-toggle="tab">Ref 1</a></li>');
+            detail_content_pane.append('<div class="tab-pane active" id="tab1"></div>');
+        }
+        else {
+            detail_tab.append('<li><a href="#tab' + (i + 1) + '" data-toggle="tab">Ref ' + (i+1) + '</a></li>');
+            detail_content_pane.append('<div class="tab-pane" id="tab' + (i+1) + '"></div>');
         }
 
+        // Append the link information
+        $("#ref-src").text("Source: " + d.source.displayName);
+        $("#ref-tgt").text("Target: " + d.target.displayName);
+        $("#tab" + (i + 1)).append('<p>Strength: ' + d.detail[i].strength + '<br/>Technique: ' + d.detail[i].technique                                
+                                    + '<br/>Ref: ' + d.detail[i].ref + '<br/>BAMS record: <a href="' + d.detail[i].bams_link 
+                                    + '" target="_blank">Click</a><br/>Pubmed link: <a href="' 
+                                    + d.detail[i].pubmed_link + '" target="_blank">Click</a><br/></p>');
     }
 }
 
@@ -552,7 +508,6 @@ function nodeClick(d) {
     if (mode == 1 || 3) {
         piwikTracker.trackPageView('Fix a node');
         if (selected_singleNode == d) {
-//            focusOnNodeFixed(d, false, false);
             focusOnNode(d, false);
             path.classed("dimmed", false);
             selected_singleNode = null;
@@ -563,15 +518,14 @@ function nodeClick(d) {
                 path.classed("dimmed", true);
             }
             else {
-//                focusOnNodeFixed(selected_singleNode, false, true);
                 focusOnNode(selected_singleNode, false);
             }
             selected_singleNode = d;
-//            focusOnNodeFixed(d, true, false);
             focusOnNode(d, true);
             mode = 3;
         }
     }
+    // Search mode
     else {
         if (selected_source !== undefined && selected_target !== undefined) {
             clearSelection();
@@ -609,6 +563,7 @@ function searchButtonClick() {
         groupSelectedLinks();
         if (selected_links.length > 1) {
             path.classed("dimmed", true);
+            console.log("dimmed the path");
         }
         highlightSelectedLinks(true);
         displayInterParents(true);
@@ -641,13 +596,13 @@ function clearButtonClick() {
 }
 
 /*
- * Please Comment
+ * Given the source specified by a user through the source search dropdown, set the selected_target variable and highlight
+ * the corresponding source elements
  *
  */
 function sourceSearchInput() {
     piwikTracker.trackPageView('Set source for search');
     if (selected_source != undefined) {
-//        highlightNodeFixed(selected_source, "selected-source", false, true);
         highlightNode(selected_source, "selected-source", false, true);
         clearSearchResult();
     }
@@ -655,20 +610,19 @@ function sourceSearchInput() {
     display_node_map.forEach(function (d) {
         if (d.name == inputRegion) {
             selected_source = d.node;
-//            highlightNodeFixed(d.node, "selected-source", true, true);
             highlightNode(d.node, "selected-source", true, true);
         }
     });
 }
 
 /*
- * Please Comment
+ * Given the target specified by a user through the target search dropdown, set the selected_target variable and highlight
+ * the corresponding target elements
  *
  */
 function targetSearchInput() {
     piwikTracker.trackPageView('Set target for search');
     if (selected_target != undefined) {
-//        highlightNodeFixed(selected_target, "selected-target", false, true);
         highlightNode(selected_target, "selected-target", false, true);
         clearSearchResult();
     }
@@ -676,7 +630,6 @@ function targetSearchInput() {
     display_node_map.forEach(function (d) {
         if (d.name == inputRegion) {
             selected_target = d.node;
-//            highlightNodeFixed(d.node, "selected-target", true, true);
             highlightNode(d.node, "selected-target", true, true);
         }
     });
@@ -684,7 +637,8 @@ function targetSearchInput() {
 
 
 /*
- * Please Comment
+ * Given the attribute selected for edge coloring, compute the corresponding value range for each color and update the
+ * legend accordingly
  *
  */
 function attrSearchInput() {
@@ -782,7 +736,7 @@ function attrSearchInput() {
 function setMaxHop() {
     piwikTracker.trackPageView('Set max hop');
     max_hop = this.value;
-    document.getElementById("maxHopValue").innerHTML = max_hop;
+    document.getElementById("maxHopValue").innerHTML = max_hop - 1;
     path.classed("dimmed", false);
     highlightSelectedLinks(false);
     selected_links = [];
@@ -837,7 +791,7 @@ function clearSearchResult() {
     selected_links = [];
     displayConnections(false);
     displayInterParents(false);
-    if (old_focused_source === null) svg.select("#arc-" + old_focused_source.key).classed("highlighted", false);
+    if (old_focused_source != null) svg.select("#arc-" + old_focused_source.key).classed("highlighted", false);
     if (old_focused_target != null) svg.select("#arc-" + old_focused_target.key).classed("highlighted", false);
 }
 
@@ -861,48 +815,6 @@ function clearSingleSelection() {
 /////////////////////////////////////
 // Node and link highlighting
 /////////////////////////////////////
-/*
-function focusOnNodeTemp(node, value) {
-    svg.selectAll("path.link.target-" + node.key)
-        .classed("target", value)
-        .each(function(d) {highlightNodeTemp(d.source, "source", value)});
-
-    svg.selectAll("path.link.source-" + node.key)
-        .classed("source", value)
-        .each(function(d) {highlightNodeTemp(d.target, "target", value)});
-
-    svg.selectAll("path.link.bi-" + node.key)
-        .classed("bi", value)
-        .each(function(d) {highlightNodeTemp(d.source, "bi", value);
-                            highlightNodeTemp(d.target, "bi", value);});
-
-    highlightNodeTemp(node, "selected", value);
-}
-
-function focusOnNodeFixed(node, value, dimmed) {
-    if (node == undefined || node == null) return;
-    svg.selectAll("path.link.target-" + node.key)
-        .classed("target", value)
-        .classed("dimmed", dimmed)
-        .classed("fixed", value)
-        .each(function(d) {highlightNodeFixed(d.source, "source", value, true)});
-
-    svg.selectAll("path.link.source-" + node.key)
-        .classed("source", value)
-        .classed("dimmed", dimmed)
-        .classed("fixed", value)
-        .each(function(d) {highlightNodeFixed(d.target, "target", value, true)});
-
-    svg.selectAll("path.link.bi-" + node.key)
-        .classed("bi", value)
-        .classed("dimmed", dimmed)
-        .classed("fixed", value)
-        .each(function(d) {highlightNodeFixed(d.source, "bi", value, true);
-                            highlightNodeFixed(d.target, "bi", value, true);});
-
-    highlightNodeFixed(node, "selected", value, true);
-}
-*/
 
 
 /*
@@ -951,35 +863,11 @@ function highlightNode(node, className, value, showName) {
     }
 }
 
-/*
-function highlightNodeTemp(node, className, value) {
-    if (node.fixed == true && node.showName == true) return;
-    svg.select("#arc-" + node.key).classed(className, value);
-    if (node.depth > 2) {
-        svg.select("#text-" + node.key).classed(className, value);
-        svg.select("#tooltip-" + node.key).classed("hidden", !value);
-    }
-}
-
-function highlightNodeFixed(node, className, value, showName) {
-    if (node == undefined) return;
-    svg.select("#arc-" + node.key).classed(className, value);
-    node.fixed = value;
-
-    if (node.depth > 2 && showName) {
-        svg.select("#text-" + node.key).classed(className, value);
-        svg.select("#tooltip-" + node.key).classed("hidden", !value);
-        svg.select("#tooltip-" + node.key).classed("selected-hidden", !value);
-        node.showName = showName;
-    }
-}
-*/
-
 function highlightSelectedLinks(value) {
     selected_links.forEach(function (d) {
         d.forEach(function (i) {
-            svg.select("path.link.source-" + i.source.key + ".target-" + i.target.key).classed("dimmed", value);
-            svg.select("path.link.bi-" + i.source.key + ".bi-" + i.target.key).classed("dimmed", value);
+            svg.select("path.link.source-" + i.source.key + ".target-" + i.target.key).classed("dimmed", !value);
+            svg.select("path.link.bi-" + i.source.key + ".bi-" + i.target.key).classed("dimmed", !value);
             svg.select("path.link.source-" + i.source.key + ".target-" + i.target.key).classed("selected", value);
             svg.select("path.link.bi-" + i.source.key + ".bi-" + i.target.key).classed("selected", value);
             if (i.source != selected_source && i.source != selected_target)
@@ -1026,54 +914,86 @@ function appendNodesAsOptions(nodes) {
     });
 }
 
+function interLinkClicked(d) {
+    var connectionPanel = $("#connections");
+    connectionPanel.empty();
+    console.log(d.actualLinks);
+    for (var i = 0; i < d.actualLinks.length; ++i) {
+            //connectionPanel.append('<h4 style="position:absolute; left:20px; top:30px">Level of indirection: ' + i + '</h4></br>');
+            //var currPanel = $('<div id=conn-hop' + (i+1) + '" class="conn-level1' + '></div>').appendTo(connectionPanel);
+            //var currLinks = grouped_selected_links[i];
+        $('<table id = "conTable" class="table table-condensed table-custom"><tbody></tbody></table>').appendTo(connectionPanel);
+        $('#conTable').append('<tr><td id="linkCell' + i + '"></td><td id="detailCell' + i +'"></td></tr>');
+        var linkCell = $('#linkCell' + i);
+             //   for (var k = 0; k < i+1; ++k) {
+        var button;
+        linkCell.append('<img src="media/css/sourceIcon.png" height="16px" width="16px"/> ' 
+                        + d.actualLinks[i].source.displayName + '<br/>' 
+                        + '<img src="media/css/targetIcon.png" height="16px" width="16px"/> '
+                        + d.actualLinks[i].target.displayName) + '<br/>';
+        button = $('<button type="button" class="btn btn-info btn-mini">Detail</button><br/>').appendTo('#detailCell' + i);                        
+        button.data(d.actualLinks[i]);
+        button.on("click", function() {
+            linkClick($(this).data(), 1);
+                if (old_focused_source != null) svg.select("#arc-" + old_focused_source.key).classed("highlighted", false);
+                if (old_focused_target != null) svg.select("#arc-" + old_focused_target.key).classed("highlighted", false);
+                svg.select("#arc-" + $(this).data().source.key).classed("highlighted", true);
+                svg.select("#arc-" + $(this).data().target.key).classed("highlighted", true);
+                old_focused_source = $(this).data().source;
+                old_focused_target = $(this).data().target;
+        });
+    }
+}
 
 function displayConnections(value) {
-    console.log("called");
     var connectionPanel = $("#connections");
+
     if (value) {
-        for (var i = 0; i < grouped_selected_links.length; ++i) {
-            //do not style h4 inline
-            connectionPanel.append('<h4 style="position:absolute; left:20px; top:' + (30 + 340 * i) + 'px">Level of indirection: ' + i + '</h4></br>');
-            var currPanel = $('<div id=conn-hop' + (i+1) + '" class="conn-level1' + '" style="top:' + (50 + 340 * i) + 'px"></div>').appendTo(connectionPanel);
-            var currLinks = grouped_selected_links[i];
-            $('<table id = "table' + (i+1) + '" class="table table-condensed"><tbody></tbody></table>').appendTo(currPanel);
-            for (var j = 0; j < currLinks.length; ++j) {
-                // i+1 is the max number of hops == the max number of items in each link array-1
-                $('#table' + (i+1)).append('<tr><td id="linkCell' + i + '' + j + '"></td><td id="detailCell' + i + '' + j + '"></td></tr>');
-                var linkCell = $('#linkCell' + i + '' + j);
-                for (var k = 0; k < i+1; ++k) {
-                    var button;
-                    if (k == i) {
-                        linkCell.append('<img src="media/css/sourceIcon.png" height="16px" width="16px"/> '
-                        + currLinks[j][k].source.displayName + '<br/>'
-                        + '<img src="media/css/targetIcon.png" height="16px" width="16px"/> '
-                        + currLinks[j][k].target.displayName);
-                        button = $('<button type="button" class="btn btn-info btn-mini">Detail</button><br/>').appendTo('#detailCell' + i + '' + j);
-                    }
-                    else {
-                        linkCell.append('<img src="media/css/sourceIcon.png" height="16px" width="16px"/> '
-                        + currLinks[j][k].source.displayName + '<br/>'
-                        + '<img src="media/css/targetIcon.png" height="16px" width="16px"/> '
-                        + currLinks[j][k].target.displayName + '<br/>');
-                        button = $('<button type="button" class="btn btn-info btn-mini">Detail</button><br/><br/>').appendTo('#detailCell' + i + '' + j);
-                    }
-                    button.data(currLinks[j][k]);
-                    button.on("click", function() {
-                        linkClick($(this).data(), 1);
-                        if (old_focused_source != null) svg.select("#arc-" + old_focused_source.key).classed("highlighted", false);
-                        if (old_focused_target != null) svg.select("#arc-" + old_focused_target.key).classed("highlighted", false);
-                        svg.select("#arc-" + $(this).data().source.key).classed("highlighted", true);
-                        svg.select("#arc-" + $(this).data().target.key).classed("highlighted", true);
-                        old_focused_source = $(this).data().source;
-                        old_focused_target = $(this).data().target;
-                    });
-                }
-            }
-        }
+        var counter = 0;
+        var numOfInterParents = interParents.length;
+        interParents.forEach(function(d) {
+            d.cx = 300 / (numOfInterParents+1) * (counter+1);
+            d.cy = 150;
+            ++counter;
+        });
+
+        selected_source.cx = 150;
+        selected_source.cy = 75;
+        selected_target.cx = 150;
+        selected_target.cy = 225;
+        interParents.push(selected_source);
+        interParents.push(selected_target);
+    
+        var local_node = local_vis.selectAll("g.node").data(interParents).enter()
+                            .append("circle").attr("r", 5).style("fill", "#555").style("stroke", "#FFF")
+                            .style("stroke-width", 3)
+                            .attr("cx", function(d) { return d.cx; })
+                            .attr("cy", function(d) { return d.cy; })
+                            .on("mouseover", localNodeMouseOver)
+                            .on("mouseout", localNodeMouseOut)
+                            .attr("id", function(d) { return "#localText-" + d.key ;})
+                            .attr("class","local_node");
+                            
+        var local_text = local_vis.selectAll("g.node").data(interParents).enter()
+                            .append("text")
+                            .attr("x", function(d) { return d.cx; })
+                            .attr("y", function(d) { return d.cy; })
+                            .attr("class", "text")
+                            .text(function(d) { return d.displayName; });
+                                                    
+        var local_link = local_vis.selectAll("line.link").data(interLinks).enter().append("line")
+                        .attr("class", "local_link")
+                        .attr("x1", function(d) { return d.source.cx; })
+                        .attr("y1", function(d) { return d.source.cy; })
+                        .attr("x2", function(d) { return d.target.cx; })
+                        .attr("y2", function(d) { return d.target.cy; })
+                        .on("click", interLinkClicked);
     }
     else {
+        $("#localCon").empty();
+        $("#localCon").append('<h3>Search Results</h3>');
+        local_vis = d3.select("#localCon").append("svg").attr("width", 300).attr("height", 300).attr("id", "localConVisual");
         connectionPanel.empty();
-        connectionPanel.append('<h3>Search Results</h3>');
     }
 }
 
@@ -1081,20 +1001,55 @@ function displayConnections(value) {
 /////////////////////////////////////
 // Backend Computation
 /////////////////////////////////////
+function linkExists(link, linkArray) {
+    var ret = false;
+    linkArray.forEach(function(d) {
+        if (d.source.key == link.source.key && d.target.key == link.target.key) {
+            ret = true;
+        }
+    });
+    return ret;
+}
+
+function addLink(linkArray, link, sourceParent, targetParent) {
+    linkArray.forEach(function(d) {
+        if (d.source.key == sourceParent.key && d.target.key == targetParent.key
+                && $.inArray(link, d.actualLinks) < 0) {
+            d.actualLinks.push(link);;
+        }
+    });
+}
+
 function getInterParents(depth) {
     interParents = [];
+    interLinks = [];
+    var sourceDecendants = [];
+    var targetDecendants = [];
+    getDecendants(selected_source, sourceDecendants);
+    getDecendants(selected_target, targetDecendants);
     selected_links.forEach(function(d) {
         for (var i = 0; i < d.length; ++i) {
-            interParents.push(findParentAtDepth(d[i].source, depth));
-            interParents.push(findParentAtDepth(d[i].target, depth));
+            var sourceParent = findParentAtDepth(d[i].source, depth);
+            var targetParent = findParentAtDepth(d[i].target, depth);
+            //if (sourceParent == null || targetParent == null) continue;
+            var interLink = {source:sourceParent, target:targetParent, actualLinks:[d[i]]};
+            if ($.inArray(sourceParent, interParents) < 0 && $.inArray(sourceParent, sourceDecendants) < 0) interParents.push(sourceParent);
+            if ($.inArray(targetParent, interParents) < 0 && $.inArray(targetParent, targetDecendants) < 0) interParents.push(targetParent);
+            if (!linkExists(interLink, interLinks)) {
+                interLinks.push(interLink);
+            }
+            else {
+                addLink(interLinks, d[i], sourceParent, targetParent);
+            }
         }
     });
 }
 
 function findParentAtDepth(node, depth) {
-    if (node == selected_source || node == selected_target) return;
+    if (node == selected_source || node == selected_target) return node;
     var parent = node;
-    while (parent.depth > depth && parent.parent != selected_source.parent && parent.parent != selected_target.parent) {
+    while (parent.depth > depth && parent.parent != selected_source.parent 
+            && parent.parent != selected_target.parent && parent.parent != undefined) {
         parent = parent.parent;
     }
     return parent;

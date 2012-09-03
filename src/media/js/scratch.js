@@ -121,3 +121,115 @@ function focusOnNode(node, value, fixed) {
     highlightNode(node, "selected", value, fixed);
 }
 */
+
+
+
+// Old code for appending textual display for links
+/*
+        for (var i = 0; i < grouped_selected_links.length; ++i) {
+            if (i != (max_hop-1)) continue;
+            connectionPanel.append('<h4 style="position:absolute; left:20px; top:30px">Level of indirection: ' + i + '</h4></br>');
+            var currPanel = $('<div id=conn-hop' + (i+1) + '" class="conn-level1' + '></div>').appendTo(connectionPanel);
+            var currLinks = grouped_selected_links[i];
+            $('<table id = "table' + (i+1) + '" class="table table-condensed"><tbody></tbody></table>').appendTo(currPanel);
+            for (var j = 0; j < currLinks.length; ++j) {
+                // i+1 is the max number of hops == the max number of items in each link array-1
+                $('#table' + (i+1)).append('<tr><td id="linkCell' + i + '' + j + '"></td><td id="detailCell' + i + '' + j + '"></td></tr>');
+                var linkCell = $('#linkCell' + i + '' + j);
+                for (var k = 0; k < i+1; ++k) {
+                    var button;
+                    if (k == i) {
+                        linkCell.append('<img src="media/css/sourceIcon.png" height="16px" width="16px"/> ' 
+                        + currLinks[j][k].source.displayName + '<br/>' 
+                        + '<img src="media/css/targetIcon.png" height="16px" width="16px"/> '
+                        + currLinks[j][k].target.displayName);
+                        button = $('<button type="button" class="btn btn-info btn-mini">Detail</button><br/>').appendTo('#detailCell' + i + '' + j);                        
+                    }
+                    else {
+                        linkCell.append('<img src="media/css/sourceIcon.png" height="16px" width="16px"/> ' 
+                        + currLinks[j][k].source.displayName + '<br/>' 
+                        + '<img src="media/css/targetIcon.png" height="16px" width="16px"/> '
+                        + currLinks[j][k].target.displayName + '<br/>');
+                        button = $('<button type="button" class="btn btn-info btn-mini">Detail</button><br/><br/>').appendTo('#detailCell' + i + '' + j);
+                    }
+                    button.data(currLinks[j][k]);
+                    button.on("click", function() {
+                        linkClick($(this).data(), 1);
+                        if (old_focused_source != null) svg.select("#arc-" + old_focused_source.key).classed("highlighted", false);
+                        if (old_focused_target != null) svg.select("#arc-" + old_focused_target.key).classed("highlighted", false);
+                        svg.select("#arc-" + $(this).data().source.key).classed("highlighted", true);
+                        svg.select("#arc-" + $(this).data().target.key).classed("highlighted", true);
+                        old_focused_source = $(this).data().source;
+                        old_focused_target = $(this).data().target;
+                    });
+                } 
+            }
+        }
+*/
+
+/*
+function focusOnNodeTemp(node, value) {
+    svg.selectAll("path.link.target-" + node.key)
+        .classed("target", value)
+        .each(function(d) {highlightNodeTemp(d.source, "source", value)});
+
+    svg.selectAll("path.link.source-" + node.key)
+        .classed("source", value)
+        .each(function(d) {highlightNodeTemp(d.target, "target", value)});
+
+    svg.selectAll("path.link.bi-" + node.key)
+        .classed("bi", value)
+        .each(function(d) {highlightNodeTemp(d.source, "bi", value);
+                            highlightNodeTemp(d.target, "bi", value);});
+
+    highlightNodeTemp(node, "selected", value);
+}
+
+function focusOnNodeFixed(node, value, dimmed) {
+    if (node == undefined || node == null) return;
+    svg.selectAll("path.link.target-" + node.key)
+        .classed("target", value)
+        .classed("dimmed", dimmed)
+        .classed("fixed", value)
+        .each(function(d) {highlightNodeFixed(d.source, "source", value, true)});
+
+    svg.selectAll("path.link.source-" + node.key)
+        .classed("source", value)
+        .classed("dimmed", dimmed)
+        .classed("fixed", value)
+        .each(function(d) {highlightNodeFixed(d.target, "target", value, true)});
+
+    svg.selectAll("path.link.bi-" + node.key)
+        .classed("bi", value)
+        .classed("dimmed", dimmed)
+        .classed("fixed", value)
+        .each(function(d) {highlightNodeFixed(d.source, "bi", value, true);
+                            highlightNodeFixed(d.target, "bi", value, true);});
+
+    highlightNodeFixed(node, "selected", value, true);
+}
+*/
+
+/*
+function highlightNodeTemp(node, className, value) {
+    if (node.fixed == true && node.showName == true) return;
+    svg.select("#arc-" + node.key).classed(className, value);
+    if (node.depth > 2) {
+        svg.select("#text-" + node.key).classed(className, value);
+        svg.select("#tooltip-" + node.key).classed("hidden", !value);
+    }
+}
+
+function highlightNodeFixed(node, className, value, showName) {
+    if (node == undefined) return;
+    svg.select("#arc-" + node.key).classed(className, value);
+    node.fixed = value;
+
+    if (node.depth > 2 && showName) {
+        svg.select("#text-" + node.key).classed(className, value);
+        svg.select("#tooltip-" + node.key).classed("hidden", !value);
+        svg.select("#tooltip-" + node.key).classed("selected-hidden", !value);
+        node.showName = showName;
+    }
+}
+*/

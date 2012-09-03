@@ -121,7 +121,21 @@
             or click clear to clear the highlighted connections <br/><br/>
         3. To adjust the level of details: use the "Max depth" slider
         </p>
-      </div><!--END HELP-->
+      </div>
+      <div id="legend" class="tab-pane fade in active">
+        <div id="legend-primary" style="position:relative; height:150px;">
+            <h4>Primary</h4></br>
+            <div style="background-color:#2ca02c; height:20px; width:20px; position:absolute; top:35px;"></div>
+            <p style="position:absolute; left:25px; top:35px;">Source region / Outgoing connecion</p>
+            <div style="background-color:#d62728; height:20px; width:20px; position:absolute; top:70px;"></div>
+            <p style="position:absolute; left:25px; top:70px;">Target region / Incoming connecion</p>
+            <div style="background-color:#062db8; height:20px; width:20px; position:absolute; top:105px;"></div>
+            <p style="position:absolute; left:25px; top:105px;">Bidirectional connection</p>
+        </div>
+        <div id="legend-feature" style="position:relative">
+            <h4>Feature Color</h4></br>
+        </div>
+      </div>
     </div>
   </div><!--END UTIL RIGHT-->
 
@@ -130,26 +144,16 @@
     <h3>Legend</h3>
   </div>
   -->
-
-
-  <div id="detail" class="tabbable tabs-top ref">
-    <h3>References</h3>
-    <span id="ref-src">Source: no selection </span>
-    <span id="ref-tgt">Target: no selection </span>
-    <i>Click on a link to see the references</i>
-    <ul id="detail-tab" class="nav nav-tabs nav-tabs-add">
-    </ul>
-    <div id="detail-content-pane" class="tab-content">
-    </div>
-  </div>
-
-
-  <div id="connections" class="conn-level0">
+  
+  <div id="canvas"></div>
+  
+  <div id="localCon" class="localCon">
     <h3>Search Results</h3>
   </div>
-
-  <div id="canvas"></div>
-
+    
+  <div id="connections" class="conn-level0">
+  </div>
+  
 <!--
   <div id="detail">
 	<h3><a href="#">Section 1</a></h3>
@@ -172,6 +176,33 @@
 	</div>
   </div>
 -->
+
+  <div id="detail" class="tabbable tabs-top ref">
+    <h3>References</h3>
+    <span id="ref-src">Source: no selection </span><br/>
+    <span id="ref-tgt">Target: no selection </span><br/>
+    <i>Click on a link to see the references</i>
+    <ul id="detail-tab" class="nav nav-tabs nav-tabs-add">
+    </ul>
+    <div id="detail-content-pane" class="tab-content">
+    </div>
+  </div>
+  
+  <div class="modal hide fade" id="messageBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:600px;">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="myModalLabel">New Incoming Message</h3>
+    </div>
+    <div class="modal-body">
+        <p id="message"></p>
+        <textarea rows="6" class="input-xxlarge"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+      <button class="btn btn-primary">Send</button>
+    </div>
+  </div>
+  <a href="#messageBox" role="button" class="btn" data-toggle="modal" style="position:absolute; bottom:200px; left:100px;">Launch demo modal</a>
 
   <!--JAVASCRIPT-->
 
