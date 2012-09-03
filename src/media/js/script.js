@@ -102,48 +102,9 @@ var local_vis = d3.select("#localCon").append("svg").attr("width", 300).attr("he
 // TODO: convert this to a simple div/css inside the hmtl
 //
 //
-var legend = d3.select("#legend1")
-                .append("svg")
-                .attr("width", "350px")
-                .attr("height", "100px")
-                .append("g");
 
-legend.append('rect')
-    .attr('x', 0)
-    .attr('y', 0)
-    .attr('width', 20)
-    .attr('height', 20)
-    .attr('fill', '#2ca02c');
 
-legend.append('text')
-    .attr('x', 40)
-    .attr('y', 10)
-    .text("Source region / Outgoing connection");
-
-legend.append('rect')
-    .attr('x', 0)
-    .attr('y', 30)
-    .attr('width', 20)
-    .attr('height', 20)
-    .attr('fill', '#d62728');
-
-legend.append('text')
-    .attr('x', 40)
-    .attr('y', 40)
-    .text("Target region / Incoming connection");
-
-legend.append('rect')
-    .attr('x', 0)
-    .attr('y', 60)
-    .attr('width', 20)
-    .attr('height', 20)
-    .attr('fill', '#062db8');
-
-legend.append('text')
-    .attr('x', 40)
-    .attr('y', 70)
-    .text("bi connection");
-legend = d3.select("#legend2")
+var legend = d3.select("#legend-feature")
                 .append("svg")
                 .attr("width", "350px")
                 .attr("height", "100px")
@@ -163,8 +124,7 @@ for (var i = 0; i < 4; ++i) {
         .attr('id', 'color' + i)
         .text("TBD");
 }
-
-
+ 
 function redraw() {
     //if (d3.event.scale > 2.5 || d3.event.scale < 0.9) {
         //return;
@@ -382,10 +342,26 @@ d3.select("#tension")
 $('#sourceSelect').change(sourceSearchInput);
 $('#targetSelect').change(targetSearchInput);
 $('#attrSelect').change(attrSearchInput);
+$(window).focus(windowGainsFocus);
+$(window).blur(windowLosesFocus);
 
+/*
+    When the window gains focus:
+    1) End the citation count timer and records its value
+    2) Highlight the trigger for the next task
+*/
+function windowGainsFocus() {
+    console.log("windowGainsFocus");
+}
 
-//d3.select("#search")
-//    .on("input", searchInput);
+/* 
+    When the window loses focus:
+    1) Start a citation count timer to record the time it takes for the user to check the citation count for a single reference
+    2) Record the next task
+*/
+function windowLosesFocus() {
+    console.log("windowLosesFocus");
+}
 
 /*
  * Mouse Position

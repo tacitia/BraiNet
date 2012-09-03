@@ -46,6 +46,8 @@ body {
     width: 350px;
     height: 50%;
     background-color: rgba(255,255,255,0.9);
+    max-height: 300px;
+    overflow-y: scroll;
 }
 
 .conn-level1 {
@@ -53,8 +55,6 @@ body {
     left: 20px;
     width: 330px;
     border: 1px solid #dddddd;
-    max-height: 300px;
-    overflow-y: scroll;
 }
 
 .table-custom {
