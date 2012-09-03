@@ -20,7 +20,6 @@ var w = 800,
 
 //state variables
 var mode = 1, // 1: exploration mode, 2: search mode, 3: fixation mode
-    selected_link_texts = [],
     selected_source,
     selected_target,
     selected_singleNode = null,
@@ -29,8 +28,8 @@ var mode = 1, // 1: exploration mode, 2: search mode, 3: fixation mode
     selected_nodes = [],
     old_focused_source = null,
     old_focused_target = null,
-    interParents = [];
-
+    interParents = [],
+    interLinks = [];
 
 //bundle graph
 var nodes,
@@ -104,6 +103,7 @@ svg.append('rect')
 // this should be in the html - not necessary for it to be in svg
 
 var highlight_text = svg.append("text").attr("id", "highlight_text").attr("x", -400).attr("y", 350).text("");
+var local_vis = d3.select("#localCon").append("svg").attr("width", 300).attr("height", 300).attr("id", "localConVisual");
 
 //legend
 var legend = d3.select("#legend1")
@@ -169,16 +169,6 @@ for (var i = 0; i < 4; ++i) {
         .attr('id', 'color' + i)
         .text("TBD");
 }
-
-
-
-//link details
-var detail = [],
-    bams_link = "",
-    pubmed_link = "";
-var selected_link_texts = [];
-
-//var detailPanel = document.getElementById("detail");
 
 
 function redraw() {
@@ -456,6 +446,14 @@ function mouseOut(d) {
     }
 }
 
+function localNodeMouseOver(d) {
+    svg.select("#localText-" + d.key).classed("text visible", true);
+}
+
+function localNodeMouseOut(d) {
+    svg.select("#localText-" + d.key).classed("text visible", false);
+}
+
 
 /*
  * Mouse over for link
@@ -519,6 +517,14 @@ function linkMouseOut(d) {
  *
  */
 function linkClick(d, value) {
+    if (!d.bi && svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key).classed("dimmed")) {
+        console.log("dimmed");
+        return;
+    }
+    if (d.bi && svg.select("path.link.bi-" + d.source.key + ".bi-" + d.target.key).classed("dimmed")) {
+        console.log("dimmed");
+        return;
+    }
     if (value == 0) {
         piwikTracker.trackPageView('Click a link');
     }
@@ -526,7 +532,7 @@ function linkClick(d, value) {
         piwikTracker.trackPageView('Click a table link entry');
 
     }
-    if (!$(this).is(".dimmed")) {
+    console.log("link clicked...");
         var detail_tab = $("#detail-tab");
         var detail_content_pane = $("#detail-content-pane");        
         detail_tab.empty();
@@ -549,8 +555,6 @@ function linkClick(d, value) {
 */
             $("#tab" + (i+1)).append('<p>Strength: ' + d.detail[i].strength + '<br/>Technique: ' + d.detail[i].technique + '<br/>Ref: ' + d.detail[i].ref + '<br/>BAMS record: <a href="' + d.detail[i].bams_link + '" target="_blank">Click</a><br/>Pubmed link: <a href="' + d.detail[i].pubmed_link +'" target="_blank">Click</a><br/></p>');
         }
-
-    }
 }
 
 
@@ -620,6 +624,7 @@ function searchButtonClick() {
         groupSelectedLinks();
         if (selected_links.length > 1) {
             path.classed("dimmed", true);
+            console.log("dimmed the path");
         }
         highlightSelectedLinks(true);
         displayInterParents(true);
@@ -770,7 +775,7 @@ function attrSearchInput() {
 function setMaxHop() {
     piwikTracker.trackPageView('Set max hop');
     max_hop = this.value;
-    document.getElementById("maxHopValue").innerHTML = max_hop;
+    document.getElementById("maxHopValue").innerHTML = max_hop - 1;
     path.classed("dimmed", false);
     highlightSelectedLinks(false);
     selected_links = [];
@@ -956,8 +961,8 @@ function highlightNodeFixed(node, className, value, showName) {
 function highlightSelectedLinks(value) {
     selected_links.forEach(function (d) {
         d.forEach(function (i) {
-            svg.select("path.link.source-" + i.source.key + ".target-" + i.target.key).classed("dimmed", value);
-            svg.select("path.link.bi-" + i.source.key + ".bi-" + i.target.key).classed("dimmed", value);
+            svg.select("path.link.source-" + i.source.key + ".target-" + i.target.key).classed("dimmed", !value);
+            svg.select("path.link.bi-" + i.source.key + ".bi-" + i.target.key).classed("dimmed", !value);
             svg.select("path.link.source-" + i.source.key + ".target-" + i.target.key).classed("selected", value);
             svg.select("path.link.bi-" + i.source.key + ".bi-" + i.target.key).classed("selected", value);
             if (i.source != selected_source && i.source != selected_target)
@@ -1005,52 +1010,90 @@ function appendNodesAsOptions(nodes) {
     });
 }
 
-function displayConnections(value) {
-    console.log("called");
+function interLinkClicked(d) {
     var connectionPanel = $("#connections");
+    connectionPanel.empty();
+    console.log(d.actualLinks);
+    for (var i = 0; i < d.actualLinks.length; ++i) {
+            //connectionPanel.append('<h4 style="position:absolute; left:20px; top:30px">Level of indirection: ' + i + '</h4></br>');
+            //var currPanel = $('<div id=conn-hop' + (i+1) + '" class="conn-level1' + '></div>').appendTo(connectionPanel);
+            //var currLinks = grouped_selected_links[i];
+        $('<table id = "conTable" class="table table-condensed table-custom"><tbody></tbody></table>').appendTo(connectionPanel);
+        $('#conTable').append('<tr><td id="linkCell' + i + '"></td><td id="detailCell' + i +'"></td></tr>');
+        var linkCell = $('#linkCell' + i);
+             //   for (var k = 0; k < i+1; ++k) {
+        var button;
+        linkCell.append('<img src="media/css/sourceIcon.png" height="16px" width="16px"/> ' 
+                        + d.actualLinks[i].source.displayName + '<br/>' 
+                        + '<img src="media/css/targetIcon.png" height="16px" width="16px"/> '
+                        + d.actualLinks[i].target.displayName) + '<br/>';
+        button = $('<button type="button" class="btn btn-info btn-mini">Detail</button><br/>').appendTo('#detailCell' + i);                        
+        button.data(d.actualLinks[i]);
+        button.on("click", function() {
+            linkClick($(this).data(), 1);
+                if (old_focused_source != null) svg.select("#arc-" + old_focused_source.key).classed("highlighted", false);
+                if (old_focused_target != null) svg.select("#arc-" + old_focused_target.key).classed("highlighted", false);
+                svg.select("#arc-" + $(this).data().source.key).classed("highlighted", true);
+                svg.select("#arc-" + $(this).data().target.key).classed("highlighted", true);
+                old_focused_source = $(this).data().source;
+                old_focused_target = $(this).data().target;
+        });
+    }
+}
+
+function displayConnections(value) {
+    var connectionPanel = $("#connections");
+
     if (value) {
-        for (var i = 0; i < grouped_selected_links.length; ++i) {
-            connectionPanel.append('<h4 style="position:absolute; left:20px; top:' + (30 + 340 * i) + 'px">Level of indirection: ' + i + '</h4></br>');
-            var currPanel = $('<div id=conn-hop' + (i+1) + '" class="conn-level1' + '" style="top:' + (50 + 340 * i) + 'px"></div>').appendTo(connectionPanel);
-            var currLinks = grouped_selected_links[i];
-            $('<table id = "table' + (i+1) + '" class="table table-condensed"><tbody></tbody></table>').appendTo(currPanel);
-            for (var j = 0; j < currLinks.length; ++j) {
-                // i+1 is the max number of hops == the max number of items in each link array-1
-                $('#table' + (i+1)).append('<tr><td id="linkCell' + i + '' + j + '"></td><td id="detailCell' + i + '' + j + '"></td></tr>');
-                var linkCell = $('#linkCell' + i + '' + j);
-                for (var k = 0; k < i+1; ++k) {
-                    var button;
-                    if (k == i) {
-                        linkCell.append('<img src="media/css/sourceIcon.png" height="16px" width="16px"/> ' 
-                        + currLinks[j][k].source.displayName + '<br/>' 
-                        + '<img src="media/css/targetIcon.png" height="16px" width="16px"/> '
-                        + currLinks[j][k].target.displayName);
-                        button = $('<button type="button" class="btn btn-info btn-mini">Detail</button><br/>').appendTo('#detailCell' + i + '' + j);                        
-                    }
-                    else {
-                        linkCell.append('<img src="media/css/sourceIcon.png" height="16px" width="16px"/> ' 
-                        + currLinks[j][k].source.displayName + '<br/>' 
-                        + '<img src="media/css/targetIcon.png" height="16px" width="16px"/> '
-                        + currLinks[j][k].target.displayName + '<br/>');
-                        button = $('<button type="button" class="btn btn-info btn-mini">Detail</button><br/><br/>').appendTo('#detailCell' + i + '' + j);
-                    }
-                    button.data(currLinks[j][k]);
-                    button.on("click", function() {
-                        linkClick($(this).data(), 1);
-                        if (old_focused_source != null) svg.select("#arc-" + old_focused_source.key).classed("highlighted", false);
-                        if (old_focused_target != null) svg.select("#arc-" + old_focused_target.key).classed("highlighted", false);
-                        svg.select("#arc-" + $(this).data().source.key).classed("highlighted", true);
-                        svg.select("#arc-" + $(this).data().target.key).classed("highlighted", true);
-                        old_focused_source = $(this).data().source;
-                        old_focused_target = $(this).data().target;
-                    });
-                } 
-            }
-        }
+        console.log(interParents);
+        console.log(interLinks);
+
+        var counter = 0;
+        var numOfInterParents = interParents.length;
+        interParents.forEach(function(d) {
+            d.cx = 300 / (numOfInterParents+1) * (counter+1);
+            d.cy = 150;
+            ++counter;
+        });
+
+        selected_source.cx = 150;
+        selected_source.cy = 75;
+        selected_target.cx = 150;
+        selected_target.cy = 225;
+        interParents.push(selected_source);
+        interParents.push(selected_target);
+    
+        var local_node = local_vis.selectAll("g.node").data(interParents).enter()
+                            .append("circle").attr("r", 5).style("fill", "#555").style("stroke", "#FFF")
+                            .style("stroke-width", 3)
+                            .attr("cx", function(d) { return d.cx; })
+                            .attr("cy", function(d) { return d.cy; })
+                            .on("mouseover", localNodeMouseOver)
+                            .on("mouseout", localNodeMouseOut)
+                            .attr("id", function(d) { return "#localText-" + d.key ;})
+                            .attr("class","local_node");
+                            
+        var local_text = local_vis.selectAll("g.node").data(interParents).enter()
+                            .append("text")
+                            .attr("x", function(d) { return d.cx; })
+                            .attr("y", function(d) { return d.cy; })
+                            .attr("class", "text")
+                            .text(function(d) { return d.displayName; });
+                                                    
+        var local_link = local_vis.selectAll("line.link").data(interLinks).enter().append("line")
+                        .attr("class", "local_link")
+                        .attr("x1", function(d) { return d.source.cx; })
+                        .attr("y1", function(d) { return d.source.cy; })
+                        .attr("x2", function(d) { return d.target.cx; })
+                        .attr("y2", function(d) { return d.target.cy; })
+                        .on("click", interLinkClicked);
+
     }
     else {
+        $("#localCon").empty();
+        $("#localCon").append('<h3>Search Results</h3>');
+        local_vis = d3.select("#localCon").append("svg").attr("width", 300).attr("height", 300).attr("id", "localConVisual");
         connectionPanel.empty();
-        connectionPanel.append('<h3>Search Results</h3>');
     }
 }
 
@@ -1058,20 +1101,55 @@ function displayConnections(value) {
 /////////////////////////////////////
 // Backend Computation
 /////////////////////////////////////
+function linkExists(link, linkArray) {
+    var ret = false;
+    linkArray.forEach(function(d) {
+        if (d.source.key == link.source.key && d.target.key == link.target.key) {
+            ret = true;
+        }
+    });
+    return ret;
+}
+
+function addLink(linkArray, link, sourceParent, targetParent) {
+    linkArray.forEach(function(d) {
+        if (d.source.key == sourceParent.key && d.target.key == targetParent.key
+                && $.inArray(link, d.actualLinks) < 0) {
+            d.actualLinks.push(link);;
+        }
+    });
+}
+
 function getInterParents(depth) {
     interParents = [];
+    interLinks = [];
+    var sourceDecendants = [];
+    var targetDecendants = [];
+    getDecendants(selected_source, sourceDecendants);
+    getDecendants(selected_target, targetDecendants);
     selected_links.forEach(function(d) {
         for (var i = 0; i < d.length; ++i) {
-            interParents.push(findParentAtDepth(d[i].source, depth));
-            interParents.push(findParentAtDepth(d[i].target, depth));
+            var sourceParent = findParentAtDepth(d[i].source, depth);
+            var targetParent = findParentAtDepth(d[i].target, depth);
+            //if (sourceParent == null || targetParent == null) continue;
+            var interLink = {source:sourceParent, target:targetParent, actualLinks:[d[i]]};
+            if ($.inArray(sourceParent, interParents) < 0 && $.inArray(sourceParent, sourceDecendants) < 0) interParents.push(sourceParent);
+            if ($.inArray(targetParent, interParents) < 0 && $.inArray(targetParent, targetDecendants) < 0) interParents.push(targetParent);
+            if (!linkExists(interLink, interLinks)) {
+                interLinks.push(interLink);
+            }
+            else {
+                addLink(interLinks, d[i], sourceParent, targetParent);
+            }
         }
     });
 }
 
 function findParentAtDepth(node, depth) {
-    if (node == selected_source || node == selected_target) return;
+    if (node == selected_source || node == selected_target) return node;
     var parent = node;
-    while (parent.depth > depth && parent.parent != selected_source.parent && parent.parent != selected_target.parent) {
+    while (parent.depth > depth && parent.parent != selected_source.parent 
+            && parent.parent != selected_target.parent && parent.parent != undefined) {
         parent = parent.parent;
     }
     return parent;

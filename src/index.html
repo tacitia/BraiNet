@@ -48,7 +48,7 @@
                 <td class="tab-column-1">Number of intermediate connections</td>
                 <td class="tab-column-2">        
                     <input id="maxHop" type="range" min=1 max=5 value=1 step=1>
-                    <span id="maxHopValue">1</span>
+                    <span id="maxHopValue">0</span>
                 </td>
             </tr>
         </table>
@@ -132,9 +132,11 @@
   
   <div id="canvas"></div>
   
-
-  <div id="connections" class="conn-level0">
+  <div id="localCon" class="localCon">
     <h3>Search Results</h3>
+  </div>
+    
+  <div id="connections" class="conn-level0">
   </div>
   
 <!--
