@@ -1,129 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>brainCircuits</title>
+  <head>
+    <meta charset="utf-8">
+    <title>brainCircuits</title>
 
-  <!--Stylesheets-->
-  <link rel="stylesheet" href="media/lib/bootstrap/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="media/lib/chosen/chosen.css" />
-  <link rel="stylesheet" href="media/css/style.css" type="text/css" charset="utf-8">
-  <link rel="stylesheet" href="media/css/colors.css" type="text/css" charset="utf-8">
-  <link rel="stylesheet" href="media/lib/jquery-ui/css/redmond/jquery-ui.css" />
+    <!--Stylesheets-->
+    <link rel="stylesheet" href="media/lib/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="media/lib/chosen/chosen.css" />
+    <link rel="stylesheet" href="media/css/style.css" type="text/css" charset="utf-8">
+    <link rel="stylesheet" href="media/css/colors.css" type="text/css" charset="utf-8">
+    <link rel="stylesheet" href="media/lib/jquery-ui/css/redmond/jquery-ui.css" />
 
-  <!-- HTML5 shim, IE6-8 support of HTML5 elements -->
-  <!--[if lt IE 9]>
+    <!-- HTML5 shim, IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-  <![endif]-->
-</head>
-<body>
-  <!--UTIL TAB RIGHT-->
-  <div id="util">
-    <ul class="nav nav-tabs">
-      <li class="active"><a href="#legend" data-toggle="tab">Legend</a></li>
-      <li><a href="#options" data-toggle="tab">Options</a></li>
-      <li><a href="#search" data-toggle="tab">Search</a></li>
-      <li><a href="#help" data-toggle="tab">Help</a></li>
-    </ul>
-    <div id="util-content" class="tab-content">
-      <!--LEGEND-->
-      <div id="legend" class="tab-pane fade in active">
-        <h4>Primary</h4></br>
-        <div id="legend1"></div>
-        <h4>Feature Color</h4></br>
-        <div id="legend2"></div>
-      </div>
-      <!--OPTIONS-->
-      <div id="options" class="tab-pane">
-        <table>
-            <tr><td class="tab-column-1"><h4>Edge color</h4></td></tr>
-            <tr>
-                <td class="tab-column-1">Feature</td>
-                <td class="tab-column-2">
-                    <select data-placeholder="Choose an attribute" class="chzn-select" style="width:250px;" id="attrSelect">
-                        <option></option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td class="tab-column-1">Scale</td>
-                <td class="tab-column-2">
-                    <select data-placeholder="Choose a scale" class="chzn-select" style="width:250px;" id="scaleSelect">
-                        <option></option>
-                </select>
-                </td>
-            </tr>
-        </table>
-        <br/>
-        <table>
-          <tr><td class="tab-column-1"><h4>General</h4></td></tr>
-          <tr>
-            <td class="tab-column-1">Level of detail</td>
-            <td class="tab-column-2"><select data-placeholder="Choose a level" class="chzn-select" style="width:250px;" id="lodSelect">
-                <option></option>
-                <option>Region</option>
-                <option>Cell</option>
-            </select></td>
-          </tr>
-          <tr>
-            <td class="tab-column-1">Tension</td>
-            <td class="tab-column-2"><input id="tension" type="range" min=0 max=100 value=85 step=1>
-              <span id="tensionValue">0.85</span>
-            </td>
-          </tr>
-        </table>
-      </div><!--END OPTIONS-->
-      <!--SEARCH-->
-      <div id="search" class="tab-pane">
-        <table>
-          <tr>
-            <td class="tab-column-1">Source</td>
-            <td class="tab-column-2">
-              <select data-placeholder="Choose a brain area" class="chzn-select" style="width:250px;" id="sourceSelect">
-                <option></option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td class="tab-column-1">Target</td>
-            <td class="tab-column-2">
-              <select data-placeholder="Choose a brain area" class="chzn-select" style="width:250px;" id="targetSelect">
-                <option></option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td class="tab-column-1">Number of intermediate connections</td>
-            <td class="tab-column-2">
-              <input id="maxHop" type="range" min=1 max=5 value=1 step=1>
-              <span id="maxHopValue">1</span>
-            </td>
-          </tr>
-        </table>
-        </br>
-        <table>
-          <tr>
-            <td style="width:350px"><button id="bt-search" class="btn">Show connectivity for selected regions</button></td>
-            <td style="width:50px;"><button id="bt-clear" class="btn btn-warning">Clear</button></td>
-          </tr>
-        </table>
-      </div><!--END SEARCH-->
-      <!--HELP-->
-      <div id="help" class="tab-pane">
-        <p>
-        Tips: <br/>
-        1. To locate a brain region: type in its name in the "Search for a region"
-            text box and it will be highlighted in the visualization <br/><br/>
-        2. To search for connections between two regions: left click to set a region
-            to be the source and shift + left click to set a region to be the target;
-            then set the level for indirect connections using the "Max hop" slider.
-            Click search to highlight the connections between the selected regions,
-            or click clear to clear the highlighted connections <br/><br/>
-        3. To adjust the level of details: use the "Max depth" slider
-        </p>
-      </div>
-      <div id="legend" class="tab-pane fade in active">
-        <div id="legend-primary" style="position:relative; height:150px;">
+    <![endif]-->
+  </head>
+  <body>
+    <!--UTIL TAB RIGHT-->
+    <div id="util">
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="#legend" data-toggle="tab">Legend</a></li>
+        <li><a href="#options" data-toggle="tab">Options</a></li>
+        <li><a href="#search" data-toggle="tab">Search</a></li>
+        <li><a href="#help" data-toggle="tab">Help</a></li>
+      </ul>
+      <div id="util-content" class="tab-content">
+        <!--LEGEND-->
+        <div id="legend" class="tab-pane fade in active">
+          <div id="legend-primary" style="position:relative; height:150px;">
             <h4>Primary</h4></br>
             <div style="background-color:#2ca02c; height:20px; width:20px; position:absolute; top:35px;"></div>
             <p style="position:absolute; left:25px; top:35px;">Source region / Outgoing connecion</p>
@@ -131,104 +36,178 @@
             <p style="position:absolute; left:25px; top:70px;">Target region / Incoming connecion</p>
             <div style="background-color:#062db8; height:20px; width:20px; position:absolute; top:105px;"></div>
             <p style="position:absolute; left:25px; top:105px;">Bidirectional connection</p>
-        </div>
-        <div id="legend-feature" style="position:relative">
+          </div>
+          <div id="legend-feature" style="position:relative">
             <h4>Feature Color</h4></br>
-        </div>
+          </div>
+        </div><!--END LEGEND-->
+
+        <!--OPTIONS-->
+        <div id="options" class="tab-pane">
+          <table>
+            <tr><td class="tab-column-1"><h4>Edge color</h4></td></tr>
+            <tr>
+              <td class="tab-column-1">Feature</td>
+              <td class="tab-column-2">
+                <select data-placeholder="Choose an attribute" class="chzn-select" style="width:250px;" id="attrSelect">
+                  <option></option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td class="tab-column-1">Scale</td>
+              <td class="tab-column-2">
+                <select data-placeholder="Choose a scale" class="chzn-select" style="width:250px;" id="scaleSelect">
+                  <option></option>
+                </select>
+              </td>
+            </tr>
+          </table>
+          <br/>
+          <table>
+            <tr><td class="tab-column-1"><h4>General</h4></td></tr>
+            <tr>
+              <td class="tab-column-1">Level of detail</td>
+              <td class="tab-column-2"><select data-placeholder="Choose a level" class="chzn-select" style="width:250px;" id="lodSelect">
+                  <option></option>
+                  <option>Region</option>
+                  <option>Cell</option>
+              </select></td>
+            </tr>
+            <tr>
+              <td class="tab-column-1">Tension</td>
+              <td class="tab-column-2"><input id="tension" type="range" min=0 max=100 value=85 step=1>
+                <span id="tensionValue">0.85</span>
+              </td>
+            </tr>
+          </table>
+        </div><!--END OPTIONS-->
+
+        <!--SEARCH-->
+        <div id="search" class="tab-pane">
+          <table>
+            <tr>
+              <td class="tab-column-1">Source</td>
+              <td class="tab-column-2">
+                <select data-placeholder="Choose a brain area" class="chzn-select" style="width:250px;" id="sourceSelect">
+                  <option></option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td class="tab-column-1">Target</td>
+              <td class="tab-column-2">
+                <select data-placeholder="Choose a brain area" class="chzn-select" style="width:250px;" id="targetSelect">
+                  <option></option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td class="tab-column-1">Number of intermediate connections</td>
+              <td class="tab-column-2">
+                <input id="maxHop" type="range" min=1 max=5 value=1 step=1>
+                <span id="maxHopValue">1</span>
+              </td>
+            </tr>
+          </table>
+          </br>
+          <table>
+            <tr>
+              <td style="width:350px"><button id="bt-search" class="btn">Show connectivity for selected regions</button></td>
+              <td style="width:50px;"><button id="bt-clear" class="btn btn-warning">Clear</button></td>
+            </tr>
+          </table>
+        </div><!--END SEARCH-->
+
+        <!--HELP-->
+        <div id="help" class="tab-pane">
+          <p>
+            Tips: <br/>
+            1. To locate a brain region: type in its name in the "Search for a region"
+            text box and it will be highlighted in the visualization <br/><br/>
+            2. To search for connections between two regions: left click to set a region
+            to be the source and shift + left click to set a region to be the target;
+            then set the level for indirect connections using the "Max hop" slider.
+            Click search to highlight the connections between the selected regions,
+            or click clear to clear the highlighted connections <br/><br/>
+            3. To adjust the level of details: use the "Max depth" slider
+          </p>
+        </div><!--END HELP-->
+
+      </div><!--END UTIL CONTENT-->
+    </div><!--END UTIL RIGHT-->
+
+    <!--
+    <div id="legend" class="legend">
+      <h3>Legend</h3>
+    </div>
+    -->
+
+    <div id="canvas"></div>
+
+    <!--Search Results-->
+    <div id="localCon" class="localCon">
+      <h3>Search Results</h3>
+    </div>
+
+    <!---List Link Connections (Search Results)-->
+    <div id="connections" class="conn-level0"></div>
+
+    <!--References and Link Details-->
+    <div id="detail" class="tabbable tabs-top ref">
+      <h3>References</h3>
+      <span id="ref-src">Source: no selection </span><br/>
+      <span id="ref-tgt">Target: no selection </span><br/>
+      <i>Click on a link to see the references</i>
+      <ul id="detail-tab" class="nav nav-tabs nav-tabs-add">
+      </ul>
+      <div id="detail-content-pane" class="tab-content">
       </div>
     </div>
-  </div><!--END UTIL RIGHT-->
 
-  <!--
-  <div id="legend" class="legend">
-    <h3>Legend</h3>
-  </div>
-  -->
-  
-  <div id="canvas"></div>
-  
-  <div id="localCon" class="localCon">
-    <h3>Search Results</h3>
-  </div>
-    
-  <div id="connections" class="conn-level0">
-  </div>
-  
-<!--
-  <div id="detail">
-	<h3><a href="#">Section 1</a></h3>
-	<div>
-		<p>
-		Mauris mauris ante, blandit et, ultrices a, suscipit eget, quam. Integer
-		ut neque. Vivamus nisi metus, molestie vel, gravida in, condimentum sit
-		amet, nunc. Nam a nibh. Donec suscipit eros. Nam mi. Proin viverra leo ut
-		odio. Curabitur malesuada. Vestibulum a velit eu ante scelerisque vulputate.
-		</p>
-	</div>
-	<h3><a href="#">Section 2</a></h3>
-	<div>
-		<p>
-		Sed non urna. Donec et ante. Phasellus eu ligula. Vestibulum sit amet
-		purus. Vivamus hendrerit, dolor at aliquet laoreet, mauris turpis porttitor
-		velit, faucibus interdum tellus libero ac justo. Vivamus non quam. In
-		suscipit faucibus urna.
-		</p>
-	</div>
-  </div>
--->
-
-  <div id="detail" class="tabbable tabs-top ref">
-    <h3>References</h3>
-    <span id="ref-src">Source: no selection </span><br/>
-    <span id="ref-tgt">Target: no selection </span><br/>
-    <i>Click on a link to see the references</i>
-    <ul id="detail-tab" class="nav nav-tabs nav-tabs-add">
-    </ul>
-    <div id="detail-content-pane" class="tab-content">
-    </div>
-  </div>
-  
-  <div class="modal hide fade" id="messageBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:600px;">
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-      <h3 id="myModalLabel">New Incoming Message</h3>
-    </div>
-    <div class="modal-body">
+    <!-- MODAL WINDOW - User Study
+    <div class="modal hide fade" id="messageBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:600px;">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">New Incoming Message</h3>
+      </div>
+      <div class="modal-body">
         <p id="message"></p>
         <textarea rows="6" class="input-xxlarge"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        <button class="btn btn-primary">Send</button>
+      </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-      <button class="btn btn-primary">Send</button>
-    </div>
-  </div>
-  <a href="#messageBox" role="button" class="btn" data-toggle="modal" style="position:absolute; bottom:200px; left:100px;">Launch demo modal</a>
+    <a href="#messageBox" role="button" class="btn" data-toggle="modal" style="position:absolute; bottom:200px; left:100px;">Launch demo modal</a>
+    -->
 
-  <!--JAVASCRIPT-->
+    <!--JAVASCRIPT-->
 
-  <!--LIBRARIES-->
-  <script type="text/javascript" src="media/lib/jquery-1.7.2.min.js"></script>
-  <script type="text/javascript" src="media/lib/bootstrap/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="media/lib/d3.v2.js"></script>
-  <script type="text/javascript" src="media/lib/chosen/chosen.jquery.js"></script>
-  <script type="text/javascript" src="media/lib/jquery-ui/js/jquery-ui.js"></script>
+    <!--LIBRARIES-->
+    <script type="text/javascript" src="media/lib/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="media/lib/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="media/lib/d3.v2.js"></script>
+    <script type="text/javascript" src="media/lib/chosen/chosen.jquery.js"></script>
+    <script type="text/javascript" src="media/lib/jquery-ui/js/jquery-ui.js"></script>
 
-  <!--TODO: brainmap and script should be compressed as one file-->
-  <script type="text/javascript" src="media/js/script.js"></script>
-  <script type="text/javascript" src="media/js/brainMap.js"></script>
+    <!--TODO: brainmap and script should be compressed as one file-->
+    <script type="text/javascript" src="media/js/script.js"></script>
+    <script type="text/javascript" src="media/js/brainMap.js"></script>
 
-  <!-- Piwik -->
-  <script type="text/javascript">
-    var pkBaseURL = (("https:" == document.location.protocol) ? "https://hivizexplorer.com/piwik/" : "http://hivizexplorer.com/piwik/");
-    document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
-  </script>
-  <script type="text/javascript">
-    try {
-      var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 2);
-      piwikTracker.trackPageView();
-      piwikTracker.enableLinkTracking();
-    } catch( err ) {}
-  </script><noscript><p><img src="http://hivizexplorer.com/piwik/piwik.php?idsite=2" style="border:0" alt="" /></p></noscript>
-  <!-- End Piwik Tracking Code -->
+    <!-- Piwik -->
+    <script type="text/javascript">
+      var pkBaseURL = (("https:" == document.location.protocol) ? "https://hivizexplorer.com/piwik/" : "http://hivizexplorer.com/piwik/");
+      document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+      </script>
+      <script type="text/javascript">
+        try {
+          var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 2);
+          piwikTracker.trackPageView();
+          piwikTracker.enableLinkTracking();
+        } catch( err ) {}
+    </script><noscript><p><img src="http://hivizexplorer.com/piwik/piwik.php?idsite=2" style="border:0" alt="" /></p></noscript>
+    <!-- End Piwik Tracking Code -->
 </body>
 </html>

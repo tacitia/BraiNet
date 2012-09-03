@@ -18,32 +18,14 @@ var w = 800,
     rotate = 0,
     radius = Math.min(w, h) / 2.7;
 
-// State variables
-var mode = 1, // 1: exploration mode, 2: search mode, 3: fixation mode
-    selected_source,
-    selected_target,
-    selected_singleNode = null,
-    selected_links = [],
-    grouped_selected_links = [],
-    selected_nodes = [],
-    old_focused_source = null,
-    old_focused_target = null,
-    interParents = [],
-    interLinks = [];
-
-var local_vis = d3.select("#localCon").append("svg").attr("width", 300).attr("height", 300).attr("id", "localConVisual");
-var attrRange = {};
-
 // Graph elements
 var nodes,
     path,
-    splines,
+    splines, //used to set the tension
     con_map,
     display_node_map,
-    name_node_map;
-
-
-var tooltips;
+    name_node_map,
+    tooltips;
 
 var cluster = d3.layout.cluster()
     .size([360, radius - 100])
@@ -87,30 +69,26 @@ svg.append('rect')
     .attr("transform", "translate(" + (-w / 2) + "," + (-h / 2) + ")");
 
 
-// Other UI elements
+//TODO: remove max depth
 var max_hop = 1,
     max_depth = 8;
+
+//TODO: [arthur] convert this to a html tag with the name of node
 var highlight_text = svg.append("text").attr("id", "highlight_text").attr("x", -400).attr("y", 350).text("");
 
+// USER STUDY
 // User goal state variables
 var previousTask;
 var externalWorkingTime = [];
 var startTime;
 var endTime;
 
-//
-//
-// THE LEGEND SHOULD NOT BE A SVG
-//
-// TODO: convert this to a simple div/css inside the hmtl
-//
-//
-
+//Legend
 var legend = d3.select("#legend-feature")
-                .append("svg")
-                .attr("width", "350px")
-                .attr("height", "100px")
-                .append("g");
+            .append("svg")
+            .attr("width", "350px")
+            .attr("height", "100px")
+            .append("g");
 
 for (var i = 0; i < 4; ++i) {
     legend.append('line')
@@ -127,11 +105,37 @@ for (var i = 0; i < 4; ++i) {
         .text("TBD");
 }
 
+// State variables
+/*
+var mode = {
+    exploration: 1, //browsing
+    search: 2,      //when search button is clicked
+    fixation: 3     //when clicked on a node
+};
+*/
 
+var mode = 1,
+    current_mode,
+    selected_source,
+    selected_target,
+    selected_singleNode = null,
+    selected_links = [],
+    grouped_selected_links = [],
+    selected_nodes = [],
+    old_focused_source = null,
+    old_focused_target = null,
+    interParents = [],
+    interLinks = [];
+
+//TODO: [HUA] simplified search mode graph
+var local_vis = d3.select("#localCon").append("svg").attr("width", 300).attr("height", 300).attr("id", "localConVisual");
+
+//defines properties for the edge color
+var attrRange = {};
+
+//TODO: [arthur] change font size on resize
+// Redraws on zoom change
 function redraw() {
-    //if (d3.event.scale > 2.5 || d3.event.scale < 0.9) {
-        //return;
-    //}
     svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
     //if (d3.event.sourceEvent.type !== "mousemove") {
         //tooltips.selectAll(".text").style("font-size", (10 / d3.event.scale));
@@ -144,24 +148,11 @@ function redraw() {
     //}
 }
 
-var tooltip = function (w, h) {
+//Defines svg path for tooltip
+var tooltip_path = function (w, h) {
     return "M 0 0 L 10 -5 L 20 " + -h + " L " + (w + 55) + " " + -h + " L " +
     (w + 55) + " " + h + " L 20 " + h + " L 10 5 Z";
 };
-
-
-/**
- * Appends options to selection ui
- *
- */
-/*
-d3.json("../media/data/options.json", function (data) {
-    data.forEach(function (d) {
-        $('#regionSelect').append(new Option(d.name, d.name, false, false));
-    });
-//    $('.chzn-select').chosen({allow_single_deselect: true});
-});
-*/
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -174,8 +165,6 @@ d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
     var nodes_for_link,
         links_visible,
         links,
-//        splines,
-//        path,
         node,
         arc;
 
@@ -273,14 +262,6 @@ d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
         .append("g")
         .attr("class", "tooltext");
 
-    /*
-    node.append("text")
-        .attr("class", "text visible")
-        .attr("transform", function(d) {return "translate(" + arc.outerCenter(d) + ")";})
-        .attr("textPath", function(d) {console.log(arc(d)); return arc(d)})
-        .text(function(d) {return d.displayName});
-    */
-
     //text
     tooltips.append("text")
         .attr("id", function (d) { return "text-" + d.key; })
@@ -297,14 +278,6 @@ d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
         })
         .text(function (d) { return d.displayName; });
 
-        //.attr("transform", function (d) { return "translate(" + arc.outerCenter(d) + ")"; })
-        //.attr("text-anchor", "middle")
-        //.attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
-        //.attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
-        //.attr("transform", function(d) {
-            //return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
-
-
     //tooltip
     tooltips.insert("path", "text")
         .attr("id", function (d) { return "tooltip-" + d.key; })
@@ -313,7 +286,7 @@ d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
             var text = svg.select("#text-" + d.key)[0][0],
                 w = text.scrollWidth,
                 h = text.scrollHeight;
-            return tooltip(w, h);
+            return tooltip_path(w, h);
         })
         .attr("transform", function (d) { return "translate(" + arc.outerCenter(d) + ")rotate(" + (d.x - 90) + ")"; });
 });
@@ -348,20 +321,22 @@ $('#attrSelect').change(attrSearchInput);
 $(window).focus(windowGainsFocus);
 $(window).blur(windowLosesFocus);
 
-/*
-    When the window gains focus:
-    1) End the citation count timer and records its value
-    2) Highlight the trigger for the next task
-*/
+/* USER STUDY
+ * When the window gains focus:
+ * 1) End the citation count timer and records its value
+ * 2) Highlight the trigger for the next task
+ *
+ */
 function windowGainsFocus() {
     console.log("windowGainsFocus");
 }
 
-/* 
-    When the window loses focus:
-    1) Start a citation count timer to record the time it takes for the user to check the citation count for a single reference
-    2) Record the next task
-*/
+/* USER STUDY
+ * When the window loses focus:
+ * 1) Start a citation count timer to record the time it takes for the user to check the citation count for a single reference
+ * 2) Record the next task
+ *
+ */
 function windowLosesFocus() {
     console.log("windowLosesFocus");
 }
@@ -374,7 +349,7 @@ function mouse(e) {
 }
 
 /*
- * Mouse Over
+ * Mouse Over Arc
  *
  *
  */
@@ -384,34 +359,39 @@ function mouseOver(d) {
         //.attr("d", tooltip())
         //.attr("transform", function (d) { return "translate(" + arc.centroid(d) + ")"; });
     console.log(mode);
-    if (mode == 1) {
-//        focusOnNodeTemp(d, true);
+    if (mode === 1) {
+        //TODO: use new mode variable
+        //focusOnNodeTemp(d, true);
         focusOnNode(d, true);
     }
 }
 
 
 /*
- * Mouse Out
+ * Mouse Out Arc
  *
  */
 function mouseOut(d) {
     highlight_text.text("");
     //svg.selectAll("path.link").classed("non-selected", false);
-    if (mode == 1) {
-//        focusOnNodeTemp(d, false);
+    if (mode === 1) {
         focusOnNode(d, false);
     }
 }
 
+/* Search Results Mouse Over
+ *
+ */
 function localNodeMouseOver(d) {
     svg.select("#localText-" + d.key).classed("text visible", true);
 }
 
+/* Search Results Mouse Out
+ *
+ */
 function localNodeMouseOut(d) {
     svg.select("#localText-" + d.key).classed("text visible", false);
 }
-
 
 /*
  * Mouse over for link
@@ -445,12 +425,14 @@ function linkMouseOver(d) {
  *
  */
 function linkMouseOut(d) {
-    if ($(this).is(".dimmed")) return;
+    if ($(this).is(".dimmed")) {
+        return;
+    }
     svg.select("path.link.bi-" + d.source.key + ".bi-" + d.target.key)
         .classed("selected", false);
     svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key)
         .classed("selected", false);
-    if (d.bi == true) {
+    if (d.bi === true) {
         highlightNode(d.source, "bi", false, true);
         highlightNode(d.target, "bi", false, true);
     }
@@ -468,10 +450,12 @@ function linkMouseOut(d) {
  *
  */
 function linkClick(d, value) {
+    //checks if the link is active or dim
     if (!d.bi && svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key).classed("dimmed")) return;
-    if (d.bi && svg.select("path.link.bi-" + d.source.key + ".bi-" + d.target.key).classed("dimmed")) return;s
+    if (d.bi && svg.select("path.link.bi-" + d.source.key + ".bi-" + d.target.key).classed("dimmed")) return;
     if (value == 0) piwikTracker.trackPageView('Click a link');
     else piwikTracker.trackPageView('Click a table link entry');
+
     var detail_tab = $("#detail-tab");
     var detail_content_pane = $("#detail-content-pane");
     detail_tab.empty();
@@ -484,17 +468,23 @@ function linkClick(d, value) {
             detail_content_pane.append('<div class="tab-pane active" id="tab1"></div>');
         }
         else {
-            detail_tab.append('<li><a href="#tab' + (i + 1) + '" data-toggle="tab">Ref ' + (i+1) + '</a></li>');
-            detail_content_pane.append('<div class="tab-pane" id="tab' + (i+1) + '"></div>');
+            detail_tab.append('<li><a href="#tab' + (i + 1) + '" data-toggle="tab">Ref ' +
+                              (i + 1) + '</a></li>');
+
+            detail_content_pane.append('<div class="tab-pane" id="tab' + (i + 1) +
+                                       '"></div>');
         }
 
         // Append the link information
         $("#ref-src").text("Source: " + d.source.displayName);
         $("#ref-tgt").text("Target: " + d.target.displayName);
-        $("#tab" + (i + 1)).append('<p>Strength: ' + d.detail[i].strength + '<br/>Technique: ' + d.detail[i].technique                                
-                                    + '<br/>Ref: ' + d.detail[i].ref + '<br/>BAMS record: <a href="' + d.detail[i].bams_link 
-                                    + '" target="_blank">Click</a><br/>Pubmed link: <a href="' 
-                                    + d.detail[i].pubmed_link + '" target="_blank">Click</a><br/></p>');
+        $("#tab" + (i + 1)).append('<p>Strength: ' + d.detail[i].strength +
+                                   '<br/>Technique: ' + d.detail[i].technique +
+                                   '<br/>Ref: ' + d.detail[i].ref +
+                                   '<br/>BAMS record: <a href="' +
+                                   d.detail[i].bams_link +
+                                   '" target="_blank">Click</a><br/>Pubmed link: <a href="' +
+                                   d.detail[i].pubmed_link + '" target="_blank">Click</a><br/></p>');
     }
 }
 
@@ -502,10 +492,12 @@ function linkClick(d, value) {
 /*
  * Node Click - for selection
  *
+ * TODO: debug node selection
+ *
  */
 function nodeClick(d) {
     d3.event.preventDefault();
-    if (mode == 1 || 3) {
+    if (mode === 1 || 3) {
         piwikTracker.trackPageView('Fix a node');
         if (selected_singleNode == d) {
             focusOnNode(d, false);
@@ -596,8 +588,8 @@ function clearButtonClick() {
 }
 
 /*
- * Given the source specified by a user through the source search dropdown, set the selected_target variable and highlight
- * the corresponding source elements
+ * Given the source specified by a user through the source search dropdown, set
+ * the selected_target variable and highlight the corresponding source elements
  *
  */
 function sourceSearchInput() {
@@ -616,8 +608,8 @@ function sourceSearchInput() {
 }
 
 /*
- * Given the target specified by a user through the target search dropdown, set the selected_target variable and highlight
- * the corresponding target elements
+ * Given the target specified by a user through the target search dropdown, set
+ * the selected_target variable and highlight the corresponding target elements
  *
  */
 function targetSearchInput() {
@@ -637,8 +629,8 @@ function targetSearchInput() {
 
 
 /*
- * Given the attribute selected for edge coloring, compute the corresponding value range for each color and update the
- * legend accordingly
+ * Given the attribute selected for edge coloring, compute the corresponding
+ * value range for each color and update the legend accordingly
  *
  */
 function attrSearchInput() {
@@ -772,7 +764,10 @@ function setMaxDepth() {
     });
 }
 
-
+/*
+ * Set Tension
+ *
+ */
 function setTension() {
     piwikTracker.trackPageView('Set tension');
     line.tension(this.value / 100);
@@ -801,30 +796,12 @@ function clearSingleSelection() {
     selected_singleNode = null;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// UTILITIES & NAVIGATION
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-// Helper Functions
-////////////////////////////////////////////////////////////////////////////////
-
-
 /////////////////////////////////////
 // Node and link highlighting
 /////////////////////////////////////
 
-
-/*
- * THIS NEEDS MAJOR FIX
- *
- *
- */
 function focusOnNode(node, value) {
 
-    //THIS IS NOT GOOD!
     if (node == undefined || node == null) {
         return;
     }
@@ -845,7 +822,7 @@ function focusOnNode(node, value) {
         .classed("dimmed", false)
         .classed("fixed", value)
         .each(function(d) {highlightNode(d.source, "bi", value, true);
-                            highlightNode(d.target, "bi", value, true);});
+                           highlightNode(d.target, "bi", value, true);});
 
     highlightNode(node, "selected", value, true);
 }
@@ -863,6 +840,7 @@ function highlightNode(node, className, value, showName) {
     }
 }
 
+//This is for the search results
 function highlightSelectedLinks(value) {
     selected_links.forEach(function (d) {
         d.forEach(function (i) {
@@ -878,6 +856,7 @@ function highlightSelectedLinks(value) {
     });
 }
 
+// higher level intermediate nodes
 function displayInterParents(value) {
     if (mode != 2) return;
     if (value) {
@@ -927,11 +906,11 @@ function interLinkClicked(d) {
         var linkCell = $('#linkCell' + i);
              //   for (var k = 0; k < i+1; ++k) {
         var button;
-        linkCell.append('<img src="media/css/sourceIcon.png" height="16px" width="16px"/> ' 
-                        + d.actualLinks[i].source.displayName + '<br/>' 
+        linkCell.append('<img src="media/css/sourceIcon.png" height="16px" width="16px"/> '
+                        + d.actualLinks[i].source.displayName + '<br/>'
                         + '<img src="media/css/targetIcon.png" height="16px" width="16px"/> '
                         + d.actualLinks[i].target.displayName) + '<br/>';
-        button = $('<button type="button" class="btn btn-info btn-mini">Detail</button><br/>').appendTo('#detailCell' + i);                        
+        button = $('<button type="button" class="btn btn-info btn-mini">Detail</button><br/>').appendTo('#detailCell' + i);
         button.data(d.actualLinks[i]);
         button.on("click", function() {
             linkClick($(this).data(), 1);
@@ -963,7 +942,7 @@ function displayConnections(value) {
         selected_target.cy = 225;
         interParents.push(selected_source);
         interParents.push(selected_target);
-    
+
         var local_node = local_vis.selectAll("g.node").data(interParents).enter()
                             .append("circle").attr("r", 5).style("fill", "#555").style("stroke", "#FFF")
                             .style("stroke-width", 3)
@@ -973,14 +952,14 @@ function displayConnections(value) {
                             .on("mouseout", localNodeMouseOut)
                             .attr("id", function(d) { return "#localText-" + d.key ;})
                             .attr("class","local_node");
-                            
+
         var local_text = local_vis.selectAll("g.node").data(interParents).enter()
                             .append("text")
                             .attr("x", function(d) { return d.cx; })
                             .attr("y", function(d) { return d.cy; })
                             .attr("class", "text")
                             .text(function(d) { return d.displayName; });
-                                                    
+
         var local_link = local_vis.selectAll("line.link").data(interLinks).enter().append("line")
                         .attr("class", "local_link")
                         .attr("x1", function(d) { return d.source.cx; })
@@ -1001,6 +980,7 @@ function displayConnections(value) {
 /////////////////////////////////////
 // Backend Computation
 /////////////////////////////////////
+
 function linkExists(link, linkArray) {
     var ret = false;
     linkArray.forEach(function(d) {
@@ -1048,7 +1028,7 @@ function getInterParents(depth) {
 function findParentAtDepth(node, depth) {
     if (node == selected_source || node == selected_target) return node;
     var parent = node;
-    while (parent.depth > depth && parent.parent != selected_source.parent 
+    while (parent.depth > depth && parent.parent != selected_source.parent
             && parent.parent != selected_target.parent && parent.parent != undefined) {
         parent = parent.parent;
     }
