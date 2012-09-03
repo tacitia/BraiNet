@@ -12,13 +12,13 @@
 
 "use strict";
 
-//display
+// Display parameters
 var w = 800,
     h = 800,
     rotate = 0,
     radius = Math.min(w, h) / 2.7;
 
-//state variables
+// State variables
 var mode = 1, // 1: exploration mode, 2: search mode, 3: fixation mode
     selected_source,
     selected_target,
@@ -31,7 +31,10 @@ var mode = 1, // 1: exploration mode, 2: search mode, 3: fixation mode
     interParents = [],
     interLinks = [];
 
-//bundle graph
+var local_vis = d3.select("#localCon").append("svg").attr("width", 300).attr("height", 300).attr("id", "localConVisual");
+var attrRange = {};
+
+// Graph elements
 var nodes,
     path,
     splines,
@@ -39,13 +42,8 @@ var nodes,
     display_node_map,
     name_node_map;
 
-var attrRange = {};
 
 var tooltips;
-
-//ui
-var max_hop = 1,
-    max_depth = 8;
 
 var cluster = d3.layout.cluster()
     .size([360, radius - 100])
@@ -88,12 +86,17 @@ svg.append('rect')
     .attr('fill', 'white')
     .attr("transform", "translate(" + (-w / 2) + "," + (-h / 2) + ")");
 
-// let's not mix the graph with other elements
-// this should be in the html - not necessary for it to be in svg
 
+// Other UI elements
+var max_hop = 1,
+    max_depth = 8;
 var highlight_text = svg.append("text").attr("id", "highlight_text").attr("x", -400).attr("y", 350).text("");
-var local_vis = d3.select("#localCon").append("svg").attr("width", 300).attr("height", 300).attr("id", "localConVisual");
 
+// User goal state variables
+var previousTask;
+var externalWorkingTime = [];
+var startTime;
+var endTime;
 
 //
 //
@@ -102,7 +105,6 @@ var local_vis = d3.select("#localCon").append("svg").attr("width", 300).attr("he
 // TODO: convert this to a simple div/css inside the hmtl
 //
 //
-
 
 var legend = d3.select("#legend-feature")
                 .append("svg")
@@ -442,22 +444,16 @@ function linkMouseOver(d) {
  *
  */
 function linkMouseOut(d) {
-    if ($(this).is(".dimmed")) {
-        return;
-    }
+    if ($(this).is(".dimmed")) return;
     svg.select("path.link.bi-" + d.source.key + ".bi-" + d.target.key)
         .classed("selected", false);
     svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key)
         .classed("selected", false);
     if (d.bi == true) {
-//        highlightNodeTemp(d.source, "bi", false);
-//        highlightNodeTemp(d.target, "bi", false);
         highlightNode(d.source, "bi", false, true);
         highlightNode(d.target, "bi", false, true);
     }
     else {
-//        highlightNodeTemp(d.source, "source", false);
-//        highlightNodeTemp(d.target, "target", false);
         highlightNode(d.source, "source", false, true);
         highlightNode(d.target, "target", false, true);
     }
@@ -471,54 +467,34 @@ function linkMouseOut(d) {
  *
  */
 function linkClick(d, value) {
-    if (!d.bi && svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key).classed("dimmed")) {
-        console.log("dimmed");
-        return;
-    }
-    if (d.bi && svg.select("path.link.bi-" + d.source.key + ".bi-" + d.target.key).classed("dimmed")) {
-        console.log("dimmed");
-        return;
-    }
-    if (value == 0) {
-        piwikTracker.trackPageView('Click a link');
-    }
-    else {
-        piwikTracker.trackPageView('Click a table link entry');
-
-    }
-    console.log("link clicked...");
-        var detail_tab = $("#detail-tab");
-        var detail_content_pane = $("#detail-content-pane");
-        detail_tab.empty();
-        detail_content_pane.empty();
-        for (var i = 0; i < d.detail.length; ++i) {
-            if (i === 0) {
-                detail_tab.append('<li class="active"><a href="#tab1" data-toggle="tab">Ref 1</a></li>');
-                detail_content_pane.append('<div class="tab-pane active" id="tab1"></div>');
-            }
-            else {
-                detail_tab.append('<li><a href="#tab' + (i + 1) + 
-                                  '" data-toggle="tab">Ref ' + (i+1) + 
-                                  '</a></li>');
-                detail_content_pane.append('<div class="tab-pane" id="tab' + (i+1) + '"></div>');
-            }
-
-            $("#ref-src").text("Source: " + d.source.displayName);
-            $("#ref-tgt").text("Target: " + d.target.displayName);
-
-            //$("#tab" + (i+1)).append('<p>Source:' + d.source.displayName + '<br/>Target: ' + d.target.displayName +
-            //'<br/>Strength: ' + d.detail[i].strength + '<br/>Technique: ' + d.detail[i].technique + '<br/>Reference: ' + d.detail[i].ref +
-            //'<br/>BAMS record: <a href="' + d.detail[i].bams_link + '" target="_blank">Click</a><br/>Pubmed link: <a href="' +
-            //d.detail[i].pubmed_link +'" target="_blank">Click</a><br/></p>');
-
-            $("#tab" + (i + 1)).append('<p>Strength: ' + d.detail[i].strength +
-                                     '<br/>Technique: ' + d.detail[i].technique +
-                                     '<br/>Ref: ' + d.detail[i].ref +
-                                     '<br/>BAMS record: <a href="' + d.detail[i].bams_link +
-                                     '" target="_blank">Click</a><br/>Pubmed link: <a href="' +
-                                     d.detail[i].pubmed_link +
-                                     '" target="_blank">Click</a><br/></p>');
+    if (!d.bi && svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key).classed("dimmed")) return;
+    if (d.bi && svg.select("path.link.bi-" + d.source.key + ".bi-" + d.target.key).classed("dimmed")) return;s
+    if (value == 0) piwikTracker.trackPageView('Click a link');
+    else piwikTracker.trackPageView('Click a table link entry');
+    var detail_tab = $("#detail-tab");
+    var detail_content_pane = $("#detail-content-pane");
+    detail_tab.empty();
+    detail_content_pane.empty();
+    // Iterate through all the details
+    for (var i = 0; i < d.detail.length; ++i) {
+        // Append the container
+        if (i === 0) {
+            detail_tab.append('<li class="active"><a href="#tab1" data-toggle="tab">Ref 1</a></li>');
+            detail_content_pane.append('<div class="tab-pane active" id="tab1"></div>');
         }
+        else {
+            detail_tab.append('<li><a href="#tab' + (i + 1) + '" data-toggle="tab">Ref ' + (i+1) + '</a></li>');
+            detail_content_pane.append('<div class="tab-pane" id="tab' + (i+1) + '"></div>');
+        }
+
+        // Append the link information
+        $("#ref-src").text("Source: " + d.source.displayName);
+        $("#ref-tgt").text("Target: " + d.target.displayName);
+        $("#tab" + (i + 1)).append('<p>Strength: ' + d.detail[i].strength + '<br/>Technique: ' + d.detail[i].technique                                
+                                    + '<br/>Ref: ' + d.detail[i].ref + '<br/>BAMS record: <a href="' + d.detail[i].bams_link 
+                                    + '" target="_blank">Click</a><br/>Pubmed link: <a href="' 
+                                    + d.detail[i].pubmed_link + '" target="_blank">Click</a><br/></p>');
+    }
 }
 
 
@@ -531,7 +507,6 @@ function nodeClick(d) {
     if (mode == 1 || 3) {
         piwikTracker.trackPageView('Fix a node');
         if (selected_singleNode == d) {
-//            focusOnNodeFixed(d, false, false);
             focusOnNode(d, false);
             path.classed("dimmed", false);
             selected_singleNode = null;
@@ -542,15 +517,14 @@ function nodeClick(d) {
                 path.classed("dimmed", true);
             }
             else {
-//                focusOnNodeFixed(selected_singleNode, false, true);
                 focusOnNode(selected_singleNode, false);
             }
             selected_singleNode = d;
-//            focusOnNodeFixed(d, true, false);
             focusOnNode(d, true);
             mode = 3;
         }
     }
+    // Search mode
     else {
         if (selected_source !== undefined && selected_target !== undefined) {
             clearSelection();
@@ -621,13 +595,13 @@ function clearButtonClick() {
 }
 
 /*
- * Please Comment
+ * Given the source specified by a user through the source search dropdown, set the selected_target variable and highlight
+ * the corresponding source elements
  *
  */
 function sourceSearchInput() {
     piwikTracker.trackPageView('Set source for search');
     if (selected_source != undefined) {
-//        highlightNodeFixed(selected_source, "selected-source", false, true);
         highlightNode(selected_source, "selected-source", false, true);
         clearSearchResult();
     }
@@ -635,20 +609,19 @@ function sourceSearchInput() {
     display_node_map.forEach(function (d) {
         if (d.name == inputRegion) {
             selected_source = d.node;
-//            highlightNodeFixed(d.node, "selected-source", true, true);
             highlightNode(d.node, "selected-source", true, true);
         }
     });
 }
 
 /*
- * Please Comment
+ * Given the target specified by a user through the target search dropdown, set the selected_target variable and highlight
+ * the corresponding target elements
  *
  */
 function targetSearchInput() {
     piwikTracker.trackPageView('Set target for search');
     if (selected_target != undefined) {
-//        highlightNodeFixed(selected_target, "selected-target", false, true);
         highlightNode(selected_target, "selected-target", false, true);
         clearSearchResult();
     }
@@ -656,7 +629,6 @@ function targetSearchInput() {
     display_node_map.forEach(function (d) {
         if (d.name == inputRegion) {
             selected_target = d.node;
-//            highlightNodeFixed(d.node, "selected-target", true, true);
             highlightNode(d.node, "selected-target", true, true);
         }
     });
@@ -664,7 +636,8 @@ function targetSearchInput() {
 
 
 /*
- * Please Comment
+ * Given the attribute selected for edge coloring, compute the corresponding value range for each color and update the
+ * legend accordingly
  *
  */
 function attrSearchInput() {
@@ -841,48 +814,6 @@ function clearSingleSelection() {
 /////////////////////////////////////
 // Node and link highlighting
 /////////////////////////////////////
-/*
-function focusOnNodeTemp(node, value) {
-    svg.selectAll("path.link.target-" + node.key)
-        .classed("target", value)
-        .each(function(d) {highlightNodeTemp(d.source, "source", value)});
-
-    svg.selectAll("path.link.source-" + node.key)
-        .classed("source", value)
-        .each(function(d) {highlightNodeTemp(d.target, "target", value)});
-
-    svg.selectAll("path.link.bi-" + node.key)
-        .classed("bi", value)
-        .each(function(d) {highlightNodeTemp(d.source, "bi", value);
-                            highlightNodeTemp(d.target, "bi", value);});
-
-    highlightNodeTemp(node, "selected", value);
-}
-
-function focusOnNodeFixed(node, value, dimmed) {
-    if (node == undefined || node == null) return;
-    svg.selectAll("path.link.target-" + node.key)
-        .classed("target", value)
-        .classed("dimmed", dimmed)
-        .classed("fixed", value)
-        .each(function(d) {highlightNodeFixed(d.source, "source", value, true)});
-
-    svg.selectAll("path.link.source-" + node.key)
-        .classed("source", value)
-        .classed("dimmed", dimmed)
-        .classed("fixed", value)
-        .each(function(d) {highlightNodeFixed(d.target, "target", value, true)});
-
-    svg.selectAll("path.link.bi-" + node.key)
-        .classed("bi", value)
-        .classed("dimmed", dimmed)
-        .classed("fixed", value)
-        .each(function(d) {highlightNodeFixed(d.source, "bi", value, true);
-                            highlightNodeFixed(d.target, "bi", value, true);});
-
-    highlightNodeFixed(node, "selected", value, true);
-}
-*/
 
 
 /*
@@ -930,30 +861,6 @@ function highlightNode(node, className, value, showName) {
 //        node.showName = showName;
     }
 }
-
-/*
-function highlightNodeTemp(node, className, value) {
-    if (node.fixed == true && node.showName == true) return;
-    svg.select("#arc-" + node.key).classed(className, value);
-    if (node.depth > 2) {
-        svg.select("#text-" + node.key).classed(className, value);
-        svg.select("#tooltip-" + node.key).classed("hidden", !value);
-    }
-}
-
-function highlightNodeFixed(node, className, value, showName) {
-    if (node == undefined) return;
-    svg.select("#arc-" + node.key).classed(className, value);
-    node.fixed = value;
-
-    if (node.depth > 2 && showName) {
-        svg.select("#text-" + node.key).classed(className, value);
-        svg.select("#tooltip-" + node.key).classed("hidden", !value);
-        svg.select("#tooltip-" + node.key).classed("selected-hidden", !value);
-        node.showName = showName;
-    }
-}
-*/
 
 function highlightSelectedLinks(value) {
     selected_links.forEach(function (d) {
