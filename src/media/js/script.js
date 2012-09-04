@@ -75,10 +75,15 @@ var highlight_text = svg.append("text").attr("id", "highlight_text").attr("x", -
 
 // USER STUDY
 // User goal state variables
-var task = {
-
+var taskType = {
+    interLink: 1,
+    actualLink: 2,
+    ref: 3
 };
-
+var task = {
+    type: null,
+    object: null
+};
 var previousTask;
 var externalWorkingTime = [];
 var startTime;
@@ -916,21 +921,16 @@ function interLinkClicked(d) {
     connectionPanel.empty();
     console.log(d.actualLinks);
     for (var i = 0; i < d.actualLinks.length; ++i) {
-            //connectionPanel.append('<h4 style="position:absolute; left:20px; top:30px">Level of indirection: ' + i + '</h4></br>');
-            //var currPanel = $('<div id=conn-hop' + (i+1) + '" class="conn-level1' + '></div>').appendTo(connectionPanel);
-            //var currLinks = grouped_selected_links[i];
         $('<table id = "conTable" class="table table-condensed table-custom"><tbody></tbody></table>').appendTo(connectionPanel);
-        $('#conTable').append('<tr><td id="linkCell' + i + '"></td><td id="detailCell' + i +'"></td></tr>');
+        $('#conTable').append('<tr><td id="linkCell' + i + '"></td></tr>');
         var linkCell = $('#linkCell' + i);
-             //   for (var k = 0; k < i+1; ++k) {
         var button;
         linkCell.append('<img src="media/img/source-icon.png" height="16px" width="16px"/> '
                         + d.actualLinks[i].source.displayName + '<br/>'
                         + '<img src="media/img/target-icon.png" height="16px" width="16px"/> '
                         + d.actualLinks[i].target.displayName) + '<br/>';
-        button = $('<button type="button" class="btn btn-info btn-mini">Detail</button><br/>').appendTo('#detailCell' + i);
-        button.data(d.actualLinks[i]);
-        button.on("click", function() {
+        linkCell.data(d.actualLinks[i]);
+        linkCell.on("click", function() {
             linkClick($(this).data(), 1);
                 if (old_focused_source != null) svg.select("#arc-" + old_focused_source.key).classed("highlighted", false);
                 if (old_focused_target != null) svg.select("#arc-" + old_focused_target.key).classed("highlighted", false);
@@ -946,6 +946,52 @@ function displayConnections(value) {
     var connectionPanel = $("#connections");
 
     if (value) {
+        var counter = 0;
+        var numOfInterParents = interParents.length;
+        interParents.forEach(function(d) {
+            d.cx = 150;
+            d.cy = 300 / (numOfInterParents+1) * (counter+1);
+            ++counter;
+        });
+
+        selected_source.cy = 150;
+        selected_source.cx = 75;
+        selected_target.cy = 150;
+        selected_target.cx = 225;
+        interParents.push(selected_source);
+        interParents.push(selected_target);
+        
+        var displayLinks = [];
+        displayLinks.push();
+        displayLinks.push();
+        
+        var local_node = local_vis.selectAll("g.node").data(interParents).enter()
+                            .append("rect").attr("width", 10).attr("height", 5).style("fill", "#555").style("stroke", "#FFF")
+                            .style("stroke-width", 3)
+                            .attr("x", function(d) { return d.cx; })
+                            .attr("y", function(d) { return d.cy; })
+                            .on("mouseover", localNodeMouseOver)
+                            .on("mouseout", localNodeMouseOut)
+                            .attr("id", function(d) { return "#localText-" + d.key ;})
+                            .attr("class","local_node");
+
+        var local_text = local_vis.selectAll("g.node").data(interParents).enter()
+                            .append("text")
+                            .attr("x", function(d) { return d.cx; })
+                            .attr("y", function(d) { return d.cy; })
+                            .attr("class", "text")
+                            .text(function(d) { return d.displayName; });
+
+        var local_link = local_vis.selectAll("line.link").data(interLinks).enter().append("line")
+                        .attr("class", "local_link")
+                        .attr("x1", function(d) { return d.source.cx; })
+                        .attr("y1", function(d) { return d.source.cy; })
+                        .attr("x2", function(d) { return d.target.cx; })
+                        .attr("y2", function(d) { return d.target.cy; })
+                        .on("click", interLinkClicked);        
+        
+        
+        /*
         var counter = 0;
         var numOfInterParents = interParents.length;
         interParents.forEach(function(d) {
@@ -985,6 +1031,7 @@ function displayConnections(value) {
                         .attr("x2", function(d) { return d.target.cx; })
                         .attr("y2", function(d) { return d.target.cy; })
                         .on("click", interLinkClicked);
+        */
     }
     else {
         $("#localCon").empty();
