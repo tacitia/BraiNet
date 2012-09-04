@@ -26,6 +26,7 @@
         <li><a href="#help" data-toggle="tab">Help</a></li>
       </ul>
       <div id="util-content" class="tab-content">
+
         <!--LEGEND-->
         <div id="legend" class="tab-pane fade in active">
           <div id="legend-primary" style="position:relative; height:150px;">
@@ -117,6 +118,15 @@
               <td style="width:50px;"><button id="bt-clear" class="btn btn-warning">Clear</button></td>
             </tr>
           </table>
+
+          <!--Search Results-->
+          <div id="localCon" class="localCon">
+            <h3>Search Results</h3>
+          </div>
+
+          <!---List Link Connections (Search Results)-->
+          <div id="connections" class="conn-level0"></div>
+
         </div><!--END SEARCH-->
 
         <!--HELP-->
@@ -135,6 +145,16 @@
         </div><!--END HELP-->
 
       </div><!--END UTIL CONTENT-->
+    <!--References and Link Details-->
+    <div id="detail" class="tabbable tabs-top">
+      <h3>Connection Details</h3>
+      <span id="ref-src">Source: no selection </span><br/>
+      <span id="ref-tgt">Target: no selection </span><br/>
+      <ul id="detail-tab" class="nav nav-tabs nav-tabs-add">
+      </ul>
+      <div id="detail-content-pane" class="tab-content">
+      </div>
+    </div>
     </div><!--END UTIL RIGHT-->
 
     <!--
@@ -145,25 +165,7 @@
 
     <div id="canvas"></div>
 
-    <!--Search Results-->
-    <div id="localCon" class="localCon">
-      <h3>Search Results</h3>
-    </div>
 
-    <!---List Link Connections (Search Results)-->
-    <div id="connections" class="conn-level0"></div>
-
-    <!--References and Link Details-->
-    <div id="detail" class="tabbable tabs-top ref">
-      <h3>References</h3>
-      <span id="ref-src">Source: no selection </span><br/>
-      <span id="ref-tgt">Target: no selection </span><br/>
-      <i>Click on a link to see the references</i>
-      <ul id="detail-tab" class="nav nav-tabs nav-tabs-add">
-      </ul>
-      <div id="detail-content-pane" class="tab-content">
-      </div>
-    </div>
 
     <!-- MODAL WINDOW - User Study
     <div class="modal hide fade" id="messageBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:600px;">

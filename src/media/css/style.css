@@ -14,14 +14,16 @@ body {
 /* Navigation */
 
 #util {
-	padding: 20px;
-	background-color: rgba(255,255,255,0.9);
-	position: absolute;
-	width: 350px;
-	height: 100%;
+    padding: 20px;
+    background-color: rgba(255,255,255,0.9);
+    position: absolute;
+    right: 0px;
+    width: 350px;
+    height: 100%;
+    border-left:thick solid #ccc;
 }
 .tab-content {
-	height: 100%;
+    /*height: 100%;*/
 }
 .tab-column-1 {
     height: 30px;
@@ -32,35 +34,35 @@ body {
 }
 
 .localCon {
-    position: absolute;
-    right: 20px;
-    top: 20px;
-    height: 50%;
-    width: 350px;
+    margin-top: 20px;
+    /*position: absolute;*/
+    /*right: 20px;*/
+    /*top: 20px;*/
+    /*height: 50%;*/
+    /*width: 350px;*/
 }
 
 .conn-level0 {
-    position: absolute;
-    right: 20px;
-    top: 400px;
-    width: 350px;
-    height: 50%;
-    background-color: rgba(255,255,255,0.9);
+    /*position: absolute;*/
+    /*right: 20px;*/
+    /*top: 400px;*/
+    /*width: 350px;*/
+    /*height: 50%;*/
     max-height: 300px;
     overflow-y: scroll;
 }
 
 .conn-level1 {
-    position: absolute;
-    left: 20px;
-    width: 330px;
+    /*position: absolute;*/
+    /*left: 20px;*/
+    /*width: 330px;*/
     border: 1px solid #dddddd;
 }
 
 .table-custom {
-    position: absolute;
-    left: 20px;
-    width: 330px;
+    /*position: absolute;*/
+    /*left: 20px;*/
+    /*width: 330px;*/
     border: 1px solid #dddddd;
     max-height: 300px;
     overflow-y: scroll;
@@ -78,20 +80,13 @@ body {
     font: 13px sans-serif;
 }
 
-.ref {
-    position: absolute;
-    bottom: 200px;
-    width: 350px;
-    height: 300px;
-}
-
 /*#util li {*/
-    /*float:left;*/
-    /*display:block;*/
-    /*background-color: #EEE;*/
-    /*border: 1px solid #ddd;*/
-    /*width:100px;*/
-    /*height:50px;*/
+/*float:left;*/
+/*display:block;*/
+/*background-color: #EEE;*/
+/*border: 1px solid #ddd;*/
+/*width:100px;*/
+/*height:50px;*/
 /*}*/
 
 .hidden {
@@ -99,11 +94,11 @@ body {
 }
 
 /*#search {*/
-    /*position: absolute;*/
-    /*top: 52px;*/
-    /*left: 0px;*/
-    /*max-width: 400px;*/
-    /*background-color: #DDD;*/
+/*position: absolute;*/
+/*top: 52px;*/
+/*left: 0px;*/
+/*max-width: 400px;*/
+/*background-color: #DDD;*/
 /*}*/
 
 
@@ -242,10 +237,10 @@ body {
 /*  links (connections) */
 
 .local_link {
-	stroke: #AAA;
-	stroke-opacity: 1;
-	fill: none;
-    stroke-width: 1.5px;    
+    stroke: #AAA;
+    stroke-opacity: 1;
+    fill: none;
+    stroke-width: 1.5px;
 }
 
 .local_link:hover {
@@ -253,9 +248,9 @@ body {
 }
 
 .link {
-	stroke: #AAA;
-	stroke-opacity: .1;
-	fill: none;
+    stroke: #AAA;
+    stroke-opacity: .1;
+    fill: none;
     stroke-width: 1.5px;
 }
 
@@ -290,8 +285,8 @@ body {
     stroke: #b45c1f;
 }
 .link.source, .link.target, .link.selected, .link.bi {
-	stroke-opacity: .9;
-	stroke-width: 3px;
+    stroke-opacity: .9;
+    stroke-width: 3px;
 }
 
 .local_node {
@@ -304,11 +299,11 @@ body {
 
 
 /*#help {*/
-    /*font: 11px sans-serif;*/
-    /*width: 200px;*/
-    /*position: fixed;*/
-    /*right: 20px;*/
-    /*bottom: 20px;*/
+/*font: 11px sans-serif;*/
+/*width: 200px;*/
+/*position: fixed;*/
+/*right: 20px;*/
+/*bottom: 20px;*/
 /*}*/
 
 #input {
@@ -317,9 +312,11 @@ body {
 }
 
 #detail {
+    border-top: 2px solid #ccc;
     font: 13px sans-serif;
     width: 300px;
+    padding: 20px;
     position: fixed;
-    left: 20px;
-    bottom: 20px;
+    /*left: 0px;*/
+    bottom: 0px;
 }
