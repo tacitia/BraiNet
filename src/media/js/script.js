@@ -22,9 +22,6 @@ var w = 800,
 var nodes,
     path,
     splines, //used to set the tension
-    con_map,
-    display_node_map,
-    name_node_map,
     tooltips;
 
 var cluster = d3.layout.cluster()
@@ -78,6 +75,10 @@ var highlight_text = svg.append("text").attr("id", "highlight_text").attr("x", -
 
 // USER STUDY
 // User goal state variables
+var task = {
+    
+}
+
 var previousTask;
 var externalWorkingTime = [];
 var startTime;
@@ -105,15 +106,15 @@ for (var i = 0; i < 4; ++i) {
         .text("TBD");
 }
 
-// State variables
+// Possible visualization interaction state
 var mode = {
     exploration: 1, //browsing
     search: 2,      //when search button is clicked
     fixation: 3     //when clicked on a node
 };
 
-var mode = 1,
-    current_mode,
+// State variables
+var current_mode = mode.exploration,
     selected_source,
     selected_target,
     selected_singleNode = null,
@@ -124,6 +125,11 @@ var mode = 1,
     old_focused_target = null,
     interParents = [],
     interLinks = [];
+    
+// 
+var con_map,
+    display_node_map,
+    name_node_map;
 
 //TODO: [HUA] simplified search mode graph
 var local_vis = d3.select("#localCon").append("svg").attr("width", 300).attr("height", 300).attr("id", "localConVisual");
@@ -356,10 +362,7 @@ function mouseOver(d) {
     //svg.select("#node-" + d.key).append("svg:path")
         //.attr("d", tooltip())
         //.attr("transform", function (d) { return "translate(" + arc.centroid(d) + ")"; });
-    console.log(mode);
-    if (mode === 1) {
-        //TODO: use new mode variable
-        //focusOnNodeTemp(d, true);
+    if (current_mode === mode.exploration) {
         focusOnNode(d, true);
     }
 }
@@ -372,7 +375,7 @@ function mouseOver(d) {
 function mouseOut(d) {
     highlight_text.text("");
     //svg.selectAll("path.link").classed("non-selected", false);
-    if (mode === 1) {
+    if (current_mode === mode.exploration) {
         focusOnNode(d, false);
     }
 }
@@ -399,19 +402,15 @@ function linkMouseOver(d) {
     if ($(this).is(".dimmed")) {
         return;
     }
-    if (d.bi == true) {
+    if (d.bi === true) {
         svg.select("path.link.bi-" + d.source.key + ".bi-" + d.target.key)
             .classed("selected", true);
-//        highlightNodeTemp(d.source, "bi", true);
-//        highlightNodeTemp(d.target, "bi", true);
         highlightNode(d.source, "bi", true, true);
         highlightNode(d.target, "bi", true, true);
     }
     else {
         svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key)
             .classed("selected", true);
-//        highlightNodeTemp(d.source, "source", true);
-//        highlightNodeTemp(d.target, "target", true);
         highlightNode(d.source, "source", true, true);
         highlightNode(d.target, "target", true, true);
     }
@@ -451,7 +450,7 @@ function linkClick(d, value) {
     //checks if the link is active or dim
     if (!d.bi && svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key).classed("dimmed")) return;
     if (d.bi && svg.select("path.link.bi-" + d.source.key + ".bi-" + d.target.key).classed("dimmed")) return;
-    if (value == 0) piwikTracker.trackPageView('Click a link');
+    if (value === 0) piwikTracker.trackPageView('Click a link');
     else piwikTracker.trackPageView('Click a table link entry');
 
     var detail_tab = $("#detail-tab");
@@ -495,13 +494,13 @@ function linkClick(d, value) {
  */
 function nodeClick(d) {
     d3.event.preventDefault();
-    if (mode === 1 || 3) {
+    if (current_mode === mode.exploration || current_mode === mode.fixation) {
         piwikTracker.trackPageView('Fix a node');
-        if (selected_singleNode == d) {
+        if (selected_singleNode === d) {
             focusOnNode(d, false);
             path.classed("dimmed", false);
             selected_singleNode = null;
-            mode = 1;
+            current_mode = mode.exploration;
         }
         else {
             if (selected_singleNode == null) {
@@ -512,11 +511,13 @@ function nodeClick(d) {
             }
             selected_singleNode = d;
             focusOnNode(d, true);
-            mode = 3;
+            current_mode = mode.fixation;
         }
     }
     // Search mode
     else {
+        console.log("search mode");
+        return; //For now, does not allow click in search mode
         if (selected_source !== undefined && selected_target !== undefined) {
             clearSelection();
         }
@@ -545,15 +546,17 @@ function nodeClick(d) {
  */
 function searchButtonClick() {
     piwikTracker.trackPageView('Click search button');
+    if (current_mode === mode.fixation) {
+        clearSingleSelection(selected_singleNode);
+    }
     selected_links = [];
     piwikTracker.trackPageView('SearchConnection');
     if (selected_source !== undefined && selected_target !== undefined) {
-        mode = 2;
+        current_mode = mode.search;
         computeLinksForSelection(max_hop, selected_source, selected_target, [], selected_links);
         groupSelectedLinks();
         if (selected_links.length > 1) {
             path.classed("dimmed", true);
-            console.log("dimmed the path");
         }
         highlightSelectedLinks(true);
         displayInterParents(true);
@@ -563,17 +566,17 @@ function searchButtonClick() {
 
 /*
  * Clear Button
- *
+ * The behavior of this function depends on the current interaction state
  *
  */
 function clearButtonClick() {
     piwikTracker.trackPageView('Click clear button');
-    if (mode == 2) {
+    if (current_mode === mode.search) {
         clearSearchResult();
         if (selected_source !== undefined) highlightNode(selected_source, "selected-source", false, true);
         if (selected_target !== undefined) highlightNode(selected_target, "selected-target", false, true);
     }
-    else if (mode == 3) {
+    else if (current_mode === mode.fixation) {
         clearSingleSelection();
     }
     /*
@@ -582,7 +585,7 @@ function clearButtonClick() {
     });
     */
 
-    mode = 1;
+    current_mode = mode.exploration;
 }
 
 /*
@@ -598,7 +601,7 @@ function sourceSearchInput() {
     }
     var inputRegion = this.value.toLowerCase();
     display_node_map.forEach(function (d) {
-        if (d.name == inputRegion) {
+        if (d.name === inputRegion) {
             selected_source = d.node;
             highlightNode(d.node, "selected-source", true, true);
         }
@@ -618,7 +621,7 @@ function targetSearchInput() {
     }
     var inputRegion = this.value.toLowerCase();
     display_node_map.forEach(function (d) {
-        if (d.name == inputRegion) {
+        if (d.name === inputRegion) {
             selected_target = d.node;
             highlightNode(d.node, "selected-target", true, true);
         }
@@ -635,7 +638,7 @@ function attrSearchInput() {
     piwikTracker.trackPageView('Set attr for edge color coding');
     var attrName = this.value;
 
-    if (attrName == "") {
+    if (attrName === "") {
         path = svg.selectAll("path.link")
         .classed("q0-4", false)
         .classed("q1-4", false)
@@ -773,25 +776,42 @@ function setTension() {
 }
 
 /*
- * Clear Selection
- *
  * Clears selected_links
  * Reverts selected arc and paths
+ * Clear search result panel
+ * Should only be called under search mode
+ * Will change interaction state to exploration state
  */
 function clearSearchResult() {
+    if (current_mode !== mode.search) {
+        console.log("Warning: request to clear search result when not in search mode.");
+        return;
+    }
     path.classed("dimmed", false);
     highlightSelectedLinks(false);
     selected_links = [];
     displayConnections(false);
     displayInterParents(false);
-    if (old_focused_source != null) svg.select("#arc-" + old_focused_source.key).classed("highlighted", false);
-    if (old_focused_target != null) svg.select("#arc-" + old_focused_target.key).classed("highlighted", false);
+    if (old_focused_source !== null) svg.select("#arc-" + old_focused_source.key).classed("highlighted", false);
+    if (old_focused_target !== null) svg.select("#arc-" + old_focused_target.key).classed("highlighted", false);
+    current_mode = mode.exploration;
 }
 
+
+/*
+* Clear the current node fixation
+* Should only be called under fixation mode
+* Will change interaction state to exploration state
+*/
 function clearSingleSelection() {
+    if (current_mode !== mode.fixation) {
+        console.log("Warning: request to clear single selection when not in fixation mode.");
+        return;
+    }
     path.classed("dimmed", false);
     focusOnNode(selected_singleNode, false);
     selected_singleNode = null;
+    current_mode = mode.exploration;
 }
 
 /////////////////////////////////////
@@ -800,7 +820,7 @@ function clearSingleSelection() {
 
 function focusOnNode(node, value) {
 
-    if (node == undefined || node == null) {
+    if (node === undefined || node === null) {
         return;
     }
 
@@ -827,7 +847,7 @@ function focusOnNode(node, value) {
 
 
 function highlightNode(node, className, value, showName) {
-    if (node == undefined) return;
+    if (node === undefined) return;
     svg.select("#arc-" + node.key).classed(className, value);
 
     if (node.depth > 2 && showName) {
@@ -856,7 +876,7 @@ function highlightSelectedLinks(value) {
 
 // higher level intermediate nodes
 function displayInterParents(value) {
-    if (mode != 2) return;
+    if (current_mode !== mode.search) return;
     if (value) {
         var parentLevel = Math.max(selected_source.depth, selected_target.depth);
         parentLevel = Math.min(parentLevel, 4);
@@ -982,7 +1002,7 @@ function displayConnections(value) {
 function linkExists(link, linkArray) {
     var ret = false;
     linkArray.forEach(function(d) {
-        if (d.source.key == link.source.key && d.target.key == link.target.key) {
+        if (d.source.key === link.source.key && d.target.key === link.target.key) {
             ret = true;
         }
     });
@@ -991,7 +1011,7 @@ function linkExists(link, linkArray) {
 
 function addLink(linkArray, link, sourceParent, targetParent) {
     linkArray.forEach(function(d) {
-        if (d.source.key == sourceParent.key && d.target.key == targetParent.key
+        if (d.source.key === sourceParent.key && d.target.key === targetParent.key
                 && $.inArray(link, d.actualLinks) < 0) {
             d.actualLinks.push(link);;
         }
@@ -1024,7 +1044,7 @@ function getInterParents(depth) {
 }
 
 function findParentAtDepth(node, depth) {
-    if (node == selected_source || node == selected_target) return node;
+    if (node === selected_source || node === selected_target) return node;
     var parent = node;
     while (parent.depth > depth && parent.parent != selected_source.parent
             && parent.parent != selected_target.parent && parent.parent != undefined) {
@@ -1121,6 +1141,6 @@ function round(num) {
 }
 
 function isSelected(node) {
-    selected_nodes.forEach(function(d) {if (node == d) return true});
-    return (node == selected_source) || (node == selected_target);
+    selected_nodes.forEach(function(d) {if (node === d) return true});
+    return (node === selected_source) || (node === selected_target);
 }
