@@ -76,8 +76,8 @@ var highlight_text = svg.append("text").attr("id", "highlight_text").attr("x", -
 // USER STUDY
 // User goal state variables
 var task = {
-    
-}
+
+};
 
 var previousTask;
 var externalWorkingTime = [];
@@ -125,8 +125,8 @@ var current_mode = mode.exploration,
     old_focused_target = null,
     interParents = [],
     interLinks = [];
-    
-// 
+
+// Map containing node data and information
 var con_map,
     display_node_map,
     name_node_map;
