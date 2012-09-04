@@ -106,13 +106,11 @@ for (var i = 0; i < 4; ++i) {
 }
 
 // State variables
-/*
 var mode = {
     exploration: 1, //browsing
     search: 2,      //when search button is clicked
     fixation: 3     //when clicked on a node
 };
-*/
 
 var mode = 1,
     current_mode,
