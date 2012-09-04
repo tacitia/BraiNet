@@ -924,9 +924,9 @@ function interLinkClicked(d) {
         var linkCell = $('#linkCell' + i);
              //   for (var k = 0; k < i+1; ++k) {
         var button;
-        linkCell.append('<img src="media/css/sourceIcon.png" height="16px" width="16px"/> '
+        linkCell.append('<img src="media/img/source-icon.png" height="16px" width="16px"/> '
                         + d.actualLinks[i].source.displayName + '<br/>'
-                        + '<img src="media/css/targetIcon.png" height="16px" width="16px"/> '
+                        + '<img src="media/img/target-icon.png" height="16px" width="16px"/> '
                         + d.actualLinks[i].target.displayName) + '<br/>';
         button = $('<button type="button" class="btn btn-info btn-mini">Detail</button><br/>').appendTo('#detailCell' + i);
         button.data(d.actualLinks[i]);

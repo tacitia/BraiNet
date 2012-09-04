@@ -315,7 +315,8 @@ body {
     border-top: 2px solid #ccc;
     font: 13px sans-serif;
     width: 300px;
-    padding: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
     position: fixed;
     /*left: 0px;*/
     bottom: 0px;
