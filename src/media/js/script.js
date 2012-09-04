@@ -948,25 +948,29 @@ function displayConnections(value) {
     if (value) {
         var counter = 0;
         var numOfInterParents = interParents.length;
+        var row_length = Math.round(Math.sqrt(numOfInterParents));
+        var rect_width = 10;
+        var rect_spacing = 2;
+        var left_border = 150 - row_length 
         interParents.forEach(function(d) {
             d.cx = 150;
             d.cy = 300 / (numOfInterParents+1) * (counter+1);
             ++counter;
         });
 
+        selected_source.cx = 10;
         selected_source.cy = 150;
-        selected_source.cx = 75;
+        selected_target.cx = 290;
         selected_target.cy = 150;
-        selected_target.cx = 225;
         interParents.push(selected_source);
         interParents.push(selected_target);
         
         var displayLinks = [];
-        displayLinks.push();
-        displayLinks.push();
+        displayLinks.push({x1:selected_source.cx, y1:150, x2:150, y2:150});
+        displayLinks.push({x1:150, y1:150, x2:selected_target.cx, y2:150});
         
         var local_node = local_vis.selectAll("g.node").data(interParents).enter()
-                            .append("rect").attr("width", 10).attr("height", 5).style("fill", "#555").style("stroke", "#FFF")
+                            .append("rect").attr("width", rect_width).attr("height", 10).style("fill", "#555").style("stroke", "#FFF")
                             .style("stroke-width", 3)
                             .attr("x", function(d) { return d.cx; })
                             .attr("y", function(d) { return d.cy; })
@@ -982,12 +986,12 @@ function displayConnections(value) {
                             .attr("class", "text")
                             .text(function(d) { return d.displayName; });
 
-        var local_link = local_vis.selectAll("line.link").data(interLinks).enter().append("line")
+        var local_link = local_vis.selectAll("line.link").data(displayLinks).enter().append("line")
                         .attr("class", "local_link")
-                        .attr("x1", function(d) { return d.source.cx; })
-                        .attr("y1", function(d) { return d.source.cy; })
-                        .attr("x2", function(d) { return d.target.cx; })
-                        .attr("y2", function(d) { return d.target.cy; })
+                        .attr("x1", function(d) { return d.x1; })
+                        .attr("y1", function(d) { return d.y1; })
+                        .attr("x2", function(d) { return d.x2; })
+                        .attr("y2", function(d) { return d.y2; })
                         .on("click", interLinkClicked);        
         
         
