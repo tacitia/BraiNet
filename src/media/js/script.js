@@ -949,18 +949,46 @@ function displayConnections(value) {
         var counter = 0;
         var numOfInterParents = interParents.length;
         interParents.forEach(function(d) {
-            d.cx = 300 / (numOfInterParents+1) * (counter+1);
-            d.cy = 150;
+            d.cx = 150;
+            d.cy = 300 / (numOfInterParents+1) * (counter+1);
             ++counter;
         });
 
-        selected_source.cx = 150;
-        selected_source.cy = 75;
-        selected_target.cx = 150;
-        selected_target.cy = 225;
+        selected_source.cy = 150;
+        selected_source.cx = 75;
+        selected_target.cy = 150;
+        selected_target.cx = 225;
         interParents.push(selected_source);
         interParents.push(selected_target);
         
+        var displayLinks = [];
+        displayLinks.push();
+        displayLinks.push();
+        
+        var local_node = local_vis.selectAll("g.node").data(interParents).enter()
+                            .append("rect").attr("width", 10).attr("height", 5).style("fill", "#555").style("stroke", "#FFF")
+                            .style("stroke-width", 3)
+                            .attr("x", function(d) { return d.cx; })
+                            .attr("y", function(d) { return d.cy; })
+                            .on("mouseover", localNodeMouseOver)
+                            .on("mouseout", localNodeMouseOut)
+                            .attr("id", function(d) { return "#localText-" + d.key ;})
+                            .attr("class","local_node");
+
+        var local_text = local_vis.selectAll("g.node").data(interParents).enter()
+                            .append("text")
+                            .attr("x", function(d) { return d.cx; })
+                            .attr("y", function(d) { return d.cy; })
+                            .attr("class", "text")
+                            .text(function(d) { return d.displayName; });
+
+        var local_link = local_vis.selectAll("line.link").data(interLinks).enter().append("line")
+                        .attr("class", "local_link")
+                        .attr("x1", function(d) { return d.source.cx; })
+                        .attr("y1", function(d) { return d.source.cy; })
+                        .attr("x2", function(d) { return d.target.cx; })
+                        .attr("y2", function(d) { return d.target.cy; })
+                        .on("click", interLinkClicked);        
         
         
         /*
