@@ -925,9 +925,9 @@ function interLinkClicked(d) {
         $('#conTable').append('<tr><td id="linkCell' + i + '"></td></tr>');
         var linkCell = $('#linkCell' + i);
         var button;
-        linkCell.append('<img src="media/css/sourceIcon.png" height="16px" width="16px"/> '
+        linkCell.append('<img src="media/img/source-icon.png" height="16px" width="16px"/> '
                         + d.actualLinks[i].source.displayName + '<br/>'
-                        + '<img src="media/css/targetIcon.png" height="16px" width="16px"/> '
+                        + '<img src="media/img/target-icon.png" height="16px" width="16px"/> '
                         + d.actualLinks[i].target.displayName) + '<br/>';
         linkCell.data(d.actualLinks[i]);
         linkCell.on("click", function() {
