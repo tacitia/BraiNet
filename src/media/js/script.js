@@ -948,26 +948,26 @@ function displayConnections(value) {
     if (value) {
         var counter = 0;
         var numOfInterParents = interParents.length;
-        var row_length = Math.round(Math.sqrt(numOfInterParents));
+        var num_ = Math.round(Math.sqrt(numOfInterParents));
         var rect_width = 10;
         var rect_spacing = 2;
         var left_border = 150 - row_length 
         interParents.forEach(function(d) {
-            d.cx = 150;
-            d.cy = 300 / (numOfInterParents+1) * (counter+1);
+            d.cy = 150;
+            d.cx = 300 / (numOfInterParents+1) * (counter+1);
             ++counter;
         });
 
-        selected_source.cx = 10;
-        selected_source.cy = 150;
-        selected_target.cx = 290;
-        selected_target.cy = 150;
+        selected_source.cy = 10;
+        selected_source.cx = 150;
+        selected_target.cy = 290;
+        selected_target.cx = 150;
         interParents.push(selected_source);
         interParents.push(selected_target);
         
         var displayLinks = [];
-        displayLinks.push({x1:selected_source.cx, y1:150, x2:150, y2:150});
-        displayLinks.push({x1:150, y1:150, x2:selected_target.cx, y2:150});
+        displayLinks.push({y1:selected_source.cy, x1:150, y2:150, x2:150});
+        displayLinks.push({y1:150, x1:150, y2:selected_target.cy, x2:150});
         
         var local_node = local_vis.selectAll("g.node").data(interParents).enter()
                             .append("rect").attr("width", rect_width).attr("height", 10).style("fill", "#555").style("stroke", "#FFF")
