@@ -70,9 +70,6 @@ svg.append('rect')
 var max_hop = 1,
     max_depth = 8;
 
-//TODO: [arthur] convert this to a html tag with the name of node
-var highlight_text = svg.append("text").attr("id", "highlight_text").attr("x", -400).attr("y", 350).text("");
-
 // USER STUDY
 // User goal state variables
 var taskType = {
@@ -129,7 +126,9 @@ var current_mode = mode.exploration,
     old_focused_source = null,
     old_focused_target = null,
     interParents = [],
-    interLinks = [];
+    interLinks = [],
+    selected_local_node_1 = null,
+    selected_local_node_2 = null;
 
 // Map containing node data and information
 var con_map,
@@ -138,6 +137,10 @@ var con_map,
 
 //TODO: [HUA] simplified search mode graph
 var local_vis = d3.select("#localCon").append("svg").attr("width", 300).attr("height", 300).attr("id", "localConVisual");
+
+//TODO: [arthur] convert this to a html tag with the name of node
+var highlight_text = svg.append("text").attr("id", "highlight_text").attr("x", -400).attr("y", 350).text(""),
+    highlight_text_search_graph = local_vis.append("text").attr("id", "highlight_text_search_graph").attr("x", 0).attr("y", 200).text("");
 
 //defines properties for the edge color
 var attrRange = {};
@@ -389,14 +392,60 @@ function mouseOut(d) {
  *
  */
 function localNodeMouseOver(d) {
-    svg.select("#localText-" + d.key).classed("text visible", true);
+    highlight_text_search_graph.text(d.displayName);
 }
 
 /* Search Results Mouse Out
  *
  */
 function localNodeMouseOut(d) {
-    svg.select("#localText-" + d.key).classed("text visible", false);
+    highlight_text_search_graph.text("");
+}
+
+function localNodeClick(d) {
+    // first check if d is already selected
+    if (d === selected_local_node_1) {
+        selected_local_node_1 = null;
+        local_vis.select("#localNode-" + d.key).classed("selected", false);
+        return;
+    }
+    if (d === selected_local_node_2) {
+        selected_local_node_2 = null;
+        local_vis.select("#localNode-" + d.key).classed("selected", false);
+        return;
+    }
+    if (selected_local_node_1 === null) {
+        selected_local_node_1 = d;
+        local_vis.select("#localNode-" + d.key).classed("selected", true);
+    }
+    else if (selected_local_node_2 === null) {
+        selected_local_node_2 = d;
+        local_vis.select("#localNode-" + d.key).classed("selected", true);     
+    }
+    else {
+        return;
+    }
+    if (selected_local_node_1 !== null && selected_local_node_2 !== null) {
+        // Show the connections if there are two local nodes being selected
+        var temp_source, temp_target;
+        if (selected_local_node_1.cy < selected_local_node_2.cy) {
+            temp_source = selected_local_node_1;
+            temp_target = selected_local_node_2;
+        }
+        else {
+            temp_source = selected_local_node_2;
+            temp_target = selected_local_node_1;
+        }
+        interLinks.forEach(function(d) {
+            if (d.source.key === temp_source.key && d.target.key === temp_target.key) {
+                displayConnectionTable(d);
+                return;
+            }
+        });
+    }
+    else {
+        $("#connections").empty();
+    }
 }
 
 /*
@@ -942,49 +991,88 @@ function interLinkClicked(d) {
     }
 }
 
-function displayConnections(value) {
+function displayConnectionTable(d) {
     var connectionPanel = $("#connections");
+    connectionPanel.empty();
+    console.log(d.actualLinks);
+    for (var i = 0; i < d.actualLinks.length; ++i) {
+        $('<table id = "conTable" class="table table-condensed table-custom"><tbody></tbody></table>').appendTo(connectionPanel);
+        $('#conTable').append('<tr><td id="linkCell' + i + '"></td></tr>');
+        var linkCell = $('#linkCell' + i);
+        var button;
+        linkCell.append('<img src="media/img/source-icon.png" height="16px" width="16px"/> '
+                        + d.actualLinks[i].source.displayName + '<br/>'
+                        + '<img src="media/img/target-icon.png" height="16px" width="16px"/> '
+                        + d.actualLinks[i].target.displayName) + '<br/>';
+        linkCell.data(d.actualLinks[i]);
+        linkCell.on("click", function() {
+            linkClick($(this).data(), 1);
+                if (old_focused_source != null) svg.select("#arc-" + old_focused_source.key).classed("highlighted", false);
+                if (old_focused_target != null) svg.select("#arc-" + old_focused_target.key).classed("highlighted", false);
+                svg.select("#arc-" + $(this).data().source.key).classed("highlighted", true);
+                svg.select("#arc-" + $(this).data().target.key).classed("highlighted", true);
+                old_focused_source = $(this).data().source;
+                old_focused_target = $(this).data().target;
+        });
+    }
+}
+
+function displayConnections(value) {
+    var connectionPanel = $("#connectionsnum_inter_parents");
 
     if (value) {
         var counter = 0;
-        var numOfInterParents = interParents.length;
-        var num_ = Math.round(Math.sqrt(numOfInterParents));
-        var rect_width = 10;
+        var num_inter_parents = interParents.length;
+        var num_rect_per_line = Math.round(Math.sqrt(num_inter_parents));
+        var rect_width = 15;
+        var rect_height = 15;
         var rect_spacing = 2;
-        var left_border = 150 - row_length 
+        var link_length = 30;
+        var left_border = 150 - (num_rect_per_line / 2)  * rect_width -  Math.floor(num_rect_per_line / 2) * rect_spacing;
+//        var top_border = 150 - (num_rect_per_line / 2)  * rect_height -  Math.floor(num_rect_per_line / 2) * rect_spacing;
+        var top_border = 10 + link_length;
+        var num_line = Math.floor(num_inter_parents / num_rect_per_line);
+        var bottom_border = top_border + num_line * rect_height + (num_line - 1) * rect_spacing;
         interParents.forEach(function(d) {
-            d.cy = 150;
-            d.cx = 300 / (numOfInterParents+1) * (counter+1);
+            if (d === selected_source || d === selected_target) {return;}
+            d.cx = left_border + (rect_width + rect_spacing) * (counter % num_rect_per_line);
+            d.cy = top_border + (rect_height + rect_spacing) * Math.floor(counter / num_rect_per_line);
+            console.log(d.cy);
+            console.log(counter);
             ++counter;
         });
 
         selected_source.cy = 10;
-        selected_source.cx = 150;
-        selected_target.cy = 290;
-        selected_target.cx = 150;
-        interParents.push(selected_source);
-        interParents.push(selected_target);
+        selected_source.cx = 145;
+        selected_target.cy = bottom_border + link_length;
+        selected_target.cx = 145;
+//        interParents.push(selected_source);
+//        interParents.push(selected_target);
         
         var displayLinks = [];
-        displayLinks.push({y1:selected_source.cy, x1:150, y2:150, x2:150});
-        displayLinks.push({y1:150, x1:150, y2:selected_target.cy, x2:150});
+        displayLinks.push({y1:selected_source.cy + rect_height + 5, x1:150, y2:top_border, x2:150});
+        displayLinks.push({y1:bottom_border + 10, x1:150, y2:selected_target.cy, x2:150});
         
         var local_node = local_vis.selectAll("g.node").data(interParents).enter()
-                            .append("rect").attr("width", rect_width).attr("height", 10).style("fill", "#555").style("stroke", "#FFF")
-                            .style("stroke-width", 3)
+                            .append("rect")
+                            .attr("width", rect_width)
+                            .attr("height", rect_height)
                             .attr("x", function(d) { return d.cx; })
                             .attr("y", function(d) { return d.cy; })
                             .on("mouseover", localNodeMouseOver)
                             .on("mouseout", localNodeMouseOut)
-                            .attr("id", function(d) { return "#localText-" + d.key ;})
+                            .on("click", localNodeClick)
+                            .attr("id", function(d) { return "localNode-" + d.key ;})
                             .attr("class","local_node");
 
+        /*
         var local_text = local_vis.selectAll("g.node").data(interParents).enter()
                             .append("text")
                             .attr("x", function(d) { return d.cx; })
                             .attr("y", function(d) { return d.cy; })
                             .attr("class", "text")
                             .text(function(d) { return d.displayName; });
+        */
 
         var local_link = local_vis.selectAll("line.link").data(displayLinks).enter().append("line")
                         .attr("class", "local_link")
@@ -994,53 +1082,12 @@ function displayConnections(value) {
                         .attr("y2", function(d) { return d.y2; })
                         .on("click", interLinkClicked);        
         
-        
-        /*
-        var counter = 0;
-        var numOfInterParents = interParents.length;
-        interParents.forEach(function(d) {
-            d.cx = 300 / (numOfInterParents+1) * (counter+1);
-            d.cy = 150;
-            ++counter;
-        });
-
-        selected_source.cx = 150;
-        selected_source.cy = 75;
-        selected_target.cx = 150;
-        selected_target.cy = 225;
-        interParents.push(selected_source);
-        interParents.push(selected_target);
-
-        var local_node = local_vis.selectAll("g.node").data(interParents).enter()
-                            .append("circle").attr("r", 5).style("fill", "#555").style("stroke", "#FFF")
-                            .style("stroke-width", 3)
-                            .attr("cx", function(d) { return d.cx; })
-                            .attr("cy", function(d) { return d.cy; })
-                            .on("mouseover", localNodeMouseOver)
-                            .on("mouseout", localNodeMouseOut)
-                            .attr("id", function(d) { return "#localText-" + d.key ;})
-                            .attr("class","local_node");
-
-        var local_text = local_vis.selectAll("g.node").data(interParents).enter()
-                            .append("text")
-                            .attr("x", function(d) { return d.cx; })
-                            .attr("y", function(d) { return d.cy; })
-                            .attr("class", "text")
-                            .text(function(d) { return d.displayName; });
-
-        var local_link = local_vis.selectAll("line.link").data(interLinks).enter().append("line")
-                        .attr("class", "local_link")
-                        .attr("x1", function(d) { return d.source.cx; })
-                        .attr("y1", function(d) { return d.source.cy; })
-                        .attr("x2", function(d) { return d.target.cx; })
-                        .attr("y2", function(d) { return d.target.cy; })
-                        .on("click", interLinkClicked);
-        */
     }
     else {
         $("#localCon").empty();
         $("#localCon").append('<h3>Search Results</h3>');
         local_vis = d3.select("#localCon").append("svg").attr("width", 300).attr("height", 300).attr("id", "localConVisual");
+        highlight_text_search_graph = local_vis.append("text").attr("id", "highlight_text_search_graph").attr("x", 0).attr("y", 200).text("");
         connectionPanel.empty();
     }
 }

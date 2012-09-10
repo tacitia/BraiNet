@@ -5,7 +5,7 @@
   <title>Brain Circuits Visualization User Study Instruction</title>
 
   <!--Stylesheets-->
-  <link rel="stylesheet" href="media/css/style-instruction.css" type="text/css" charset="utf-8">
+  <link rel="stylesheet" href="style-instruction.css" type="text/css" charset="utf-8">
 
   <!-- HTML5 shim, IE6-8 support of HTML5 elements -->
   <!--[if lt IE 9]>
@@ -14,24 +14,25 @@
 </head>
 <body>
         <h3 class="center">Brain Circuits Visualization User Study Instruction</h3>
-        <p>In this study, you will explore rat brain connectivity using the given application. There will be two tasks, where each will take approximately 30 minutes. In each task, you will be asked to find all the paths that involve one intermediate region between two given brain regions, evaluate the paths according to a set of criteria described below, and report the intermediate region that you believe to be the most probable one that is responsible for the functional association between the two given brain regions.</p>
+        <p>In this study, you will explore rat brain connectivity using the given application. There will be two tasks, where each will take approximately 30 minutes. In each task, you will be asked to find all the paths that involve one intermediate region between two given brain regions and collect a set of information about the paths. More instructions on which information to collect and how to collect them will be described in detail below.</p>
         <p>While you are working on the two tasks, you will also need to complete some short secondary tasks. Each secondary task will involve reading and answering a message that pops up when you are working on the main tasks. Each message will contain a question about living in Brown and Providence, asked by an incoming Brown student. The messages may pop up any time while you are working on the two tasks. You will encounter approximately 4 - 5 messages during the study.</p>
-        <h4>Guidelines for choosing the most probable intermediate regions</h4>
-        <h5>Connection evaluation criteria</h5>
-        <p>We ask you to consider the following factors when evaluating each connection:<br/>
-            1. Number of distinct references associated with each connection. Higher number of distinct references implies that the connection is more likely to exist.<br/>
-            2. Citation count for each of the associated literature. You do not need to read the paper, but you need to check the number of citations of each paper using Google Scholar and take that into account. Higher citation count implies higher credibility of the paper.<br/>
-            3. Diversity of techniques. If a connection is associated with records that have used different techniques, it should be considered stronger when compared to a connection associated with only one type of technique, given everything else being equal.<br/>
-            4. The strength of the connection reported by the associated literature. The strength can be either "weak", "moderate" or "heavy".<br/>
-            The above information will be available when you click on a connection in the visualization.
-        <h5>Regions v.s. groups of cells</h5>
-        <p>In the search result, you will see two types of intermediate nodes: regions and groups of cells. Regions are colored in dark brown and cells are colored in light brown (see the illustration below.</p>
-        <img src="media/img/instruction2.png" class="center" style="width:1000px; height:auto"></img>
-        <p><b>For the two tasks, you will need to report a region, not a group of cells.</b> However, each region consists of several groups of cells, so when you are evaluating each intermediate region, you should consider all the relevant connections that involve any group of cells that belong to that region. Connections are transferable: <b>a connection between two groups of cells can also be interpretated as a connection between the brain regions that contain those two groups of cells respectively.</b></p>
-        <p>In the visualization, the layers of arcs represent the hierarchy, where the parent-children relationship between a brain region and a group of cells is indicated by finer division of angles.</p>
         <h4>How to use the application</h4>
-        <img src="media/img/instruction1.png" class="center" style="width:1000px; height:auto"></img>
+        <img src="instruction1.png" class="center" style="width:1000px; height:auto"></img>
         <p>Note: the input panel allows you to read legends, customize the visualization, search the dataset and see help information. <b>For the purpose of the study, you will only need to make use of the Search tab.</b></p>
+        <h4>Interpreting search results</h4>
+        <p>In the search result, you will see two types of intermediate nodes: regions and groups of cells. Regions are colored in dark brown and cells are colored in light brown (see the illustration below.</p>
+        <img src="instruction2.png" class="center" style="width:1000px; height:auto"></img>
+        <p>Connections are transferable: a connection between two groups of cells implies that the brain regions that contain those two groups of cells are connected. A connection between a group of cells that belong to region A and a group of cells that belong to region B is referred to as a <b>sub-connection between A and B</b>.</p>
+        <p>In the visualization, the layers of arcs represent the hierarchy, where the parent-children relationship between a brain region and a group of cells is indicated by finer division of angles.</p>
+        <h4>Information collection</h4>
+        <p>We ask you to collect the following information about the paths returned as the search result:<br/>
+            1. Numbers of sub-connections between the source region and each intermediate region.
+            2. Numbers of sub-connections between each intermediate region and the target region.
+            3. Numbers of distinct references associated with each connection between two brain regions. To get this number, you need to sum up the number of distinct references for all the sub-connections between the two regions, excluding any repetition.<br/>
+            4. Citation counts for each of the literature associated with each connection. You do not need to read the paper, but you need to check the number of citations of each paper using Google Scholar and take that into account.<br/>
+            5. Number of distinct techniques used to examine each sub-connection.<br/>
+            6. The strength of each sub-connection reported by the associated literature. The strength can be either "weak", "moderate" or "heavy".<br/>
+            The above information will be available when you click on a connection in the visualization. <b>You will need to type those information into a text editor by the end of each session.</b> You could also use the text editor as a workspace to record any temporary information while you are working.
         <h4>Tasks</h4>
         <p>
             1. Report the most probable path that accounts for the communication between hippocampal region and anterior hypothalamic area. <br/>

@@ -69,7 +69,7 @@ body {
 }
 
 .nav-tabs-add {
-    max-height: 100px;
+    max-height: 300px;
     overflow-y: scroll;
 }
 
@@ -240,7 +240,7 @@ body {
     stroke: #AAA;
     stroke-opacity: 1;
     fill: none;
-    stroke-width: 1.5px;
+    stroke-width: 3px;
 }
 
 .local_link:hover {
@@ -292,7 +292,12 @@ body {
 .local_node {
     fill: #555;
     stroke: #FFF;
-    stroke-width: 3px;
+    stroke-width: 1px;
+}
+
+.local_node.selected {
+    fill: #062db8;
+    stroke: #062db8;;
 }
 
 /* TEMP */
