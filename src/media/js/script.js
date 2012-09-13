@@ -82,9 +82,14 @@ var task = {
     object: null
 };
 var previousTask;
-var externalWorkingTime = [];
-var startTime;
-var endTime;
+var extWorkData = [];
+var generalData = [];
+var startTime = null;
+var endTime = null;
+var sessionStartTime;
+var sessionEndTime;
+var currentExtWorkData = {extWorkLength: -1, recoveryTime: -1, mouseTrace: ""};
+var extWorkRcvryTimerOn = false;
 
 //Legend
 var legend = d3.select("#legend-feature")
@@ -140,7 +145,7 @@ var local_vis = d3.select("#localCon").append("svg").attr("width", 300).attr("he
 
 //TODO: [arthur] convert this to a html tag with the name of node
 var highlight_text = svg.append("text").attr("id", "highlight_text").attr("x", -400).attr("y", 350).text(""),
-    highlight_text_search_graph = local_vis.append("text").attr("id", "highlight_text_search_graph").attr("x", 0).attr("y", 200).text("");
+    highlight_text_search_graph = local_vis.append("text").attr("id", "highlight_text_search_graph").attr("x", 200).attr("y", 20).text("");
 
 //defines properties for the edge color
 var attrRange = {};
@@ -332,6 +337,12 @@ $('#targetSelect').change(targetSearchInput);
 $('#attrSelect').change(attrSearchInput);
 $(window).focus(windowGainsFocus);
 $(window).blur(windowLosesFocus);
+$(document).click(mouseClick);
+window.onbeforeunload=saveSessionData;
+window.onload=startSession;
+document.onmousemove = recordMouseMovement;
+
+/*=====================Start of User Study Functions===========================*/
 
 /* USER STUDY
  * When the window gains focus:
@@ -341,6 +352,12 @@ $(window).blur(windowLosesFocus);
  */
 function windowGainsFocus() {
     console.log("windowGainsFocus");
+    if (startTime === null) {return;}
+    endTime = new Date();
+    var extWorkLength = endTime - startTime;
+    currentExtWorkData.extWorkLength = extWorkLength;
+    startTime = new Date();
+    extWorkRcvryTimerOn = true;
 }
 
 /* USER STUDY
@@ -351,7 +368,66 @@ function windowGainsFocus() {
  */
 function windowLosesFocus() {
     console.log("windowLosesFocus");
+    startTime = new Date();
+    currentExtWorkData.extWorkLength = -1;
+    currentExtWorkData.recoveryTime = -1;
+    currentExtWorkData.mouseTrace = "";  
+    extWorkRcvryTimerOn = false;
 }
+
+
+function saveSessionData() {
+    sessionEndTime = new Date();
+    var sessionLength = sessionEndTime - sessionStartTime;
+    sessionLength /= 1000;
+    $.ajax({        
+       type: "POST",
+       url: "media/php/writeUserStudyData.php",
+       data: {extWorkDataArray : extWorkData, sessionLength : sessionLength},
+       error: function(data) {
+            console.log("Failed");
+            console.log(data);
+       },
+       success: function(data) {
+            console.log("Successfully passed data to php.");
+            console.log(data);
+       }
+    });
+}
+
+
+function startSession() {
+    sessionStartTime = new Date();
+}
+
+
+function recordMouseMovement(e) {
+    if (!extWorkRcvryTimerOn) {return;}
+    var currentTime = new Date();
+    console.log(e.pageX + " " + e.pageY + " " + (currentTime - startTime));
+    currentExtWorkData.mouseTrace += "x:" + e.pageX + ",y:" + e.pageY + 
+                                    ",time:" + (currentTime - startTime) + ";";
+}
+
+
+function recordBreakData() {
+    endTime = new Date();
+    var recoveryTime = endTime - startTime;
+    currentExtWorkData.recoveryTime = recoveryTime;
+    extWorkRcvryTimerOn = false;
+    console.log(currentExtWorkData);
+    extWorkData.push({extWorkLength:currentExtWorkData.extWorkLength, mouseTrace:currentExtWorkData.mouseTrace, 
+                        recoveryTime:currentExtWorkData.recoveryTime});
+}
+
+function mouseClick() {
+    if (extWorkRcvryTimerOn) {
+        console.log("mouse click");
+        recordBreakData();
+    }
+}
+
+/*========================End of User Study Functions========================*/
 
 /*
  * Mouse Position
@@ -403,6 +479,11 @@ function localNodeMouseOut(d) {
 }
 
 function localNodeClick(d) {
+    /*
+    if (extWorkRcvryTimerOn) {
+        recordBreakData();
+    }
+    */
     // first check if d is already selected
     if (d === selected_local_node_1) {
         selected_local_node_1 = null;
@@ -501,6 +582,11 @@ function linkMouseOut(d) {
  *
  */
 function linkClick(d, value) {
+    /*
+    if (extWorkRcvryTimerOn) {
+        recordBreakData();
+    }
+    */
     //checks if the link is active or dim
     if (!d.bi && svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key).classed("dimmed")) return;
     if (d.bi && svg.select("path.link.bi-" + d.source.key + ".bi-" + d.target.key).classed("dimmed")) return;
@@ -547,6 +633,11 @@ function linkClick(d, value) {
  *
  */
 function nodeClick(d) {
+    /*
+    if (extWorkRcvryTimerOn) {
+        recordBreakData();
+    }
+    */
     d3.event.preventDefault();
     if (current_mode === mode.exploration || current_mode === mode.fixation) {
         piwikTracker.trackPageView('Fix a node');
@@ -570,7 +661,6 @@ function nodeClick(d) {
     }
     // Search mode
     else {
-        console.log("search mode");
         return; //For now, does not allow click in search mode
         if (selected_source !== undefined && selected_target !== undefined) {
             clearSelection();
@@ -1085,9 +1175,9 @@ function displayConnections(value) {
     }
     else {
         $("#localCon").empty();
-        $("#localCon").append('<h3>Search Results</h3>');
+        $("#localCon").append('<h4>Search Results</h4>');
         local_vis = d3.select("#localCon").append("svg").attr("width", 300).attr("height", 300).attr("id", "localConVisual");
-        highlight_text_search_graph = local_vis.append("text").attr("id", "highlight_text_search_graph").attr("x", 0).attr("y", 200).text("");
+        highlight_text_search_graph = local_vis.append("text").attr("id", "highlight_text_search_graph").attr("x", 200).attr("y", 20).text("");
         connectionPanel.empty();
     }
 }
