@@ -1,0 +1,204 @@
+/*===== Primary Elements =====/*
+
+/*  Node  */
+
+.hidden {
+    display: none;
+}
+
+/*.node {*/
+/*fill: #2d527c;*/
+/*}*/
+
+/*.node:hover {*/
+/*}*/
+
+/*.node.target {*/
+/*fill: #d62728;*/
+/*}*/
+
+/*.node.source {*/
+/*fill: #2ca02c;*/
+/*}*/
+
+/*   Arc    */
+
+.arc {
+    opacity: 0.15;
+    fill: #0D0D0D;
+    stroke: #FFF;
+}
+
+/*blue - no connections*/
+.arc:hover {
+    fill: #ccc;
+}
+
+/*red*/
+.arc.target {
+    fill: #d62728;
+}
+
+/*green*/
+.arc.source {
+    fill: #2ca02c !important;
+}
+
+.arc.selected-source {
+    fill: #25fb3a;
+}
+.arc.selected-target {
+    fill: #fa0615;
+}
+
+.arc.selected {
+    fill: #b45c1f;
+}
+
+.arc.selected-secondary {
+    fill: #b45c1f;
+    opacity: 0.5;
+}
+
+/*blue*/
+.arc.bi {
+    fill: #062db8;
+}
+
+.arc.target, .arc.source, .arc.selected {
+    opacity: 0.8;
+}
+
+.arc.hidden {
+    visibility: hidden;
+}
+
+.arc.highlighted {
+    stroke: red;
+    stroke-width: 3px;
+}
+
+/*   Text    */
+
+
+.text {
+    pointer-events: none;
+    visibility: hidden;
+    fill: #FFF;
+}
+
+.text.visible {
+    fill: #000;
+    visibility: visible;
+}
+
+.text.target {
+    visibility: visible;
+}
+
+.text.source {
+    visibility: visible;
+}
+
+.text.bi {
+    visibility: visible;
+}
+
+.text.selected {
+    visibility: visible;
+}
+
+/* These are for clicked nodes */
+
+.text.selected-target {
+    visibility: visible;
+}
+
+.text.selected-source {
+    visibility: visible;
+}
+
+.tooltip {
+    visibility: visible;
+    pointer-events: none;
+    fill: #000;
+}
+/* tooltip */
+.tooltip.hidden {
+    visibility: hidden;
+}
+.tooltip.selected-hidden {
+    visibility: hidden;
+}
+.tooltip.selected-source {
+    visibility: hidden;
+}
+.tooltip.selected-target {
+    visibility: hidden;
+}
+
+/*  links (connections) */
+
+.local_link {
+    stroke: #AAA;
+    stroke-opacity: 1;
+    fill: none;
+    stroke-width: 3px;
+}
+
+.local_link:hover {
+    stroke: #b45c1f;
+}
+
+.link {
+    stroke: #AAA;
+    stroke-opacity: .1;
+    fill: none;
+    stroke-width: 1.5px;
+}
+
+/*.link:hover {*/
+/*stroke: #b45c1f;*/
+/*stroke-opacity: 1;*/
+/*stroke-width:2px;*/
+/*fill: hidden;*/
+/*}*/
+
+.link.dimmed {
+    opacity: 0.1;
+}
+
+/*red*/
+.link.target {
+    stroke: #d62728;
+}
+/*green*/
+.link.source {
+    stroke: #2ca02c;
+}
+.link.bi {
+    stroke: #062db8;
+}
+
+.link.hidden {
+    visibility: hidden;
+}
+
+.link.selected {
+    stroke: #b45c1f;
+}
+.link.source, .link.target, .link.selected, .link.bi {
+    stroke-opacity: .9;
+    stroke-width: 3px;
+}
+
+.local_node {
+    fill: #555;
+    stroke: #FFF;
+    stroke-width: 1px;
+}
+
+.local_node.selected {
+    fill: #062db8;
+    stroke: #062db8;;
+}

@@ -54,7 +54,7 @@ var svg = d3.select("#canvas")
       .attr("height", "100%")
       .attr("viewBox", "0 0 " + w + " " + h)
     .append('g')
-      .attr("transform", "translate(" + (w / 2) + "," + (h / 2) + ")")
+      .attr("transform", "translate(" + (w / 4) + "," + (h / 2) + ")")
       .call(zoom)
     .append('g');
 
@@ -63,7 +63,7 @@ svg.append('rect')
     .attr('width', w)
     .attr('height', h)
     .attr('fill', 'white')
-    .attr("transform", "translate(" + (-w / 2) + "," + (-h / 2) + ")");
+    .attr("transform", "translate(" + (-w / 4) + "," + (-h / 2) + ")");
 
 
 //TODO: remove max depth
@@ -404,7 +404,6 @@ function startSession() {
 function recordMouseMovement(e) {
     if (!extWorkRcvryTimerOn) {return;}
     var currentTime = new Date();
-    console.log(e.pageX + " " + e.pageY + " " + (currentTime - startTime));
     currentExtWorkData.mouseTrace += "x:" + e.pageX + ",y:" + e.pageY + 
                                     ",time:" + (currentTime - startTime) + ";";
 }
@@ -415,14 +414,12 @@ function recordBreakData() {
     var recoveryTime = endTime - startTime;
     currentExtWorkData.recoveryTime = recoveryTime;
     extWorkRcvryTimerOn = false;
-    console.log(currentExtWorkData);
     extWorkData.push({extWorkLength:currentExtWorkData.extWorkLength, mouseTrace:currentExtWorkData.mouseTrace, 
                         recoveryTime:currentExtWorkData.recoveryTime});
 }
 
 function mouseClick() {
     if (extWorkRcvryTimerOn) {
-        console.log("mouse click");
         recordBreakData();
     }
 }
@@ -587,11 +584,12 @@ function linkClick(d, value) {
         recordBreakData();
     }
     */
+    console.log(d);
     //checks if the link is active or dim
     if (!d.bi && svg.select("path.link.source-" + d.source.key + ".target-" + d.target.key).classed("dimmed")) return;
     if (d.bi && svg.select("path.link.bi-" + d.source.key + ".bi-" + d.target.key).classed("dimmed")) return;
-    if (value === 0) piwikTracker.trackPageView('Click a link');
-    else piwikTracker.trackPageView('Click a table link entry');
+    if (value === 0) {piwikTracker.trackPageView('Click a link');}
+    else {piwikTracker.trackPageView('Click a table link entry');}
 
     var detail_tab = $("#detail-tab");
     var detail_content_pane = $("#detail-content-pane");
@@ -1071,10 +1069,10 @@ function interLinkClicked(d) {
         linkCell.data(d.actualLinks[i]);
         linkCell.on("click", function() {
             linkClick($(this).data(), 1);
-                if (old_focused_source != null) svg.select("#arc-" + old_focused_source.key).classed("highlighted", false);
-                if (old_focused_target != null) svg.select("#arc-" + old_focused_target.key).classed("highlighted", false);
-                svg.select("#arc-" + $(this).data().source.key).classed("highlighted", true);
-                svg.select("#arc-" + $(this).data().target.key).classed("highlighted", true);
+//                if (old_focused_source !== null) svg.select("#arc-" + old_focused_source.key).classed("highlighted", false);
+//                if (old_focused_target !== null) svg.select("#arc-" + old_focused_target.key).classed("highlighted", false);
+//                svg.select("#arc-" + $(this).data().source.key).classed("highlighted", true);
+//                svg.select("#arc-" + $(this).data().target.key).classed("highlighted", true);
                 old_focused_source = $(this).data().source;
                 old_focused_target = $(this).data().target;
         });
@@ -1089,14 +1087,15 @@ function displayConnectionTable(d) {
         $('<table id = "conTable" class="table table-condensed table-custom"><tbody></tbody></table>').appendTo(connectionPanel);
         $('#conTable').append('<tr><td id="linkCell' + i + '"></td></tr>');
         var linkCell = $('#linkCell' + i);
-        var button;
         linkCell.append('<img src="media/img/source-icon.png" height="16px" width="16px"/> '
                         + d.actualLinks[i].source.displayName + '<br/>'
                         + '<img src="media/img/target-icon.png" height="16px" width="16px"/> '
                         + d.actualLinks[i].target.displayName) + '<br/>';
         linkCell.data(d.actualLinks[i]);
         linkCell.on("click", function() {
-            linkClick($(this).data(), 1);
+                linkClick($(this).data(), 1);
+                console.log($(this).data().source.key);
+                console.log($(this).data().target.key);
                 if (old_focused_source != null) svg.select("#arc-" + old_focused_source.key).classed("highlighted", false);
                 if (old_focused_target != null) svg.select("#arc-" + old_focused_target.key).classed("highlighted", false);
                 svg.select("#arc-" + $(this).data().source.key).classed("highlighted", true);
@@ -1127,8 +1126,6 @@ function displayConnections(value) {
             if (d === selected_source || d === selected_target) {return;}
             d.cx = left_border + (rect_width + rect_spacing) * (counter % num_rect_per_line);
             d.cy = top_border + (rect_height + rect_spacing) * Math.floor(counter / num_rect_per_line);
-            console.log(d.cy);
-            console.log(counter);
             ++counter;
         });
 
@@ -1154,15 +1151,6 @@ function displayConnections(value) {
                             .on("click", localNodeClick)
                             .attr("id", function(d) { return "localNode-" + d.key ;})
                             .attr("class","local_node");
-
-        /*
-        var local_text = local_vis.selectAll("g.node").data(interParents).enter()
-                            .append("text")
-                            .attr("x", function(d) { return d.cx; })
-                            .attr("y", function(d) { return d.cy; })
-                            .attr("class", "text")
-                            .text(function(d) { return d.displayName; });
-        */
 
         var local_link = local_vis.selectAll("line.link").data(displayLinks).enter().append("line")
                         .attr("class", "local_link")
@@ -1263,7 +1251,7 @@ function computeLinksForSelection(hop, source, target, currLink, selected_links)
 
     source.links.forEach(function (d) {
         if (name_node_map[d.name] != undefined) {
-            augmentedLinks.push({source: source, target: name_node_map[d.name], detail: d.detail});
+            augmentedLinks.push({source: source, target: name_node_map[d.name], detail: d.detail, bi:d.bi});
         }
     });
 
@@ -1272,7 +1260,7 @@ function computeLinksForSelection(hop, source, target, currLink, selected_links)
     descendants.forEach(function (d) {
         d.links.forEach(function (i) {
             if (name_node_map[i.name] != undefined && $.inArray(name_node_map[i.name], descendants) < 0) {
-                augmentedLinks.push({source: d, target: name_node_map[i.name], detail: i.detail});
+                augmentedLinks.push({source: d, target: name_node_map[i.name], detail: i.detail, bi: i.bi});
             }
         });
     });
@@ -1280,7 +1268,7 @@ function computeLinksForSelection(hop, source, target, currLink, selected_links)
     getDecendants(target, augmentedTargets);
     augmentedLinks.forEach(function (d) {
         var newLink = currLink.slice();
-        newLink.push({source: d.source, target: d.target, detail: d.detail});
+        newLink.push({source: d.source, target: d.target, detail: d.detail, bi: d.bi});
         augmentedTargets.forEach(function (i) {
             if (d.target === i) {
                 selected_links.push(newLink);
