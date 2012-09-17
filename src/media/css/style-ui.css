@@ -68,6 +68,10 @@ body {
     overflow-y: scroll;
 }
 
+.selected-cell {
+    background:#99FFFF;
+}
+
 .nav-tabs-add {
     max-height: 300px;
     overflow-y: scroll;

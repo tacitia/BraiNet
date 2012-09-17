@@ -133,7 +133,8 @@ var current_mode = mode.exploration,
     interParents = [],
     interLinks = [],
     selected_local_node_1 = null,
-    selected_local_node_2 = null;
+    selected_local_node_2 = null,
+    selected_td = null;
 
 // Map containing node data and information
 var con_map,
@@ -574,9 +575,6 @@ function linkMouseOut(d) {
 
 /*
  * Link Click
- *
- * TODO: to be implemented as separate gui element
- *
  */
 function linkClick(d, value) {
     /*
@@ -596,7 +594,7 @@ function linkClick(d, value) {
     detail_tab.empty();
     detail_content_pane.empty();
     // Iterate through all the details
-    for (var i = 0; i < d.detail.length; ++i) {
+    for (var i = 0; i < Math.min(d.detail.length, 10); ++i) {
         // Append the container
         if (i === 0) {
             detail_tab.append('<li class="active"><a href="#tab1" data-toggle="tab">Ref 1</a></li>');
@@ -1083,8 +1081,8 @@ function displayConnectionTable(d) {
     var connectionPanel = $("#connections");
     connectionPanel.empty();
     console.log(d.actualLinks);
-    for (var i = 0; i < d.actualLinks.length; ++i) {
-        $('<table id = "conTable" class="table table-condensed table-custom"><tbody></tbody></table>').appendTo(connectionPanel);
+    $('<table id = "conTable" class="table table-condensed table-custom"><tbody></tbody></table>').appendTo(connectionPanel);
+    for (var i = 0; i < Math.min(d.actualLinks.length, 10); ++i) {
         $('#conTable').append('<tr><td id="linkCell' + i + '"></td></tr>');
         var linkCell = $('#linkCell' + i);
         linkCell.append('<img src="media/img/source-icon.png" height="16px" width="16px"/> '
@@ -1102,6 +1100,10 @@ function displayConnectionTable(d) {
                 svg.select("#arc-" + $(this).data().target.key).classed("highlighted", true);
                 old_focused_source = $(this).data().source;
                 old_focused_target = $(this).data().target;
+                console.log($(this));
+                if (selected_td !== null) {selected_td.removeClass("selected-cell");}
+                $(this).addClass("selected-cell");
+                selected_td = $(this);
         });
     }
 }
@@ -1207,8 +1209,8 @@ function getInterParents(depth) {
             var targetParent = findParentAtDepth(d[i].target, depth);
             //if (sourceParent == null || targetParent == null) continue;
             var interLink = {source:sourceParent, target:targetParent, actualLinks:[d[i]]};
-            if ($.inArray(sourceParent, interParents) < 0 && $.inArray(sourceParent, sourceDecendants) < 0) interParents.push(sourceParent);
-            if ($.inArray(targetParent, interParents) < 0 && $.inArray(targetParent, targetDecendants) < 0) interParents.push(targetParent);
+            if ($.inArray(sourceParent, interParents) < 0 && $.inArray(sourceParent, sourceDecendants) < 0 && interParents.length <= 12) interParents.push(sourceParent);
+            if ($.inArray(targetParent, interParents) < 0 && $.inArray(targetParent, targetDecendants) < 0 && interParents.length <= 12) interParents.push(targetParent);
             if (!linkExists(interLink, interLinks)) {
                 interLinks.push(interLink);
             }
