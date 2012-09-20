@@ -517,15 +517,13 @@ function localNodeClick(d) {
         }
         interLinks.forEach(function(d) {
             if (d.source.key === temp_source.key && d.target.key === temp_target.key) {
-		console.log("matched");
-                //displayConnectionTable(d);
-		displayLiteratures(d);
+                displayConnectionTable(d);
                 return;
             }
         });
     }
     else {
-        $("#search-results").empty();
+        $("#connections").empty();
     }
 }
 
@@ -683,7 +681,7 @@ function nodeClick(d) {
         if (selected_local_node_1 !== null && selected_local_node_2 !== null) {
             // Show the connections if there are two local nodes being selected
             var temp_source, temp_target;
-            if (selected_local_node_1.con_pos < selected_local_node_2.con_pos) {
+            if (selected_local_node_1.cy < selected_local_node_2.cy) {
                 temp_source = selected_local_node_1;
                 temp_target = selected_local_node_2;
             }
@@ -691,20 +689,15 @@ function nodeClick(d) {
                 temp_source = selected_local_node_2;
                 temp_target = selected_local_node_1;
             }
-            console.log("lala");
-	    console.log(temp_source);
-            console.log(temp_target);
             interLinks.forEach(function(d) {
                 if (d.source.key === temp_source.key && d.target.key === temp_target.key) {
-                    //displayConnectionTable(d);
-		    displayLiteratures(d);
+                    displayConnectionTable(d);
                     return;
                 }
             });
         }
         else {
-	    console.log("clear connections");
-            $("#search-results").empty();
+            $("#connections").empty();
         }
     }
 }
@@ -729,7 +722,7 @@ function searchButtonClick() {
             path.classed("dimmed", true);
         }
         highlightSelectedLinks(true);
-        displayInterParents(true);
+        //displayInterParents(true);
         //displayConnections(true);
     }
 }
@@ -961,7 +954,7 @@ function clearSearchResult() {
     highlightSelectedLinks(false);
     selected_links = [];
     //displayConnections(false);
-    displayInterParents(false);
+    //displayInterParents(false);
     if (old_focused_source !== null) svg.select("#arc-" + old_focused_source.key).classed("highlighted", false);
     if (old_focused_target !== null) svg.select("#arc-" + old_focused_target.key).classed("highlighted", false);
     current_mode = mode.exploration;
@@ -1082,7 +1075,7 @@ function appendNodesAsOptions(nodes) {
 }
 
 function interLinkClicked(d) {
-    var connectionPanel = $("#search-results");
+    var connectionPanel = $("#connections");
     connectionPanel.empty();
     console.log(d.actualLinks);
     for (var i = 0; i < d.actualLinks.length; ++i) {
@@ -1107,44 +1100,8 @@ function interLinkClicked(d) {
     }
 }
 
-function paperExists(paper, paperList) {
-    for (var i = 0; i < paperList.length; ++i) {
-        if (paperList[i].ref === paper.ref) {return true;}
-    }
-    return false;
-}
-
-function getPaperList(links) {
-    var paperList = [];
-    for (var i = 0; i < links.length; ++i) {
-	var details = links[i].detail;
-        for (var j = 0; j < details.length; ++j) {
-	    var detail = details[j];
-	    var paper = {ref:detail.ref, pubmed_link:detail.pubmed_link};
-	    if (!paperExists(paper, paperList)) {
-	        paperList.push(paper);
-	    }
-	}
-    }
-    return paperList;
-}
-
-function displayLiteratures(d) {
-    var connectionPanel = $("#search-results");
-    connectionPanel.empty();
-    $('<table id = "conTable" class="table table-condensed table-custom"><tbody></tbody></table>').appendTo(connectionPanel);
-    var paperList = getPaperList(d.actualLinks);
-    console.log(paperList);
-    for (var i = 0; i < paperList.length; ++i) {
-	var paperInfo = paperList[i];
-        $('#conTable').append('<tr><td id="paperCell' + i + '"></td></tr>');
-        var paperCell = $("#paperCell" + i);
-        paperCell.append('<a href="' + paperInfo.pubmed_link + '" target="_blank">' + paperInfo.ref + '</a>');
-    }
-}
-
 function displayConnectionTable(d) {
-    var connectionPanel = $("#search-results");
+    var connectionPanel = $("#connections");
     connectionPanel.empty();
     console.log(d.actualLinks);
     $('<table id = "conTable" class="table table-condensed table-custom"><tbody></tbody></table>').appendTo(connectionPanel);
@@ -1175,7 +1132,7 @@ function displayConnectionTable(d) {
 }
 
 function displayConnections(value) {
-    var connectionPanel = $("#search-results");
+    var connectionPanel = $("#connections");
 
     if (value) {
         var counter = 0;
@@ -1273,8 +1230,6 @@ function getInterParents(depth) {
         for (var i = 0; i < d.length; ++i) {
             var sourceParent = findParentAtDepth(d[i].source, depth);
             var targetParent = findParentAtDepth(d[i].target, depth);
-	    sourceParent.con_pos = i;
-	    targetParent.con_pos = i + 1;
             //if (sourceParent == null || targetParent == null) continue;
             var interLink = {source:sourceParent, target:targetParent, actualLinks:[d[i]]};
             if ($.inArray(sourceParent, interParents) < 0 && $.inArray(sourceParent, sourceDecendants) < 0 && interParents.length <= 12) interParents.push(sourceParent);

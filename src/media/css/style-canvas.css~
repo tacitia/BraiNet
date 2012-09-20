@@ -78,11 +78,6 @@
     stroke-width: 3px;
 }
 
-.arc.search-selected {
-	 fill: #062db8;
-    stroke: #062db8;;
-}
-
 /*   Text    */
 
 

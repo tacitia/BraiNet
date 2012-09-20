@@ -87,6 +87,7 @@
 
         <!--SEARCH-->
         <div id="search" class="tab-pane">
+          <div id="search-settings">
           <table>
             <tr>
               <td class="tab-column-1">Source</td>
@@ -119,14 +120,25 @@
               <td style="width:50px;"><button id="bt-clear" class="btn btn-warning">Clear</button></td>
             </tr>
           </table>
-
+          </div>
           <!--Search Results-->
+          <!--
           <div id="localCon" class="localCon">
             <h4>Search Results</h4>
           </div>
-
+          -->
           <!---List Link Connections (Search Results)-->
-          <div id="connections" class="conn-level0"></div>
+          <div id="search-results">
+	    <ul class="nav nav-tabs">
+              <li class="active"><a href="#paper-list" data-toggle="tab">Show literature list</a></li>
+              <li><a href="#sub-con-list" data-toggle="tab">Show sub-connection list</a></li>
+            </ul>
+	    <div id="paper-list">
+	      <p><i>Search for the connections between two brain regions and the relevant literature will be displayed here.</i></p>
+	    </div>
+	    <div id="sub-con-list">
+	    </div>
+	  </div>
 
         </div><!--END SEARCH-->
 
