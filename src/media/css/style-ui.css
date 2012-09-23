@@ -43,6 +43,7 @@ body {
 }
 
 #search-settings {
+    padding-bottom:20px;
 }
 
 #search-results {
@@ -51,9 +52,13 @@ body {
     /*top: 400px;*/
     /*width: 350px;*/
     /*height: 50%;*/
-    max-height: 300px;
-    overflow-y: scroll;
     top: 300px;
+}
+
+.search-results-contents {
+    margin:5px;
+    height:280px;
+    overflow-y: scroll;
 }
 
 .conn-level1 {
@@ -130,4 +135,8 @@ body {
     padding-top: 20px;
     position: absolute;
     top: 650px;
+}
+
+.explanation.hidden {
+    display:none;
 }

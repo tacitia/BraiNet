@@ -45,7 +45,7 @@
         </div><!--END LEGEND-->
 
         <!--OPTIONS-->
-        <div id="options" class="tab-pane">
+        <div id="options" class="tab-pane fade in">
           <table>
             <tr><td class="tab-column-1"><h4>Edge color</h4></td></tr>
             <tr>
@@ -86,7 +86,7 @@
         </div><!--END OPTIONS-->
 
         <!--SEARCH-->
-        <div id="search" class="tab-pane">
+        <div id="search" class="tab-pane fade in">
           <div id="search-settings">
           <table>
             <tr>
@@ -128,23 +128,25 @@
           </div>
           -->
           <!---List Link Connections (Search Results)-->
-          <div id="search-results">
-	    <ul class="nav nav-tabs">
+          <div id="search-results" class="tab-content">
+            <ul class="nav nav-tabs">
               <li class="active"><a href="#paper-list" data-toggle="tab">Show literature list</a></li>
               <li><a href="#sub-con-list" data-toggle="tab">Show sub-connection list</a></li>
             </ul>
-	    <div id="paper-list">
-	      <p><i>Search for the connections between two brain regions and the relevant literature will be displayed here.</i></p>
-	    </div>
-	    <div id="sub-con-list">
-	    </div>
-	  </div>
+            <div id="paper-list" class="tab-pane fade in active search-results-contents">
+              <p class="search-results-exp explanation"><i>Search for the connections between two brain regions and the relevant literature will be displayed here.</i></p>
+            </div>
+            <div id="sub-con-list" class="tab-pane fade in search-results-contents">
+              <p class="search-results-exp explanation"><i>Search for the connections between two brain regions and the underlying sub-connections will be displayed here.</i></p>
+            </div>
+          </div>
 
         </div><!--END SEARCH-->
 
         <!--HELP-->
-        <div id="help" class="tab-pane">
+        <div id="help" class="tab-pane fade in">
           <p>
+            <a href="http://www.youtube.com/watch?v=PyPHzxaCEfU&feature=youtu.be">Demo video</a>
             Tips: <br/>
             1. To locate a brain region: type in its name in the "Search for a region"
             text box and it will be highlighted in the visualization <br/><br/>
