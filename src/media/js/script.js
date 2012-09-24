@@ -676,6 +676,19 @@ function nodeClick(d) {
             return;
         }
         if (selected_local_node_1 === null) {
+            selected_local_node_1 = selected_local_node_2;
+            selected_local_node_2 = d;
+            svg.select("#arc-" + d.key).classed("search-selected", true);
+        }
+        else {
+            if (selected_local_node_2 !== null) {
+                svg.select("#arc-" + selected_local_node_2.key).classed("search-selected", false);
+            }
+            selected_local_node_2 = d;
+            svg.select("#arc-" + d.key).classed("search-selected", true);     
+        }
+        /*
+        if (selected_local_node_1 === null) {
             selected_local_node_1 = d;
             svg.select("#arc-" + d.key).classed("search-selected", true);
         }
@@ -683,6 +696,7 @@ function nodeClick(d) {
             selected_local_node_2 = d;
             svg.select("#arc-" + d.key).classed("search-selected", true);     
         }
+        */
         console.log(selected_local_node_1 + " " + selected_local_node_2);
         if (selected_local_node_1 !== null && selected_local_node_2 !== null) {
             // Show the connections if there are two local nodes being selected
