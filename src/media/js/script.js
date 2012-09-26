@@ -73,13 +73,12 @@ var max_hop = 1,
 // USER STUDY
 // User goal state variables
 var taskType = {
-    interLink: 1,
-    actualLink: 2,
-    ref: 3
+    vis: 1,
+    paper: 2
 };
 var task = {
     type: null,
-    object: null
+    htmlObject: null
 };
 var previousTask;
 var extWorkData = [];
@@ -135,7 +134,23 @@ var current_mode = mode.exploration,
     selected_local_node_1 = null,
     selected_local_node_2 = null,
     selected_td = null;
+    /*
+    paper_list_tracker = null,
+    unread_paper = 0,
+    search_result_tracker = null,
+    unchecked_source = 0,
+    unchecked_target = 0,
+    */
 
+// User study variables
+var checking_source = false,
+    checking_target = false,
+    unread_paper = [],
+    unchecked_source = [],
+    unchecked_target = [],
+    temp_source,
+    temp_target;
+    
 // Map containing node data and information
 var con_map,
     display_node_map,
@@ -178,7 +193,7 @@ var tooltip_path = function (w, h) {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
+d3.json("media/data/bamsBrainDataSimp.json", function (data) {
 
     var nodes_for_link,
         links_visible,
@@ -374,6 +389,16 @@ function windowLosesFocus() {
     currentExtWorkData.recoveryTime = -1;
     currentExtWorkData.mouseTrace = "";  
     extWorkRcvryTimerOn = false;
+    if (task.htmlObject !== null) {
+        console.log("activiting next target");
+        console.log(task.htmlObject);
+        if (task.type === taskType.paper) {
+            task.htmlObject.addClass('next-target');
+        }
+        else {
+            task.htmlObject.classed('highlighted', true);
+        }
+    }
 }
 
 
@@ -394,6 +419,7 @@ function saveSessionData() {
             console.log(data);
        }
     });
+    return "Please confirm that you want to close the current page.";
 }
 
 
@@ -422,6 +448,16 @@ function recordBreakData() {
 function mouseClick() {
     if (extWorkRcvryTimerOn) {
         recordBreakData();
+        console.log(task.htmlObject);
+        if (task.htmlObject !== null) {
+            console.log("cancel taget");
+            if (task.type === taskType.paper) {
+                task.htmlObject.removeClass('next-target');
+            }
+            else {
+                task.htmlObject.classed('highlighted', false);
+            }
+        }
     }
 }
 
@@ -675,6 +711,7 @@ function nodeClick(d) {
             resetSearchResultsPanel();
             return;
         }
+        /*
         if (selected_local_node_1 === null) {
             selected_local_node_1 = d;
             svg.select("#arc-" + d.key).classed("search-selected", true);
@@ -683,10 +720,21 @@ function nodeClick(d) {
             selected_local_node_2 = d;
             svg.select("#arc-" + d.key).classed("search-selected", true);     
         }
-        console.log(selected_local_node_1 + " " + selected_local_node_2);
+        */
+        if (selected_local_node_1 === null) {
+            selected_local_node_1 = selected_local_node_2;
+            selected_local_node_2 = d;
+            svg.select("#arc-" + d.key).classed("search-selected", true);
+        }
+        else {
+            if (selected_local_node_2 !== null) {
+                svg.select("#arc-" + selected_local_node_2.key).classed("search-selected", false);
+            }
+            selected_local_node_2 = d;
+            svg.select("#arc-" + d.key).classed("search-selected", true);     
+        }
         if (selected_local_node_1 !== null && selected_local_node_2 !== null) {
             // Show the connections if there are two local nodes being selected
-            var temp_source, temp_target;
             if (selected_local_node_1.con_pos < selected_local_node_2.con_pos) {
                 temp_source = selected_local_node_1;
                 temp_target = selected_local_node_2;
@@ -694,6 +742,15 @@ function nodeClick(d) {
             else {
                 temp_source = selected_local_node_2;
                 temp_target = selected_local_node_1;
+            }
+            //var length = search_result_tracker.length;
+            if (temp_source === selected_source) {
+                checking_source = true;
+                checking_target = false;
+            }
+            else {
+                checking_source = false;
+                checking_target = true;
             }
             interLinks.forEach(function(d) {
                 if (d.source.key === temp_source.key && d.target.key === temp_target.key) {
@@ -754,13 +811,13 @@ function clearButtonClick() {
         clearSearchResult();
         if (selected_source !== undefined) { highlightNode(selected_source, "selected-source", false, true); }
         if (selected_target !== undefined) { highlightNode(selected_target, "selected-target", false, true); }
-        if (selected_local_node_1 !== undefined) { 
+        if (selected_local_node_1 !== null) { 
             svg.select("#arc-" + selected_local_node_1.key).classed("search-selected", false);
-            selected_local_node_1 = undefined;
+            selected_local_node_1 = null;
         }
-        if (selected_local_node_2 !== undefined) { 
+        if (selected_local_node_2 !== null) { 
             svg.select("#arc-" + selected_local_node_2.key).classed("search-selected", false);
-            selected_local_node_2 = undefined;
+            selected_local_node_2 = null;
         }
     }
     else if (current_mode === mode.fixation) {
@@ -785,13 +842,13 @@ function sourceSearchInput() {
     if (selected_source != undefined) {
         highlightNode(selected_source, "selected-source", false, true);
         clearSearchResult();
-        if (selected_local_node_1 !== undefined) { 
+        if (selected_local_node_1 !== null) { 
             svg.select("#arc-" + selected_local_node_1.key).classed("search-selected", false);
-            selected_local_node_1 = undefined;
+            selected_local_node_1 = null;
         }
-        if (selected_local_node_2 !== undefined) { 
+        if (selected_local_node_2 !== null) { 
             svg.select("#arc-" + selected_local_node_2.key).classed("search-selected", false);
-            selected_local_node_2 = undefined;
+            selected_local_node_2 = null;
         }
     }
     var inputRegion = this.value.toLowerCase();
@@ -813,8 +870,8 @@ function targetSearchInput() {
     if (selected_target != undefined) {
         highlightNode(selected_target, "selected-target", false, true);
         clearSearchResult();
-        if (selected_local_node_1 !== undefined) { svg.select("#arc-" + selected_local_node_1.key).classed("search-selected", false); }
-        if (selected_local_node_2 !== undefined) { svg.select("#arc-" + selected_local_node_2.key).classed("search-selected", false); }
+        if (selected_local_node_1 !== null) { svg.select("#arc-" + selected_local_node_1.key).classed("search-selected", false); }
+        if (selected_local_node_2 !== null) { svg.select("#arc-" + selected_local_node_2.key).classed("search-selected", false); }
     }
     var inputRegion = this.value.toLowerCase();
     display_node_map.forEach(function (d) {
@@ -1087,8 +1144,13 @@ function displayInterParents(value) {
         getDecendants(selected_target, targetDec);
         if (d != selected_source && d != selected_target && $.inArray(d, sourceDec) < 0 && $.inArray(d, targetDec) < 0) {
             highlightNode(d, "selected", value, true);
+            unchecked_source.push(d.key);
+            unchecked_target.push(d.key);
+//            search_result_tracker.push({htmlObject: d, source_checked: false, target_checked: false});
         }
     });
+//    unchecked_source = search_result_tracker.length;
+//    unchecked_target = search_result_tracker.length;
 }
 
 
@@ -1147,14 +1209,14 @@ function paperExists(paper, paperList) {
 function getPaperList(links) {
     var paperList = [];
     for (var i = 0; i < links.length; ++i) {
-	var details = links[i].detail;
+    var details = links[i].detail;
         for (var j = 0; j < details.length; ++j) {
-	    var detail = details[j];
-	    var paper = {ref:detail.ref, pubmed_link:detail.pubmed_link};
-	    if (!paperExists(paper, paperList)) {
-	        paperList.push(paper);
-	    }
-	}
+           var detail = details[j];
+           var paper = {ref:detail.ref, pubmed_link:detail.pubmed_link};
+            if (!paperExists(paper, paperList)) {
+                paperList.push(paper);
+            }
+        }
     }
     return paperList;
 }
@@ -1163,16 +1225,99 @@ function displayLiteratures(d) {
     var connectionPanel = $('#paper-list');
     $('#paperNum').remove();
     $('#paperTable').remove();
+    unread_paper = [];
     var paperList = getPaperList(d.actualLinks);
     $('<p id="paperNum">Total number of relevant papers: ' + paperList.length + '</p>').appendTo(connectionPanel)
     $('<table id = "paperTable" class="table table-condensed table-custom"><tbody></tbody></table>').appendTo(connectionPanel);
     console.log(paperList);
-    for (var i = 0; i < paperList.length; ++i) {
-	var paperInfo = paperList[i];
+    var list_length = paperList.length;
+    for (var i = 0; i < list_length; ++i) {
+        var paperInfo = paperList[i];
         $('#paperTable').append('<tr><td id="paperCell' + i + '"></td></tr>');
         var paperCell = $("#paperCell" + i);
-        paperCell.append('<a href="' + paperInfo.pubmed_link + '" target="_blank">' + paperInfo.ref + '</a>');
+        var link = $('<a href="' + paperInfo.pubmed_link + '" target="_blank">' + paperInfo.ref + '</a>').appendTo(paperCell);
+        link.on("click", function() {
+            if (task.htmlObject !== null) {
+                if (task.type === taskType.paper) {
+                    task.htmlObject.removeClass('next-target');
+                }
+                else {
+                    task.htmlObject.classed("highlighted", false);
+                }
+                console.log("cancel next target");
+                console.log(task.htmlObject);
+                task.htmlObject = null;
+            }    
+            console.log("link click");
+            
+        })
+        paperCell.data({pos: i});
+        paperCell.on("click", function() {
+            //Infer and log the next task
+            if (unread_paper.length > 0) {
+                var pos = $.inArray($(this).data().pos, unread_paper);
+                if (pos >= 0) {
+                    unread_paper.splice(pos, 1);
+                }
+                // If all the paper are read, set the next task to be a node
+                if (unread_paper.length === 0) {
+                    task.type = taskType.vis;
+                    if (checking_source) {
+                        var pos = $.inArray(temp_target.key, unchecked_source);
+                        if (pos >= 0) {
+                            unchecked_source.splice(pos, 1);
+                        }
+                        if (unchecked_source.length > 0) {
+                            task.htmlObject = svg.select("#arc-" + unchecked_source[0]);
+                        }
+                        else if (unchecked_target.length > 0){
+                            task.htmlObject = svg.select("#arc-" + unchecked_target[0]);
+                        }
+                        else {
+                            task.htmlObject = null;
+                        }
+                    }
+                    else {
+                        var pos = $.inArray(temp_source.key, unchecked_target);
+                        if (pos >= 0) {
+                            unchecked_target.splice(pos, 1);
+                        }
+                        if (unchecked_target.length > 0) {
+                            task.htmlObject = svg.select("#arc-" + unchecked_target[0]);
+                        }
+                        else if (unchecked_source.length > 0){
+                            task.htmlObject = svg.select("#arc-" + unchecked_source[0]);
+                        }
+                        else {
+                            task.htmlObject = null;
+                        }
+                    }
+                }
+                else {
+                    task.type = taskType.paper;
+                    task.htmlObject = $('#paperCell' + unread_paper[0]);
+                    console.log("set next html object");
+                }
+            }
+            else {
+                task.htmlObject = null;
+            }
+            /*
+            if (unread_paper === 0) {
+                task.type = taskType.vis;
+                if (selected_)
+                task.htmlObject
+            }
+            else {
+                task.type = taskType.paper;
+                task.htmlObject = $('#paperCell' + ($(this).data().pos + 1));
+            }
+            console.log(paper_list_tracker);
+            */
+        });
+        unread_paper.push(i);
     }
+//    console.log(paper_list_tracker);
 }
 
 function displayConnectionTable(d) {
@@ -1189,18 +1334,15 @@ function displayConnectionTable(d) {
         linkCell.data(d.actualLinks[i]);
         linkCell.on("click", function() {
                 linkClick($(this).data(), 1);
-                console.log($(this).data().source.key);
-                console.log($(this).data().target.key);
                 if (old_focused_source != null) svg.select("#arc-" + old_focused_source.key).classed("highlighted", false);
                 if (old_focused_target != null) svg.select("#arc-" + old_focused_target.key).classed("highlighted", false);
                 svg.select("#arc-" + $(this).data().source.key).classed("highlighted", true);
                 svg.select("#arc-" + $(this).data().target.key).classed("highlighted", true);
                 old_focused_source = $(this).data().source;
                 old_focused_target = $(this).data().target;
-                console.log($(this));
-                if (selected_td !== null) {selected_td.removeClass("selected-cell");}
-                $(this).addClass("selected-cell");
-                selected_td = $(this);
+//                if (selected_td !== null) {selected_td.removeClass("selected-cell");}
+//                $(this).addClass("selected-cell");
+//                selected_td = $(this);
         });
     }
 }

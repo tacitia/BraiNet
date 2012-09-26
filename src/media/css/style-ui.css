@@ -140,3 +140,7 @@ body {
 .explanation.hidden {
     display:none;
 }
+
+.next-target {
+    border:2px solid red;
+}

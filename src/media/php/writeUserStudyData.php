@@ -15,7 +15,7 @@
     
     mysql_query("
         INSERT INTO General (duration, interface_type, is_pilot)
-        VALUES ($sessionLength, 1, 1);
+        VALUES ($sessionLength, 2, 1);
     ", $con);
 
     echo mysql_error($con) . "\n";
@@ -29,7 +29,6 @@
     
     while ($row = mysql_fetch_array($result)) {
         echo $row;
-        var_dump($row);
         $sessionId = $row["session_id"];
     }
                       

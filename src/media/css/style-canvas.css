@@ -75,7 +75,7 @@
 
 .arc.highlighted {
     stroke: red;
-    stroke-width: 3px;
+    stroke-width: 5px;
 }
 
 .arc.search-selected {
