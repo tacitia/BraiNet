@@ -178,7 +178,7 @@ var tooltip_path = function (w, h) {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
+d3.json("media/data/bamsBrainDataSimp.json", function (data) {
 
     var nodes_for_link,
         links_visible,
@@ -381,7 +381,7 @@ function saveSessionData() {
     sessionEndTime = new Date();
     var sessionLength = sessionEndTime - sessionStartTime;
     sessionLength /= 1000;
-    $.ajax({        
+    $.ajax({
        type: "POST",
        url: "media/php/writeUserStudyData.php",
        data: {extWorkDataArray : extWorkData, sessionLength : sessionLength},
@@ -394,6 +394,7 @@ function saveSessionData() {
             console.log(data);
        }
     });
+    return "Please confirm that you want to close the current page.";
 }
 
 
@@ -422,6 +423,8 @@ function recordBreakData() {
 function mouseClick() {
     if (extWorkRcvryTimerOn) {
         recordBreakData();
+//        console.log("ready to call saving session data");
+//        saveSessionData();
     }
 }
 
@@ -763,6 +766,7 @@ function searchButtonClick() {
  *
  */
 function clearButtonClick() {
+//    saveSessionData();
     piwikTracker.trackPageView('Click clear button');
     if (current_mode === mode.search) {
         clearSearchResult();

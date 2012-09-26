@@ -28,8 +28,6 @@
     $sessionId;
     
     while ($row = mysql_fetch_array($result)) {
-        echo $row;
-        var_dump($row);
         $sessionId = $row["session_id"];
     }
                       
@@ -49,4 +47,7 @@
     echo mysql_error($con) . "\n";
           
     mysql_close($con);
+
+    echo $sessionId;
+    echo $extWorkData;
 ?>
