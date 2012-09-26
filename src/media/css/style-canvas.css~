@@ -1,109 +1,10 @@
+/*===== Primary Elements =====/*
+
 /*  Node  */
-
-body {
-    /*make everything not selectable*/
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    font: 13px sans-serif;
-}
-
-/* Navigation */
-
-#util {
-    padding: 20px;
-    background-color: rgba(255,255,255,0.9);
-    position: absolute;
-    right: 0px;
-    width: 350px;
-    height: 100%;
-    border-left:thick solid #ccc;
-}
-.tab-content {
-    /*height: 100%;*/
-    height:70%;
-}
-.tab-column-1 {
-    height: 30px;
-    width: 100px;
-}
-.tab-column-2 {
-    height: 30px;
-}
-
-.localCon {
-    margin-top: 20px;
-    max-height: 200px;
-    /*position: absolute;*/
-    /*right: 20px;*/
-    /*top: 20px;*/
-    /*height: 50%;*/
-    /*width: 350px;*/
-}
-
-.conn-level0 {
-    /*position: absolute;*/
-    /*right: 20px;*/
-    /*top: 400px;*/
-    /*width: 350px;*/
-    /*height: 50%;*/
-    max-height: 300px;
-    overflow-y: scroll;
-}
-
-.conn-level1 {
-    /*position: absolute;*/
-    /*left: 20px;*/
-    /*width: 330px;*/
-    border: 1px solid #dddddd;
-}
-
-.table-custom {
-    /*position: absolute;*/
-    /*left: 20px;*/
-    /*width: 330px;*/
-    border: 1px solid #dddddd;
-    max-height: 300px;
-    overflow-y: scroll;
-}
-
-.nav-tabs-add {
-    max-height: 300px;
-    overflow-y: scroll;
-}
-
-.legend {
-    position: absolute;
-    top: 320px;
-    left: 20px;
-    font: 13px sans-serif;
-}
-
-/*#util li {*/
-/*float:left;*/
-/*display:block;*/
-/*background-color: #EEE;*/
-/*border: 1px solid #ddd;*/
-/*width:100px;*/
-/*height:50px;*/
-/*}*/
 
 .hidden {
     display: none;
 }
-
-/*#search {*/
-/*position: absolute;*/
-/*top: 52px;*/
-/*left: 0px;*/
-/*max-width: 400px;*/
-/*background-color: #DDD;*/
-/*}*/
-
-
 
 /*.node {*/
 /*fill: #2d527c;*/
@@ -300,28 +201,4 @@ body {
 .local_node.selected {
     fill: #062db8;
     stroke: #062db8;;
-}
-
-/* TEMP */
-
-
-/*#help {*/
-/*font: 11px sans-serif;*/
-/*width: 200px;*/
-/*position: fixed;*/
-/*right: 20px;*/
-/*bottom: 20px;*/
-/*}*/
-
-#input {
-    font: 11px sans-serif;
-    width: 900px;
-}
-
-#detail {
-    border-top: 2px solid #ccc;
-    font: 13px sans-serif;
-    width: 300px;
-    padding-top: 20px;
-    padding-bottom: 20px;
 }

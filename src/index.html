@@ -7,7 +7,8 @@
     <!--Stylesheets-->
     <link rel="stylesheet" href="media/lib/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" href="media/lib/chosen/chosen.css" />
-    <link rel="stylesheet" href="media/css/style.css" type="text/css" charset="utf-8">
+    <link rel="stylesheet" href="media/css/style-ui.css" type="text/css" charset="utf-8">
+    <link rel="stylesheet" href="media/css/style-canvas.css" type="text/css" charset="utf-8">
     <link rel="stylesheet" href="media/css/colors.css" type="text/css" charset="utf-8">
     <link rel="stylesheet" href="media/lib/jquery-ui/css/redmond/jquery-ui.css" />
 
@@ -44,7 +45,7 @@
         </div><!--END LEGEND-->
 
         <!--OPTIONS-->
-        <div id="options" class="tab-pane">
+        <div id="options" class="tab-pane fade in">
           <table>
             <tr><td class="tab-column-1"><h4>Edge color</h4></td></tr>
             <tr>
@@ -85,7 +86,8 @@
         </div><!--END OPTIONS-->
 
         <!--SEARCH-->
-        <div id="search" class="tab-pane">
+        <div id="search" class="tab-pane fade in">
+          <div id="search-settings">
           <table>
             <tr>
               <td class="tab-column-1">Source</td>
@@ -118,20 +120,33 @@
               <td style="width:50px;"><button id="bt-clear" class="btn btn-warning">Clear</button></td>
             </tr>
           </table>
-
+          </div>
           <!--Search Results-->
+          <!--
           <div id="localCon" class="localCon">
             <h4>Search Results</h4>
           </div>
-
+          -->
           <!---List Link Connections (Search Results)-->
-          <div id="connections" class="conn-level0"></div>
+          <div id="search-results" class="tab-content">
+            <ul class="nav nav-tabs">
+              <li class="active"><a href="#paper-list" data-toggle="tab">Show literature list</a></li>
+              <li><a href="#sub-con-list" data-toggle="tab">Show sub-connection list</a></li>
+            </ul>
+            <div id="paper-list" class="tab-pane fade in active search-results-contents">
+              <p class="search-results-exp explanation"><i>Search for the connections between two brain regions and the relevant literature will be displayed here.</i></p>
+            </div>
+            <div id="sub-con-list" class="tab-pane fade in search-results-contents">
+              <p class="search-results-exp explanation"><i>Search for the connections between two brain regions and the underlying sub-connections will be displayed here.</i></p>
+            </div>
+          </div>
 
         </div><!--END SEARCH-->
 
         <!--HELP-->
-        <div id="help" class="tab-pane">
+        <div id="help" class="tab-pane fade in">
           <p>
+            <a href="http://www.youtube.com/watch?v=PyPHzxaCEfU&feature=youtu.be">Demo video</a>
             Tips: <br/>
             1. To locate a brain region: type in its name in the "Search for a region"
             text box and it will be highlighted in the visualization <br/><br/>
@@ -198,18 +213,17 @@
     <script type="text/javascript" src="media/js/script.js"></script>
     <script type="text/javascript" src="media/js/brainMap.js"></script>
 
-    <!-- Piwik -->
+    <!-- Piwik --> 
     <script type="text/javascript">
-      var pkBaseURL = (("https:" == document.location.protocol) ? "https://hivizexplorer.com/piwik/" : "http://hivizexplorer.com/piwik/");
-      document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
-      </script>
-      <script type="text/javascript">
-        try {
-          var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 2);
-          piwikTracker.trackPageView();
-          piwikTracker.enableLinkTracking();
-        } catch( err ) {}
-    </script><noscript><p><img src="http://hivizexplorer.com/piwik/piwik.php?idsite=2" style="border:0" alt="" /></p></noscript>
+    var pkBaseURL = (("https:" == document.location.protocol) ? "https://hivizexplorer.com/piwik/" : "http://hivizexplorer.com/piwik/");
+    document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+    </script><script type="text/javascript">
+    try {
+        var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 3);
+        piwikTracker.trackPageView();
+        piwikTracker.enableLinkTracking();
+    } catch( err ) {}
+    </script><noscript><p><img src="http://hivizexplorer.com/piwik/piwik.php?idsite=3" style="border:0" alt="" /></p></noscript>
     <!-- End Piwik Tracking Code -->
 </body>
 </html>

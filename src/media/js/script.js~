@@ -178,7 +178,7 @@ var tooltip_path = function (w, h) {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-d3.json("media/data/bamsBrainDataSimp.json", function (data) {
+d3.json("../media/data/bamsBrainDataSimp.json", function (data) {
 
     var nodes_for_link,
         links_visible,
@@ -381,7 +381,7 @@ function saveSessionData() {
     sessionEndTime = new Date();
     var sessionLength = sessionEndTime - sessionStartTime;
     sessionLength /= 1000;
-    $.ajax({
+    $.ajax({        
        type: "POST",
        url: "media/php/writeUserStudyData.php",
        data: {extWorkDataArray : extWorkData, sessionLength : sessionLength},
@@ -394,7 +394,6 @@ function saveSessionData() {
             console.log(data);
        }
     });
-    return "Please confirm that you want to close the current page.";
 }
 
 
@@ -423,8 +422,6 @@ function recordBreakData() {
 function mouseClick() {
     if (extWorkRcvryTimerOn) {
         recordBreakData();
-//        console.log("ready to call saving session data");
-//        saveSessionData();
     }
 }
 
@@ -466,28 +463,25 @@ function mouseOut(d) {
 }
 
 /* Search Results Mouse Over
- * deprecated
+ *
  */
- /*
 function localNodeMouseOver(d) {
     highlight_text_search_graph.text(d.displayName);
 }
-*/
 
 /* Search Results Mouse Out
- * deprecated
+ *
  */
- /*
 function localNodeMouseOut(d) {
     highlight_text_search_graph.text("");
 }
-*/
 
-/*
 function localNodeClick(d) {
+    /*
     if (extWorkRcvryTimerOn) {
         recordBreakData();
     }
+    */
     // first check if d is already selected
     if (d === selected_local_node_1) {
         selected_local_node_1 = null;
@@ -523,18 +517,15 @@ function localNodeClick(d) {
         }
         interLinks.forEach(function(d) {
             if (d.source.key === temp_source.key && d.target.key === temp_target.key) {
-		console.log("matched");
-                //displayConnectionTable(d);
-		displayLiteratures(d);
+                displayConnectionTable(d);
                 return;
             }
         });
     }
     else {
-        $("#search-results").empty();
+        $("#connections").empty();
     }
 }
-*/
 
 /*
  * Mouse over for link
@@ -669,28 +660,13 @@ function nodeClick(d) {
         if (d === selected_local_node_1) {
             selected_local_node_1 = null;
             svg.select("#arc-" + d.key).classed("search-selected", false);
-            resetSearchResultsPanel();
             return;
         }
         if (d === selected_local_node_2) {
             selected_local_node_2 = null;
             svg.select("#arc-" + d.key).classed("search-selected", false);
-            resetSearchResultsPanel();
             return;
         }
-        if (selected_local_node_1 === null) {
-            selected_local_node_1 = selected_local_node_2;
-            selected_local_node_2 = d;
-            svg.select("#arc-" + d.key).classed("search-selected", true);
-        }
-        else {
-            if (selected_local_node_2 !== null) {
-                svg.select("#arc-" + selected_local_node_2.key).classed("search-selected", false);
-            }
-            selected_local_node_2 = d;
-            svg.select("#arc-" + d.key).classed("search-selected", true);     
-        }
-        /*
         if (selected_local_node_1 === null) {
             selected_local_node_1 = d;
             svg.select("#arc-" + d.key).classed("search-selected", true);
@@ -699,12 +675,13 @@ function nodeClick(d) {
             selected_local_node_2 = d;
             svg.select("#arc-" + d.key).classed("search-selected", true);     
         }
-        */
-        console.log(selected_local_node_1 + " " + selected_local_node_2);
+        else {
+            return;
+        }
         if (selected_local_node_1 !== null && selected_local_node_2 !== null) {
             // Show the connections if there are two local nodes being selected
             var temp_source, temp_target;
-            if (selected_local_node_1.con_pos < selected_local_node_2.con_pos) {
+            if (selected_local_node_1.cy < selected_local_node_2.cy) {
                 temp_source = selected_local_node_1;
                 temp_target = selected_local_node_2;
             }
@@ -714,25 +691,15 @@ function nodeClick(d) {
             }
             interLinks.forEach(function(d) {
                 if (d.source.key === temp_source.key && d.target.key === temp_target.key) {
-                    $('.search-results-exp').addClass('hidden');
                     displayConnectionTable(d);
-                    displayLiteratures(d);
                     return;
                 }
             });
         }
         else {
-            resetSearchResultsPanel();
+            $("#connections").empty();
         }
     }
-}
-
-function resetSearchResultsPanel() {
-    console.log("resetSearchResultsPanel");
-    $('#paperNum').remove();
-    $('#paperTable').remove();
-    $('#conTable').remove();
-    $('.search-results-exp').removeClass('hidden');
 }
 
 /*
@@ -754,8 +721,8 @@ function searchButtonClick() {
         if (selected_links.length > 1) {
             path.classed("dimmed", true);
         }
-        displayInterParents(true);
         highlightSelectedLinks(true);
+        //displayInterParents(true);
         //displayConnections(true);
     }
 }
@@ -766,20 +733,11 @@ function searchButtonClick() {
  *
  */
 function clearButtonClick() {
-//    saveSessionData();
     piwikTracker.trackPageView('Click clear button');
     if (current_mode === mode.search) {
         clearSearchResult();
-        if (selected_source !== undefined) { highlightNode(selected_source, "selected-source", false, true); }
-        if (selected_target !== undefined) { highlightNode(selected_target, "selected-target", false, true); }
-        if (selected_local_node_1 !== undefined) { 
-            svg.select("#arc-" + selected_local_node_1.key).classed("search-selected", false);
-            selected_local_node_1 = undefined;
-        }
-        if (selected_local_node_2 !== undefined) { 
-            svg.select("#arc-" + selected_local_node_2.key).classed("search-selected", false);
-            selected_local_node_2 = undefined;
-        }
+        if (selected_source !== undefined) highlightNode(selected_source, "selected-source", false, true);
+        if (selected_target !== undefined) highlightNode(selected_target, "selected-target", false, true);
     }
     else if (current_mode === mode.fixation) {
         clearSingleSelection();
@@ -803,14 +761,6 @@ function sourceSearchInput() {
     if (selected_source != undefined) {
         highlightNode(selected_source, "selected-source", false, true);
         clearSearchResult();
-        if (selected_local_node_1 !== undefined) { 
-            svg.select("#arc-" + selected_local_node_1.key).classed("search-selected", false);
-            selected_local_node_1 = undefined;
-        }
-        if (selected_local_node_2 !== undefined) { 
-            svg.select("#arc-" + selected_local_node_2.key).classed("search-selected", false);
-            selected_local_node_2 = undefined;
-        }
     }
     var inputRegion = this.value.toLowerCase();
     display_node_map.forEach(function (d) {
@@ -831,8 +781,6 @@ function targetSearchInput() {
     if (selected_target != undefined) {
         highlightNode(selected_target, "selected-target", false, true);
         clearSearchResult();
-        if (selected_local_node_1 !== undefined) { svg.select("#arc-" + selected_local_node_1.key).classed("search-selected", false); }
-        if (selected_local_node_2 !== undefined) { svg.select("#arc-" + selected_local_node_2.key).classed("search-selected", false); }
     }
     var inputRegion = this.value.toLowerCase();
     display_node_map.forEach(function (d) {
@@ -948,7 +896,7 @@ function setMaxHop() {
     path.classed("dimmed", false);
     highlightSelectedLinks(false);
     selected_links = [];
-    //displayConnections(false);
+    displayConnections(false);
 }
 
 /*
@@ -1006,8 +954,7 @@ function clearSearchResult() {
     highlightSelectedLinks(false);
     selected_links = [];
     //displayConnections(false);
-    displayInterParents(false);
-    resetSearchResultsPanel();
+    //displayInterParents(false);
     if (old_focused_source !== null) svg.select("#arc-" + old_focused_source.key).classed("highlighted", false);
     if (old_focused_target !== null) svg.select("#arc-" + old_focused_target.key).classed("highlighted", false);
     current_mode = mode.exploration;
@@ -1127,11 +1074,10 @@ function appendNodesAsOptions(nodes) {
     });
 }
 
-/* deprecated */
-/*function interLinkClicked(d) {
-    var connectionPanel = $("#search-results");
-//    connectionPanel.empty();
-//    console.log(d.actualLinks);
+function interLinkClicked(d) {
+    var connectionPanel = $("#connections");
+    connectionPanel.empty();
+    console.log(d.actualLinks);
     for (var i = 0; i < d.actualLinks.length; ++i) {
         $('<table id = "conTable" class="table table-condensed table-custom"><tbody></tbody></table>').appendTo(connectionPanel);
         $('#conTable').append('<tr><td id="linkCell' + i + '"></td></tr>');
@@ -1153,49 +1099,11 @@ function appendNodesAsOptions(nodes) {
         });
     }
 }
-*/
-
-function paperExists(paper, paperList) {
-    for (var i = 0; i < paperList.length; ++i) {
-        if (paperList[i].ref === paper.ref) {return true;}
-    }
-    return false;
-}
-
-function getPaperList(links) {
-    var paperList = [];
-    for (var i = 0; i < links.length; ++i) {
-	var details = links[i].detail;
-        for (var j = 0; j < details.length; ++j) {
-	    var detail = details[j];
-	    var paper = {ref:detail.ref, pubmed_link:detail.pubmed_link};
-	    if (!paperExists(paper, paperList)) {
-	        paperList.push(paper);
-	    }
-	}
-    }
-    return paperList;
-}
-
-function displayLiteratures(d) {
-    var connectionPanel = $('#paper-list');
-    $('#paperNum').remove();
-    $('#paperTable').remove();
-    var paperList = getPaperList(d.actualLinks);
-    $('<p id="paperNum">Total number of relevant papers: ' + paperList.length + '</p>').appendTo(connectionPanel)
-    $('<table id = "paperTable" class="table table-condensed table-custom"><tbody></tbody></table>').appendTo(connectionPanel);
-    console.log(paperList);
-    for (var i = 0; i < paperList.length; ++i) {
-	var paperInfo = paperList[i];
-        $('#paperTable').append('<tr><td id="paperCell' + i + '"></td></tr>');
-        var paperCell = $("#paperCell" + i);
-        paperCell.append('<a href="' + paperInfo.pubmed_link + '" target="_blank">' + paperInfo.ref + '</a>');
-    }
-}
 
 function displayConnectionTable(d) {
-    var connectionPanel = $("#sub-con-list");
-    $("#conTable").remove();
+    var connectionPanel = $("#connections");
+    connectionPanel.empty();
+    console.log(d.actualLinks);
     $('<table id = "conTable" class="table table-condensed table-custom"><tbody></tbody></table>').appendTo(connectionPanel);
     for (var i = 0; i < Math.min(d.actualLinks.length, 10); ++i) {
         $('#conTable').append('<tr><td id="linkCell' + i + '"></td></tr>');
@@ -1223,10 +1131,8 @@ function displayConnectionTable(d) {
     }
 }
 
-/* deprecated */
-/*
 function displayConnections(value) {
-    var connectionPanel = $("#search-results");
+    var connectionPanel = $("#connections");
 
     if (value) {
         var counter = 0;
@@ -1254,11 +1160,11 @@ function displayConnections(value) {
         selected_target.cx = 145;
 //        interParents.push(selected_source);
 //        interParents.push(selected_target);
-
+        
         var displayLinks = [];
         displayLinks.push({y1:selected_source.cy + rect_height + 5, x1:150, y2:top_border, x2:150});
         displayLinks.push({y1:bottom_border + 10, x1:150, y2:selected_target.cy, x2:150});
-
+        
         var local_node = local_vis.selectAll("g.node").data(interParents).enter()
                             .append("rect")
                             .attr("width", rect_width)
@@ -1277,7 +1183,8 @@ function displayConnections(value) {
                         .attr("y1", function(d) { return d.y1; })
                         .attr("x2", function(d) { return d.x2; })
                         .attr("y2", function(d) { return d.y2; })
-                        .on("click", interLinkClicked);
+                        .on("click", interLinkClicked);        
+        
     }
     else {
         $("#localCon").empty();
@@ -1287,7 +1194,7 @@ function displayConnections(value) {
         connectionPanel.empty();
     }
 }
-*/
+
 
 /////////////////////////////////////
 // Backend Computation
@@ -1323,8 +1230,6 @@ function getInterParents(depth) {
         for (var i = 0; i < d.length; ++i) {
             var sourceParent = findParentAtDepth(d[i].source, depth);
             var targetParent = findParentAtDepth(d[i].target, depth);
-	    sourceParent.con_pos = i;
-	    targetParent.con_pos = i + 1;
             //if (sourceParent == null || targetParent == null) continue;
             var interLink = {source:sourceParent, target:targetParent, actualLinks:[d[i]]};
             if ($.inArray(sourceParent, interParents) < 0 && $.inArray(sourceParent, sourceDecendants) < 0 && interParents.length <= 12) interParents.push(sourceParent);
