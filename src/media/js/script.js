@@ -1138,11 +1138,11 @@ function displayConnections(value) {
         selected_target.cx = 145;
 //        interParents.push(selected_source);
 //        interParents.push(selected_target);
-        
+
         var displayLinks = [];
         displayLinks.push({y1:selected_source.cy + rect_height + 5, x1:150, y2:top_border, x2:150});
         displayLinks.push({y1:bottom_border + 10, x1:150, y2:selected_target.cy, x2:150});
-        
+
         var local_node = local_vis.selectAll("g.node").data(interParents).enter()
                             .append("rect")
                             .attr("width", rect_width)
@@ -1170,8 +1170,7 @@ function displayConnections(value) {
                         .attr("y1", function(d) { return d.y1; })
                         .attr("x2", function(d) { return d.x2; })
                         .attr("y2", function(d) { return d.y2; })
-                        .on("click", interLinkClicked);        
-        
+                        .on("click", interLinkClicked);
     }
     else {
         $("#localCon").empty();
