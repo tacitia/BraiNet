@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Sign in or register</title>
+
+    <!--Stylesheets-->
+    <link rel="stylesheet" href="media/lib/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="media/css/style-ui.css" type="text/css" charset="utf-8">
+
+    <!-- HTML5 shim, IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="accordion" id="login-main">
+      <div class="accordion-group">
+        <div class="accordion-heading">
+          <a class="accordion-toggle" data-toggle="collapse" data-parent="#login-main" href="#signin-body"">Sign in</a>
+        </div>
+        <div id="signin-body" class="accordion-body collapse in">
+          <div id="signin" class="accordion-inner">
+            <table>
+              <tr>
+                  <td>Email: </td>
+                  <td><input type="text"></td>
+              </tr>
+              <tr>
+                  <td>Password: </td>
+                  <td><input type="password"></td>
+              </tr>
+              <tr><td></td><td>-----------<b>Or</b>----------</td></tr>
+              <tr></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="accordion-group">
+        <div class="accordion-heading">
+          <a class="accordion-toggle" data-toggle="collapse" data-parent="#login-main" href="#signup-body"">Sign up</a>
+        </div>
+        <div id="signup-body" class="accordion-body collapse">
+          <div id="signup" class="accordion-inner">
+            <p>Something else</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript" src="media/lib/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="media/lib/bootstrap/js/bootstrap.min.js"></script>
+
+  </body>
+</html>

@@ -140,3 +140,9 @@ body {
 .explanation.hidden {
     display:none;
 }
+
+#login-main {
+    width: 400px;
+    height: 400px;
+    margin: auto;
+}
