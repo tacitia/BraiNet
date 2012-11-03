@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>brainCircuits</title>
+    <title>Brain Circuits Diagram</title>
 
     <!--Stylesheets-->
     <link rel="stylesheet" href="media/lib/bootstrap/css/bootstrap.min.css" />
@@ -18,6 +18,13 @@
     <![endif]-->
   </head>
   <body>
+    <div id="test">
+    </div>
+    <div id="user">
+        <a href="signin.html" target="_blank">Sign In</a>
+        <span>&nbsp &nbsp &nbsp</span>
+        <a href="http://hivizexplorer.com/lazarus/" target="_blank">Message Board</a>
+    </div>
     <!--UTIL TAB RIGHT-->
     <div id="util">
       <ul class="nav nav-tabs">
@@ -161,7 +168,7 @@
 
       </div><!--END UTIL CONTENT-->
     <!--References and Link Details-->
-    <div id="detail" class="tabbable tabs-top detail-panel">
+    <div id="detail" class="tabbable tabs-left detail-panel">
       <h4>Connection Details</h4>
       <span id="ref-src">Source: no selection </span><br/>
       <span id="ref-tgt">Target: no selection </span><br/>
@@ -178,7 +185,20 @@
     </div>
     -->
 
-    <div id="canvas"></div>
+    <div id="canvas">
+      <div id="canvas-body"">
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="#canvas-circular" data-toggle="tab">Circular view</a></li>
+        <li><a href="#canvas-force" data-toggle="tab">Force-directed view</a></li>
+      </ul>
+      <div id="canvas-content" class="tab-content">
+        <div id="canvas-circular" class="tab-pane fade in active">
+        </div>
+        <div id="canvas-force" class="tab-pane fade in">
+        </div>
+      </div>
+      </div>
+    </div>
 
 
 
