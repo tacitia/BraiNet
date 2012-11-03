@@ -86,7 +86,9 @@ function assignColors() {
     for (var i = 0; i < num_level1_nodes; ++i) {
         level1_nodes[i].color = currentPalette[i];
         for (var j = 0; j < level1_nodes[i].children.length; ++j) {
-            node_map[level1_nodes[i].children[j]].color = currentPalette[i];
+            var child = node_map[level1_nodes[i].children[j]];
+            child.color = currentPalette[i];
+            child.group = level1_nodes[i].key;
         }
     }
 }

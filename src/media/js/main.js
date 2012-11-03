@@ -22,6 +22,7 @@ d3.json("media/data/test_node.json", function (data) {
         node_out_neighbor_map[node.key] = [];
     }
     // !! Change Java code later so that parent field is assigned in json file
+    /*
     for (var key in node_map) {
         var node = node_map[key];
         for (var i = 0; i < node.children.length; ++i) {
@@ -33,7 +34,7 @@ d3.json("media/data/test_node.json", function (data) {
             }
         }
     }
-    
+    */
     mutex -= 1;
 });
 
