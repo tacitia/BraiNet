@@ -118,6 +118,11 @@ function renderCanvas() {
              .startAngle(function(d) {return d.circ.startAngle;})
              .endAngle(function(d) {return d.circ.endAngle;});
 
+    curves = d3.svg.line()
+               .x(function(d) {return d.x;})
+               .y(function(d) {return d.y;})
+               .interpolate("basis");
+
     force = d3.layout.force()
               .nodes(active_data_nodes_force)
               .links(active_data_links_force)

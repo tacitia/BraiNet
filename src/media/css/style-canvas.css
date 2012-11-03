@@ -155,9 +155,9 @@
     stroke: #b45c1f;
 }
 
-.link {
-    stroke: #AAA;
-    stroke-opacity: .1;
+.links {
+    stroke: #ccc;
+    stroke-opacity: 1;
     fill: none;
     stroke-width: 1.5px;
 }

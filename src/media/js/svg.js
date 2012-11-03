@@ -90,14 +90,12 @@ function expandRegion(d, svg) {
         // Remove the links associated with the expanded node
         var key_pair = old_link_keys[i];
         link = node_link_map[key_pair];
-        console.log(link);
         var pos = $.inArray(link, active_data_links);
-        console.log(pos);
         active_data_links.splice(pos, 1);
     }
 
     // Remove the nodes and links from canvas
-    svg.selectAll('path')
+    svg.selectAll('.circular.nodes')
        .data(active_data_nodes, function(d) {return d.key;})
        .exit().remove();
 
@@ -105,7 +103,7 @@ function expandRegion(d, svg) {
        .data(active_data_nodes, function(d) {return d.key;})
        .exit().remove();
        
-    svg.selectAll('line')
+    svg.selectAll('.circular.links')
        .data(active_data_links, function(d) {return d.key;})
        .exit().remove();
 
@@ -155,12 +153,13 @@ function linkClick(d) {
 }
 
 function enterCircularNodes(svg) {
-    svg.selectAll("circular.nodes")
+    svg.selectAll(".circular.nodes")
         .data(active_data_nodes, function(d) {return d.key;})
         .enter().append("svg:path")
         .style("fill", function(d) {return d.color;})
         .style("stroke", 'gray')
         .attr("d", arcs)
+        .attr("class", "circular nodes")
         .on("click", function(d) {expandRegion(d, svg);});
 
     svg.selectAll("text")
@@ -173,15 +172,24 @@ function enterCircularNodes(svg) {
 }
 
 function enterCircularLinks(svg) {
-    svg.selectAll("circular.links")
+    svg.selectAll(".circular.links")
         .data(active_data_links, function(d) {return d.key;})
-        .enter().append("svg:line")
+        .enter().append("svg:path")
+        .attr("d", function(d) {
+                var coors = [{x: d.source.circ.x, y:d.source.circ.y}, 
+                             {x: 0, y: 0},
+                             {x: d.target.circ.x, y:d.target.circ.y}];
+                return curves(coors);
+            })
         .attr("stroke", 'black')
         .attr("fill", 'none')
-        .attr("x1", function(d) { return d.source.circ.x; })
-        .attr("x2", function(d) { return d.target.circ.x; })
-        .attr("y1", function(d) { return d.source.circ.y; })
-        .attr("y2", function(d) { return d.target.circ.y; })
+        .attr("class", "circular links")
+//        .attr("x1", function(d) { return d.source.circ.x; })
+//        .attr("x2", function(d) { return vis_center_x;})
+//        .attr("x2", function(d) { return d.target.circ.x; })
+//        .attr("y1", function(d) { return d.source.circ.y; })
+//        .attr("y2", function(d) {return vis_center_y;})
+//        .attr("y2", function(d) { return d.target.circ.y; })
         .on("click", linkClick);
 }
 
