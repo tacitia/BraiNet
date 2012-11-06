@@ -175,3 +175,16 @@ body {
     height: 400px;
     margin: auto;
 }
+
+#conn-info {
+    height: 50%;
+}
+
+#region-info {
+    height: 50%;
+}
+
+.accordion-content {
+    height: 300px;
+}
+

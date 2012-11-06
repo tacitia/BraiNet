@@ -127,6 +127,7 @@ function renderCanvas() {
               .nodes(active_data_nodes_force)
               .links(active_data_links_force)
               .size([vis_width, vis_height])
+              .linkDistance([100])
               .start();
 
     // Initialize the background svg canvas
@@ -154,7 +155,7 @@ function renderCanvas() {
     var link = svg_force.selectAll("nodelink.links")
        .data(active_data_links_force)
        .enter().append("svg:line")
-       .attr("class", "link")
+       .attr("class", "links")
        .style("stroke-width", 3);
  
     var node = svg_force.selectAll("nodelink.nodes")

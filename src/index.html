@@ -31,9 +31,89 @@
         <li class="active"><a href="#legend" data-toggle="tab">Legend</a></li>
         <li><a href="#options" data-toggle="tab">Options</a></li>
         <li><a href="#search" data-toggle="tab">Search</a></li>
-        <li><a href="#help" data-toggle="tab">Help</a></li>
+
+        <li><a href="#info" data-toggle="tab">Info</a></li>
       </ul>
       <div id="util-content" class="tab-content">
+
+        <!--INFO-->
+        <div id="info" class="tab-pane fade in">
+            <div id="conn-info" class="accordion">
+                <h4>Connection information</h4>
+                <div id="self" class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#conn-info" href="#self-content">
+                            Exact connections
+                        </a>
+                    </div>
+                    <div id="self-content" class="accordion-body collapse in">
+                        <div class="accordion-inner accordion-content">
+                        </div>
+                    </div>
+                </div>
+                <div id="children" class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#conn-info" href="#children-content">
+                            Derived connections
+                        </a>
+                    </div>
+                    <div id="children-content" class="accordion-body collapse">
+                        <div class="accordion-inner accordion-content">
+                            <div id="children-list">
+                            </div>
+                            <div id="paper-list">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="region-info">
+                <h4>Brain Region information</h4>
+                <div id="source-region-info" class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#region-info" href="#source-info-content">
+                            Source region
+                        </a>
+                    </div>
+                    <div id="source-info-content" class="accordion-body collapse in">
+                        <div class="accordion-inner accordion-content">
+                            <div class="tab-content">
+                                <ul class="nav nav-tabs">
+                                    <li class="active"><a href="#source-slice" data-toggle="tab">Anatomical image</a></li>
+                                    <li><a href="#source-wiki" data-toggle="tab">Other resources</a></li>
+                                </ul>
+                                <div id="source-slice" class="slice tap-pane fade in active">
+                                </div>
+                                <div id="source-wiki" class="wiki tap-pane fade in">
+                                    <iframe src="http://en.wikipedia.org/wiki/Cerebrum"></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="target-region-info" class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#region-info" href="#target-info-content">
+                            Target region
+                        </a>
+                    </div>
+                    <div id="target-info-content" class="accordion-body collapse">
+                        <div class="accordion-inner accordion-content">
+                            <div class="tab-content">
+                                <ul class="nav nav-tabs">
+                                    <li class="active"><a href="#target-slice" data-toggle="tab">Anatomical image</a></li>
+                                    <li><a href="#target-wiki" data-toggle="tab">Other resources</a></li>
+                                </ul>
+                                <div id="target-slice" class="slice tap-pane fade in active">
+                                </div>
+                                <div id="target-wiki" class="wiki tap-pane fade in">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!--END INFO-->
 
         <!--LEGEND-->
         <div id="legend" class="tab-pane fade in active">
@@ -151,7 +231,7 @@
         </div><!--END SEARCH-->
 
         <!--HELP-->
-        <div id="help" class="tab-pane fade in">
+<!--        <div id="help" class="tab-pane fade in">
           <p>
             <a href="http://www.youtube.com/watch?v=PyPHzxaCEfU&feature=youtu.be">Demo video</a>
             Tips: <br/>
@@ -164,11 +244,11 @@
             or click clear to clear the highlighted connections <br/><br/>
             3. To adjust the level of details: use the "Max depth" slider
           </p>
-        </div><!--END HELP-->
+        </div>--><!--END HELP-->
 
       </div><!--END UTIL CONTENT-->
     <!--References and Link Details-->
-    <div id="detail" class="tabbable tabs-left detail-panel">
+<!--    <div id="detail" class="tabbable tabs-left detail-panel">
       <h4>Connection Details</h4>
       <span id="ref-src">Source: no selection </span><br/>
       <span id="ref-tgt">Target: no selection </span><br/>
@@ -176,7 +256,7 @@
       </ul>
       <div id="detail-content-pane" class="tab-content">
       </div>
-    </div>
+    </div> -->
     </div><!--END UTIL RIGHT-->
 
     <!--
