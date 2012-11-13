@@ -79,8 +79,8 @@ function expandRegion(d, svg) {
         }
     }
     // Add the new links and new nodes resulted from the split
-    enterCircularNodes(svg);
-    enterCircularLinks(svg);
+    enterCircularNodes();
+    enterCircularLinks();
     
     // Remove the expanded node from the data nodes and the corresponding 
     // links from the data links
@@ -95,7 +95,7 @@ function expandRegion(d, svg) {
     }
 
     // Remove the nodes and links from canvas
-    svg.selectAll('.circular.nodes')
+    svg.selectAll('.circular.node')
        .data(active_data_nodes, function(d) {return d.key;})
        .exit().remove();
 
@@ -103,7 +103,7 @@ function expandRegion(d, svg) {
        .data(active_data_nodes, function(d) {return d.key;})
        .exit().remove();
        
-    svg.selectAll('.circular.links')
+    svg.selectAll('.circular.link')
        .data(active_data_links, function(d) {return d.key;})
        .exit().remove();
 
@@ -112,10 +112,32 @@ function expandRegion(d, svg) {
 }
 
 function linkClick(d) {
-    /*
-    $('ref-src').text("Source: " + d.source.name);
-    $('ref-tgt').text("Source: " + d.target.name);
+    d3.select('#self-content #src-name')
+        .html('Source: ' + d.source.name);
+    d3.select('#self-content #tgt-name')
+        .html('Target: ' + d.target.name);
 
+    var paperKeys = d.paper;
+    var self_paper_tab = d3.select('#self-record-paper');
+
+    self_paper_tab.selectAll('p').remove();
+
+    var content = self_paper_tab.append('p');
+
+    if (paperKeys.length < 1) {
+        content.html('This is a meta link. See the derived connections for more information');
+    }
+    else {
+        content.selectAll('p')
+                .data(paperKeys)
+                .enter()
+                .append('p')
+                .html(function(d) { return d; });
+    }
+
+
+    
+    /*
     var detail_tab = $("#detail-tab");
     var detail_content_pane = $("#detail-content-pane");
     detail_tab.empty();
@@ -152,17 +174,36 @@ function linkClick(d) {
     */
 }
 
-function enterCircularNodes(svg) {
-    svg.selectAll(".circular.nodes")
+function linkMouseOver(d, svg) {
+    svg.select("#circ-link-" + d.key)
+        .classed("focus", true);
+    svg.select("#circ-node-" + d.source.key)
+        .classed("focus", true);
+    svg.select("#circ-node-" + d.target.key)
+        .classed("focus", true);
+}
+
+function linkMouseOut(d, svg) {
+    svg.select("#circ-link-" + d.key)
+        .classed("focus", false);
+    svg.select("#circ-node-" + d.source.key)
+        .classed("focus", false);
+    svg.select("#circ-node-" + d.target.key)
+        .classed("focus", false);
+}
+
+function enterCircularNodes() {
+    svg_circular.selectAll(".circular.node")
         .data(active_data_nodes, function(d) {return d.key;})
         .enter().append("svg:path")
         .style("fill", function(d) {return d.color;})
         .style("stroke", 'gray')
         .attr("d", arcs)
-        .attr("class", "circular nodes")
-        .on("click", function(d) {expandRegion(d, svg);});
+        .attr("class", "circular node")
+        .attr("id", function(d) { return "circ-node-" + d.key; })        
+        .on("click", function(d) {expandRegion(d, svg_circular);});
 
-    svg.selectAll("text")
+    svg_circular.selectAll("text")
        .data(active_data_nodes, function(d) {return d.key;})
        .enter().append("text")
        .attr('x', function(d) {return d.circ.x;})
@@ -171,8 +212,8 @@ function enterCircularNodes(svg) {
        .text(function(d) {return d.name});
 }
 
-function enterCircularLinks(svg) {
-    svg.selectAll(".circular.links")
+function enterCircularLinks() {
+    svg_circular.selectAll(".circular.links")
         .data(active_data_links, function(d) {return d.key;})
         .enter().append("svg:path")
         .attr("d", function(d) {
@@ -183,13 +224,10 @@ function enterCircularLinks(svg) {
             })
         .attr("stroke", 'black')
         .attr("fill", 'none')
-        .attr("class", "circular links")
-//        .attr("x1", function(d) { return d.source.circ.x; })
-//        .attr("x2", function(d) { return vis_center_x;})
-//        .attr("x2", function(d) { return d.target.circ.x; })
-//        .attr("y1", function(d) { return d.source.circ.y; })
-//        .attr("y2", function(d) {return vis_center_y;})
-//        .attr("y2", function(d) { return d.target.circ.y; })
+        .attr("class", "circular link")
+        .attr("id", function(d) { return "circ-link-" + d.key; })
+        .on("mouseover", function(d) { linkMouseOver(d, svg_circular); })
+        .on("mouseout", function(d) { linkMouseOut(d, svg_circular); })
         .on("click", linkClick);
 }
 

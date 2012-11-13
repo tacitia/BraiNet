@@ -57,7 +57,7 @@ d3.json("media/data/test_link.json", function (data) {
     for (var i = 0; i < num_links; ++i) {
         var raw_link = data[i];
         var link = {key: raw_link.key, source: node_map[raw_link.sourceKey], 
-                    target: node_map[raw_link.targetKey]};
+                    target: node_map[raw_link.targetKey], paper: raw_link.paper};
         link_map[link.key] = link;
         var key_pair = link.source.key + "-" + link.target.key;
         node_link_map[key_pair] = link;
@@ -148,14 +148,14 @@ function renderCanvas() {
 
             
     // Render the arcs
-    enterCircularNodes(svg_circular);
+    enterCircularNodes();
     // Render the links
-    enterCircularLinks(svg_circular);
+    enterCircularLinks();
 
     var link = svg_force.selectAll("nodelink.links")
        .data(active_data_links_force)
        .enter().append("svg:line")
-       .attr("class", "links")
+       .attr("class", "link")
        .style("stroke-width", 3);
  
     var node = svg_force.selectAll("nodelink.nodes")
