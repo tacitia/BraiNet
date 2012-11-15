@@ -21,7 +21,7 @@ var record_rating_map; // Key: record id. Value: user rating for the record.
 
 // State variables
 var selected_source;
-var selected_target; 
+var selected_target;
 
 // SVG data variables
 // var data_nodes;
@@ -42,7 +42,7 @@ var force;
 // SVG display parameters
 var vis_width = 800;
 var vis_height = 800;
-var inner_radius = Math.min(vis_width, vis_height) * .32;
+var inner_radius = Math.min(vis_width, vis_height) * 0.32;
 var outer_radius = inner_radius * 1.2;
 
 // Enumerations
@@ -50,7 +50,7 @@ var directionType = {
     "in": 1,
     "out": 2,
     "bi": 3
-}
+};
 
 // Constants
 var colorPalette = [
@@ -65,7 +65,7 @@ var colorPalette = [
     d3.rgb(217, 217, 217).toString(),
     d3.rgb(188, 128, 189).toString(),
     d3.rgb(204, 235, 197).toString(),
-    d3.rgb(255, 237, 111).toString() 
+    d3.rgb(255, 237, 111).toString()
 ];
 
 // Misc program control variables

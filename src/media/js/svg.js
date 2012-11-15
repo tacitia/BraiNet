@@ -22,12 +22,12 @@
   * ! TODO: Need to think how to more efficiently add new links !
  */
 function expandRegion(d, svg) {
-    console.log(svg);
+    //console.log(svg);
     // First check the children. If no children, do nothing and return.
     var child_keys = d.children;
     var total_num = child_keys.length;
     if (total_num < 1) {return;}
-    
+
     // Add the sub-regions of the original region that has been chosen to be expanded
     var start_angle = d.circ.startAngle;
     var end_angle = d.circ.endAngle;
@@ -81,8 +81,8 @@ function expandRegion(d, svg) {
     // Add the new links and new nodes resulted from the split
     enterCircularNodes(svg);
     enterCircularLinks(svg);
-    
-    // Remove the expanded node from the data nodes and the corresponding 
+
+    // Remove the expanded node from the data nodes and the corresponding
     // links from the data links
     var pos = $.inArray(d, active_data_nodes);
     active_data_nodes.splice(pos, 1);
@@ -102,12 +102,12 @@ function expandRegion(d, svg) {
     svg.selectAll('text')
        .data(active_data_nodes, function(d) {return d.key;})
        .exit().remove();
-       
+
     svg.selectAll('.circular.links')
        .data(active_data_links, function(d) {return d.key;})
        .exit().remove();
 
-    console.log(active_data_links);
+    //console.log(active_data_links);
 
 }
 
@@ -195,10 +195,10 @@ function enterCircularLinks(svg) {
 
 function highlightNode(node, class_name, value, show_name, svg) {
     if (node === undefined) {
-        console.log("undefined node in highlightNode");
+        //console.log("undefined node in highlightNode");
         return;
     }
-    
+
     svg.select("#arc-" + node.key).classed(class_name, value);
 
     if (show_name) {
@@ -208,9 +208,9 @@ function highlightNode(node, class_name, value, show_name, svg) {
 }
 
 function expandNode() {
-    
+
 }
 
 function expandLink() {
-    
+
 }

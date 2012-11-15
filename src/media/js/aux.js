@@ -7,8 +7,8 @@
  */
 
 /*
-    This function should be used to determine if an array contains a given 
-    element if that object might differ slightly from the version stored in 
+    This function should be used to determine if an array contains a given
+    element if that object might differ slightly from the version stored in
     the array (but will still have the same key)
 */
 function contains(array, element) {
