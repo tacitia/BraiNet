@@ -7,8 +7,8 @@
  */
 
 /*
-    This function should be used to determine if an array contains a given 
-    element if that object might differ slightly from the version stored in 
+    This function should be used to determine if an array contains a given
+    element if that object might differ slightly from the version stored in
     the array (but will still have the same key)
 */
 function contains(array, element) {
@@ -103,10 +103,15 @@ function computeCircularNodesParameters(data) {
 }
 
 function calculateArcPositions(datum, start_angle, delta, i) {
-    datum.circ.startAngle = start_angle + delta * i;
-    datum.circ.endAngle = start_angle + delta * (i+1);
+    datum.circ.start_angle = start_angle + delta * i;
+    datum.circ.end_angle = start_angle + delta * (i+1);
     var angle = delta * (i + 0.5) + start_angle;
     var radius = inner_radius + (outer_radius - inner_radius) / 2;
     datum.circ.x = radius * Math.cos(Math.PI / 2 - angle);
     datum.circ.y = -radius * Math.sin(Math.PI / 2 - angle);
+}
+
+function stash(d) {
+    d.circ.old_start_angle = d.circ.start_angle;
+    d.circ.old_end_angle = d.circ.end_angle;
 }
