@@ -36,20 +36,33 @@ function expandRegion(d, svg) {
     // Record neighbors of the node being removed
     var in_neighbors = [];
     var out_neighbors = [];
-    var old_link_keys = [];
+//    var old_link_keys = [];
     var link_length = active_data_links.length;
     // Iterate through all the ative links and locate those associated with d
-    for (var i = 0; i < link_length; ++i) {
-        var curr_link = active_data_links[i];
-        if (curr_link.source === d){
+//    for (var i = 0; i < link_length; ++i) {
+
+    // Remove the expanded node from the data nodes and the corresponding 
+    // links from the data links
+    while (link_length--) {
+        var curr_link = active_data_links[link_length];
+        if (curr_link.source === d) {
             out_neighbors.push(curr_link.target);
-            old_link_keys.push(curr_link.source.key + "-" + curr_link.target.key);
+//            old_link_keys.push(curr_link.source.key + "-" + curr_link.target.key);
+//            var pos = $.inArray(curr_link, active_data_links);
+            active_data_links.splice(link_length, 1);
         }
-        if (curr_link.target === d) {
+        else if (curr_link.target === d) {
             in_neighbors.push(curr_link.source);
-            old_link_keys.push(curr_link.source.key + "-" + curr_link.target.key);
+//            old_link_keys.push(curr_link.source.key + "-" + curr_link.target.key);
+//            var pos = $.inArray(curr_link, active_data_links);
+            active_data_links.splice(link_length, 1);
         }
     }
+
+    var pos = $.inArray(d, active_data_nodes);
+    active_data_nodes.splice(pos, 1);
+
+    
     var in_neighbor_num = in_neighbors.length;
     var out_neighbor_num = out_neighbors.length;
     var old_link_num = old_link_keys.length;
@@ -82,33 +95,18 @@ function expandRegion(d, svg) {
     enterCircularNodes();
     enterCircularLinks();
     
-    // Remove the expanded node from the data nodes and the corresponding 
-    // links from the data links
-    var pos = $.inArray(d, active_data_nodes);
-    active_data_nodes.splice(pos, 1);
+    /*
     for (var i = 0; i < old_link_num; ++i) {
         // Remove the links associated with the expanded node
         var key_pair = old_link_keys[i];
         link = node_link_map[key_pair];
         var pos = $.inArray(link, active_data_links);
         active_data_links.splice(pos, 1);
-    }
+    }*/
 
     // Remove the nodes and links from canvas
-    svg.selectAll('.circular.node')
-       .data(active_data_nodes, function(d) {return d.key;})
-       .exit().remove();
-
-    svg.selectAll('text')
-       .data(active_data_nodes, function(d) {return d.key;})
-       .exit().remove();
-       
-    svg.selectAll('.circular.link')
-       .data(active_data_links, function(d) {return d.key;})
-       .exit().remove();
-
-    console.log(active_data_links);
-
+    exitCircularNodes();
+    exitCircularLinks();
 }
 
 function linkClick(d) {
@@ -129,49 +127,11 @@ function linkClick(d) {
     }
     else {
         content.selectAll('p')
-                .data(paperKeys)
-                .enter()
-                .append('p')
-                .html(function(d) { return d; });
+            .data(paperKeys)
+            .enter()
+            .append('p')
+            .html(function(d) { return '<a href="' +  'http://www.google.com' + '">' + d + '</a>'; })
     }
-
-
-    
-    /*
-    var detail_tab = $("#detail-tab");
-    var detail_content_pane = $("#detail-content-pane");
-    detail_tab.empty();
-    detail_content_pane.empty();
-
-    var num_paper = d.paper.length;
-
-
-    // Iterate through all the details
-    for (var i = 0; i < num_paper; ++i) {
-        // Append the container
-        if (i === 0) {
-            detail_tab.append('<li class="active"><a href="#tab1" data-toggle="tab">Ref 1</a></li>');
-            detail_content_pane.append('<div class="tab-pane active" id="tab1"></div>');
-        }
-        else {
-            detail_tab.append('<li><a href="#tab' + (i + 1) + '" data-toggle="tab">Ref ' +
-                              (i + 1) + '</a></li>');
-
-            detail_content_pane.append('<div class="tab-pane" id="tab' + (i + 1) +
-                                       '"></div>');
-        }
-
-        // Append the link information
-        var paper = paper_map[d.paper[i]];
-        $("#tab" + (i + 1)).append('<p>Strength: ' + d.detail[i].strength +
-                                   '<br/>Technique: ' + d.detail[i].technique +
-                                   '<br/>Ref: ' + d.detail[i].ref +
-                                   '<br/>BAMS record: <a href="' +
-                                   d.detail[i].bams_link +
-                                   '" target="_blank">Click</a><br/>Pubmed link: <a href="' +
-                                   d.detail[i].pubmed_link + '" target="_blank">Click</a><br/></p>');
-    }
-    */
 }
 
 function linkMouseOver(d, svg) {
@@ -229,6 +189,22 @@ function enterCircularLinks() {
         .on("mouseover", function(d) { linkMouseOver(d, svg_circular); })
         .on("mouseout", function(d) { linkMouseOut(d, svg_circular); })
         .on("click", linkClick);
+}
+
+function exitCircularNodes() {
+    svg_circular.selectAll('.circular.node')
+       .data(active_data_nodes, function(d) {return d.key;})
+       .exit().remove();
+
+    svg_circular.selectAll('text')
+       .data(active_data_nodes, function(d) {return d.key;})
+       .exit().remove();
+}
+
+function exitCircularLinks() {
+    svg_circular.selectAll('.circular.link')
+       .data(active_data_links, function(d) {return d.key;})
+       .exit().remove();
 }
 
 function highlightNode(node, class_name, value, show_name, svg) {
