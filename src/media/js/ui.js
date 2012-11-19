@@ -1,9 +1,9 @@
 function appendNodesAsOptions(node_map) {
-    console.log(node_map);
+    //console.log(node_map);
     for (var key in node_map) {
         var d = node_map[key];
         $('#sourceSelect').append(new Option(d.name, d.name, false, false));
-        $('#targetSelect').append(new Option(d.name, d.name, false, false));        
+        $('#targetSelect').append(new Option(d.name, d.name, false, false));
     }
 }
 

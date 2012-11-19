@@ -38,8 +38,9 @@ d3.json("media/data/test_node.json", function (data) {
     mutex -= 1;
 });
 
-/*
+
 d3.json("media/data/test_paper.json", function(data) {
+    
     paper_map = {};
     var num_paper = data.length;
     for (var i = 0; i < num_paper; ++i) {
@@ -48,16 +49,16 @@ d3.json("media/data/test_paper.json", function(data) {
     }
     mutex -= 1;
 });
-*/
+
 
 d3.json("media/data/test_link.json", function (data) {
     link_map = {};
-    node_link_map = {}
+    node_link_map = {};
     var num_links = data.length;
     for (var i = 0; i < num_links; ++i) {
         var raw_link = data[i];
         var link = {key: raw_link.key, source: node_map[raw_link.sourceKey], 
-                    target: node_map[raw_link.targetKey]};
+                    target: node_map[raw_link.targetKey], paper: raw_link.paper};
         link_map[link.key] = link;
         var key_pair = link.source.key + "-" + link.target.key;
         node_link_map[key_pair] = link;
@@ -103,7 +104,7 @@ bams_map[1] = {key: 1, url: ""};
 */
 
 function renderCanvas() {
-    // Assign colors to 
+    // Assign colors to
     assignColors();
     // Initialize the active nodes to be the highest level ones
     initActiveNodes();
@@ -115,19 +116,44 @@ function renderCanvas() {
     arcs = d3.svg.arc()
              .innerRadius(inner_radius)
              .outerRadius(outer_radius)
-             .startAngle(function(d) {return d.circ.startAngle;})
-             .endAngle(function(d) {return d.circ.endAngle;});
+             .startAngle(function(d) {return d.circ.start_angle;})
+             .endAngle(function(d) {return d.circ.end_angle;});
 
     curves = d3.svg.line()
                .x(function(d) {return d.x;})
                .y(function(d) {return d.y;})
                .interpolate("basis");
 
+
+    //this should be incorporated in the node data
+    var num_groups = 0,
+        group_count = {};
+    active_data_nodes_force.forEach(function(d) {
+        if (!group_count[d.group]) {
+            ++num_groups;
+            group_count[d.group] = [num_groups, 1];
+        } else {
+            //increase group size
+            group_count[d.group][1] += 1;
+        }
+    });
+
     force = d3.layout.force()
               .nodes(active_data_nodes_force)
               .links(active_data_links_force)
+              //.links([])
               .size([vis_width, vis_height])
-              .linkDistance([100])
+              //still needs work - link distance determined by group size and if
+              //connection are internal
+              .linkDistance(function(l) {
+                  var s = group_count[l.source.group], t = group_count[l.target.group];
+                  return 30 * Math.max(l.source.group != l.target.group ? s[1] : 2/s[1],
+                                       l.source.group != l.target.group ? t[1] : 2/t[1]) + 20;
+              })
+              .linkStrength(1)
+              //.gravity(0.01)
+              .charge(-600)
+              .friction(0.5)
               .start();
 
     // Initialize the background svg canvas
@@ -143,25 +169,25 @@ function renderCanvas() {
             .append("svg")
             .attr("width", vis_width)
             .attr("height", vis_height)
-            .append('g')
             .append('g');
 
-            
     // Render the arcs
-    enterCircularNodes(svg_circular);
+    enterCircularNodes();
     // Render the links
-    enterCircularLinks(svg_circular);
+    enterCircularLinks();
 
     var link = svg_force.selectAll("nodelink.links")
        .data(active_data_links_force)
        .enter().append("svg:line")
-       .attr("class", "links")
+       .attr("class", "link")
        .style("stroke-width", 3);
- 
+
     var node = svg_force.selectAll("nodelink.nodes")
        .data(active_data_nodes_force)
        .enter().append("svg:circle")
        .attr("class", "node")
+       .attr("cx", function(d) { return d.x; })
+       .attr("cy", function(d) { return d.y; })
        .attr("r", 5)
        .style("fill", function(d) {return d.color;})
        .call(force.drag);
@@ -176,15 +202,26 @@ function renderCanvas() {
        .text(function(d) {return d.name});
    */
 
-   force.on("tick", function() {
+  force.on("tick", function(e) {
+      // To bundle nodes without links (useful)
+      /*
+      var k = 8 * e.alpha;
+
+      active_data_nodes_force.forEach(function(o) {
+          o.x += group_count[o.group][0] * k;
+          o.y += group_count[o.group][0] * -k;
+      });
+      */
+
      link.attr("x1", function(d) { return d.source.x; })
          .attr("y1", function(d) { return d.source.y; })
          .attr("x2", function(d) { return d.target.x; })
          .attr("y2", function(d) { return d.target.y; });
- 
-     node.attr("cx", function(d) { return d.x; })
-         .attr("cy", function(d) { return d.y; });
-   });
+
+      node.attr("cx", function(d) { return d.x; })
+          .attr("cy", function(d) { return d.y; });
+  })
+
 }
 
 function setupUIElements() {
@@ -201,7 +238,3 @@ function waitForDataLoading() {
         setupUIElements();
     }
 }
-
-
-
-
