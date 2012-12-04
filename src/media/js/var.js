@@ -35,7 +35,6 @@ var svg_circular;
 var svg_force;
 var arcs;
 var curves;
-var linkGenerator;
 var links;
 var force;
 

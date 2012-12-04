@@ -2,12 +2,16 @@ function appendNodesAsOptions(node_map) {
     //console.log(node_map);
     for (var key in node_map) {
         var d = node_map[key];
-        $('#sourceSelect').append(new Option(d.name, d.name, false, false));
-        $('#targetSelect').append(new Option(d.name, d.name, false, false));
+        $('#sourceSelect').append(new Option(d.name, key, false, false));
+        $('#targetSelect').append(new Option(d.name, key, false, false));
     }
 }
 
 function searchButtonClick() {
+    var num_hop = 1;
+    var paths = calculatePaths(num_hop);
+    populateForceElements(paths);
+    updateForceLayout();
 }
 
 function clearButtonClick() {
@@ -19,34 +23,39 @@ function sourceSearchInput() {
         piwikTracker.trackPageView('Set source for search');
     }
 
-    /*
     if (selected_source != undefined) {
-        highlightNode(selected_source, "selected-source", false, true);
+        highlightNode(selected_source, "focus", false, true, svg_circular);
         clearSearchResult();
-        if (selected_local_node_1 !== null) { 
-            svg.select("#arc-" + selected_local_node_1.key).classed("search-selected", false);
-            selected_local_node_1 = null;
-        }
-        if (selected_local_node_2 !== null) { 
-            svg.select("#arc-" + selected_local_node_2.key).classed("search-selected", false);
-            selected_local_node_2 = null;
-        }
     }
-    var input_region = this.value.toLowerCase();
-    // TODO: Highlight the search item. If the item is currently invisible, need to 
-    // be able to expand it
-    var num_elem = active_data_nodes.length;
-    for (var i = 0; i < num_elem; ++i) {
-        var d = active_data_nodes[i];
-        if (d.name === input_region) {
-            selected_source = d.node;
-            highlightNode(d.node, "selected-source", true, true);
-        }
+    var input_key = this.value;
+    var input_node = node_map[input_key];
+    selected_source = input_node;
+    if (!input_node.isActive) {
+        var parent = findActiveParent(input_node);
+        var siblings = findDescAtDepth(parent, input_node.depth);
+        expandRegion(parent, siblings, svg_circular);
     }
-    */
+    highlightNode(input_node, "focus", true, true, svg_circular);
 }
 
 function targetSearchInput() {
+    if (enable_piwik) {
+        piwikTracker.trackPageView('Set source for search');
+    }
+
+    if (selected_target != undefined) {
+        highlightNode(selected_target, "focus", false, true, svg_circular);
+        clearSearchResult();
+    }
+    var input_key = this.value;
+    var input_node = node_map[input_key];
+    selected_target = input_node;
+    if (!input_node.isActive) {
+        var parent = findActiveParent(input_node);
+        var siblings = findDescAtDepth(parent, input_node.depth);
+        expandRegion(parent, siblings, svg_circular);
+    }
+    highlightNode(input_node, "focus", true, true, svg_circular);
 }
 
 function clearSearchResult() {

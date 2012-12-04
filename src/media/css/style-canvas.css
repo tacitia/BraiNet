@@ -14,6 +14,23 @@
     opacity: 1;    
 }
 
+/*  links (connections) */
+.link {
+    stroke: #ccc;
+    stroke-opacity: 0.3;
+    fill: none;
+    stroke-width: 3px;
+}
+
+.link.focus {
+    stroke-opacity: 1;
+}
+
+.link.dimmed {
+    opacity: 0.1;
+}
+
+
 /*   Arc    */
 
 .arc {
@@ -114,20 +131,4 @@
 
 .text.selected-source {
     visibility: visible;
-}
-
-/*  links (connections) */
-.link {
-    stroke: #ccc;
-    stroke-opacity: 0.3;
-    fill: none;
-    stroke-width: 3px;
-}
-
-.link.dimmed {
-    opacity: 0.1;
-}
-
-.link.focus {
-    stroke-opacity: 1;
 }

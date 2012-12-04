@@ -41,17 +41,31 @@
       <div id="util-content" class="tab-content">
 
         <!--INFO-->
-        <div id="info" class="tab-pane fade in">
+        <div id="info" class="tab-pane fade in active">
             <div id="conn-info" class="accordion">
                 <h4>Connection information</h4>
                 <div id="self" class="accordion-group">
                     <div class="accordion-heading">
                         <a class="accordion-toggle" data-toggle="collapse" data-parent="#conn-info" href="#self-content">
-                            Exact connections
+                            Exact Match
                         </a>
                     </div>
                     <div id="self-content" class="accordion-body collapse in">
                         <div class="accordion-inner accordion-content">
+                            <p id="src-name">&nbsp &nbsp &nbsp</p>
+                            <p id="tgt-name">&nbsp &nbsp &nbsp</p>
+                            <div id="record" class="tabbable tabs-below">
+                                <div id="record-content" class="tab-content">
+                                    <div id="self-record-paper" class="tab-pane fade in active">
+                                    </div>
+                                    <div id="self-record-bams" class="tab-pane fade in">
+                                    </div>
+                                </div>
+                                <ul class="nav nav-tabs">
+                                    <li class="active"><a href="#self-record-paper" data-toggle="tab">Paper</a></li>
+                                    <li ><a href="#self-record-bams" data-toggle="tab">BAMS Record</a></li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -89,7 +103,7 @@
                                 <div id="source-slice" class="slice tap-pane fade in active">
                                 </div>
                                 <div id="source-wiki" class="wiki tap-pane fade in">
-                                    <iframe src="http://en.wikipedia.org/wiki/Cerebrum"></iframe>
+                                    <!--<iframe src="http://en.wikipedia.org/wiki/Cerebrum"></iframe>-->
                                 </div>
                             </div>
                         </div>
