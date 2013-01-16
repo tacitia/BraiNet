@@ -12,7 +12,7 @@
 /*
  * This function gets called when the user clicks on a node. The corresponding
  * object is passed in as d. The function does three things:
- * 1) Add the children of d into active_data_nodes and the links associated with 
+ * 1) Add the children of d into active_data_nodes and the linkfs associated with 
  * those children and the other existing nodes into active_data_links
  * 2) Remove d and the associated links
  * 3) Update the svg canvas to propagate the change in active_data_nodes and 
@@ -91,14 +91,34 @@ function expandRegion(d, sub, svg) {
             }
         }
     }
-    
-    // Add the new links and new nodes resulted from the split
-    enterCircularNodes();
-    enterCircularLinks();
+    // Add new links between new nodes
+    for (var i = 0; i < sub_num; ++i) {
+        for (var j = i + 1; j < sub_num; ++j) {
+            var key_pair = sub[i].key + '-' + sub[j].key;
+            var link = node_link_map[key_pair];
+            if (link !== undefined) {
+                active_data_links.push(link);
+            }
+            key_pair = sub[j].key + '-' + sub[i].key;
+            link = node_link_map[key_pair];
+            if (link !== undefined) {
+                active_data_links.push(link);
+            }
 
+        }
+    }
+
+    updateCircularLayout(new_num, new_delta);
+}
+
+function updateCircularLayout(new_num, new_delta) {
     // Remove the nodes and links from canvas
     exitCircularNodes();
     exitCircularLinks();
+
+    // Add the new links and new nodes resulted from the split
+    enterCircularNodes();
+    enterCircularLinks();    
 
     for (var i = 0; i < new_num; ++i) {
         var datum = active_data_nodes[i];
@@ -107,66 +127,170 @@ function expandRegion(d, sub, svg) {
 
     updateCircularNodes();
     updateCircularLinks();
+    updateCircularTexts();
 }
 
 function nodeClick(d) {
-    var children = [];
-    var ids = d.children;
-    var length = ids.length;
-    for (var i = 0; i < length; ++i) {
-        children.push(node_map[ids[i]]);
+    if (d3.event.shiftKey) {
+        if (enable_piwik) { piwikTracker.trackPageView('Combine node in circular view'); }
+        if (enable_owa) { OWATracker.trackAction('Viz', 'Combine circular node', d.name); }
+        combineNodes(d);
     }
-    expandRegion(d, children, svg_circular);
+    else {
+        if (enable_piwik) { piwikTracker.trackPageView('Expand node in circular view'); }
+        if (enable_owa) { OWATracker.trackAction('Viz', 'Expand circular node', d.name); }
+        var children = [];
+        var ids = d.children;
+        var length = ids.length;
+        for (var i = 0; i < length; ++i) {
+            children.push(node_map[ids[i]]);
+        }
+        expandRegion(d, children, svg_circular);
+    }
+}
+
+// When mousing over, highlight itself and the neighbors
+function nodeMouseOver(node, svg) {
+    if (current_mode === mode.search) { return; }
+    svg.selectAll('.circular.node')
+        .classed('nofocus', function(d) {
+            var dKey = d.key;
+            var nodeKey = node.key;
+            var inNeighbors = node_in_neighbor_map[nodeKey];
+            var outNeighbors = node_out_neighbor_map[nodeKey];
+            return dKey !== nodeKey && ($.inArray(dKey, inNeighbors) < 0) &&
+                ($.inArray(dKey, outNeighbors) < 0);
+        });
+    svg.selectAll('.circular.link')
+        .classed('nofocus', function(d) {
+            return d.source.key !== node.key && d.target.key !== node.key; 
+        });
+    svg.selectAll('.circular.text')
+        .classed('visible', function(d) {
+            var dKey = d.key;
+            var nodeKey = node.key;
+            var inNeighbors = node_in_neighbor_map[nodeKey];
+            var outNeighbors = node_out_neighbor_map[nodeKey];
+            return dKey === nodeKey || ($.inArray(dKey, inNeighbors) >= 0) ||
+                ($.inArray(dKey, outNeighbors) >= 0);
+        });
+}
+
+function nodeMouseOut(node, svg) {
+    if (current_mode === mode.search) { return; }
+    svg.selectAll('.circular.node').classed('nofocus', false);
+    svg.selectAll('.circular.link').classed('nofocus', false);
+    updateCircularTexts();
 }
 
 function linkClick(d) {
-    d3.select('#self-content #src-name')
-        .html('Source: ' + d.source.name);
-    d3.select('#self-content #tgt-name')
-        .html('Target: ' + d.target.name);
-
-    var paperKeys = d.paper;
-    var self_paper_tab = d3.select('#self-record-paper');
-
-    self_paper_tab.selectAll('p').remove();
-
-    var content = self_paper_tab.append('p');
-
-    if (paperKeys.length < 1) {
-        content.html('This is a meta link. See the derived connections for more information');
+    if (enable_piwik) {
+        piwikTracker.trackPageView('Click link in circular view');
     }
-    else {
-        content.selectAll('p')
-            .data(paperKeys)
-            .enter()
-            .append('p')
-            .html(function(d) { 
-                var paper = paper_map[d];
-                return '<a href="' +  paper.url + '">' + paper.title + '</a>'; 
-            });
+    if (enable_owa) {
+        OWATracker.trackAction('Viz', 'Click circular link', d.source.name + '-' + d.target.name);
     }
+    displayConnectionInfo(d);
 }
 
-function linkMouseOver(d, svg) {
-    svg.select("#circ-link-" + d.key)
-        .classed("focus", true);
-    svg.select("#circ-node-" + d.source.key)
-        .classed("focus", true);
-    svg.select("#circ-node-" + d.target.key)
-        .classed("focus", true);
+function linkMouseOver(link, svg) {
+    svg.selectAll('.circular.node')
+        .classed('nofocus', function(d) {
+            return d.key !== link.source.key && d.key !== link.target.key;
+        });
+    svg.selectAll('.circular.link')
+        .classed('nofocus', function(d) {
+            return d.key !== link.key;
+        });
+    svg.selectAll('.circular.text')
+        .classed('visible', function(d) {
+            return d.key === link.source.key || d.key === link.target.key;
+        });    
 }
 
-function linkMouseOut(d, svg) {
-    svg.select("#circ-link-" + d.key)
-        .classed("focus", false);
-    svg.select("#circ-node-" + d.source.key)
-        .classed("focus", false);
-    svg.select("#circ-node-" + d.target.key)
-        .classed("focus", false);
+function linkMouseOut(link, svg) {
+    if (current_mode === mode.search) { return; }
+    svg.selectAll('.circular.node').classed('nofocus', false);
+    svg.selectAll('.circular.link').classed('nofocus', false);
+    updateCircularTexts();
+}
+
+function forceNodeClick(d) {
+    if (enable_piwik) {
+        piwikTracker.trackPageView('Click link in nodelink view');
+    }
+    if (enable_owa) {
+        OWATracker.trackAction('Viz', 'Click force node', d.name);
+    }
+    console.log(d);
+}
+
+function forceNodeMouseOver(node) {
+    if (current_mode === mode.search) { return; }
+    svg_force.selectAll('.nodelink.node')
+        .classed('nofocus', function(d) {
+            var dKey = d.key;
+            var nodeKey = node.key;
+            var inNeighbors = node_in_neighbor_map[nodeKey];
+            var outNeighbors = node_out_neighbor_map[nodeKey];
+            return dKey !== nodeKey && ($.inArray(dKey, inNeighbors) < 0) &&
+                ($.inArray(dKey, outNeighbors) < 0);
+        });
+    svg_force.selectAll('.nodelink.link')
+        .classed('nofocus', function(d) {
+            return d.source.key !== node.key && d.target.key !== node.key; 
+        });
+    svg_force.selectAll('.nodelink.text')
+        .classed('visible', function(d) {
+            var dKey = d.key;
+            var nodeKey = node.key;
+            var inNeighbors = node_in_neighbor_map[nodeKey];
+            var outNeighbors = node_out_neighbor_map[nodeKey];
+            return dKey === nodeKey || ($.inArray(dKey, inNeighbors) >= 0) ||
+                ($.inArray(dKey, outNeighbors) >= 0);
+        });
+}
+
+function forceNodeMouseOut(d) {
+    if (current_mode === mode.search) { return; }
+    svg_force.selectAll('.circular.node').classed('nofocus', false);
+    svg_force.selectAll('.circular.link').classed('nofocus', false);
+    svg_force.selectAll('.nodelink.text').classed('visible', true);
+}
+
+function forceLinkClick(d) {
+    if (enable_piwik) {
+        piwikTracker.trackPageView('Click link in nodelink view');
+    }
+    if (enable_owa) {
+        OWATracker.trackAction('Viz', 'Click force link', d.source.name + '-' + d.target.name);
+    }
+    displayConnectionInfo(d);
+}
+
+function forceLinkMouseOver(link) {
+    svg_force.selectAll('.nodelink.node')
+        .classed('nofocus', function(d) {
+            return d.key !== link.source.key && d.key !== link.target.key;
+        });
+    svg_force.selectAll('.nodelink.link')
+        .classed('nofocus', function(d) {
+            return d.key !== link.key;
+        });
+    svg_force.selectAll('.nodelink.text')
+        .classed('visible', function(d) {
+            return d.key === link.source.key || d.key === link.target.key;
+        });    
+}
+
+function forceLinkMouseOut(d) {
+    if (current_mode === mode.search) { return; }
+    svg_force.selectAll('.nodelink.node').classed('nofocus', false);
+    svg_force.selectAll('.nodelink.link').classed('nofocus', false);
+    svg_force.selectAll('.nodelink.text').classed('visible', true);
 }
 
 function enterCircularNodes() {
-
     svg_circular.selectAll(".circular.node")
         .data(active_data_nodes, function(d) {return d.key;})
         .enter().append("svg:path")
@@ -174,9 +298,10 @@ function enterCircularNodes() {
         .style("stroke", 'gray')
         .attr("d", arcs)
         .attr("class", "circular node")
-        .attr("id", function(d) { return "circ-node-" + d.key; })        
-        .on("click", nodeClick);
-//        .each(stash);
+        .attr("id", function(d) { return "circ-node-" + d.key; })
+        .on("click", nodeClick)
+        .on('mouseover', function(d) { nodeMouseOver(d, svg_circular); })
+        .on('mouseout', function(d) { nodeMouseOut(d, svg_circular); });
 
     svg_circular.selectAll(".circular.text")
        .data(active_data_nodes, function(d) {return d.key;})
@@ -184,8 +309,9 @@ function enterCircularNodes() {
        .append("svg:text")
        .attr('x', function(d) {return d.circ.x;})
        .attr('y', function(d) {return d.circ.y;})
-       .attr('class', 'circular text visible')
-       .text(function(d) {return d.name});       
+       .attr('class', 'circular text')
+       .attr('id', function(d) { return 'text-' + d.key; })
+       .text(function(d) {return d.name});
 }
 
 function enterCircularLinks() {
@@ -253,6 +379,16 @@ function updateCircularLinks() {
 
 }
 
+// Update the visibility of the texts, depending on the current number of 
+// active arcs
+function updateCircularTexts() {
+    svg_circular.selectAll(".circular.text")
+        .classed('visible', function(d) {
+            var circ = d.circ;
+            return (circ.end_angle - circ.start_angle) > Math.PI / 12;
+        });    
+}
+
 function updateForceLayout() {
     //this should be incorporated in the node data
     var num_groups = 0,
@@ -266,6 +402,15 @@ function updateForceLayout() {
             group_count[d.group][1] += 1;
         }
     });
+
+    // Set the selected source and selected target to have fixed positions, and 
+    // set their locations
+    selected_source.fixed = true;
+    selected_target.fixed = true;
+    selected_source.x = 200;
+    selected_source.y = 400;
+    selected_target.x = 600;
+    selected_target.y = 400; 
 
     force = d3.layout.force()
               .nodes(active_data_nodes_force)
@@ -281,35 +426,56 @@ function updateForceLayout() {
               })
               .linkStrength(1)
               //.gravity(0.01)
-              .charge(-600)
+              .charge(-6000)
               .friction(0.5)
               .start();
 
-    var link = svg_force.selectAll("nodelink.links")
-       .data(active_data_links_force)
+    // Clear up visual elements from previous search
+    svg_force.selectAll('.link').remove();
+    svg_force.selectAll(".node").remove();
+    svg_force.selectAll(".text").remove();
+    
+    var link = svg_force.selectAll(".nodelink.link")    
+       .data(active_data_links_force, function(d) { return d.key; })
        .enter().append("svg:line")
-       .attr("class", "link")
-       .style("stroke-width", 3);
+       .attr("class", "nodelink link")
+       .style("stroke-width", 3)
+       .on('click', forceLinkClick)
+       .on('mouseover', forceLinkMouseOver)
+       .on('mouseout', forceLinkMouseOut);
 
-    var node = svg_force.selectAll("nodelink.nodes")
-       .data(active_data_nodes_force)
+
+    var node = svg_force.selectAll(".nodelink.node")
+       .data(active_data_nodes_force, function(d) { return d.key; })
        .enter().append("svg:circle")
-       .attr("class", "node")
+       .attr("class", "nodelink node")
        .attr("cx", function(d) { return d.x; })
        .attr("cy", function(d) { return d.y; })
-       .attr("r", 5)
+       .attr("r", function(d) { return (d === selected_source || d === selected_target) ? 20 : 10; })
        .style("fill", function(d) {return d.color;})
+       .on('click', forceNodeClick)
+       .on('mouseover', forceNodeMouseOver)
+       .on('mouseout', forceNodeMouseOut)
        .call(force.drag);
 
-    /*
-    svg_force.selectAll("text")
+    var text = svg_force.append('svg:g')
+        .selectAll('g')
+        .data(force.nodes())
+        .enter().append('g')
+        .append("svg:text")
+        .attr("x", 8)
+        .attr("y", ".31em")
+        .attr('class', 'nodelink text visible')
+        .text(function(d) { return d.name; });
+    
+/*    svg_force.selectAll(".nodelink.text")
        .data(active_data_nodes, function(d) {return d.key;})
        .enter().append("text")
        .attr('x', function(d) {return d.circ.x;})
        .attr('y', function(d) {return d.circ.y;})
-       .attr('class', 'text visible')
-       .text(function(d) {return d.name});
-   */
+       .attr('class', 'nodelink text visible')
+       .text(function(d) {return d.name}); 
+*/   
 
   force.on("tick", function(e) {
       // To bundle nodes without links (useful)
@@ -329,6 +495,10 @@ function updateForceLayout() {
 
       node.attr("cx", function(d) { return d.x; })
           .attr("cy", function(d) { return d.y; });
+
+      text.attr("transform", function(d) {
+          return "translate(" + d.x + "," + d.y + ")";
+      });
   });
 }
 
@@ -337,10 +507,13 @@ function highlightNode(node, class_name, value, show_name, svg) {
         return;
     }
 
-    svg.select("#circ-node-" + node.key).classed(class_name, value);
+    svg.selectAll('.circular.node')
+        .classed(class_name, function(d) {
+            return d.key === node.key;
+        })
 
     if (show_name) {
-        svg.select("#text-" + node.key).classed("selected", value);
+        svg.select("#text-" + node.key).classed("visible", value);
     }
 }
 

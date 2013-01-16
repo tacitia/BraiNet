@@ -6,24 +6,24 @@
     display: none;
 }
 
-.node {
+.node.nofocus {
     opacity: 0.5;
 }
 
-.node.focus {
+.node {
     opacity: 1;    
 }
 
 /*  links (connections) */
-.link {
-    stroke: #ccc;
+.link.nofocus {
     stroke-opacity: 0.3;
-    fill: none;
-    stroke-width: 3px;
 }
 
-.link.focus {
+.link {
+    stroke: #ccc;
     stroke-opacity: 1;
+    fill: none;
+    stroke-width: 3px;
 }
 
 .link.dimmed {

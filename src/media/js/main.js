@@ -22,7 +22,7 @@ d3.json("media/data/test_node.json", function (data) {
         node_out_neighbor_map[node.key] = [];
     }
     // !! Change Java code later so that parent field is assigned in json file
-    /*
+    
     for (var key in node_map) {
         var node = node_map[key];
         for (var i = 0; i < node.children.length; ++i) {
@@ -30,11 +30,11 @@ d3.json("media/data/test_node.json", function (data) {
             var child = node_map[child_key];
             if (child !== undefined) {
                 child.parent = key;
-                child.group = key;
+//                child.group = key;
             }
         }
-    }
-    */
+    } 
+    
     mutex -= 1;
 });
 
@@ -46,7 +46,7 @@ d3.json("media/data/test_paper.json", function(data) {
     for (var i = 0; i < num_paper; ++i) {
         var paper = data[i];
         paper_map[paper.key] = paper;
-    }
+    } 
     mutex -= 1;
 });
 
@@ -55,16 +55,19 @@ d3.json("media/data/test_link.json", function (data) {
     link_map = {};
     node_link_map = {};
     var num_links = data.length;
+    console.log(num_links);
     for (var i = 0; i < num_links; ++i) {
         var raw_link = data[i];
         var link = {key: raw_link.key, source: node_map[raw_link.sourceKey], 
-                    target: node_map[raw_link.targetKey], paper: raw_link.paper};
+                    target: node_map[raw_link.targetKey], paper: raw_link.paper,
+                    children: raw_link.children, isDerived: raw_link.isDerived};
         link_map[link.key] = link;
         var key_pair = link.source.key + "-" + link.target.key;
         node_link_map[key_pair] = link;
         node_in_neighbor_map[raw_link.targetKey].push(raw_link.sourceKey);
         node_out_neighbor_map[raw_link.sourceKey].push(raw_link.targetKey);
     }
+    console.log(link_map);
     mutex -= 1;
 });
 
@@ -80,6 +83,7 @@ waitForDataLoading();
 *******/
 d3.select("#bt-search").on("click", searchButtonClick);
 d3.select("#bt-clear").on("click", clearButtonClick);
+d3.select("#maxHop").on("change", setMaxHop);
 $('#sourceSelect').change(sourceSearchInput);
 $('#targetSelect').change(targetSearchInput);
 /*******
@@ -143,6 +147,7 @@ function renderCanvas() {
     enterCircularNodes();
     // Render the links
     enterCircularLinks();
+    updateCircularTexts();
 
 //    updateForceLayout();
 }

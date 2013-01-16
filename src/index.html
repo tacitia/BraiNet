@@ -37,52 +37,19 @@
 
         <!--INFO-->
         <div id="info" class="tab-pane fade in active">
-            <div id="conn-info" class="accordion">
+            <div id="conn-info" style="height:100px">
                 <h4>Connection information</h4>
-                <div id="self" class="accordion-group">
-                    <div class="accordion-heading">
-                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#conn-info" href="#self-content">
-                            Exact Match
-                        </a>
-                    </div>
-                    <div id="self-content" class="accordion-body collapse in">
-                        <div class="accordion-inner accordion-content">
-                            <p id="src-name">&nbsp &nbsp &nbsp</p>
-                            <p id="tgt-name">&nbsp &nbsp &nbsp</p>
-                            <div id="record" class="tabbable tabs-below">
-                                <div id="record-content" class="tab-content">
-                                    <div id="self-record-paper" class="tab-pane fade in active">
-                                    </div>
-                                    <div id="self-record-bams" class="tab-pane fade in">
-                                    </div>
-                                </div>
-                                <ul class="nav nav-tabs">
-                                    <li class="active"><a href="#self-record-paper" data-toggle="tab">Paper</a></li>
-                                    <li ><a href="#self-record-bams" data-toggle="tab">BAMS Record</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div id="children" class="accordion-group">
-                    <div class="accordion-heading">
-                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#conn-info" href="#children-content">
-                            Derived connections
-                        </a>
-                    </div>
-                    <div id="children-content" class="accordion-body collapse">
-                        <div class="accordion-inner accordion-content">
-                            <div id="children-list">
-                            </div>
-                            <div id="paper-list">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <p>&nbsp</p>
+                <p class="exp"><i>Click on a connection and the basic connection information will be displayed here.</i></p>
+                <p id="src-name"></p>
+                <p id="tgt-name"></p>
             </div>
             <div id="region-info">
                 <h4>Brain Region information</h4>
-                <div id="source-region-info" class="accordion-group">
+                <p>&nbsp</p>
+                <p><i>Region information will be available in future updates</i></p>
+                
+<!--                <div id="source-region-info" class="accordion-group">
                     <div class="accordion-heading">
                         <a class="accordion-toggle" data-toggle="collapse" data-parent="#region-info" href="#source-info-content">
                             Source region
@@ -98,7 +65,7 @@
                                 <div id="source-slice" class="slice tap-pane fade in active">
                                 </div>
                                 <div id="source-wiki" class="wiki tap-pane fade in">
-                                    <!--<iframe src="http://en.wikipedia.org/wiki/Cerebrum"></iframe>-->
+                                    <iframe src="http://en.wikipedia.org/wiki/Cerebrum"></iframe>
                                 </div>
                             </div>
                         </div>
@@ -124,7 +91,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div><!--END INFO-->
 
@@ -208,7 +175,7 @@
             <tr>
               <td class="tab-column-1">Number of intermediate connections</td>
               <td class="tab-column-2">
-                <input id="maxHop" type="range" min=1 max=5 value=1 step=1>
+                <input id="maxHop" type="range" min=0 max=3 value=1 step=1>
                 <span id="maxHopValue">1</span>
               </td>
             </tr>
@@ -227,20 +194,6 @@
             <h4>Search Results</h4>
           </div>
           -->
-          <!---List Link Connections (Search Results)-->
-          <div id="search-results" class="tab-content">
-            <ul class="nav nav-tabs">
-              <li class="active"><a href="#paper-list" data-toggle="tab">Show literature list</a></li>
-              <li><a href="#sub-con-list" data-toggle="tab">Show sub-connection list</a></li>
-            </ul>
-            <div id="paper-list" class="tab-pane fade in active search-results-contents">
-              <p class="search-results-exp explanation"><i>Search for the connections between two brain regions and the relevant literature will be displayed here.</i></p>
-            </div>
-            <div id="sub-con-list" class="tab-pane fade in search-results-contents">
-              <p class="search-results-exp explanation"><i>Search for the connections between two brain regions and the underlying sub-connections will be displayed here.</i></p>
-            </div>
-          </div>
-
         </div><!--END SEARCH-->
 
         <!--HELP-->
@@ -286,8 +239,25 @@
       </div>
       </div>
     </div>
-
-
+    <!---List Link Connections (Search Results)-->
+    <div id="search-results" style="position:absolute;top:1000px; width: 800px; height: 400px">
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="#paper-list" data-toggle="tab">Publications</a></li>
+        <li><a href="#bams-list" data-toggle="tab">BAMS records</a></li>
+        <li><a href="#sub-con-list" data-toggle="tab">Sub-connections</a></li>
+      </ul>
+      <div class="tab-content" style="padding:20px">
+        <div id="paper-list" class="tab-pane fade in active">
+          <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and the relevant literature will be displayed here.</i></p>
+        </div>
+        <div id="bams-list" class="tab-pane fade in">
+          <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and the relevant BAMS records will be displayed here.</i></p>
+        </div>
+        <div id="sub-con-list" class="tab-pane fade in">
+          <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and the underlying sub-connections will be displayed here.</i></p>
+        </div>
+      </div>
+    </div>
 
     <!-- MODAL WINDOW - User Study
     <div class="modal hide fade" id="messageBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:600px;">

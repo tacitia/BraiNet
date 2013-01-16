@@ -7,6 +7,51 @@
  */
 
 
+function combineNodes(node) {
+    // If no parent, return
+    if (node.parent === undefined || node.parent === null) { return; }
+    var nodesToRemove = findActiveSiblings(node);
+    // Iterate through all the active nodes and remove the links associated 
+    // with the nodes to be removed
+    var numToRemove = nodesToRemove.length;
+    var link_length = active_data_links.length;
+    while (link_length--) {
+        var curr_link = active_data_links[link_length];
+        // Iterate through all the siblings and remove associated links
+        for (var i = 0; i < numToRemove; ++i) {
+            var d = nodesToRemove[i];
+            if (curr_link.source === d || curr_link.target === d) {
+                active_data_links.splice(link_length, 1);
+            }
+        }
+    }
+    // Remove the nodes and add the parent node
+    var old_num = active_data_nodes.length;
+    var parent = node_map[node.parent];
+    var firstPos = $.inArray(nodesToRemove[0], active_data_nodes);
+    active_data_nodes[firstPos] = parent;
+    for (var i = 1; i < numToRemove; ++i) {
+        var curr_node = nodesToRemove[i];
+        var pos = $.inArray(curr_node, active_data_nodes);
+        active_data_nodes.splice(pos, 1);
+    }
+    // Update the positions of the nodes
+
+    // Update the layout
+    updateCircularLayout(old_num, 2 * Math.PI / old_num);
+}
+
+function findActiveSiblings(node) {
+    var parent = node_map[node.parent];
+    var sibling_ids = parent.children;
+    var result = [];
+    var numSibling = sibling_ids.length;
+    for (var i = 0; i < numSibling; ++i) {
+        result.push(node_map[sibling_ids[i]]);
+    }
+    return result;
+}
+
 function findActiveParent(node) {
     var result = node;
     while (result !== undefined && result !== null) {
@@ -20,7 +65,7 @@ function findActiveParent(node) {
 
 function findDescAtDepth(node, depth) {
     var result = [node];
-    while (result[0].depth < depth) {
+    while (result.length > 0 && result[0].depth < depth) {
         var curr_node = result[0];
         var children = curr_node.children;
         var child_num = children.length;
@@ -28,6 +73,7 @@ function findDescAtDepth(node, depth) {
             result.push(node_map[children[i]]);
         }
         result.splice(0, 1);
+        console.log(result[0]);
     }
     return result;
 }
@@ -80,10 +126,17 @@ function initActiveLinks() {
     }
 }
 
+
 function calculatePaths(num_hop) {
+    var counter = 0;
     var paths = [];
     var results = [];
     paths[0] = [selected_source];
+    // Set the min / max depth
+    var depth1 = selected_source.depth;
+    var depth2 = selected_target.depth;
+    var min_depth = Math.min(depth1, depth2);
+    var max_depth = Math.max(depth1, depth2);
     while (paths.length > 0 && paths[0].length <= num_hop + 2) {
         var current_path = paths[0];
         paths.splice(0, 1);
@@ -92,12 +145,25 @@ function calculatePaths(num_hop) {
             results.push(current_path);
             continue;
         }
+        // If already reaches the maximum length, don't continue counting neighbors
+        if (current_path.length >= num_hop + 2) { continue; }
         var neighbors = node_out_neighbor_map[anchor_node.key];
         var neighbor_num = neighbors.length;
         for (var i = 0; i < neighbor_num; ++i) {
             var neighbor_id = neighbors[i];
             var neighbor_node = node_map[neighbor_id];
-            paths.push(current_path.concat(neighbor_node));
+            if (neighbor_node.depth >= min_depth && neighbor_node.depth <= max_depth) {
+                paths.push(current_path.concat(neighbor_node));
+            }
+        }
+        counter++;
+        if (counter > 5000) { 
+            if (enable_owa) {
+                console.log(selected_source);
+                console.log(selected_target);
+                OWATracker.trackAction('Warning', 'Path size limit reached', selected_source.name + '-' + selected_target + '-' + max_hop);
+            }
+            console.log("Reached path limit."); break;
         }
     }
     return results;
@@ -110,7 +176,7 @@ function populateForceElements(paths) {
     for (var i = 0; i < num_path; ++i) {
         var path = paths[i];
         var num_link = path.length - 1;
-        for (var j = 0; j < num_link - 1; ++j) {
+        for (var j = 0; j < num_link; ++j) {
             var current_source = path[j];
             var current_target = path[j+1];
             var key_pair = current_source.key + "-" + current_target.key;
@@ -126,23 +192,25 @@ function populateForceElements(paths) {
             }
         }
     }
-    console.log(active_data_nodes_force);
-    console.log(active_data_links_force);
 }
 
 
 /*
  * This function is called before rendering the canvas to assign colors to the 
  * top level nodes
+ * Also assigns group
+ * TODO: Assign the groups when formatting the data, and then assign the colors
+ * based on the group IDs
  */
 function assignColors() {
     var num_level1_nodes = 0;
-    var level1_nodes = [];
+    var queue = [];
     for (var key in node_map) {
         var node = node_map[key];
         if (node.depth === 1) {
             num_level1_nodes += 1;
-            level1_nodes.push(node);
+            node.group = node.key;
+            queue.push(node);
         }
     }
     var currentPalette = [];
@@ -153,12 +221,19 @@ function assignColors() {
                       .domain(d3.range(num_level1_nodes))
                       .range(currentPalette);
     for (var i = 0; i < num_level1_nodes; ++i) {
-        level1_nodes[i].color = currentPalette[i];
-        for (var j = 0; j < level1_nodes[i].children.length; ++j) {
-            var child = node_map[level1_nodes[i].children[j]];
-            child.color = currentPalette[i];
-            child.group = level1_nodes[i].key;
+        queue[i].color = currentPalette[i];
+    }
+    while (queue.length > 0) {
+        var curr_node = queue[0];
+        var children = curr_node.children;
+        var child_num = children.length;
+        for (var i = 0; i < child_num; ++i) {
+            var child = node_map[children[i]];
+            child.color = curr_node.color;
+            child.group = curr_node.group;
+            queue.push(child);
         }
+        queue.splice(0, 1);
     }
 }
 

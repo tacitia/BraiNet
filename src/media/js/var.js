@@ -50,6 +50,11 @@ var directionType = {
     "out": 2,
     "bi": 3
 };
+var mode = {
+    exploration: 1, //browsing
+    search: 2,      //when search button is clicked
+    fixation: 3     //when clicked on a node
+};
 
 // Constants
 var colorPalette = [
@@ -70,6 +75,9 @@ var colorPalette = [
 // Misc program control variables
 var mutex = 3;
 var enable_piwik = false;
+var enable_owa = false;
+var current_mode = mode.exploration;
+var max_hop = 1;
 
 /*******
     End of data declaration section
