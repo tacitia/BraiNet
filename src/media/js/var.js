@@ -18,6 +18,8 @@ var node_out_neighbor_map;
 // User specific data
 var link_rating_map; // Key: link id. Value: user rating for the link.
 var record_rating_map; // Key: record id. Value: user rating for the record.
+var dataset_list;
+var uid;
 
 // State variables
 var selected_source;
@@ -75,9 +77,19 @@ var colorPalette = [
 // Misc program control variables
 var mutex = 3;
 var enable_piwik = false;
-var enable_owa = false;
+var enable_owa = true;
+var enable_tracking = true;
 var current_mode = mode.exploration;
 var max_hop = 1;
+
+// Action records
+var actionData = [];
+var generalData = [];
+var startTime = null;
+var endTime = null;
+var sessionStartTime;
+var sessionEndTime;
+var currentActionData = {timeElapsed: -1, mouseTrace: "", actionBasic: "", actionDetail: "", time: -1};
 
 /*******
     End of data declaration section

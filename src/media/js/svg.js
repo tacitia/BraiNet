@@ -134,11 +134,20 @@ function nodeClick(d) {
     if (d3.event.shiftKey) {
         if (enable_piwik) { piwikTracker.trackPageView('Combine node in circular view'); }
         if (enable_owa) { OWATracker.trackAction('Viz', 'Combine circular node', d.name); }
-        combineNodes(d);
+        if (enable_tracking) {
+            trackAction('Combine circular node', d.name);
+        }
+        if (d.parent === undefined || d.parent === null) { return; } // Ignore top level nodes
+        var parent = node_map[d.parent]; 
+        var nodes_to_remove = findActiveDescends(parent);
+        combineRegions(parent, nodes_to_remove);
     }
     else {
         if (enable_piwik) { piwikTracker.trackPageView('Expand node in circular view'); }
         if (enable_owa) { OWATracker.trackAction('Viz', 'Expand circular node', d.name); }
+        if (enable_tracking) {
+            trackAction('Expand circular node', d.name);
+        }        
         var children = [];
         var ids = d.children;
         var length = ids.length;
@@ -190,6 +199,9 @@ function linkClick(d) {
     if (enable_owa) {
         OWATracker.trackAction('Viz', 'Click circular link', d.source.name + '-' + d.target.name);
     }
+    if (enable_tracking) {
+        trackAction('Click circular link', d.source.name + '-' + d.target.name);
+    }
     displayConnectionInfo(d);
 }
 
@@ -222,7 +234,9 @@ function forceNodeClick(d) {
     if (enable_owa) {
         OWATracker.trackAction('Viz', 'Click force node', d.name);
     }
-    console.log(d);
+    if (enable_tracking) {
+        trackAction('Click force node', d.name);
+    }
 }
 
 function forceNodeMouseOver(node) {
@@ -265,6 +279,9 @@ function forceLinkClick(d) {
     if (enable_owa) {
         OWATracker.trackAction('Viz', 'Click force link', d.source.name + '-' + d.target.name);
     }
+    if (enable_tracking) {
+        trackAction('Click force link', d.source.name + '-' + d.target.name);
+    }    
     displayConnectionInfo(d);
 }
 

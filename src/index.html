@@ -32,6 +32,7 @@
         <li><a href="#legend" data-toggle="tab">Legend</a></li>
         <li><a href="#options" data-toggle="tab">Options</a></li>
         <li><a href="#search" data-toggle="tab">Search</a></li>
+        <li><a href="#manage-data" data-toggle="tab">Manage Data</a></li>
       </ul>
       <div id="util-content" class="tab-content">
 
@@ -195,6 +196,28 @@
           </div>
           -->
         </div><!--END SEARCH-->
+
+        <!--MANAGE DATA-->
+        <div id="manage-data" class="tab-pane fade in">
+            <div id="create" style="height:80px">
+              <input type="text" placeholder="Name for the new dataset" name="datasetName">
+              <button class="btn" id="bt-createDatasets">Create a dataset</button>
+              <div id="createDatasetSuccessAlert" class="alert alert-success" style="display:none">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                Dataset created successfully. Select and edit the new dataset to add nodes and links.
+              </div>
+            </div>
+            <div id="select" style="height:80px">
+                <p>Select an existing dataset:</p>
+                <select data-placeholder="Select a dataset" class="chzn-select" style="width:250px;" id="dataSelect">
+                  <option></option>
+                </select>
+            </div>
+            <div id="edit">
+              <button class="btn" id="bt-manageDatasets">Edit selected dataset</button>
+<!--                <a href="media/php/manageDataset.php?dataset=" target="_blank" class="btn">Edit selected dataset</a> -->
+            </div>
+        </div><!--END MANAGE DATA-->
 
         <!--HELP-->
 <!--        <div id="help" class="tab-pane fade in">

@@ -7,6 +7,37 @@ function appendNodesAsOptions(node_map) {
     }
 }
 
+function populateDatasetUI() {
+    console.log("testing user id");
+    console.log(uid);
+    var num_datasets = dataset_list.length;
+    for (var i = 0; i < num_datasets; ++i) {
+        var curr_dataset = dataset_list[i];
+        console.log(curr_dataset);
+        $('#dataSelect').append(new Option(curr_dataset[1], curr_dataset[0]));
+    }
+}
+
+/*
+ * 1. Get the dataset name
+ * 2. Call the corresponding backend function
+ */
+function createDatasetButtonClick() {
+    createDataset($('[name="datasetName"]').val(), uid);
+}
+
+/*
+ * 
+ */
+function manageDatasetButtonClick() {
+    var datasetName = $('#dataSelect :selected').text();
+    var datasetID = $('#dataSelect').val();
+    var url = "media/php/manageDataset.php?datasetName=" + datasetName + 
+                "&datasetID=" + datasetID;
+    console.log(url);
+    window.open(url, 'Manage Datasets', 'width=800, height=800');
+}
+
 function searchButtonClick() {
     if (enable_piwik) {
         piwikTracker.trackPageView('Search:' + selected_source.name + '-' + selected_target.name);
@@ -14,7 +45,15 @@ function searchButtonClick() {
     if (enable_owa) {
         OWATracker.trackAction('UI', 'Search', selected_source.name + '-' + selected_target.name);
     }
-    console.log(max_hop);
+    if (enable_tracking) {
+        trackAction("Search", selected_source.name + '-' + selected_target.name);
+/*        currentActionData.actionBasic = "Search";
+        currentActionData.actionDetail = selected_source.name + '-' + selected_target.name;
+        endTime = new Date();
+        currentActionData.timeElapsed = (endTime - startTime) / 1000;
+        currentActionData.time = endTime.toString();
+        recordActionData();*/
+    }
     var paths = calculatePaths(max_hop);
     populateForceElements(paths);
     updateForceLayout();
@@ -45,12 +84,22 @@ function sourceSearchInput() {
     selected_source = input_node;
     if (!input_node.isActive) {
         var parent = findActiveParent(input_node);
-        var siblings = findDescAtDepth(parent, input_node.depth);
-        expandRegion(parent, siblings, svg_circular);
+        // In this case, the input is on a level higher than the visible nodes
+        if (parent === undefined) {
+            var activeDescs = findActiveDescends(input_node);
+            combineRegions(input_node, activeDescs);
+        }
+        else {
+            var siblings = findDescAtDepth(parent, input_node.depth);
+            expandRegion(parent, siblings, svg_circular);
+        }
     }
     highlightNode(input_node, "focus", true, true, svg_circular);
     if (enable_owa) {
         OWATracker.trackAction('UI', 'Set source', selected_source.name);
+    }
+    if (enable_tracking) {
+        trackAction('Set source', selected_source.name);
     }
 }
 
@@ -69,12 +118,22 @@ function targetSearchInput() {
     selected_target = input_node;
     if (!input_node.isActive) {
         var parent = findActiveParent(input_node);
-        var siblings = findDescAtDepth(parent, input_node.depth);
-        expandRegion(parent, siblings, svg_circular);
+        // In this case, the input is on a level higher than the visible nodes
+        if (parent === undefined) {
+            var activeDescs = findActiveDescends(input_node);
+            combineRegions(input_node, activeDescs);
+        }
+        else {
+            var siblings = findDescAtDepth(parent, input_node.depth);
+            expandRegion(parent, siblings, svg_circular);
+        }
     }
     highlightNode(input_node, "focus", true, true, svg_circular);
     if (enable_owa) {
         OWATracker.trackAction('UI', 'Set target', selected_target.name);
+    }
+    if (enable_tracking) {
+        trackAction('Set target', selected_target.name);
     }
 }
 
@@ -89,13 +148,12 @@ function setMaxHop() {
     if (enable_owa) {
         OWATracker.trackAction('UI', 'Set max hop', this.value);
     }
-    
+    if (enable_tracking) {
+        trackAction('Set max hop', this.value);
+    }    
     max_hop = this.value;
     document.getElementById("maxHopValue").innerHTML = max_hop;
-//    path.classed("dimmed", false);
-//    highlightSelectedLinks(false);
-//    selected_links = [];
-    //displayConnections(false);
+
 }
 
 function displayConnectionInfo(d) {
@@ -110,6 +168,7 @@ function displayConnectionInfo(d) {
     var self_paper_tab = d3.select('#paper-list');
     self_paper_tab.selectAll('p').remove();
     var content = self_paper_tab.append('p');
+    // Add the list of papers associated
     if (paperKeys.length < 1) {
         content.html('This is a meta link. See the derived connections for more information');
     }
@@ -119,8 +178,9 @@ function displayConnectionInfo(d) {
             .append('p')
             .html(function(d) { 
                 var paper = paper_map[d];
-                return '<a href="' +  paper.url + '" target="_blank">' + paper.title + '</a>'; 
+                return '<a href="' +  paper.url + '" target="_blank" class="paperLink">' + paper.title + '</a>'; 
             });
+        d3.selectAll('.paperLink').on('click', paperClick);
     }
 
     // Add the list of dataset-specific records
@@ -129,7 +189,6 @@ function displayConnectionInfo(d) {
     content = bams_records_tab.append('p');
     content.html('Links to BAMS records will be added in future updates');
 
-    console.log(d);
     // Add the sub-connections
     var sub_link_keys = d.children;
     var subcon_tab = d3.select('#sub-con-list');

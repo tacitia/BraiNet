@@ -206,3 +206,18 @@ body {
     height: 180px;
 }
 
+.datasetDisplay {
+    height: 300px;
+    width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    overflow-y: scroll;
+}
+
+#datasetControl {
+    width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+

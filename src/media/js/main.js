@@ -67,10 +67,11 @@ d3.json("media/data/test_link.json", function (data) {
         node_in_neighbor_map[raw_link.targetKey].push(raw_link.sourceKey);
         node_out_neighbor_map[raw_link.sourceKey].push(raw_link.targetKey);
     }
-    console.log(link_map);
     mutex -= 1;
 });
 
+populateUserId();
+populateDatasets();
 waitForDataLoading();
 
 /*******
@@ -83,9 +84,13 @@ waitForDataLoading();
 *******/
 d3.select("#bt-search").on("click", searchButtonClick);
 d3.select("#bt-clear").on("click", clearButtonClick);
+d3.select('#bt-createDatasets').on('click', createDatasetButtonClick);
+d3.select('#bt-manageDatasets').on('click', manageDatasetButtonClick);
 d3.select("#maxHop").on("change", setMaxHop);
 $('#sourceSelect').change(sourceSearchInput);
 $('#targetSelect').change(targetSearchInput);
+window.onbeforeunload=saveSessionData;
+window.onload=startSession;
 /*******
     End of UI elements action binding section
 *******/
@@ -154,6 +159,7 @@ function renderCanvas() {
 
 function setupUIElements() {
     appendNodesAsOptions(node_map);
+    console.log("about to bind chzn-select");
     $('.chzn-select').chosen({allow_single_deselect: true});
 }
 

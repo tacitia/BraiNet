@@ -7,49 +7,54 @@
  */
 
 
-function combineNodes(node) {
-    // If no parent, return
-    if (node.parent === undefined || node.parent === null) { return; }
-    var nodesToRemove = findActiveSiblings(node);
+function combineRegions(new_node, nodes_to_remove) {
     // Iterate through all the active nodes and remove the links associated 
     // with the nodes to be removed
-    var numToRemove = nodesToRemove.length;
+    var numToRemove = nodes_to_remove.length;
     var link_length = active_data_links.length;
     while (link_length--) {
         var curr_link = active_data_links[link_length];
         // Iterate through all the siblings and remove associated links
         for (var i = 0; i < numToRemove; ++i) {
-            var d = nodesToRemove[i];
+            var d = nodes_to_remove[i];
             if (curr_link.source === d || curr_link.target === d) {
                 active_data_links.splice(link_length, 1);
             }
         }
     }
     // Remove the nodes and add the parent node
-    var old_num = active_data_nodes.length;
-    var parent = node_map[node.parent];
-    var firstPos = $.inArray(nodesToRemove[0], active_data_nodes);
-    active_data_nodes[firstPos] = parent;
+    var first_pos = $.inArray(nodes_to_remove[0], active_data_nodes);
+    var remove_first = active_data_nodes[first_pos];
+    remove_first.isActive = false;
+    new_node.circ = remove_first.circ;
+    new_node.isActive = true;
+    active_data_nodes[first_pos] = new_node;
     for (var i = 1; i < numToRemove; ++i) {
-        var curr_node = nodesToRemove[i];
+        var curr_node = nodes_to_remove[i];
+        curr_node.isActive = false;
         var pos = $.inArray(curr_node, active_data_nodes);
         active_data_nodes.splice(pos, 1);
     }
     // Update the positions of the nodes
-
-    // Update the layout
-    updateCircularLayout(old_num, 2 * Math.PI / old_num);
-}
-
-function findActiveSiblings(node) {
-    var parent = node_map[node.parent];
-    var sibling_ids = parent.children;
-    var result = [];
-    var numSibling = sibling_ids.length;
-    for (var i = 0; i < numSibling; ++i) {
-        result.push(node_map[sibling_ids[i]]);
+    var new_num = active_data_nodes.length;
+    var new_delta = 2 * Math.PI / new_num;
+    // Add in links for the parent
+    var new_key = new_node.key;
+    for (var i = 0; i < new_num; ++i) {
+        var curr_key = active_data_nodes[i].key;
+        var key_pair = new_key + '-' + curr_key;
+        var link = node_link_map[key_pair];
+        if (link !== undefined) {
+            active_data_links.push(link);
+        }
+        key_pair = curr_key + '-' + new_key;
+        link = node_link_map[key_pair];
+        if (link !== undefined) {
+            active_data_links.push(link);
+        }
     }
-    return result;
+    // Update the layout
+    updateCircularLayout(new_num, new_delta);
 }
 
 function findActiveParent(node) {
@@ -63,6 +68,25 @@ function findActiveParent(node) {
     return result;
 }
 
+function findActiveDescends(node) {
+    var num_active_nodes = active_data_nodes.length;
+    var results = [];
+    for (var i = 0; i < num_active_nodes; ++i) {
+        var curr_node = active_data_nodes[i];
+        if (curr_node.parent === undefined || curr_node.parent === null) { continue; }
+        // Check if the input node is a parent of the current active node
+        var parent = node_map[curr_node.parent];
+        while (parent !== undefined && parent !== null) {
+            if (parent === node) {
+                results.push(curr_node);
+                break;
+            }
+            parent = node_map[parent.parent];
+        }
+    }
+    return results;
+}
+
 function findDescAtDepth(node, depth) {
     var result = [node];
     while (result.length > 0 && result[0].depth < depth) {
@@ -73,7 +97,6 @@ function findDescAtDepth(node, depth) {
             result.push(node_map[children[i]]);
         }
         result.splice(0, 1);
-        console.log(result[0]);
     }
     return result;
 }
@@ -258,4 +281,130 @@ function calculateArcPositions(datum, start_angle, delta, i) {
 function stash(d) {
     d.circ.old_start_angle = d.circ.start_angle;
     d.circ.old_end_angle = d.circ.end_angle;
+}
+
+function saveSessionData() {
+    sessionEndTime = new Date();
+    var sessionLength = sessionEndTime - sessionStartTime;
+    sessionLength /= 1000;
+    $.ajax({        
+       type: "POST",
+       url: "media/php/writeActionData.php",
+       data: {actionDataArray : actionData, sessionLength : sessionLength, userID: uid},
+       error: function(data) {
+            console.log("Failed");
+            console.log(data);
+       },
+       success: function(data) {
+            console.log("Successfully passed data to php.");
+            console.log(data);
+       },
+       async: false
+    });
+}
+
+function populateUserId() {
+    $.ajax({
+        type: "POST",
+        url: "media/php/getUserID.php",
+        error: function(data) {
+            console.log("Failed");
+            console.log(data);
+        },
+        success: function(data) {
+            console.log("Success");
+            uid = data;
+        },
+        async: false
+    });
+}
+
+function populateDatasets() {
+    $.ajax({
+        type: "POST",
+        url: "media/php/getDatasetByUserId.php",
+        data: {userID: 2},
+        error: function(data) {
+            console.log("Failed");
+            console.log(data);
+        },
+        success: function(data) {
+            console.log("Success");
+            dataset_list = $.parseJSON(data);
+            populateDatasetUI();
+        },
+        async: false
+    });
+}
+
+/*
+ * 1. Add the dataset in the dabase
+ * 2. Add the dataset in the 
+ */
+function createDataset(datasetName, userID) {
+    $.ajax({
+        type: "POST",
+        url: "media/php/addDataset.php",
+        data: {datasetName: datasetName, userID: userID},
+        error: function(data) {
+            console.log("Failed");
+            console.log(data);
+        },
+        success: function(datasetID) {
+            console.log("Success");
+            console.log(datasetID);
+//            var option=document.createElement("option");
+//option.text="Kiwi";
+            $('#dataSelect').append(new Option(datasetName, datasetID));
+            $('#dataSelect').trigger('liszt:updated');
+            $('#createDatasetSuccessAlert').css('display', 'block');
+        },
+        async: true
+    });
+}
+
+function startSession() {
+    sessionStartTime = new Date();
+    startTime = new Date();
+    document.onmousemove = recordMouseMovement;
+}
+
+function recordActionData() {
+    actionData.push({
+        timeElapsed: currentActionData.timeElapsed,
+        mouseTrace: currentActionData.mouseTrace,
+        actionBasic: currentActionData.actionBasic,
+        actionDetail: currentActionData.actionDetail,
+        time: currentActionData.time
+    });
+    startTime = new Date();
+    currentActionData = {timeElapsed: -1, mouseTrace: "", actionBasic: "", actionDetail: "", time: -1};
+}
+
+
+function recordMouseMovement(e) {
+    if (currentActionData.mouseTrace.length > 2950) { return; }
+    var currentTime = new Date();
+    currentActionData.mouseTrace += "x:" + e.pageX + ",y:" + e.pageY + 
+                                    ",time:" + (currentTime - startTime) + ";";
+}
+
+function trackAction(actionBasicStr, actionDetailStr) {
+    currentActionData.actionBasic = actionBasicStr;
+    currentActionData.actionDetail = actionDetailStr;
+    endTime = new Date();
+    currentActionData.timeElapsed = (endTime - startTime) / 1000;
+    currentActionData.time = endTime.toString();
+    recordActionData();
+}
+
+function paperClick() {
+    var paperName = $(this).text();
+    if (enable_owa) {
+        OWATracker.trackAction('UI', 'Click paper', paperName);
+    }
+    if (enable_tracking) {
+        console.log("tracking paper click");
+        trackAction('Click paper', paperName);
+    }
 }
