@@ -1,0 +1,33 @@
+[25-Jan-2013 14:15:50] PHP Parse error:  syntax error, unexpected ';' in /home/tacitia/public_html/version5/media/php/addBrainLink.php on line 20
+[25-Jan-2013 15:17:12] PHP Parse error:  syntax error, unexpected ';' in /home/tacitia/public_html/version5/media/php/getBrainData.php on line 20
+[25-Jan-2013 16:00:12] PHP Fatal error:  Uncaught exception 'Exception' with message 'sql error: No database selected' in /home/tacitia/public_html/version5/media/php/addBrainNode.php:36
+Stack trace:
+#0 {main}
+  thrown in /home/tacitia/public_html/version5/media/php/addBrainNode.php on line 36
+[25-Jan-2013 16:00:27] PHP Fatal error:  Uncaught exception 'Exception' with message 'sql error: No database selected' in /home/tacitia/public_html/version5/media/php/addBrainNode.php:36
+Stack trace:
+#0 {main}
+  thrown in /home/tacitia/public_html/version5/media/php/addBrainNode.php on line 36
+[25-Jan-2013 16:03:31] PHP Fatal error:  Uncaught exception 'Exception' with message 'sql error: No database selected' in /home/tacitia/public_html/version5/media/php/addBrainNode.php:36
+Stack trace:
+#0 {main}
+  thrown in /home/tacitia/public_html/version5/media/php/addBrainNode.php on line 36
+[25-Jan-2013 16:04:26] PHP Fatal error:  Uncaught exception 'Exception' with message 'sql error: Unknown column 'datasetName' in 'field list'' in /home/tacitia/public_html/version5/media/php/addBrainNode.php:36
+Stack trace:
+#0 {main}
+  thrown in /home/tacitia/public_html/version5/media/php/addBrainNode.php on line 36
+[25-Jan-2013 16:05:30] PHP Fatal error:  Uncaught exception 'Exception' with message 'sql error: Cannot add or update a child row: a foreign key constraint fails (`tacitia_brainData`.`user_nodes`, CONSTRAINT `fk_node_datasetKey` FOREIGN KEY (`datasetKey`) REFERENCES `user_dataset` (`key`))' in /home/tacitia/public_html/version5/media/php/addBrainNode.php:36
+Stack trace:
+#0 {main}
+  thrown in /home/tacitia/public_html/version5/media/php/addBrainNode.php on line 36
+[28-Jan-2013 16:10:40] PHP Warning:  mysql_fetch_row(): supplied argument is not a valid MySQL result resource in /home/tacitia/public_html/version5/media/php/getDatasetByUserId.php on line 27
+[28-Jan-2013 16:11:47] PHP Warning:  mysql_fetch_row(): supplied argument is not a valid MySQL result resource in /home/tacitia/public_html/version5/media/php/getDatasetByUserId.php on line 27
+[28-Jan-2013 16:11:56] PHP Warning:  mysql_fetch_row(): supplied argument is not a valid MySQL result resource in /home/tacitia/public_html/version5/media/php/getDatasetByUserId.php on line 27
+[28-Jan-2013 16:12:15] PHP Warning:  mysql_fetch_row(): supplied argument is not a valid MySQL result resource in /home/tacitia/public_html/version5/media/php/getDatasetByUserId.php on line 27
+[28-Jan-2013 16:14:01] PHP Warning:  mysql_fetch_row(): supplied argument is not a valid MySQL result resource in /home/tacitia/public_html/version5/media/php/getDatasetByUserId.php on line 27
+[28-Jan-2013 16:14:56] PHP Warning:  mysql_fetch_row(): supplied argument is not a valid MySQL result resource in /home/tacitia/public_html/version5/media/php/getDatasetByUserId.php on line 27
+[28-Jan-2013 16:15:04] PHP Warning:  mysql_fetch_row(): supplied argument is not a valid MySQL result resource in /home/tacitia/public_html/version5/media/php/getDatasetByUserId.php on line 27
+[28-Jan-2013 16:15:47] PHP Warning:  mysql_fetch_row(): supplied argument is not a valid MySQL result resource in /home/tacitia/public_html/version5/media/php/getDatasetByUserId.php on line 27
+[28-Jan-2013 16:15:57] PHP Warning:  mysql_fetch_row(): supplied argument is not a valid MySQL result resource in /home/tacitia/public_html/version5/media/php/getDatasetByUserId.php on line 27
+[28-Jan-2013 16:17:12] PHP Warning:  mysql_fetch_row(): supplied argument is not a valid MySQL result resource in /home/tacitia/public_html/version5/media/php/getDatasetByUserId.php on line 27
+[28-Jan-2013 16:17:40] PHP Warning:  mysql_fetch_row(): supplied argument is not a valid MySQL result resource in /home/tacitia/public_html/version5/media/php/getDatasetByUserId.php on line 27
