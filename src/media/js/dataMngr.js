@@ -41,14 +41,13 @@ function constructNodesTable() {
 /*
  * 1. Retrieve node information from the UI
  * 2. Add node to the database
- * 3. Update the display [TODO]
+ * 3. Update the display
  */
 function addBrainNode(nodeName, parentName, depth) {
     var nodeName = $('[name="nodeName"]').val();
     var nodeDepth = parseInt($('[name="nodeDepth"]').val());
     var parentKey = $('#nodeParent').val();
     var newData = {userID: userId, datasetKey: datasetKey, nodeName: nodeName, parentKey: parentKey, depth: nodeDepth};
-    console.log(newData);
     $.ajax({        
         type: "POST",
         url: "../php/addBrainNode.php",
@@ -69,7 +68,7 @@ function addBrainNode(nodeName, parentName, depth) {
  * 1. Retrieve link information from the UI
    2. Retrieve the keys for the nodes
  * 3. Add link to the database
- * 4. Update the display [TODO]
+ * 4. Update the display
  */
 function addBrainLink() {
     var sourceKey = $('#sourceName').val();
@@ -85,25 +84,18 @@ function addBrainLink() {
         },
         success: function(link) {
             console.log("Successfully passed data to php.");
-            console.log(link);
-            console.log($.parseJSON(link));
             addLinkToDisplay($.parseJSON(link));
         },
         async: false
     });    
 }
-
+/*
+ * [TODO]
+ */
 function addFromFile() {
 
 }
 
-/*
- * 1. Retrieve brain data 
- */
-function displayBrainData() {
-    console.log("displaybraindata");
-    getBrainData(1);
-}
 
 function populateBrainDataTable() {
     populateNodesTable();
@@ -221,8 +213,6 @@ function getUserId() {
 }
 
 function getBrainData(datasetKey) {
-    console.log("datasetKey");
-    console.log(datasetKey);
     $.ajax({
         type: "POST",
         url: "../php/getBrainData.php",

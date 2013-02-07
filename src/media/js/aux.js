@@ -6,6 +6,7 @@
  * affect the visual appearance of the canvas
  */
 
+// ================ Viz Auxilary Functions ================ //
 
 function combineRegions(new_node, nodes_to_remove) {
     // Iterate through all the active nodes and remove the links associated 
@@ -57,6 +58,73 @@ function combineRegions(new_node, nodes_to_remove) {
     updateCircularLayout(new_num, new_delta);
 }
 
+/*
+ * This function is called before rendering the canvas to assign colors to the 
+ * top level nodes
+ * Also assigns group
+ * TODO: Assign the groups when formatting the data, and then assign the colors
+ * based on the group IDs
+ */
+function assignColors() {
+    var num_level1_nodes = 0;
+    var queue = [];
+    for (var key in node_map) {
+        var node = node_map[key];
+        if (node.depth === 1) {
+            num_level1_nodes += 1;
+            node.group = node.key;
+            queue.push(node);
+        }
+    }
+    var currentPalette = [];
+    for (var i = 0; i < num_level1_nodes; ++i) {
+        currentPalette.push(colorPalette[i]);
+    }
+    var nodesFill = d3.scale.ordinal()
+                      .domain(d3.range(num_level1_nodes))
+                      .range(currentPalette);
+    for (var i = 0; i < num_level1_nodes; ++i) {
+        queue[i].color = currentPalette[i];
+    }
+    while (queue.length > 0) {
+        var curr_node = queue[0];
+        var children = curr_node.children;
+        var child_num = children.length;
+        for (var i = 0; i < child_num; ++i) {
+            var child = node_map[children[i]];
+            child.color = curr_node.color;
+            child.group = curr_node.group;
+            queue.push(child);
+        }
+        queue.splice(0, 1);
+    }
+}
+
+function computeCircularNodesParameters(data) {
+    var total_num = data.length;
+    var delta = 2 * Math.PI  / total_num;
+    for (var i = 0; i < total_num; ++i) {
+        var datum = data[i];
+        calculateArcPositions(datum, 0, delta, i);
+    }
+}
+
+function calculateArcPositions(datum, start_angle, delta, i) {
+    datum.circ.start_angle = start_angle + delta * i;
+    datum.circ.end_angle = start_angle + delta * (i+1);
+    var angle = delta * (i + 0.5) + start_angle;
+    var radius = inner_radius + (outer_radius - inner_radius) / 2;
+    datum.circ.x = radius * Math.cos(Math.PI / 2 - angle);
+    datum.circ.y = -radius * Math.sin(Math.PI / 2 - angle);
+}
+
+function stash(d) {
+    d.circ.old_start_angle = d.circ.start_angle;
+    d.circ.old_end_angle = d.circ.end_angle;
+}
+
+// ================ Data Structure Functions ================ //
+
 function findActiveParent(node) {
     var result = node;
     while (result !== undefined && result !== null) {
@@ -100,29 +168,6 @@ function findDescAtDepth(node, depth) {
     }
     return result;
 }
-
-/*
-    This function should be used to determine if an array contains a given
-    element if that object might differ slightly from the version stored in
-    the array (but will still have the same key)
-*/
-function contains(array, element) {
-    var length = array.length;
-    for (var i = 0; i < length; ++i) {
-        if (element.key === array[i].key) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-/*
-function generateKeyForNodeLinkMap(a, b) {
-    var min_key = Math.min(a.key, b.key);
-    var max_key = Math.max(a.key, b.key);
-    return min_key + "-" + max_key;
-}
-*/
 
 function initActiveNodes() {
     active_data_nodes = [];
@@ -217,71 +262,55 @@ function populateForceElements(paths) {
     }
 }
 
+// ================ Interaction Capture Functions ================ //
 
-/*
- * This function is called before rendering the canvas to assign colors to the 
- * top level nodes
- * Also assigns group
- * TODO: Assign the groups when formatting the data, and then assign the colors
- * based on the group IDs
- */
-function assignColors() {
-    var num_level1_nodes = 0;
-    var queue = [];
-    for (var key in node_map) {
-        var node = node_map[key];
-        if (node.depth === 1) {
-            num_level1_nodes += 1;
-            node.group = node.key;
-            queue.push(node);
-        }
+function startSession() {
+    sessionStartTime = new Date();
+    startTime = new Date();
+    document.onmousemove = recordMouseMovement;
+}
+
+function recordActionData() {
+    actionData.push({
+        timeElapsed: currentActionData.timeElapsed,
+        mouseTrace: currentActionData.mouseTrace,
+        actionBasic: currentActionData.actionBasic,
+        actionDetail: currentActionData.actionDetail,
+        time: currentActionData.time
+    });
+    startTime = new Date();
+    currentActionData = {timeElapsed: -1, mouseTrace: "", actionBasic: "", actionDetail: "", time: -1};
+}
+
+
+function recordMouseMovement(e) {
+    if (currentActionData.mouseTrace.length > 2950) { return; }
+    var currentTime = new Date();
+    currentActionData.mouseTrace += "x:" + e.pageX + ",y:" + e.pageY + 
+                                    ",time:" + (currentTime - startTime) + ";";
+}
+
+function trackAction(actionBasicStr, actionDetailStr) {
+    currentActionData.actionBasic = actionBasicStr;
+    currentActionData.actionDetail = actionDetailStr;
+    endTime = new Date();
+    currentActionData.timeElapsed = (endTime - startTime) / 1000;
+    currentActionData.time = endTime.toString();
+    recordActionData();
+}
+
+function paperClick() {
+    var paperName = $(this).text();
+    if (enable_owa) {
+        OWATracker.trackAction('UI', 'Click paper', paperName);
     }
-    var currentPalette = [];
-    for (var i = 0; i < num_level1_nodes; ++i) {
-        currentPalette.push(colorPalette[i]);
-    }
-    var nodesFill = d3.scale.ordinal()
-                      .domain(d3.range(num_level1_nodes))
-                      .range(currentPalette);
-    for (var i = 0; i < num_level1_nodes; ++i) {
-        queue[i].color = currentPalette[i];
-    }
-    while (queue.length > 0) {
-        var curr_node = queue[0];
-        var children = curr_node.children;
-        var child_num = children.length;
-        for (var i = 0; i < child_num; ++i) {
-            var child = node_map[children[i]];
-            child.color = curr_node.color;
-            child.group = curr_node.group;
-            queue.push(child);
-        }
-        queue.splice(0, 1);
+    if (enable_tracking) {
+        console.log("tracking paper click");
+        trackAction('Click paper', paperName);
     }
 }
 
-function computeCircularNodesParameters(data) {
-    var total_num = data.length;
-    var delta = 2 * Math.PI  / total_num;
-    for (var i = 0; i < total_num; ++i) {
-        var datum = data[i];
-        calculateArcPositions(datum, 0, delta, i);
-    }
-}
-
-function calculateArcPositions(datum, start_angle, delta, i) {
-    datum.circ.start_angle = start_angle + delta * i;
-    datum.circ.end_angle = start_angle + delta * (i+1);
-    var angle = delta * (i + 0.5) + start_angle;
-    var radius = inner_radius + (outer_radius - inner_radius) / 2;
-    datum.circ.x = radius * Math.cos(Math.PI / 2 - angle);
-    datum.circ.y = -radius * Math.sin(Math.PI / 2 - angle);
-}
-
-function stash(d) {
-    d.circ.old_start_angle = d.circ.start_angle;
-    d.circ.old_end_angle = d.circ.end_angle;
-}
+// ================ Database Query Functions ================ //
 
 function saveSessionData() {
     sessionEndTime = new Date();
@@ -338,7 +367,7 @@ function populateDatasets() {
 }
 
 /*
- * 1. Add the dataset in the dabase
+ * 1. Add the dataset in the database
  * 2. Add the dataset in the 
  */
 function createDataset(datasetName, userID) {
@@ -363,48 +392,97 @@ function createDataset(datasetName, userID) {
     });
 }
 
-function startSession() {
-    sessionStartTime = new Date();
-    startTime = new Date();
-    document.onmousemove = recordMouseMovement;
-}
-
-function recordActionData() {
-    actionData.push({
-        timeElapsed: currentActionData.timeElapsed,
-        mouseTrace: currentActionData.mouseTrace,
-        actionBasic: currentActionData.actionBasic,
-        actionDetail: currentActionData.actionDetail,
-        time: currentActionData.time
+function getBrainData(datasetKey) {
+    $.ajax({
+        type: "POST",
+        url: "media/php/getBrainData.php",
+        data: {datasetKey: datasetKey},
+        error: function(data) {
+        console.log("Failed");
+            console.log(data);
+        },
+        success: function(result) {
+            console.log("Successfully passed data to php.");
+            console.log(result);
+            var data = $.parseJSON(result);
+            var nodes = data.nodes;
+            var links = data.links;
+            constructUserDataMaps(datasetKey, nodes, links);
+        },
+        async: false
     });
-    startTime = new Date();
-    currentActionData = {timeElapsed: -1, mouseTrace: "", actionBasic: "", actionDetail: "", time: -1};
 }
 
-
-function recordMouseMovement(e) {
-    if (currentActionData.mouseTrace.length > 2950) { return; }
-    var currentTime = new Date();
-    currentActionData.mouseTrace += "x:" + e.pageX + ",y:" + e.pageY + 
-                                    ",time:" + (currentTime - startTime) + ";";
+/*
+ *[TODO: reposition]
+ */
+function constructUserDataMaps(datasetKey, nodes, links) {
+    user_datasets[datasetKey] = {};
+    console.log(datasetKey);
+    constructUserNodesMaps(datasetKey);
 }
 
-function trackAction(actionBasicStr, actionDetailStr) {
-    currentActionData.actionBasic = actionBasicStr;
-    currentActionData.actionDetail = actionDetailStr;
-    endTime = new Date();
-    currentActionData.timeElapsed = (endTime - startTime) / 1000;
-    currentActionData.time = endTime.toString();
-    recordActionData();
-}
+/*
+ *[TODO: reposition]
+ */
+function constructUserDataMaps(datasetKey, nodes) {
+    console.log(nodes);
+    console.log(datasetKey);
+    var user_node_map = {};
+    var user_in_neighbor_map = {};
+    var user_out_neighbor_map = {};
 
-function paperClick() {
-    var paperName = $(this).text();
-    if (enable_owa) {
-        OWATracker.trackAction('UI', 'Click paper', paperName);
+    var num_nodes = nodes.length;
+    for (var i = 0; i < num_nodes; ++i) {
+        var node = nodes[i];
+        node.key = parseInt(node.key);
+        node.depth = parseInt(node.depth);
+        node.parent = parseInt(node.parentKey);
+        node.circ = {};
+        node.children = [];
+        user_node_map[node.key] = node;
+        user_in_neighbor_map[node.key] = [];
+        user_out_neighbor_map[node.key] = [];
     }
-    if (enable_tracking) {
-        console.log("tracking paper click");
-        trackAction('Click paper', paperName);
+    
+    console.log(user_node_map);
+    
+    for (var key in user_node_map) {
+        var node = user_node_map[key];
+        var parent_node = user_node_map[node.parent];
+        parent_node.children.push(node);
     }
+    
+    console.log(user_datasets);
+    console.log(user_node_map);
+
+    user_datasets[datasetKey].node_map = user_node_map;
+    user_datasets[datasetKey].node_in_neighbor_map = user_in_neighbor_map;
+    user_datasets[datasetKey].node_out_neighbor_map = user_out_neighbor_map;
 }
+
+
+// ================ Misc Functions ================ //
+
+/*
+    This function should be used to determine if an array contains a given
+    element if that object might differ slightly from the version stored in
+    the array (but will still have the same key)
+*/
+function contains(array, element) {
+    var length = array.length;
+    for (var i = 0; i < length; ++i) {
+        if (element.key === array[i].key) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+/*
+function generateKeyForNodeLinkMap(a, b) {
+    var min_key = Math.min(a.key, b.key);
+    var max_key = Math.max(a.key, b.key);
+    return min_key + "-" + max_key;
+}
+*/

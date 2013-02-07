@@ -34,8 +34,22 @@ function manageDatasetButtonClick() {
     var datasetID = $('#dataSelect').val();
     var url = "media/php/manageDataset.php?datasetName=" + datasetName + 
                 "&datasetID=" + datasetID;
-    console.log(url);
     window.open(url, 'Manage Datasets', 'width=800, height=800');
+}
+
+/*
+ * 1. Get the name of the selected dataset
+ * 2. Get the content of the selected dataset
+ * 3. Construct local maps for the selected dataset
+ * 4. Update the visualization [TODO]
+ */
+function applyDatasetButtonClick() {
+    var datasetID = parseInt($('#dataSelect').val());
+    if (user_datasets[datasetID] === undefined) {
+	    getBrainData(datasetID);
+    }
+    else {
+    }
 }
 
 function searchButtonClick() {

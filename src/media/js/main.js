@@ -86,6 +86,7 @@ d3.select("#bt-search").on("click", searchButtonClick);
 d3.select("#bt-clear").on("click", clearButtonClick);
 d3.select('#bt-createDatasets').on('click', createDatasetButtonClick);
 d3.select('#bt-manageDatasets').on('click', manageDatasetButtonClick);
+d3.select('#bt-applyDataset').on('click', applyDatasetButtonClick);
 d3.select("#maxHop").on("change", setMaxHop);
 $('#sourceSelect').change(sourceSearchInput);
 $('#targetSelect').change(targetSearchInput);
