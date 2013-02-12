@@ -193,13 +193,13 @@
 
         <!--MANAGE DATA-->
         <div id="manage-data" class="tab-pane fade in">
+            <div id="createDatasetSuccessAlert" class="alert alert-success" style="display:none">
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+              Dataset created successfully. Select and edit the new dataset to add nodes and links.
+            </div>
             <div id="create" style="height:80px">
               <input type="text" placeholder="Name for the new dataset" name="datasetName">
               <button class="btn" id="bt-createDatasets">Create a dataset</button>
-              <div id="createDatasetSuccessAlert" class="alert alert-success" style="display:none">
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-                Dataset created successfully. Select and edit the new dataset to add nodes and links.
-              </div>
             </div>
             <div id="select" style="height:80px">
                 <p>Select an existing dataset:</p>

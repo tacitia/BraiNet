@@ -556,7 +556,7 @@ function createDataset(datasetName, userID) {
             console.log("Success");
             $('#dataSelect').append(new Option(datasetName, datasetID));
             $('#dataSelect').trigger('liszt:updated');
-            $('#createDatasetSuccessAlert').css('display', 'block');
+            $('#createDatasetSuccessAlert').show();
         },
         async: true
     });
