@@ -1,3 +1,6 @@
+/* @override 
+	http://localhost:8888/braincircuiviz/src/media/css/style-ui.css */
+
 body {
     /*make everything not selectable*/
     -webkit-touch-callout: none;
@@ -32,20 +35,20 @@ body {
     position: absolute;
     right: 0px;
     top:45px;
-    width: 25%;
+    width: 32%;
     height: 100%;
     /*border-left:thick solid #ccc;
     border-top:thick solid #ccc;*/
     box-sizing: border-box;
 }
 #canvas {
-    padding: 20px;
+
     background-color: rgba(255,255,255,0.9);
     position: absolute;
     left: 0px;
     top: 45px;
     min-width: 825px;
-    width: 75%;
+    width: 67%;
     height: 850px;
     /*border-left:thick solid #ccc;
     border-top:thick solid #ccc;*/
@@ -206,6 +209,8 @@ body {
     height: 180px;
 }
 
+/* @group Manage Data */
+
 .datasetDisplay {
     height: 300px;
     width: 800px;
@@ -214,10 +219,34 @@ body {
     overflow-y: scroll;
 }
 
+#create {
+	margin-bottom: 35px;
+}
+
+#bt-createDatasets {
+	margin-bottom: 10px;
+}
+
+#select {
+	margin-bottom: 20px;
+}
+
 #datasetControl {
     width: 800px;
     margin-left: auto;
     margin-right: auto;
 }
+
+#bt-manageDatasets {
+	float: left;
+	margin-bottom: 10px;
+}
+
+#bt-applyDataset {
+	float: left;
+	margin-left: 10px;
+}
+
+/* @end */
 
 
