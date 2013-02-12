@@ -66,6 +66,7 @@ function expandRegion(d, sub, svg) {
         active_data_nodes[i] = active_data_nodes[i-sub_num+1];
     }
 
+    console.log(active_node_link_map);
     for (var i = pos; i < pos + sub_num; ++i) {
         var datum = sub[i-pos];
         calculateArcPositions(datum, start_angle, delta, i-pos);
@@ -77,7 +78,8 @@ function expandRegion(d, sub, svg) {
         for (var j = 0; j < in_neighbor_num; ++j) {
             var neighbor = in_neighbors[j];
             var key_pair = neighbor.key + "-" + datum.key;
-            var link = node_link_map[key_pair];
+            console.log(key_pair);
+            var link = active_node_link_map[key_pair];
             if (link !== undefined) {
                 active_data_links.push(link);
             }
@@ -85,7 +87,8 @@ function expandRegion(d, sub, svg) {
         for (var j = 0; j < out_neighbor_num; ++j) {
             var neighbor = out_neighbors[j];
             var key_pair = datum.key + "-" + neighbor.key;
-            var link = node_link_map[key_pair];
+            console.log(key_pair);
+            var link = active_node_link_map[key_pair];
             if (link !== undefined) {
                 active_data_links.push(link);
             }
@@ -95,12 +98,13 @@ function expandRegion(d, sub, svg) {
     for (var i = 0; i < sub_num; ++i) {
         for (var j = i + 1; j < sub_num; ++j) {
             var key_pair = sub[i].key + '-' + sub[j].key;
-            var link = node_link_map[key_pair];
+            console.log(key_pair);
+            var link = active_node_link_map[key_pair];
             if (link !== undefined) {
                 active_data_links.push(link);
             }
             key_pair = sub[j].key + '-' + sub[i].key;
-            link = node_link_map[key_pair];
+            link = active_node_link_map[key_pair];
             if (link !== undefined) {
                 active_data_links.push(link);
             }
@@ -138,7 +142,7 @@ function nodeClick(d) {
             trackAction('Combine circular node', d.name);
         }
         if (d.parent === undefined || d.parent === null) { return; } // Ignore top level nodes
-        var parent = node_map[d.parent]; 
+        var parent = active_node_map[d.parent]; 
         var nodes_to_remove = findActiveDescends(parent);
         combineRegions(parent, nodes_to_remove);
     }
@@ -152,7 +156,7 @@ function nodeClick(d) {
         var ids = d.children;
         var length = ids.length;
         for (var i = 0; i < length; ++i) {
-            children.push(node_map[ids[i]]);
+            children.push(active_node_map[ids[i]]);
         }
         expandRegion(d, children, svg_circular);
     }
@@ -165,8 +169,8 @@ function nodeMouseOver(node, svg) {
         .classed('nofocus', function(d) {
             var dKey = d.key;
             var nodeKey = node.key;
-            var inNeighbors = node_in_neighbor_map[nodeKey];
-            var outNeighbors = node_out_neighbor_map[nodeKey];
+            var inNeighbors = active_node_in_neighbor_map[nodeKey];
+            var outNeighbors = active_node_out_neighbor_map[nodeKey];
             return dKey !== nodeKey && ($.inArray(dKey, inNeighbors) < 0) &&
                 ($.inArray(dKey, outNeighbors) < 0);
         });
@@ -178,8 +182,8 @@ function nodeMouseOver(node, svg) {
         .classed('visible', function(d) {
             var dKey = d.key;
             var nodeKey = node.key;
-            var inNeighbors = node_in_neighbor_map[nodeKey];
-            var outNeighbors = node_out_neighbor_map[nodeKey];
+            var inNeighbors = active_node_in_neighbor_map[nodeKey];
+            var outNeighbors = active_node_out_neighbor_map[nodeKey];
             return dKey === nodeKey || ($.inArray(dKey, inNeighbors) >= 0) ||
                 ($.inArray(dKey, outNeighbors) >= 0);
         });
@@ -245,8 +249,8 @@ function forceNodeMouseOver(node) {
         .classed('nofocus', function(d) {
             var dKey = d.key;
             var nodeKey = node.key;
-            var inNeighbors = node_in_neighbor_map[nodeKey];
-            var outNeighbors = node_out_neighbor_map[nodeKey];
+            var inNeighbors = active_node_in_neighbor_map[nodeKey];
+            var outNeighbors = active_node_out_neighbor_map[nodeKey];
             return dKey !== nodeKey && ($.inArray(dKey, inNeighbors) < 0) &&
                 ($.inArray(dKey, outNeighbors) < 0);
         });
@@ -258,8 +262,8 @@ function forceNodeMouseOver(node) {
         .classed('visible', function(d) {
             var dKey = d.key;
             var nodeKey = node.key;
-            var inNeighbors = node_in_neighbor_map[nodeKey];
-            var outNeighbors = node_out_neighbor_map[nodeKey];
+            var inNeighbors = active_node_in_neighbor_map[nodeKey];
+            var outNeighbors = active_node_out_neighbor_map[nodeKey];
             return dKey === nodeKey || ($.inArray(dKey, inNeighbors) >= 0) ||
                 ($.inArray(dKey, outNeighbors) >= 0);
         });

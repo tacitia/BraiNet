@@ -5,15 +5,27 @@ function appendNodesAsOptions(node_map) {
         $('#sourceSelect').append(new Option(d.name, key, false, false));
         $('#targetSelect').append(new Option(d.name, key, false, false));
     }
+    $('.chzn-select').chosen({allow_single_deselect: true});
+    $('#sourceSelect').trigger('liszt:updated');
+    $('#targetSelect').trigger('liszt:updated');
+}
+
+function updateOptions() {
+    console.log('called');
+    $('#sourceSelect').find('option').remove();
+    $('#targetSelect').find('option').remove();
+    $('#sourceSelect').trigger('liszt:updated');
+    $('#targetSelect').trigger('liszt:updated');
+    appendNodesAsOptions(active_node_map);
 }
 
 function populateDatasetUI() {
     console.log("testing user id");
     console.log(uid);
     var num_datasets = dataset_list.length;
+    console.log(dataset_list);
     for (var i = 0; i < num_datasets; ++i) {
         var curr_dataset = dataset_list[i];
-        console.log(curr_dataset);
         $('#dataSelect').append(new Option(curr_dataset[1], curr_dataset[0]));
     }
 }
@@ -45,6 +57,9 @@ function manageDatasetButtonClick() {
  */
 function applyDatasetButtonClick() {
     var datasetID = parseInt($('#dataSelect').val());
+    if (datasetID === "") {
+        return;
+    }
     if (user_datasets[datasetID] === undefined) {
 	    getBrainData(datasetID);
     }
@@ -94,7 +109,7 @@ function sourceSearchInput() {
         clearSearchResult();
     }
     var input_key = this.value;
-    var input_node = node_map[input_key];
+    var input_node = active_node_map[input_key];
     selected_source = input_node;
     if (!input_node.isActive) {
         var parent = findActiveParent(input_node);
@@ -128,7 +143,7 @@ function targetSearchInput() {
         clearSearchResult();
     }
     var input_key = this.value;
-    var input_node = node_map[input_key];
+    var input_node = active_node_map[input_key];
     selected_target = input_node;
     if (!input_node.isActive) {
         var parent = findActiveParent(input_node);
@@ -216,7 +231,7 @@ function displayConnectionInfo(d) {
             .enter()
             .append('p')
             .html(function(d) {
-                var sub_link = link_map[d];
+                var sub_link = active_link_map[d];
                 return 'Source: ' + sub_link.source.name + '; Target: ' + sub_link.target.name;
             })
     }

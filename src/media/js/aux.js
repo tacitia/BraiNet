@@ -8,6 +8,23 @@
 
 // ================ Viz Auxilary Functions ================ //
 
+function visualizeUserData(dataset_key) {
+    console.log(dataset_key);
+    var dataset = user_datasets[dataset_key];
+    initActiveNodes(dataset.node_map);
+    computeCircularNodesParameters(active_data_nodes);
+    initActiveLinks(dataset.link_map);
+    clearCanvases();
+    enterCircularNodes();
+    enterCircularLinks();
+    updateCircularTexts();
+}
+
+function clearCanvases() {
+    svg_circular.selectAll('.circular').remove();
+    svg_force.selectAll('.force').remove();
+}
+
 function combineRegions(new_node, nodes_to_remove) {
     // Iterate through all the active nodes and remove the links associated 
     // with the nodes to be removed
@@ -44,12 +61,12 @@ function combineRegions(new_node, nodes_to_remove) {
     for (var i = 0; i < new_num; ++i) {
         var curr_key = active_data_nodes[i].key;
         var key_pair = new_key + '-' + curr_key;
-        var link = node_link_map[key_pair];
+        var link = active_node_link_map[key_pair];
         if (link !== undefined) {
             active_data_links.push(link);
         }
         key_pair = curr_key + '-' + new_key;
-        link = node_link_map[key_pair];
+        link = active_node_link_map[key_pair];
         if (link !== undefined) {
             active_data_links.push(link);
         }
@@ -65,7 +82,7 @@ function combineRegions(new_node, nodes_to_remove) {
  * TODO: Assign the groups when formatting the data, and then assign the colors
  * based on the group IDs
  */
-function assignColors() {
+function assignColors(node_map) {
     var num_level1_nodes = 0;
     var queue = [];
     for (var key in node_map) {
@@ -124,6 +141,160 @@ function stash(d) {
 }
 
 // ================ Data Structure Functions ================ //
+function constructUserDataMaps(datasetKey, nodes, links) {
+    user_datasets[datasetKey] = {};
+    constructUserNodesMaps(datasetKey, nodes);
+    constructUserLinksMaps(datasetKey, links);
+    constructLinkHierarchy(datasetKey, links);
+    assignColors(user_datasets[datasetKey].node_map);
+    console.log("Color assigned");
+    console.log(user_datasets[datasetKey]);
+}
+
+function constructUserNodesMaps(datasetKey, nodes) {
+    var user_node_map = {};
+    var user_in_neighbor_map = {};
+    var user_out_neighbor_map = {};
+
+    var num_nodes = nodes.length;
+    for (var i = 0; i < num_nodes; ++i) {
+        var node = nodes[i];
+        node.key = parseInt(node.key);
+        node.depth = parseInt(node.depth);
+        node.parent = (node.parentKey === null) ? null : parseInt(node.parentKey);
+        node.circ = {};
+        node.children = [];
+        user_node_map[node.key] = node;
+        user_in_neighbor_map[node.key] = [];
+        user_out_neighbor_map[node.key] = [];
+    }
+    
+    for (var key in user_node_map) {
+        var node = user_node_map[key];
+        if (node.parent !== null) { 
+            var parent_node = user_node_map[node.parent];
+            parent_node.children.push(node.key);
+        }
+    }
+
+    user_datasets[datasetKey].node_map = user_node_map;
+    user_datasets[datasetKey].node_in_neighbor_map = user_in_neighbor_map;
+    user_datasets[datasetKey].node_out_neighbor_map = user_out_neighbor_map;
+}
+
+
+/*
+ * TODO: extend this to handle user entered notes
+ */
+function constructUserLinksMaps(datasetKey, links) {    
+    var user_link_map = {};
+    var user_node_link_map = {};
+    var dataset = user_datasets[datasetKey];
+
+    var num_links = links.length;
+    for (var i = 0; i < num_links; ++i) {
+        var raw_link = links[i];
+        var source_key = parseInt(raw_link.sourceKey);
+        var target_key = parseInt(raw_link.targetKey);
+        var link = {key: parseInt(raw_link.key), source: dataset.node_map[source_key], 
+            target: dataset.node_map[target_key], notes: null,
+            children: []};
+        user_link_map[link.key] = link;
+        var key_pair = link.source.key + "-" + link.target.key;
+        user_node_link_map[key_pair] = link;
+        dataset.node_in_neighbor_map[target_key].push(source_key);
+        dataset.node_out_neighbor_map[source_key].push(target_key);
+    }
+    dataset.link_map = user_link_map;
+    dataset.node_link_map = user_node_link_map;
+
+    console.log(dataset);
+}
+
+/*
+ * TODO: could use some performance improvement
+ */
+function constructLinkHierarchy(datasetKey, links) {
+    var num_link = links.length;
+    var max_link_key = 0;
+    for (var i = 0; i < num_link; ++i) {
+        var link_key = parseInt(links[i].key);
+        if (link_key > max_link_key) {
+            max_link_key = link_key;
+        }
+    }
+    var dataset = user_datasets[datasetKey];
+    // 1. initiate children
+    // 2. check parent existence
+    // 3. optionally create parent and add a child
+    for (var i = 0; i < num_link; ++i) {
+        var link_key = parseInt(links[i].key);
+        var link = dataset.link_map[link_key];
+        var source = link.source;
+        var target = link.target;
+        if (source.parent !== null) {
+            var key_pair = source.parent + "-" + target.key;
+            var srcParentLink = dataset.node_link_map[key_pair];
+            if (srcParentLink === undefined) {
+                max_link_key += 1;
+                var srcParentLink = {key: max_link_key, 
+                source: dataset.node_map[parseInt(source.parent)],
+                target: target, notes: null, children: [link_key]};
+                dataset.link_map[max_link_key] = srcParentLink;
+                dataset.node_link_map[key_pair] = srcParentLink;
+                links.push(srcParentLink);
+                num_link += 1;
+            }
+            else {
+                if ($.inArray(link_key, srcParentLink.children) < 0) {
+                    srcParentLink.children.push(link_key);
+                }
+            }
+        }
+        if (target.parent !== null) {
+            var key_pair = source.key + "-" + target.parent;
+            var tgtParentLink = dataset.node_link_map[key_pair];
+            if (tgtParentLink === undefined) {
+                max_link_key += 1;
+                var tgtParentLink = {key: max_link_key, 
+                source: source,
+                target: dataset.node_map[parseInt(target.parent)], 
+                notes: null, children: [link_key]};
+                dataset.link_map[max_link_key] = tgtParentLink;
+                dataset.node_link_map[key_pair] = tgtParentLink;
+                links.push(tgtParentLink);
+                num_link += 1;
+            }
+            else {
+                if ($.inArray(link_key, tgtParentLink.children) < 0) {
+                    tgtParentLink.children.push(link_key);
+                }
+            }
+        } 
+        if (source.parent !== null && target.parent !== null) {
+            var key_pair = source.parent + "-" + target.parent;
+            var parentLink = dataset.node_link_map[key_pair];
+            if (parentLink === undefined) {
+                max_link_key += 1;
+                var parentLink = {key: max_link_key, 
+                source: dataset.node_map[parseInt(source.parent)],
+                target: dataset.node_map[parseInt(target.parent)], 
+                notes: null, children: [link_key]};
+                dataset.link_map[max_link_key] = parentLink;
+                dataset.node_link_map[key_pair] = parentLink;
+                links.push(parentLink);
+                num_link += 1;
+            }
+            else {
+                if ($.inArray(link_key, parentLink.children) < 0) {            
+                    parentLink.children.push(link_key);
+                }
+            }
+        } 
+    }
+    console.log(dataset.link_map);
+    console.log(dataset.node_link_map);
+}
 
 function findActiveParent(node) {
     var result = node;
@@ -131,7 +302,7 @@ function findActiveParent(node) {
         if (result.isActive) {
             return result;
         }
-        result = node_map[result.parent];
+        result = active_node_map[result.parent];
     }
     return result;
 }
@@ -143,13 +314,13 @@ function findActiveDescends(node) {
         var curr_node = active_data_nodes[i];
         if (curr_node.parent === undefined || curr_node.parent === null) { continue; }
         // Check if the input node is a parent of the current active node
-        var parent = node_map[curr_node.parent];
+        var parent = active_node_map[curr_node.parent];
         while (parent !== undefined && parent !== null) {
             if (parent === node) {
                 results.push(curr_node);
                 break;
             }
-            parent = node_map[parent.parent];
+            parent = active_node_map[parent.parent];
         }
     }
     return results;
@@ -162,14 +333,14 @@ function findDescAtDepth(node, depth) {
         var children = curr_node.children;
         var child_num = children.length;
         for (var i = 0; i < child_num; ++i) {
-            result.push(node_map[children[i]]);
+            result.push(active_node_map[children[i]]);
         }
         result.splice(0, 1);
     }
     return result;
 }
 
-function initActiveNodes() {
+function initActiveNodes(node_map) {
     active_data_nodes = [];
     for (var key in node_map) {
         var curr_node = node_map[key];
@@ -184,7 +355,7 @@ function initActiveNodes() {
     }
 }
 
-function initActiveLinks() {
+function initActiveLinks(link_map) {
     active_data_links = [];
     for (var key in link_map) {
         var curr_link = link_map[key];
@@ -215,11 +386,11 @@ function calculatePaths(num_hop) {
         }
         // If already reaches the maximum length, don't continue counting neighbors
         if (current_path.length >= num_hop + 2) { continue; }
-        var neighbors = node_out_neighbor_map[anchor_node.key];
+        var neighbors = active_node_out_neighbor_map[anchor_node.key];
         var neighbor_num = neighbors.length;
         for (var i = 0; i < neighbor_num; ++i) {
             var neighbor_id = neighbors[i];
-            var neighbor_node = node_map[neighbor_id];
+            var neighbor_node = active_node_map[neighbor_id];
             if (neighbor_node.depth >= min_depth && neighbor_node.depth <= max_depth) {
                 paths.push(current_path.concat(neighbor_node));
             }
@@ -248,7 +419,7 @@ function populateForceElements(paths) {
             var current_source = path[j];
             var current_target = path[j+1];
             var key_pair = current_source.key + "-" + current_target.key;
-            var link = node_link_map[key_pair];
+            var link = active_node_link_map[key_pair];
             if ($.inArray(link, active_data_links_force) < 0) {
                 active_data_links_force.push(link);
             }
@@ -343,22 +514,24 @@ function populateUserId() {
         success: function(data) {
             console.log("Success");
             uid = data;
+            populateDatasets(uid);
         },
         async: false
     });
 }
 
-function populateDatasets() {
+function populateDatasets(uid) {
     $.ajax({
         type: "POST",
         url: "media/php/getDatasetByUserId.php",
-        data: {userID: 2},
+        data: {userID: uid},
         error: function(data) {
             console.log("Failed");
             console.log(data);
         },
         success: function(data) {
-            console.log("Success");
+            console.log("Populate dataset success");
+            console.log(data);
             dataset_list = $.parseJSON(data);
             populateDatasetUI();
         },
@@ -381,9 +554,6 @@ function createDataset(datasetName, userID) {
         },
         success: function(datasetID) {
             console.log("Success");
-            console.log(datasetID);
-//            var option=document.createElement("option");
-//option.text="Kiwi";
             $('#dataSelect').append(new Option(datasetName, datasetID));
             $('#dataSelect').trigger('liszt:updated');
             $('#createDatasetSuccessAlert').css('display', 'block');
@@ -403,64 +573,21 @@ function getBrainData(datasetKey) {
         },
         success: function(result) {
             console.log("Successfully passed data to php.");
-            console.log(result);
             var data = $.parseJSON(result);
             var nodes = data.nodes;
             var links = data.links;
             constructUserDataMaps(datasetKey, nodes, links);
+            var dataset = user_datasets[datasetKey];
+            active_node_map = dataset.node_map;
+            active_node_link_map = dataset.node_link_map;
+            active_node_in_neighbor_map = dataset.node_in_neighbor_map;
+            active_node_out_neighbor_map = dataset.node_out_neighbor_map;
+            updateOptions();
+            visualizeUserData(datasetKey);
         },
         async: false
     });
 }
-
-/*
- *[TODO: reposition]
- */
-function constructUserDataMaps(datasetKey, nodes, links) {
-    user_datasets[datasetKey] = {};
-    console.log(datasetKey);
-    constructUserNodesMaps(datasetKey);
-}
-
-/*
- *[TODO: reposition]
- */
-function constructUserDataMaps(datasetKey, nodes) {
-    console.log(nodes);
-    console.log(datasetKey);
-    var user_node_map = {};
-    var user_in_neighbor_map = {};
-    var user_out_neighbor_map = {};
-
-    var num_nodes = nodes.length;
-    for (var i = 0; i < num_nodes; ++i) {
-        var node = nodes[i];
-        node.key = parseInt(node.key);
-        node.depth = parseInt(node.depth);
-        node.parent = parseInt(node.parentKey);
-        node.circ = {};
-        node.children = [];
-        user_node_map[node.key] = node;
-        user_in_neighbor_map[node.key] = [];
-        user_out_neighbor_map[node.key] = [];
-    }
-    
-    console.log(user_node_map);
-    
-    for (var key in user_node_map) {
-        var node = user_node_map[key];
-        var parent_node = user_node_map[node.parent];
-        parent_node.children.push(node);
-    }
-    
-    console.log(user_datasets);
-    console.log(user_node_map);
-
-    user_datasets[datasetKey].node_map = user_node_map;
-    user_datasets[datasetKey].node_in_neighbor_map = user_in_neighbor_map;
-    user_datasets[datasetKey].node_out_neighbor_map = user_out_neighbor_map;
-}
-
 
 // ================ Misc Functions ================ //
 

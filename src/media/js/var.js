@@ -32,6 +32,7 @@ var active_data_nodes;
 var active_data_links;
 var active_data_nodes_force;
 var active_data_links_force;
+var active_node_map;
 
 // SVG display variables
 var svg_circular;
@@ -78,7 +79,7 @@ var colorPalette = [
 // Misc program control variables
 var mutex = 3;
 var enable_piwik = false;
-var enable_owa = true;
+var enable_owa = false;
 var enable_tracking = true;
 var current_mode = mode.exploration;
 var max_hop = 1;

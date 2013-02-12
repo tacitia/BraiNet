@@ -34,7 +34,6 @@ d3.json("media/data/test_node.json", function (data) {
             }
         }
     } 
-    
     mutex -= 1;
 });
 
@@ -55,12 +54,11 @@ d3.json("media/data/test_link.json", function (data) {
     link_map = {};
     node_link_map = {};
     var num_links = data.length;
-    console.log(num_links);
     for (var i = 0; i < num_links; ++i) {
         var raw_link = data[i];
         var link = {key: raw_link.key, source: node_map[raw_link.sourceKey], 
                     target: node_map[raw_link.targetKey], paper: raw_link.paper,
-                    children: raw_link.children, isDerived: raw_link.isDerived};
+                    children: raw_link.children};
         link_map[link.key] = link;
         var key_pair = link.source.key + "-" + link.target.key;
         node_link_map[key_pair] = link;
@@ -71,7 +69,6 @@ d3.json("media/data/test_link.json", function (data) {
 });
 
 populateUserId();
-populateDatasets();
 waitForDataLoading();
 
 /*******
@@ -114,13 +111,15 @@ bams_map[1] = {key: 1, url: ""};
 */
 
 function renderCanvas() {
+    console.log('2');
+    console.log(node_map);
     // Assign colors to
-    assignColors();
+    assignColors(node_map);
     // Initialize the active nodes to be the highest level ones
-    initActiveNodes();
+    initActiveNodes(node_map);
     computeCircularNodesParameters(active_data_nodes);
     // Initialize the active links according to the active nodes
-    initActiveLinks();
+    initActiveLinks(link_map);
 
     // Setup the arc function object
     arcs = d3.svg.arc()
@@ -160,8 +159,6 @@ function renderCanvas() {
 
 function setupUIElements() {
     appendNodesAsOptions(node_map);
-    console.log("about to bind chzn-select");
-    $('.chzn-select').chosen({allow_single_deselect: true});
 }
 
 function waitForDataLoading() {
@@ -169,6 +166,10 @@ function waitForDataLoading() {
         setTimeout(function() {waitForDataLoading();}, 1000);
     }
     else {
+        active_node_map = node_map;
+        active_node_link_map = node_link_map;
+        active_node_in_neighbor_map = node_in_neighbor_map;
+        active_node_out_neighbor_map = node_out_neighbor_map;
         renderCanvas();
         setupUIElements();
     }

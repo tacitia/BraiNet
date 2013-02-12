@@ -2,8 +2,8 @@ var datasetName = $('#datasetName').text();
 var datasetKey = parseInt($('#datasetID').text());
 var nodes;
 var links;
-var key_node_map = [];
-var name_node_map = [];
+var key_node_map = {};
+var name_node_map = {};
 var userId = 3;
 var mutex = 1;
 getBrainData(datasetKey);
@@ -47,6 +47,9 @@ function addBrainNode(nodeName, parentName, depth) {
     var nodeName = $('[name="nodeName"]').val();
     var nodeDepth = parseInt($('[name="nodeDepth"]').val());
     var parentKey = $('#nodeParent').val();
+    if (parentKey === "") {
+        parentKey = -1;
+    }
     var newData = {userID: userId, datasetKey: datasetKey, nodeName: nodeName, parentKey: parentKey, depth: nodeDepth};
     $.ajax({        
         type: "POST",
@@ -104,7 +107,14 @@ function populateBrainDataTable() {
 
 function populateNodesTable() {
     var nodesTable = d3.select('#nodesTable').select('tbody');
-    nodesTable.selectAll(':not(.tableTitle)')
+    var length = nodes.length;
+    for (var i = 0; i < length; ++i) {
+        var node = nodes[i];
+        $('#nodesTable > tbody:last').append('<tr><td>' + node.name + '</td><td>' + 
+            node.depth + '</td><td>' + node.parentName + '</td></tr>');    
+    }
+    /* Can't get this to work
+    nodesTable.selectAll('tr')
         .data(nodes)
         .enter()
         .append('tr')
@@ -113,6 +123,7 @@ function populateNodesTable() {
             return '<td>' + d.name + '</td><td>' + d.depth + '</td><td>' +
             d.parentName + '</td>';
         });
+        */
 }
 
 function addNodeEntry(node) {
@@ -121,6 +132,8 @@ function addNodeEntry(node) {
 }
 
 function addLinkEntry(link) {
+    console.log(key_node_map);
+    console.log(link);
     var source_node = key_node_map[parseInt(link.sourceKey)];
     var target_node = key_node_map[parseInt(link.targetKey)];
     $('#linksTable > tbody:last').append('<tr><td>' + source_node.name + '</td><td>' + 
@@ -129,6 +142,15 @@ function addLinkEntry(link) {
 
 function populateLinksTable() {
     var linksTable = d3.select('#linksTable').select('tbody');
+    var length = links.length;
+    for (var i = 0; i < length; ++i) {
+        var link = links[i];
+        var source_node = key_node_map[parseInt(link.sourceKey)];
+        var target_node = key_node_map[parseInt(link.targetKey)];
+        $('#linksTable > tbody:last').append('<tr><td>' + source_node.name + '</td><td>' + 
+            target_node.name + '</td></tr>');        
+    }
+    /* Can't get this to work
     linksTable.selectAll(':not(.tableTitle)')
         .data(links)
         .enter()
@@ -138,7 +160,7 @@ function populateLinksTable() {
             var source_node = key_node_map[parseInt(d.sourceKey)];
             var target_node = key_node_map[parseInt(d.targetKey)];
             return '<td>' + source_node.name + '</td><td>' + target_node.name + '</td>';
-        });
+        }); */
 }
 
 function populateOptions() {
@@ -153,16 +175,30 @@ function populateOptions() {
 
 function addNodeToDisplay(node) {
     var parent = key_node_map[parseInt(node.parentKey)];
-    node.parentName = parent.name;
-    key_node_map[parent.key] = parent;
-    name_node_map[parent.name] = parent;
+    node.parentName = (parent === null || parent === undefined) ? null : parent.name;
+/*    if (parent !== null && parent !== undefined) {
+        key_node_map[parent.key] = parent;
+        name_node_map[parent.name] = parent;
+    } */
     nodes.push(node);
+    key_node_map[node.key] = node;
+    name_node_map[node.name] = node;
     addNodeEntry(node);
+    addNodeToOptions(node);
 }
 
 function addLinkToDisplay(link) {
     links.push(link);
     addLinkEntry(link);
+}
+
+function addNodeToOptions(node) {
+    $('#nodeParent').append(new Option(node.name, parseInt(node.key)));
+    $('#nodeParent').trigger('liszt:updated');
+    $('#sourceName').append(new Option(node.name, parseInt(node.key)));
+    $('#sourceName').trigger('liszt:updated');
+    $('#targetName').append(new Option(node.name, parseInt(node.key)));
+    $('#targetName').trigger('liszt:updated');
 }
 
 function displayAddBrainNodeField() {
