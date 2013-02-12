@@ -4,6 +4,7 @@
     $parentKey = $_POST['parentKey'];		/*int*/
     $depth = $_POST['depth'];			/*int*/
     $userID = $_POST['userID'];			/*int*/
+    $notes = $_POST['notes'];           /*string*/
     
     $con = mysql_connect("localhost", "tacitia_brainIDC", "Ophelia621");
     if (!$con) {
@@ -27,8 +28,8 @@
     echo mysql_error($con) . "\n";
     
     
-    mysql_query("INSERT INTO user_nodes (name, parent, depth, userID, datasetKey)
-VALUES ('$nodeName', '$parentKey','$depth','$userID', '$datasetKey')");
+    mysql_query("INSERT INTO user_nodes (name, parent, depth, userID, datasetKey, notes)
+VALUES ('$nodeName', '$parentKey','$depth','$userID', '$datasetKey', '$notes')");
 
     $query = "SELECT * FROM user_nodes 
     WHERE name = '" . $nodeName. "' AND datasetKey = " . $datasetKey;

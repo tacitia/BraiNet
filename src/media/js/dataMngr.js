@@ -50,7 +50,7 @@ function addBrainNode(nodeName, parentName, depth) {
     if (parentKey === "") {
         parentKey = -1;
     }
-    var newData = {userID: userId, datasetKey: datasetKey, nodeName: nodeName, parentKey: parentKey, depth: nodeDepth};
+    var newData = {userID: userId, datasetKey: datasetKey, nodeName: nodeName, parentKey: parentKey, depth: nodeDepth, notes: "test"};
     $.ajax({        
         type: "POST",
         url: "../php/addBrainNode.php",
