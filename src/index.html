@@ -197,21 +197,22 @@
               <button type="button" class="close" data-dismiss="alert">&times;</button>
               Dataset created successfully. Select and edit the new dataset to add nodes and links.
             </div>
-            <div id="create" style="height:80px">
-              <input type="text" placeholder="Name for the new dataset" name="datasetName">
-              <button class="btn" id="bt-createDatasets">Create a dataset</button>
-            </div>
-            <div id="select" style="height:80px">
-                <p>Select an existing dataset:</p>
-                <select data-placeholder="Select a dataset" class="chzn-select" style="width:250px;" id="dataSelect">
+            <div id="create">
+			<p>Create Dataset:</p>
+				<input type="text" placeholder="Name" name="datasetName">
+				<button class="btn" id="bt-createDatasets">Create Dataset</button>
+			</div>
+            <div id="select">
+                <p>Stored Datasets:</p>
+                <select data-placeholder="Select Dataset" class="chzn-select" style="width:250px;" id="dataSelect">
                   <option></option>
                 </select>
             </div>
             <div id="edit">
-              <button class="btn" id="bt-manageDatasets">Edit selected dataset</button>
+              <button class="btn" id="bt-manageDatasets">Edit</button>
             </div>
 	        <div id="apply">
-              <button class="btn" id="bt-applyDataset">Apply selected dataset</button>
+              <button class="btn btn-primary" id="bt-applyDataset">Display</button>
             </div>
         </div><!--END MANAGE DATA-->
 
