@@ -48,6 +48,7 @@ VALUES ('$nodeName', '$parentKey','$depth','$userID', '$datasetKey', '$notes')")
         $node['parentKey'] = $row['parent'];
         	$node['depth'] = $row['depth'];
         $node['datasetKey'] = $row['datasetKey'];
+        $node['notes'] = $row['notes'];
     }
 
     echo json_encode($node);

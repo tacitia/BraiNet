@@ -9,7 +9,6 @@
 // ================ Viz Auxilary Functions ================ //
 
 function visualizeUserData(dataset_key) {
-    console.log(dataset_key);
     var dataset = user_datasets[dataset_key];
     initActiveNodes(dataset.node_map);
     computeCircularNodesParameters(active_data_nodes);
@@ -197,8 +196,8 @@ function constructUserLinksMaps(datasetKey, links) {
         var source_key = parseInt(raw_link.sourceKey);
         var target_key = parseInt(raw_link.targetKey);
         var link = {key: parseInt(raw_link.key), source: dataset.node_map[source_key], 
-            target: dataset.node_map[target_key], notes: null,
-            children: []};
+            target: dataset.node_map[target_key], notes: raw_link.notes,
+            children: [], isDerived: false, base_children: []};
         user_link_map[link.key] = link;
         var key_pair = link.source.key + "-" + link.target.key;
         user_node_link_map[key_pair] = link;
@@ -207,8 +206,6 @@ function constructUserLinksMaps(datasetKey, links) {
     }
     dataset.link_map = user_link_map;
     dataset.node_link_map = user_node_link_map;
-
-    console.log(dataset);
 }
 
 /*
@@ -232,14 +229,44 @@ function constructLinkHierarchy(datasetKey, links) {
         var link = dataset.link_map[link_key];
         var source = link.source;
         var target = link.target;
-        if (source.parent !== null) {
+        var source_parent_node = dataset.node_map[source.parent];
+        var target_parent_node = dataset.node_map[target.parent];
+        var base_children = [];
+        var num_base_child = link.base_children.length;        
+        for (var j = 0; j < num_base_child; ++j) {
+            base_children.push(link.base_children[j]);
+        }
+        if (!link.isDerived) {
+            base_children.push(link.key);
+            num_base_child += 1;
+        }
+        
+/*        console.log(base_children);
+        console.log(num_base_child);
+        console.log(link);
+        console.log(link_key);
+            console.log(source.parent !== null);
+            console.log(target.parent !== null);
+            console.log(source.parent !== target.parent);
+            if (source_parent_node !== undefined) {
+                console.log($.inArray(target.key, source_parent_node.children) < 0);
+            }
+            if (target_parent_node !== undefined) {
+                console.log($.inArray(source.key, target_parent_node.children) < 0);    
+            }
+            console.log(source.parent !== target.key);
+            console.log(target.parent !== source.key); */
+        
+        if (source.parent !== null && source.parent !== target.key && 
+                $.inArray(target.key, source_parent_node.children) < 0) {
             var key_pair = source.parent + "-" + target.key;
             var srcParentLink = dataset.node_link_map[key_pair];
             if (srcParentLink === undefined) {
                 max_link_key += 1;
                 var srcParentLink = {key: max_link_key, 
                 source: dataset.node_map[parseInt(source.parent)],
-                target: target, notes: null, children: [link_key]};
+                target: target, notes: 'Meta link', children: [link_key], isDerived: true, 
+                base_children: base_children};
                 dataset.link_map[max_link_key] = srcParentLink;
                 dataset.node_link_map[key_pair] = srcParentLink;
                 links.push(srcParentLink);
@@ -249,9 +276,16 @@ function constructLinkHierarchy(datasetKey, links) {
                 if ($.inArray(link_key, srcParentLink.children) < 0) {
                     srcParentLink.children.push(link_key);
                 }
+                for (var j = 0; j < num_base_child; ++j) {
+                    var base_child = base_children[j];
+                    if ($.inArray(base_child, srcParentLink.base_children) < 0) {
+                        srcParentLink.base_children.push(base_child);
+                    }
+                }
             }
         }
-        if (target.parent !== null) {
+        if (target.parent !== null && target.parent !== source.key &&
+                $.inArray(source.key, target_parent_node.children) < 0) {
             var key_pair = source.key + "-" + target.parent;
             var tgtParentLink = dataset.node_link_map[key_pair];
             if (tgtParentLink === undefined) {
@@ -259,7 +293,8 @@ function constructLinkHierarchy(datasetKey, links) {
                 var tgtParentLink = {key: max_link_key, 
                 source: source,
                 target: dataset.node_map[parseInt(target.parent)], 
-                notes: null, children: [link_key]};
+                notes: 'Meta link', children: [link_key], isDerived: true, 
+                base_children: base_children};
                 dataset.link_map[max_link_key] = tgtParentLink;
                 dataset.node_link_map[key_pair] = tgtParentLink;
                 links.push(tgtParentLink);
@@ -269,9 +304,17 @@ function constructLinkHierarchy(datasetKey, links) {
                 if ($.inArray(link_key, tgtParentLink.children) < 0) {
                     tgtParentLink.children.push(link_key);
                 }
+                for (var j = 0; j < num_base_child; ++j) {
+                    var base_child = base_children[j];
+                    if ($.inArray(base_child, tgtParentLink.base_children) < 0) {
+                        tgtParentLink.base_children.push(base_child);
+                    }
+                }          
             }
         } 
-        if (source.parent !== null && target.parent !== null) {
+        if (source.parent !== null && target.parent !== null && source.parent !== target.parent &&
+                $.inArray(target.key, source_parent_node.children) < 0 &&
+                $.inArray(source.key, target_parent_node.children) < 0) {
             var key_pair = source.parent + "-" + target.parent;
             var parentLink = dataset.node_link_map[key_pair];
             if (parentLink === undefined) {
@@ -279,7 +322,8 @@ function constructLinkHierarchy(datasetKey, links) {
                 var parentLink = {key: max_link_key, 
                 source: dataset.node_map[parseInt(source.parent)],
                 target: dataset.node_map[parseInt(target.parent)], 
-                notes: null, children: [link_key]};
+                notes: 'Meta link', children: [link_key], isDerived: true, 
+                base_children: base_children};
                 dataset.link_map[max_link_key] = parentLink;
                 dataset.node_link_map[key_pair] = parentLink;
                 links.push(parentLink);
@@ -289,11 +333,15 @@ function constructLinkHierarchy(datasetKey, links) {
                 if ($.inArray(link_key, parentLink.children) < 0) {            
                     parentLink.children.push(link_key);
                 }
+                for (var j = 0; j < num_base_child; ++j) {
+                    var base_child = base_children[j];
+                    if ($.inArray(base_child, parentLink.base_children) < 0) {
+                        parentLink.base_children.push(base_child);
+                    }
+                }
             }
         } 
     }
-    console.log(dataset.link_map);
-    console.log(dataset.node_link_map);
 }
 
 function findActiveParent(node) {
@@ -582,8 +630,10 @@ function getBrainData(datasetKey) {
             active_node_link_map = dataset.node_link_map;
             active_node_in_neighbor_map = dataset.node_in_neighbor_map;
             active_node_out_neighbor_map = dataset.node_out_neighbor_map;
+            active_link_map = dataset.link_map;
             updateOptions();
             visualizeUserData(datasetKey);
+            is_preloaded_data = false;
         },
         async: false
     });

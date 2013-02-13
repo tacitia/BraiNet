@@ -4,6 +4,7 @@
 	$userId = $_POST['user'];
 	$sourceKey = $_POST['source'];
 	$targetKey = $_POST['target'];
+	$notes = $_POST['notes'];
 
     $con = mysql_connect("localhost", "tacitia_brainIDC", "Ophelia621");
     if (!$con) {
@@ -35,8 +36,8 @@
     echo json_encode($result);
     */
     
-    mysql_query("INSERT INTO user_links (sourceKey, targetKey, userID, datasetKey)
-VALUES ('$sourceKey','$targetKey','$userId', '$datasetKey')");
+    mysql_query("INSERT INTO user_links (sourceKey, targetKey, userID, datasetKey, notes)
+VALUES ('$sourceKey','$targetKey','$userId', '$datasetKey', '$notes')");
 
     $query = "SELECT * FROM user_links 
     WHERE sourceKey = " . $sourceKey . " AND targetKey = " . $targetKey . 
@@ -55,6 +56,7 @@ VALUES ('$sourceKey','$targetKey','$userId', '$datasetKey')");
         $link['sourceKey'] = $row['sourceKey'];
         $link['targetKey'] = $row['targetKey'];
         $link['datasetKey'] = $row['datasetKey'];
+        $link['notes'] = $row['notes'];
     }
 
     echo json_encode($link);

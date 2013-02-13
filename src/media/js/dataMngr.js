@@ -43,14 +43,15 @@ function constructNodesTable() {
  * 2. Add node to the database
  * 3. Update the display
  */
-function addBrainNode(nodeName, parentName, depth) {
+function addBrainNode() {
     var nodeName = $('[name="nodeName"]').val();
     var nodeDepth = parseInt($('[name="nodeDepth"]').val());
     var parentKey = $('#nodeParent').val();
     if (parentKey === "") {
         parentKey = -1;
     }
-    var newData = {userID: userId, datasetKey: datasetKey, nodeName: nodeName, parentKey: parentKey, depth: nodeDepth, notes: "test"};
+    var notes = $('[name="nodeNotes"]').val();
+    var newData = {userID: userId, datasetKey: datasetKey, nodeName: nodeName, parentKey: parentKey, depth: nodeDepth, notes: notes};
     $.ajax({        
         type: "POST",
         url: "../php/addBrainNode.php",
@@ -61,6 +62,7 @@ function addBrainNode(nodeName, parentName, depth) {
         },
         success: function(node) {
             console.log("Successfully passed data to php.");
+            console.log($.parseJSON(node));
             addNodeToDisplay($.parseJSON(node));
         },
         async: false
@@ -76,7 +78,8 @@ function addBrainNode(nodeName, parentName, depth) {
 function addBrainLink() {
     var sourceKey = $('#sourceName').val();
     var targetKey = $('#targetName').val();
-    var linkData = {user: userId, dataset: datasetKey, source: sourceKey, target: targetKey};
+    var notes = $('[name="linkNotes"]').val();
+    var linkData = {user: userId, dataset: datasetKey, source: sourceKey, target: targetKey, notes: notes};
     $.ajax({        
         type: "POST",
         url: "../php/addBrainLink.php",
@@ -87,6 +90,7 @@ function addBrainLink() {
         },
         success: function(link) {
             console.log("Successfully passed data to php.");
+            console.log($.parseJSON(link));
             addLinkToDisplay($.parseJSON(link));
         },
         async: false
@@ -111,33 +115,22 @@ function populateNodesTable() {
     for (var i = 0; i < length; ++i) {
         var node = nodes[i];
         $('#nodesTable > tbody:last').append('<tr><td>' + node.name + '</td><td>' + 
-            node.depth + '</td><td>' + node.parentName + '</td></tr>');    
+            node.depth + '</td><td>' + node.parentName + '</td><td>' + node.notes +
+            '</td></tr>');    
     }
-    /* Can't get this to work
-    nodesTable.selectAll('tr')
-        .data(nodes)
-        .enter()
-        .append('tr')
-        .html(function(d) {
-            console.log(d);
-            return '<td>' + d.name + '</td><td>' + d.depth + '</td><td>' +
-            d.parentName + '</td>';
-        });
-        */
 }
 
 function addNodeEntry(node) {
     $('#nodesTable > tbody:last').append('<tr><td>' + node.name + '</td><td>' + 
-        node.depth + '</td><td>' + node.parentName + '</td></tr>');
+        node.depth + '</td><td>' + node.parentName + '</td><td>' + node.notes + 
+        '</td></tr>');
 }
 
 function addLinkEntry(link) {
-    console.log(key_node_map);
-    console.log(link);
     var source_node = key_node_map[parseInt(link.sourceKey)];
     var target_node = key_node_map[parseInt(link.targetKey)];
     $('#linksTable > tbody:last').append('<tr><td>' + source_node.name + '</td><td>' + 
-        target_node.name + '</td></tr>');
+        target_node.name + '</td><td>' + link.notes + '</td></tr>');
 }
 
 function populateLinksTable() {
@@ -148,9 +141,9 @@ function populateLinksTable() {
         var source_node = key_node_map[parseInt(link.sourceKey)];
         var target_node = key_node_map[parseInt(link.targetKey)];
         $('#linksTable > tbody:last').append('<tr><td>' + source_node.name + '</td><td>' + 
-            target_node.name + '</td></tr>');        
+            target_node.name + '</td><td>' + link.notes + '</td></tr>');        
     }
-    /* Can't get this to work
+    /* Can't get this to work - works with a 'tr' selector
     linksTable.selectAll(':not(.tableTitle)')
         .data(links)
         .enter()

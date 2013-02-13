@@ -170,6 +170,7 @@ function waitForDataLoading() {
         active_node_link_map = node_link_map;
         active_node_in_neighbor_map = node_in_neighbor_map;
         active_node_out_neighbor_map = node_out_neighbor_map;
+        active_link_map = link_map;
         renderCanvas();
         setupUIElements();
     }

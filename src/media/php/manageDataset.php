@@ -25,12 +25,12 @@
       </div>
       <div id="nodesDisplay" class="datasetDisplay">
         <table id="nodesTable" class="table table-bordered table-striped table-condensed">
-          <tr class="tableTitle"><td>Node name</td><td>Depth</td><td>Parent name</td></tr>
+          <tr class="tableTitle"><td>Node name</td><td>Depth</td><td>Parent name</td><td>Notes</td></tr>
         </table>
       </div>
       <div id="linksDisplay" class="datasetDisplay">
         <table id="linksTable" class="table table-bordered table-striped table-condensed">
-          <tr class="tableTitle"><td>Source name</td><td>Target name</td></tr>
+          <tr class="tableTitle"><td>Source name</td><td>Target name</td><td>Notes</td></tr>
         </table>
       </div>
 
@@ -48,6 +48,7 @@
             <select data-placeholder="Parent name" class="chzn-select" style="width:250px;" id="nodeParent">
               <option></option>
             </select>
+            <input type="text" placeholder="Notes" name="nodeNotes" class="input-xxlarge">
             <button id="bt-addNodeSubmit" class="btn" type="submit">Add</button>
           </div>
           <div id="addLinkField" style="display:none">
@@ -57,6 +58,7 @@
             <select data-placeholder="Target name" class="chzn-select" style="width:250px;" id="targetName">
               <option></option>
             </select>            
+            <input type="text" placeholder="Notes" name="linkNotes" class="input-xxlarge">
             <button id="bt-addLinkSubmit" class="btn" type="submit">Add</button>
           </div>
           <div id="addBatchField" style="display:none">

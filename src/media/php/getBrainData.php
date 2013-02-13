@@ -41,7 +41,7 @@
         $node['parentKey'] = $row['parentKey'];
     	$node['depth'] = $row['depth'];
         $node['datasetKey'] = $row['datasetKey'];
-        
+        $node['notes'] = $row['notes'];
         $nodes[] = $node;
         //array_push($nodes, $row);
     }
@@ -57,7 +57,7 @@
         $link['sourceKey'] = $row['sourceKey'];
         $link['targetKey'] = $row['targetKey'];
         $link['datasetKey'] = $row['datasetKey'];
-        
+        $link['notes'] = $row['notes'];
         $links[] = $link;
         //array_push($links, $row);
     }

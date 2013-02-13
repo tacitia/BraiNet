@@ -11,7 +11,6 @@ function appendNodesAsOptions(node_map) {
 }
 
 function updateOptions() {
-    console.log('called');
     $('#sourceSelect').find('option').remove();
     $('#targetSelect').find('option').remove();
     $('#sourceSelect').trigger('liszt:updated');
@@ -192,31 +191,78 @@ function displayConnectionInfo(d) {
     d3.select('#conn-info #tgt-name')
         .html('Target: ' + d.target.name);
 
-    // Add the list of papers 
-    var paperKeys = d.paper;
-    var self_paper_tab = d3.select('#paper-list');
-    self_paper_tab.selectAll('p').remove();
-    var content = self_paper_tab.append('p');
-    // Add the list of papers associated
-    if (paperKeys.length < 1) {
-        content.html('This is a meta link. See the derived connections for more information');
-    }
-    else {
-        content.selectAll('p').data(paperKeys)
-            .enter()
-            .append('p')
-            .html(function(d) { 
-                var paper = paper_map[d];
-                return '<a href="' +  paper.url + '" target="_blank" class="paperLink">' + paper.title + '</a>'; 
-            });
-        d3.selectAll('.paperLink').on('click', paperClick);
+    var mirror_link = active_node_link_map[d.target.key + '-' + d.source.key];
+
+    if (!is_preloaded_data) {
+        var notes_tab = d3.select('#notes');
+        notes_tab.selectAll('div').remove();
+        notes_tab.selectAll('p').remove();
+        var content = notes_tab.append('div');
+        var content_html = '<p>Current link: ' + d.source.name + '-' + d.target.name + '</p>';
+        if (d.isDerived) {
+            content_html += '<p>This is a meta link. See the derived connections for user entered notes.</p>';
+        }
+        else {
+            content_html += '<p>' + d.notes + '</p>';
+        }
+        content_html += '<p>Children links:</p>';
+        content_html += '<table class="table table-bordered table-striped table-condensed"><tr class="tableTitle"><td>Source</td><td>Target</td><td>Notes</td></tr>';
+        var num_child = d.base_children.length;
+        for (var i = 0; i < num_child; ++i) {
+            var child = active_link_map[d.base_children[i]];
+            content_html += '<tr><td>' + child.source.name + '</td><td>' + child.target.name +
+                '</td><td>' + child.notes + '</td></tr>';
+        }
+        content_html += '</table>';
+
+        if (mirror_link !== undefined) {
+            content_html += '<p>Current link: ' + d.target.name + '-' + d.source.name + '</p>';
+            if (mirror_link.isDerived) {
+                content_html += '<p>This is a meta link. See the derived connections for user entered notes.</p>';
+            }
+            else {
+              content_html += '<p>' + mirror_link.notes + '</p>';
+            }
+            content_html += '<p>Children links:</p>';
+            content_html += '<table class="table table-bordered table-striped table-condensed"><tr class="tableTitle"><td>Source</td><td>Target</td><td>Notes</td></tr>';
+            var num_child = mirror_link.base_children.length;
+            for (var i = 0; i < num_child; ++i) {
+            var child = active_link_map[mirror_link.base_children[i]];
+                content_html += '<tr><td>' + child.source.name + '</td><td>' + child.target.name +
+                '</td><td>' + child.notes + '</td></tr>';
+            }
+            content_html += '</table>';     
+        }
+        content.html(content_html);
     }
 
-    // Add the list of dataset-specific records
-    var bams_records_tab = d3.select('#bams-list');
-    bams_records_tab.selectAll('p').remove();
-    content = bams_records_tab.append('p');
-    content.html('Links to BAMS records will be added in future updates');
+    if (is_preloaded_data) {
+        // Add the list of papers 
+        var paperKeys = d.paper;
+        var self_paper_tab = d3.select('#paper-list');
+        self_paper_tab.selectAll('p').remove();
+        var content = self_paper_tab.append('p');
+        // Add the list of papers associated
+        if (paperKeys.length < 1) {
+            content.html('This is a meta link. See the derived connections for more information');
+        }
+        else {
+            content.selectAll('p').data(paperKeys)
+                .enter()
+                .append('p')
+                .html(function(d) { 
+                    var paper = paper_map[d];
+                    return '<a href="' +  paper.url + '" target="_blank" class="paperLink">' + paper.title + '</a>'; 
+                });
+            d3.selectAll('.paperLink').on('click', paperClick);
+        }
+    
+        // Add the list of dataset-specific records
+        var bams_records_tab = d3.select('#bams-list');
+        bams_records_tab.selectAll('p').remove();
+        content = bams_records_tab.append('p');
+        content.html('Links to BAMS records will be added in future updates');
+    }
 
     // Add the sub-connections
     var sub_link_keys = d.children;

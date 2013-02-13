@@ -262,16 +262,20 @@
     <!---List Link Connections (Search Results)-->
     <div id="search-results" style="position:absolute;top:1000px; width: 800px; height: 400px">
       <ul class="nav nav-tabs">
-        <li class="active"><a href="#paper-list" data-toggle="tab">Publications</a></li>
+        <li class="active"><a href="#notes" data-toggle="tab">Notes</a></li>
+        <li><a href="#paper-list" data-toggle="tab">Publications</a></li>
         <li><a href="#bams-list" data-toggle="tab">BAMS records</a></li>
         <li><a href="#sub-con-list" data-toggle="tab">Sub-connections</a></li>
       </ul>
       <div class="tab-content" style="padding:20px">
-        <div id="paper-list" class="tab-pane fade in active">
-          <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and the relevant literature will be displayed here.</i></p>
+        <div id="notes" class="tab-pane fade in active">
+          <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and the notes will be displayed here.(Only available for user defined datasets.)</i></p>
+        </div>
+        <div id="paper-list" class="tab-pane fade in">
+          <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and the relevant literature will be displayed here.(Only available for pre-loaded datasets.)</i></p>
         </div>
         <div id="bams-list" class="tab-pane fade in">
-          <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and the relevant BAMS records will be displayed here.</i></p>
+          <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and the relevant BAMS records will be displayed here.(Only available for pre-loaded datasets.)</i></p>
         </div>
         <div id="sub-con-list" class="tab-pane fade in">
           <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and the underlying sub-connections will be displayed here.</i></p>

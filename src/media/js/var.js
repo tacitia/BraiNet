@@ -21,6 +21,7 @@ var record_rating_map; // Key: record id. Value: user rating for the record.
 var dataset_list;
 var uid;
 var user_datasets = {};
+var is_preloaded_data = true;
 
 // State variables
 var selected_source;
@@ -33,6 +34,10 @@ var active_data_links;
 var active_data_nodes_force;
 var active_data_links_force;
 var active_node_map;
+var active_node_link_map;
+var active_node_in_neighbor_map;
+var active_node_out_neighbor_map;
+var active_link_map;
 
 // SVG display variables
 var svg_circular;
