@@ -25,37 +25,37 @@
       </div>
       <div id="nodesDisplay" class="datasetDisplay">
         <table id="nodesTable" class="table table-bordered table-striped table-condensed">
-          <tr class="tableTitle"><td>Node name</td><td>Depth</td><td>Parent name</td><td>Notes</td></tr>
+          <tr class="tableTitle"><td>Brain region/cell group</td><td>Depth</td><td>Located within</td><td>Notes</td></tr>
         </table>
       </div>
       <div id="linksDisplay" class="datasetDisplay">
         <table id="linksTable" class="table table-bordered table-striped table-condensed">
-          <tr class="tableTitle"><td>Source name</td><td>Target name</td><td>Notes</td></tr>
+          <tr class="tableTitle"><td>Start</td><td>End</td><td>Notes</td></tr>
         </table>
       </div>
 
       <!--User action buttons-->
       <div id="datasetControl">
         <table><tr>
-          <td><button id="bt-addNode" class="btn">Add a node</button></td>
-          <td><button id="bt-addLink" class="btn">Add a link</button></td>
-          <td><button id="bt-addBatch" class="btn">Add nodes and links from a file</button></td>
+          <td><button id="bt-addNode" class="btn">Add a brain region/cell group</button></td>
+          <td><button id="bt-addLink" class="btn">Add a projection/connection</button></td>
+          <td><button id="bt-addBatch" class="btn">Create a network from a file</button></td>
         </tr></table>
         <div id="actionField">
           <div id="addNodeField" class="form-inline">
-            <input type="text" placeholder="Node name" name="nodeName">
-            <input type="text" placeholder="Node depth" name="nodeDepth">
-            <select data-placeholder="Parent name" class="chzn-select" style="width:250px;" id="nodeParent">
+            <input type="text" placeholder="Name of the region/cell group" name="nodeName">
+            <input type="text" placeholder="Depth (1 for the highest level)" name="nodeDepth">
+            <select data-placeholder="Located within" class="chzn-select" style="width:250px;" id="nodeParent">
               <option></option>
             </select>
             <input type="text" placeholder="Notes" name="nodeNotes" class="input-xxlarge">
             <button id="bt-addNodeSubmit" class="btn" type="submit">Add</button>
           </div>
           <div id="addLinkField" style="display:none">
-            <select data-placeholder="Source name" class="chzn-select" style="width:250px;" id="sourceName">
+            <select data-placeholder="Start from..." class="chzn-select" style="width:250px;" id="sourceName">
               <option></option>
             </select>
-            <select data-placeholder="Target name" class="chzn-select" style="width:250px;" id="targetName">
+            <select data-placeholder="End at..." class="chzn-select" style="width:250px;" id="targetName">
               <option></option>
             </select>            
             <input type="text" placeholder="Notes" name="linkNotes" class="input-xxlarge">

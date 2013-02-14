@@ -33,7 +33,10 @@ d3.json("media/data/test_node.json", function (data) {
 //                child.group = key;
             }
         }
-    } 
+    }
+//    var datasetKey = 'pre_1'; 
+//    user_datasets[datasetKey] = {};
+//    constructUserDataMaps(datasetKey, data);
     mutex -= 1;
 });
 
@@ -51,6 +54,9 @@ d3.json("media/data/test_paper.json", function(data) {
 
 
 d3.json("media/data/test_link.json", function (data) {
+//    var datasetKey = 'pre_1';
+//    constructUserLinksMaps(datasetKey, data);
+//    constructLinkHierarchy(datasetKey, data);
     link_map = {};
     node_link_map = {};
     var num_links = data.length;
@@ -65,6 +71,7 @@ d3.json("media/data/test_link.json", function (data) {
         node_in_neighbor_map[raw_link.targetKey].push(raw_link.sourceKey);
         node_out_neighbor_map[raw_link.sourceKey].push(raw_link.targetKey);
     }
+    
     mutex -= 1;
 });
 
@@ -111,8 +118,6 @@ bams_map[1] = {key: 1, url: ""};
 */
 
 function renderCanvas() {
-    console.log('2');
-    console.log(node_map);
     // Assign colors to
     assignColors(node_map);
     // Initialize the active nodes to be the highest level ones
@@ -171,6 +176,11 @@ function waitForDataLoading() {
         active_node_in_neighbor_map = node_in_neighbor_map;
         active_node_out_neighbor_map = node_out_neighbor_map;
         active_link_map = link_map;
+/*        active_node_map = user_datasets['pre_1'].node_map;
+        active_node_link_map = user_datasets['pre_1'].node_link_map;
+        active_node_in_neighbor_map = user_datasets['pre_1'].node_in_neighbor_map;
+        active_node_out_neighbor_map = user_datasets['pre_1'].node_out_neighbor_map;
+        active_link_map = user_datasets['pre_1'].link_map; */
         renderCanvas();
         setupUIElements();
     }
