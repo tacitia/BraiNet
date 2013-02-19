@@ -159,6 +159,7 @@ function constructUserNodesMaps(datasetKey, nodes) {
     for (var i = 0; i < num_nodes; ++i) {
         var node = nodes[i];
         node.key = parseInt(node.key);
+//        console.log(node.key);
         node.depth = parseInt(node.depth);
         node.parent = (node.parentKey === null) ? null : parseInt(node.parentKey);
         node.circ = {};
@@ -167,12 +168,17 @@ function constructUserNodesMaps(datasetKey, nodes) {
         user_in_neighbor_map[node.key] = [];
         user_out_neighbor_map[node.key] = [];
     }
+
+    console.log(user_node_map);
     
     for (var key in user_node_map) {
         var node = user_node_map[key];
+//        console.log(node);
         if (node.parent !== null) { 
             var parent_node = user_node_map[node.parent];
-            parent_node.children.push(node.key);
+            // TODO fix this in the test_node
+            if (parent_node !== undefined) { parent_node.children.push(node.key); }
+            else { node.parent = null; }
         }
     }
 
@@ -196,7 +202,7 @@ function constructUserLinksMaps(datasetKey, links) {
         var source_key = parseInt(raw_link.sourceKey);
         var target_key = parseInt(raw_link.targetKey);
         var link = {key: parseInt(raw_link.key), source: dataset.node_map[source_key], 
-            target: dataset.node_map[target_key], notes: raw_link.notes,
+            target: dataset.node_map[target_key], notes: raw_link.notes, paper: raw_link.paper,
             children: [], isDerived: false, base_children: []};
         user_link_map[link.key] = link;
         var key_pair = link.source.key + "-" + link.target.key;
@@ -266,9 +272,11 @@ function constructLinkHierarchy(datasetKey, links) {
                 var srcParentLink = {key: max_link_key, 
                 source: dataset.node_map[parseInt(source.parent)],
                 target: target, notes: 'Meta link', children: [link_key], isDerived: true, 
-                base_children: base_children};
+                base_children: base_children, paper: []};
                 dataset.link_map[max_link_key] = srcParentLink;
                 dataset.node_link_map[key_pair] = srcParentLink;
+                dataset.node_in_neighbor_map[target.key].push(source.parent);
+                dataset.node_out_neighbor_map[source.parent].push(target.key);
                 links.push(srcParentLink);
                 num_link += 1;
             }
@@ -294,9 +302,11 @@ function constructLinkHierarchy(datasetKey, links) {
                 source: source,
                 target: dataset.node_map[parseInt(target.parent)], 
                 notes: 'Meta link', children: [link_key], isDerived: true, 
-                base_children: base_children};
+                base_children: base_children, paper: []};
                 dataset.link_map[max_link_key] = tgtParentLink;
                 dataset.node_link_map[key_pair] = tgtParentLink;
+                dataset.node_in_neighbor_map[target.parent].push(source.key);
+                dataset.node_out_neighbor_map[source.key].push(target.parent);
                 links.push(tgtParentLink);
                 num_link += 1;
             }
@@ -323,9 +333,11 @@ function constructLinkHierarchy(datasetKey, links) {
                 source: dataset.node_map[parseInt(source.parent)],
                 target: dataset.node_map[parseInt(target.parent)], 
                 notes: 'Meta link', children: [link_key], isDerived: true, 
-                base_children: base_children};
+                base_children: base_children, paper: []};
                 dataset.link_map[max_link_key] = parentLink;
                 dataset.node_link_map[key_pair] = parentLink;
+                dataset.node_in_neighbor_map[target.parent].push(source.parent);
+                dataset.node_out_neighbor_map[source.parent].push(target.parent);
                 links.push(parentLink);
                 num_link += 1;
             }
@@ -424,6 +436,8 @@ function calculatePaths(num_hop) {
     var depth2 = selected_target.depth;
     var min_depth = Math.min(depth1, depth2);
     var max_depth = Math.max(depth1, depth2);
+    console.log('map');
+    console.log(active_node_out_neighbor_map);
     while (paths.length > 0 && paths[0].length <= num_hop + 2) {
         var current_path = paths[0];
         paths.splice(0, 1);
@@ -460,7 +474,9 @@ function populateForceElements(paths) {
     var num_path = paths.length;
     active_data_nodes_force = [];
     active_data_links_force = [];
+    console.log(paths);
     for (var i = 0; i < num_path; ++i) {
+        console.log(i);
         var path = paths[i];
         var num_link = path.length - 1;
         for (var j = 0; j < num_link; ++j) {

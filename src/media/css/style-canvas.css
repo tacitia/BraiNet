@@ -14,6 +14,7 @@
     opacity: 1;    
 }
 
+
 /*  links (connections) */
 .link.nofocus {
     stroke-opacity: 0.3;
@@ -23,11 +24,15 @@
     stroke: #ccc;
     stroke-opacity: 1;
     fill: none;
-    stroke-width: 3px;
+/*    stroke-width: 3px; */
 }
 
 .link.dimmed {
     opacity: 0.1;
+}
+
+.link.hidden {
+    stroke-opacity: 0;
 }
 
 

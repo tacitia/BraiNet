@@ -346,6 +346,7 @@ function enterCircularLinks() {
                 return curves(coors);
             })
         .attr("class", "circular link")
+        .attr('stroke-width', function(d) { return Math.ceil(d.base_children.length / 100) + 'px'; })
         .attr("id", function(d) { return "circ-link-" + d.key; })
         .on("mouseover", function(d) { linkMouseOver(d, svg_circular); })
         .on("mouseout", function(d) { linkMouseOut(d, svg_circular); })
@@ -442,7 +443,7 @@ function updateForceLayout() {
               //connection are internal
               .linkDistance(function(l) {
                   var s = group_count[l.source.group], t = group_count[l.target.group];
-                  return 30 * Math.max(l.source.group != l.target.group ? s[1] : 2/s[1],
+                  return 10 * Math.max(l.source.group != l.target.group ? s[1] : 2/s[1],
                                        l.source.group != l.target.group ? t[1] : 2/t[1]) + 20;
               })
               .linkStrength(1)

@@ -85,6 +85,22 @@ function searchButtonClick() {
     var paths = calculatePaths(max_hop);
     populateForceElements(paths);
     updateForceLayout();
+    dimNonSearchResults();
+}
+
+function dimNonSearchResults() {
+    svg_circular.selectAll('.circular.node')
+        .classed('nofocus', function(d) {
+            return ($.inArray(d, active_data_nodes_force) < 0);
+        });
+    svg_circular.selectAll('.circular.link')
+        .classed('hidden', function(d) {
+            return ($.inArray(d, active_data_links_force) < 0);
+        });
+    svg_circular.selectAll('.circular.text')
+        .classed('visible', function(d) {
+            return ($.inArray(d, active_data_nodes_force) >= 0) ;
+        });    
 }
 
 function clearButtonClick() {
@@ -240,22 +256,39 @@ function displayConnectionInfo(d) {
         // Add the list of papers 
         var paperKeys = d.paper;
         var self_paper_tab = d3.select('#paper-list');
+        self_paper_tab.selectAll('div').remove();
         self_paper_tab.selectAll('p').remove();
-        var content = self_paper_tab.append('p');
-        // Add the list of papers associated
-        if (paperKeys.length < 1) {
-            content.html('This is a meta link. See the derived connections for more information');
+        var content = self_paper_tab.append('div');
+        var content_html = '<p>Current link: ' + d.source.name + '-' + d.target.name + '</p>';
+        if (d.isDerived) {
+            content_html += '<p>This is a meta link. See the derived connections for more information.</p>';
         }
         else {
-            content.selectAll('p').data(paperKeys)
-                .enter()
-                .append('p')
-                .html(function(d) { 
-                    var paper = paper_map[d];
-                    return '<a href="' +  paper.url + '" target="_blank" class="paperLink">' + paper.title + '</a>'; 
-                });
-            d3.selectAll('.paperLink').on('click', paperClick);
+            content_html += '<table class="table table-bordered table-striped table-condensed"><tr class="tableTitle"><td>Publication</td></tr>';
+            var num_paper = paperKeys.length;
+            for (var i = 0; i < num_paper; ++i) {
+                var paper = paper_map[paperKeys[i]];
+                content_html += '<tr><td>' + '<a href="' +  paper.url + '" target="_blank" class="paperLink">' + paper.title + '</a>' + '</td></tr>';
+            }
         }
+        content_html += '</table>';
+        content_html += '<p>Children links:</p>';
+        content_html += '<table class="table table-bordered table-striped table-condensed"><tr class="tableTitle"><td>Source</td><td>Target</td><td>Publication</td></tr>';
+        var num_child = d.base_children.length;
+        for (var i = 0; i < num_child; ++i) {
+            var child = active_link_map[d.base_children[i]];
+            var paperKey = child.paper;
+            var num_paper = paperKey.length;
+            for (var j = 0; j < num_paper; ++j) {
+                var paper = paper_map[paperKey[j]];
+                content_html += '<tr><td>' + child.source.name + '</td><td>' + child.target.name +
+                    '</td><td>' + '<a href="' +  paper.url + '" target="_blank" class="paperLink">' + paper.title + '</a>' + '</td></tr>';
+            }
+        }
+        content_html += '</table>';
+        content.html(content_html);
+
+        d3.selectAll('.paperLink').on('click', paperClick);
     
         // Add the list of dataset-specific records
         var bams_records_tab = d3.select('#bams-list');

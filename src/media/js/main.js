@@ -7,9 +7,12 @@
 /*******
     Data loading section
 *******/
+var pre_nodes;
+var pre_links;
 
 // Read in the nodes data and build the node map
 d3.json("media/data/test_node.json", function (data) {
+/*
     node_map = {};
     node_in_neighbor_map = {};
     node_out_neighbor_map = {};
@@ -33,10 +36,8 @@ d3.json("media/data/test_node.json", function (data) {
 //                child.group = key;
             }
         }
-    }
-//    var datasetKey = 'pre_1'; 
-//    user_datasets[datasetKey] = {};
-//    constructUserDataMaps(datasetKey, data);
+    } */
+    pre_nodes = data;
     mutex -= 1;
 });
 
@@ -54,10 +55,8 @@ d3.json("media/data/test_paper.json", function(data) {
 
 
 d3.json("media/data/test_link.json", function (data) {
-//    var datasetKey = 'pre_1';
-//    constructUserLinksMaps(datasetKey, data);
-//    constructLinkHierarchy(datasetKey, data);
-    link_map = {};
+    pre_links = data;
+/*    link_map = {};
     node_link_map = {};
     var num_links = data.length;
     for (var i = 0; i < num_links; ++i) {
@@ -70,7 +69,7 @@ d3.json("media/data/test_link.json", function (data) {
         node_link_map[key_pair] = link;
         node_in_neighbor_map[raw_link.targetKey].push(raw_link.sourceKey);
         node_out_neighbor_map[raw_link.sourceKey].push(raw_link.targetKey);
-    }
+    } */
     
     mutex -= 1;
 });
@@ -119,12 +118,12 @@ bams_map[1] = {key: 1, url: ""};
 
 function renderCanvas() {
     // Assign colors to
-    assignColors(node_map);
+    assignColors(active_node_map);
     // Initialize the active nodes to be the highest level ones
-    initActiveNodes(node_map);
+    initActiveNodes(active_node_map);
     computeCircularNodesParameters(active_data_nodes);
     // Initialize the active links according to the active nodes
-    initActiveLinks(link_map);
+    initActiveLinks(active_link_map);
 
     // Setup the arc function object
     arcs = d3.svg.arc()
@@ -163,7 +162,7 @@ function renderCanvas() {
 }
 
 function setupUIElements() {
-    appendNodesAsOptions(node_map);
+    appendNodesAsOptions(active_node_map);
 }
 
 function waitForDataLoading() {
@@ -171,16 +170,23 @@ function waitForDataLoading() {
         setTimeout(function() {waitForDataLoading();}, 1000);
     }
     else {
-        active_node_map = node_map;
+/*        active_node_map = node_map;
         active_node_link_map = node_link_map;
         active_node_in_neighbor_map = node_in_neighbor_map;
         active_node_out_neighbor_map = node_out_neighbor_map;
-        active_link_map = link_map;
-/*        active_node_map = user_datasets['pre_1'].node_map;
+       active_link_map = link_map; */
+        var datasetKey = 'pre_1'; 
+        user_datasets[datasetKey] = {};
+        constructUserNodesMaps(datasetKey, pre_nodes);
+        constructUserLinksMaps(datasetKey, pre_links);
+        constructLinkHierarchy(datasetKey, pre_links);
+//        assignColors(user_datasets[datasetKey].node_map);
+        active_node_map = user_datasets['pre_1'].node_map;
         active_node_link_map = user_datasets['pre_1'].node_link_map;
         active_node_in_neighbor_map = user_datasets['pre_1'].node_in_neighbor_map;
         active_node_out_neighbor_map = user_datasets['pre_1'].node_out_neighbor_map;
-        active_link_map = user_datasets['pre_1'].link_map; */
+        active_link_map = user_datasets['pre_1'].link_map;
+        console.log(active_link_map);
         renderCanvas();
         setupUIElements();
     }
