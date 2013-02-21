@@ -8,16 +8,23 @@ var userId = 3;
 var mutex = 1;
 
 
-var table = $('#example').dataTable();
+var nodesTable = $('#nodesDisplay').dataTable();
+var linksTable = $('#linksDisplay').dataTable();
 
-var giCount = 1;
-table.fnAddData( [
-    giCount+".1",
-    giCount+".2",
-    giCount+".3",
-    giCount+".4" ]
-);
+//on tr hover append delete button on last th
+var deleteIcon;
+$('table').on("mouseenter", "tr", function() {
+    deleteIcon = $(this).find('td:last').append('<span onclick="deleteRow(this)"><i class="icon-trash"></i> Delete</span>');
+});
 
+$('table').on("mouseleave", "tr", function() {
+    $(deleteIcon).find('span').remove();
+});
+
+//pass tr element
+function deleteRow(node) {
+    nodesTable.fnDeleteRow($(node).closest('tr').get()[0]);
+}
 
 getBrainData(datasetKey);
 $('.chzn-select').chosen({allow_single_deselect: true});
@@ -122,20 +129,14 @@ function populateBrainDataTable() {
 }
 
 function populateNodesTable() {
-    var nodesTable = d3.select('#nodesTable').select('tbody');
-    var length = nodes.length;
-    for (var i = 0; i < length; ++i) {
+    nodesLength = nodes.length;
+    for (var i = 0; i < nodesLength; ++i) {
         var node = nodes[i];
-        $('#nodesTable > tbody:last').append('<tr><td>' + node.name + '</td><td>' +
-            node.depth + '</td><td>' + node.parentName + '</td><td>' + node.notes +
-            '</td></tr>');
-
-        table.fnAddData([String(node.name),
+        nodesTable.fnAddData([String(node.name),
                          String(node.depth),
                          String(node.parentName),
                          String(node.notes)]);
     }
-
 }
 
 function addNodeEntry(node) {
@@ -152,15 +153,16 @@ function addLinkEntry(link) {
 }
 
 function populateLinksTable() {
-    var linksTable = d3.select('#linksTable').select('tbody');
-    var length = links.length;
-    for (var i = 0; i < length; ++i) {
+    var linksLength = links.length;
+    for (var i = 0; i < linksLength; ++i) {
         var link = links[i];
         var source_node = key_node_map[parseInt(link.sourceKey)];
         var target_node = key_node_map[parseInt(link.targetKey)];
-        $('#linksTable > tbody:last').append('<tr><td>' + source_node.name + '</td><td>' +
-            target_node.name + '</td><td>' + link.notes + '</td></tr>');
+        linksTable.fnAddData([String(source_node.name),
+                              String(target_node.name),
+                              String(link.notes)]);
     }
+
     /* Can't get this to work - works with a 'tr' selector
     linksTable.selectAll(':not(.tableTitle)')
         .data(links)

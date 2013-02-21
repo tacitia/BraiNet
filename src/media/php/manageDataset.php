@@ -15,10 +15,25 @@
     <!--[if lt IE 9]>
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    <style>
+        div.dataTables_length {
+            float:left;
+        }
+        div.dataTables_filter {
+            float:right;
+        }
+        select {
+            width:75px;
+        }
+    </style>
   </head>
   <body>
+      <?php
+        echo '<h2>' . $_GET["datasetName"] . '</h2>';
+        echo '<span id="datasetID" style="display:none">' . $_GET["datasetID"] . '</span>'
+      ?>
 
-      <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
+      <table class="table table-bordered table-striped" cellpadding="0" cellspacing="0" border="0" class="display" id="nodesDisplay">
         <thead>
           <tr>
             <th>Brain Region</th>
@@ -30,36 +45,24 @@
 
         <tbody>
         </tbody>
-
-        <tfoot>
-          <tr>
-            <th>Brain Region</th>
-            <th>Depth</th>
-            <th>Location</th>
-            <th>Notes</th>
-          </tr>
-        </tfoot>
       </table>
 
+      <table class="table table-bordered table-striped" cellpadding="0" cellspacing="0" border="0" class="display" id="linksDisplay">
+        <thead>
+          <tr>
+            <th>Start</th>
+            <th>End</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
 
-      <div style="width:800px;margin-left:auto;margin-right:auto">
-      <?php
-        echo '<span>Dataset name: </span><span id="datasetName">' . $_GET["datasetName"] . '</span><br>';
-        echo '<span id="datasetID" style="display:none">' . $_GET["datasetID"] . '</span>'
-      ?>
-      </div>
-      <div id="nodesDisplay" class="datasetDisplay">
-        <table id="nodesTable" class="table table-bordered table-striped table-condensed">
-          <tr class="tableTitle"><td>Brain region/cell group</td><td>Depth</td><td>Located within</td><td>Notes</td></tr>
-        </table>
-      </div>
-      <div id="linksDisplay" class="datasetDisplay">
-        <table id="linksTable" class="table table-bordered table-striped table-condensed">
-          <tr class="tableTitle"><td>Start</td><td>End</td><td>Notes</td></tr>
-        </table>
-      </div>
+        <tbody>
+        </tbody>
+      </table>
 
       <!--User action buttons-->
+
+<!--
       <div id="datasetControl">
         <table><tr>
           <td><button id="bt-addNode" class="btn">Add a brain region/cell group</button></td>
@@ -90,6 +93,7 @@
           </div>
         </div>
       </div>
+-->
 
     <!--LIBRARIES-->
     <script type="text/javascript" src="../lib/datatables/media/js/jquery.js"></script>
