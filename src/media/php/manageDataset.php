@@ -17,6 +17,31 @@
     <![endif]-->
   </head>
   <body>
+
+      <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
+        <thead>
+          <tr>
+            <th>Brain Region</th>
+            <th>Depth</th>
+            <th>Location</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+
+        <tbody>
+        </tbody>
+
+        <tfoot>
+          <tr>
+            <th>Brain Region</th>
+            <th>Depth</th>
+            <th>Location</th>
+            <th>Notes</th>
+          </tr>
+        </tfoot>
+      </table>
+
+
       <div style="width:800px;margin-left:auto;margin-right:auto">
       <?php
         echo '<span>Dataset name: </span><span id="datasetName">' . $_GET["datasetName"] . '</span><br>';
@@ -57,7 +82,7 @@
             </select>
             <select data-placeholder="End at..." class="chzn-select" style="width:250px;" id="targetName">
               <option></option>
-            </select>            
+            </select>
             <input type="text" placeholder="Notes" name="linkNotes" class="input-xxlarge">
             <button id="bt-addLinkSubmit" class="btn" type="submit">Add</button>
           </div>
@@ -65,12 +90,16 @@
           </div>
         </div>
       </div>
+
     <!--LIBRARIES-->
-    <script type="text/javascript" src="../lib/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="../lib/datatables/media/js/jquery.js"></script>
+    <script type="text/javascript" src="../lib/datatables/media/js/jquery.dataTables.min.js"></script>
+
     <script type="text/javascript" src="../lib/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../lib/d3.v2.js"></script>
     <script type="text/javascript" src="../lib/chosen/chosen.jquery.js"></script>
     <script type="text/javascript" src="../lib/jquery-ui/js/jquery-ui.js"></script>
+
 
     <script type="text/javascript" src="../js/dataMngr.js"></script>
   </body>

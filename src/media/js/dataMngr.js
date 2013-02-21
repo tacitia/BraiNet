@@ -6,6 +6,19 @@ var key_node_map = {};
 var name_node_map = {};
 var userId = 3;
 var mutex = 1;
+
+
+var table = $('#example').dataTable();
+
+var giCount = 1;
+table.fnAddData( [
+    giCount+".1",
+    giCount+".2",
+    giCount+".3",
+    giCount+".4" ]
+);
+
+
 getBrainData(datasetKey);
 $('.chzn-select').chosen({allow_single_deselect: true});
 d3.select("#bt-addNode").on("click", displayAddBrainNodeField);
@@ -13,7 +26,6 @@ d3.select("#bt-addLink").on("click", displayAddBrainLinkField);
 d3.select("#bt-addBatch").on("click", displayAddFromFileField);
 d3.select("#bt-addNodeSubmit").on("click", addBrainNode);
 d3.select("#bt-addLinkSubmit").on("click", addBrainLink);
-
 
 // ================ Misc Processing Functions ================ //
 
@@ -29,7 +41,7 @@ function waitForDataLoading() {
 function constructNodesTable() {
     var num_nodes = nodes.length;
     for (var i = 0; i < num_nodes; ++i) {
-        var curr_node = nodes[i];    
+        var curr_node = nodes[i];
         key_node_map[curr_node.key] = curr_node;
         name_node_map[curr_node.name] = curr_node;
     }
@@ -52,7 +64,7 @@ function addBrainNode() {
     }
     var notes = $('[name="nodeNotes"]').val();
     var newData = {userID: userId, datasetKey: datasetKey, nodeName: nodeName, parentKey: parentKey, depth: nodeDepth, notes: notes};
-    $.ajax({        
+    $.ajax({
         type: "POST",
         url: "../php/addBrainNode.php",
         data: newData,
@@ -80,7 +92,7 @@ function addBrainLink() {
     var targetKey = $('#targetName').val();
     var notes = $('[name="linkNotes"]').val();
     var linkData = {user: userId, dataset: datasetKey, source: sourceKey, target: targetKey, notes: notes};
-    $.ajax({        
+    $.ajax({
         type: "POST",
         url: "../php/addBrainLink.php",
         data: linkData,
@@ -94,7 +106,7 @@ function addBrainLink() {
             addLinkToDisplay($.parseJSON(link));
         },
         async: false
-    });    
+    });
 }
 /*
  * [TODO]
@@ -114,22 +126,28 @@ function populateNodesTable() {
     var length = nodes.length;
     for (var i = 0; i < length; ++i) {
         var node = nodes[i];
-        $('#nodesTable > tbody:last').append('<tr><td>' + node.name + '</td><td>' + 
+        $('#nodesTable > tbody:last').append('<tr><td>' + node.name + '</td><td>' +
             node.depth + '</td><td>' + node.parentName + '</td><td>' + node.notes +
-            '</td></tr>');    
+            '</td></tr>');
+
+        table.fnAddData([String(node.name),
+                         String(node.depth),
+                         String(node.parentName),
+                         String(node.notes)]);
     }
+
 }
 
 function addNodeEntry(node) {
-    $('#nodesTable > tbody:last').append('<tr><td>' + node.name + '</td><td>' + 
-        node.depth + '</td><td>' + node.parentName + '</td><td>' + node.notes + 
+    $('#nodesTable > tbody:last').append('<tr><td>' + node.name + '</td><td>' +
+        node.depth + '</td><td>' + node.parentName + '</td><td>' + node.notes +
         '</td></tr>');
 }
 
 function addLinkEntry(link) {
     var source_node = key_node_map[parseInt(link.sourceKey)];
     var target_node = key_node_map[parseInt(link.targetKey)];
-    $('#linksTable > tbody:last').append('<tr><td>' + source_node.name + '</td><td>' + 
+    $('#linksTable > tbody:last').append('<tr><td>' + source_node.name + '</td><td>' +
         target_node.name + '</td><td>' + link.notes + '</td></tr>');
 }
 
@@ -140,8 +158,8 @@ function populateLinksTable() {
         var link = links[i];
         var source_node = key_node_map[parseInt(link.sourceKey)];
         var target_node = key_node_map[parseInt(link.targetKey)];
-        $('#linksTable > tbody:last').append('<tr><td>' + source_node.name + '</td><td>' + 
-            target_node.name + '</td><td>' + link.notes + '</td></tr>');        
+        $('#linksTable > tbody:last').append('<tr><td>' + source_node.name + '</td><td>' +
+            target_node.name + '</td><td>' + link.notes + '</td></tr>');
     }
     /* Can't get this to work - works with a 'tr' selector
     linksTable.selectAll(':not(.tableTitle)')
@@ -160,7 +178,7 @@ function populateOptions() {
     for (var key in key_node_map) {
         var node = key_node_map[key];
         $('#nodeParent').append(new Option(node.name, key, false, false));
-        $('#sourceName').append(new Option(node.name, key, false, false));        
+        $('#sourceName').append(new Option(node.name, key, false, false));
         $('#targetName').append(new Option(node.name, key, false, false));
     }
     $('.chzn-select').chosen({allow_single_deselect: true});
@@ -262,6 +280,3 @@ function getBrainData(datasetKey) {
         async: false
     });
 }
-
-
-
