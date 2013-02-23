@@ -36,7 +36,7 @@
       </ul>
       <div id="util-content" class="tab-content">
 
-        <!--INFO-->
+        <!--INFO-->    <link rel="stylesheet" href="media/lib/jquery-ui/css/redmond/jquery-ui.css" />
         <div id="info" class="tab-pane fade in active">
             <div id="conn-info" style="height:100px">
                 <h4>Connection information</h4>
@@ -44,6 +44,14 @@
                 <p class="exp"><i>Click on a connection and the basic connection information will be displayed here.</i></p>
                 <p id="src-name"></p>
                 <p id="tgt-name"></p>
+            </div>
+            <div id="anatomy-map">
+                <img src="media/img/brodmann-lateral.png" usemap="brainmap" class="map">
+                <map name="brainmap">
+                    <area title="Areas 3, 1 & 2 - Primary Somatosensory Cortex" coords="255,93,298,118" 
+                        alt="Areas 3, 1 & 2 - Primary Somatosensory Cortex" shape="rect" 
+                        data-map-highlight='{"stroke":false,"fillColor":"ff0000","fillOpacity":0.6}'>    
+                </map>
             </div>
             <div id="region-info">
                 <h4>Brain Region information</h4>
@@ -53,7 +61,7 @@
 <!--                <div id="source-region-info" class="accordion-group">
                     <div class="accordion-heading">
                         <a class="accordion-toggle" data-toggle="collapse" data-parent="#region-info" href="#source-info-content">
-                            Source region
+                            Source region    <link rel="stylesheet" href="media/lib/jquery-ui/css/redmond/jquery-ui.css" />
                         </a>
                     </div>
                     <div id="source-info-content" class="accordion-body collapse in">
@@ -309,10 +317,10 @@
     <script type="text/javascript" src="media/lib/d3.v2.js"></script>
     <script type="text/javascript" src="media/lib/chosen/chosen.jquery.js"></script>
     <script type="text/javascript" src="media/lib/jquery-ui/js/jquery-ui.js"></script>
-
+    <script type="text/javascript" src="media/lib/jquery.maphilight.min.js"></script>
+    
     <!--TODO: brainmap and script should be compressed as one file-->
     <script type="text/javascript" src="media/js/brainCircuits.js"></script>
-    <script type="text/javascript" src="media/js/brainMap.js"></script>
 
     <!-- Piwik -->
     <script type="text/javascript">

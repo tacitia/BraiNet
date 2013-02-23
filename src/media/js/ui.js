@@ -88,21 +88,6 @@ function searchButtonClick() {
     dimNonSearchResults();
 }
 
-function dimNonSearchResults() {
-    svg_circular.selectAll('.circular.node')
-        .classed('nofocus', function(d) {
-            return ($.inArray(d, active_data_nodes_force) < 0);
-        });
-    svg_circular.selectAll('.circular.link')
-        .classed('hidden', function(d) {
-            return ($.inArray(d, active_data_links_force) < 0);
-        });
-    svg_circular.selectAll('.circular.text')
-        .classed('visible', function(d) {
-            return ($.inArray(d, active_data_nodes_force) >= 0) ;
-        });    
-}
-
 function clearButtonClick() {
     if (enable_piwik) {
         piwikTracker.trackPageView('Click clear button');

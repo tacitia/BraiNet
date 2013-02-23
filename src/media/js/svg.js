@@ -121,18 +121,35 @@ function updateCircularLayout(new_num, new_delta) {
     exitCircularLinks();
 
     // Add the new links and new nodes resulted from the split
-    enterCircularNodes();
     enterCircularLinks();    
+    enterCircularNodes();
+
 
     for (var i = 0; i < new_num; ++i) {
         var datum = active_data_nodes[i];
         calculateArcPositions(datum, 0, new_delta, i);
     }
 
-    updateCircularNodes();
     updateCircularLinks();
+    updateCircularNodes();
     updateCircularTexts();
 }
+
+function dimNonSearchResults() {
+    svg_circular.selectAll('.circular.node')
+        .classed('nofocus', function(d) {
+            return ($.inArray(d, active_data_nodes_force) < 0);
+        });
+    svg_circular.selectAll('.circular.link')
+        .classed('hidden', function(d) {
+            return ($.inArray(d, active_data_links_force) < 0);
+        });
+    svg_circular.selectAll('.circular.text')
+        .classed('visible', function(d) {
+            return ($.inArray(d, active_data_nodes_force) >= 0) ;
+        });    
+}
+
 
 function nodeClick(d) {
     if (d3.event.shiftKey) {
@@ -164,6 +181,8 @@ function nodeClick(d) {
 
 // When mousing over, highlight itself and the neighbors
 function nodeMouseOver(node, svg) {
+    /* testing */
+//    $('[title="Areas 3, 1 & 2 - Primary Somatosensory Cortex"]').mouseover();    
     if (current_mode === mode.search) { return; }
     svg.selectAll('.circular.node')
         .classed('nofocus', function(d) {
@@ -175,7 +194,7 @@ function nodeMouseOver(node, svg) {
                 ($.inArray(dKey, outNeighbors) < 0);
         });
     svg.selectAll('.circular.link')
-        .classed('nofocus', function(d) {
+        .classed('hidden', function(d) {
             return d.source.key !== node.key && d.target.key !== node.key; 
         });
     svg.selectAll('.circular.text')
@@ -190,9 +209,10 @@ function nodeMouseOver(node, svg) {
 }
 
 function nodeMouseOut(node, svg) {
+//    $('[title="Areas 3, 1 & 2 - Primary Somatosensory Cortex"]').mouseout();    
     if (current_mode === mode.search) { return; }
     svg.selectAll('.circular.node').classed('nofocus', false);
-    svg.selectAll('.circular.link').classed('nofocus', false);
+    svg.selectAll('.circular.link').classed('hidden', false);
     updateCircularTexts();
 }
 
@@ -215,7 +235,7 @@ function linkMouseOver(link, svg) {
             return d.key !== link.source.key && d.key !== link.target.key;
         });
     svg.selectAll('.circular.link')
-        .classed('nofocus', function(d) {
+        .classed('hidden', function(d) {
             return d.key !== link.key;
         });
     svg.selectAll('.circular.text')
@@ -227,7 +247,7 @@ function linkMouseOver(link, svg) {
 function linkMouseOut(link, svg) {
     if (current_mode === mode.search) { return; }
     svg.selectAll('.circular.node').classed('nofocus', false);
-    svg.selectAll('.circular.link').classed('nofocus', false);
+    svg.selectAll('.circular.link').classed('hidden', false);
     updateCircularTexts();
 }
 

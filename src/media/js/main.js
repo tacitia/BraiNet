@@ -93,6 +93,7 @@ d3.select('#bt-applyDataset').on('click', applyDatasetButtonClick);
 d3.select("#maxHop").on("change", setMaxHop);
 $('#sourceSelect').change(sourceSearchInput);
 $('#targetSelect').change(targetSearchInput);
+$('.map').maphilight();
 window.onbeforeunload=saveSessionData;
 window.onload=startSession;
 /*******
