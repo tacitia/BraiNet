@@ -158,7 +158,15 @@ function constructUserNodesMaps(datasetKey, nodes) {
     var num_nodes = nodes.length;
     for (var i = 0; i < num_nodes; ++i) {
         var node = nodes[i];
+        console.log(node);
         node.key = parseInt(node.key);
+        if (node.brodmannKey === undefined) {
+        	node.brodmannKey = -1;
+        	// TODO: propagate the information down the hierarchy.
+        }
+        else {
+        	node.brodmannKey = node.brodmannKey[0];
+        }
 //        console.log(node.key);
         node.depth = parseInt(node.depth);
         node.parent = (node.parentKey === null) ? null : parseInt(node.parentKey);
@@ -168,8 +176,6 @@ function constructUserNodesMaps(datasetKey, nodes) {
         user_in_neighbor_map[node.key] = [];
         user_out_neighbor_map[node.key] = [];
     }
-
-    console.log(user_node_map);
     
     for (var key in user_node_map) {
         var node = user_node_map[key];
@@ -188,9 +194,6 @@ function constructUserNodesMaps(datasetKey, nodes) {
 }
 
 
-/*
- * TODO: extend this to handle user entered notes
- */
 function constructUserLinksMaps(datasetKey, links) {    
     var user_link_map = {};
     var user_node_link_map = {};
@@ -656,6 +659,24 @@ function getBrainData(datasetKey) {
     });
 }
 
+function getBrodmannAreas() {
+    $.ajax({
+        type: "GET",
+        url: "media/php/getBrodmannAreas.php",
+        error: function(data) {
+        console.log("Failed");
+            console.log(data);
+        },
+        success: function(result) {
+            console.log("Successfully passed data to php.");
+            console.log(result);
+            var data = $.parseJSON(result);
+            constructBrodmannMap(data);
+        },
+        async: true
+    });
+}
+
 // ================ Misc Functions ================ //
 
 /*
@@ -671,6 +692,15 @@ function contains(array, element) {
         }
     }
     return -1;
+}
+
+function constructBrodmannMap(data) {
+	brodmann_map = {};
+	var num_area = data.length;
+	for (var i = 0; i < num_area; ++i) {
+		var area = data[i];
+		brodmann_map[area.id] = area.name;
+	}
 }
 
 /*

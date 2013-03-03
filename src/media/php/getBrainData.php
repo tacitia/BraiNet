@@ -16,56 +16,64 @@
     
     $brainData = array();
 
-    $nodeTableName = 'user_nodes';
+    $nodeTableName = 'user_nodes';//not used
     $linkTableName = 'user_links';
     
-    //select un1.*, un2.name as parent from user_nodes un1 left join user_nodes un2 on un1.parent = un2.key
-    $nodes_query = "SELECT un1.*, un2.key as parentKey, un2.name as parent FROM ".$nodeTableName.
-    " un1 LEFT JOIN user_nodes un2 ON un1.parent = un2.key WHERE un1.datasetKey = ".$datasetKey;    
+    $nodes_query = "
+    SELECT 	nodes.key, nodes.name, parents.parent as parentKey, 
+    		parents.parentName as parentName, parents.depth, nodes.userID, nodes.datasetKey, nodes.notes, nodes.brodmannKey
+	FROM user_nodes nodes 
+	LEFT JOIN 
+		(SELECT np.node, un.key as parent, np.depth, un.name as parentName 
+		FROM node_parents np 
+		LEFT JOIN user_nodes un 
+		ON un.key = np.parent) as parents
+	ON nodes.key = parents.node WHERE nodes.datasetKey = ".$datasetKey;
     
     $links_query = "SELECT * FROM " .$linkTableName." WHERE datasetKey = ".$datasetKey;
     
     //echo $links_query;
     
-    $nodes_result = mysql_query($nodes_query, $con);
-    
-    if(!$nodes_result) die("SELECT nodes failed: ".mysql_error());
-    //echo mysql_error($con). "\n";
-    
-	$nodes = array(); 
-    while ($row = mysql_fetch_array($nodes_result)) {
-    	$node = array();
-    	$node['key'] = $row['key'];
-    	$node['name'] = $row['name'];
-        $node['parentName'] = $row['parent'];
-        $node['parentKey'] = $row['parentKey'];
-    	$node['depth'] = $row['depth'];
-        $node['datasetKey'] = $row['datasetKey'];
-        $node['notes'] = $row['notes'];
-        $nodes[] = $node;
-        //array_push($nodes, $row);
-    }
-	
-	$links_result = mysql_query($links_query, $con);
-	if(!$links_result) die("SELECT links failed: ".mysql_error());
+    $nodes_result = mysql_query($nodes_query, $con) or die("SELECT nodes failed: ".mysql_error());
 
-	$links = array(); 
-    while ($row = mysql_fetch_array($links_result)) {
+    try{
+		$nodes = array(); 
+		while ($row = mysql_fetch_array($nodes_result)) {
+			$node = array();
+			$node['key'] = $row['key'];
+			$node['name'] = $row['name'];
+			$node['parentName'] = $row['parentName'];
+			$node['parentKey'] = $row['parentKey'];
+			$node['depth'] = $row['depth'];
+			$node['datasetKey'] = $row['datasetKey'];
+			$node['notes'] = $row['notes'];
+			$node['brodmannKey'] = $row['brodmannKey'];
+			$nodes[] = $node;
+			//array_push($nodes, $row);
+		}
+		
+		$links_result = mysql_query($links_query, $con);
+		if(!$links_result) die("SELECT links failed: ".mysql_error());
+		
+		$links = array(); 
+		while ($row = mysql_fetch_array($links_result)) {
+		
+			$link = array();
+			$link['key'] = $row['key'];
+			$link['sourceKey'] = $row['sourceKey'];
+			$link['targetKey'] = $row['targetKey'];
+			$link['datasetKey'] = $row['datasetKey'];
+			$link['notes'] = $row['notes'];
+			$links[] = $link;
+			//array_push($links, $row);
+		}
+		
+		$result = array();
+		$result['nodes'] = $nodes;
+		$result['links'] = $links;
+	    echo json_encode($result);
     
-    	$link = array();
-        $link['key'] = $row['key'];
-        $link['sourceKey'] = $row['sourceKey'];
-        $link['targetKey'] = $row['targetKey'];
-        $link['datasetKey'] = $row['datasetKey'];
-        $link['notes'] = $row['notes'];
-        $links[] = $link;
-        //array_push($links, $row);
+    }catch(Exception $e){
+		echo "exception while processing brain data: ",  $e->getMessage(), "\n";
     }
-    
-
-    $result = array();
-	$result['nodes'] = $nodes;
-	$result['links'] = $links;
-	
-    echo json_encode($result);
 ?>

@@ -40,6 +40,7 @@
             <th>Depth</th>
             <th>Location</th>
             <th>Notes</th>
+            <th>Brodmann Area</th>
           </tr>
         </thead>
 
@@ -89,8 +90,21 @@ style="width:250px;" id="brodmannArea">
             <select data-placeholder="End at..." class="chzn-select" style="width:250px;" id="targetName">
               <option></option>
             </select>
+            <select data-placeholder="Select an attribute" class="chzn-select" style="width:250px;" id="attrName">
+              <option></option>
+            </select> 
+            <input type="text" placeholder="Attribute value" name="attrValue">
             <input type="text" placeholder="Notes" name="linkNotes" class="input-xxlarge">
             <button id="bt-addLinkSubmit" class="btn" type="submit">Add</button>
+            <div>
+              <input type="text" placeholder="Attribute name" name="newAttrName">
+              <select data-placeholder="Attribute type" class="chzn-select" style="width:250px;" id="attrType">
+                <option value="nominal">Nominal</option>
+                <option value="ordinal">Ordinal</option>
+                <option value="numeric">Numeric</option>
+              </select> 
+              <button id="bt-addLinkAttrSubmit" class="btn" type="submit">Add a new attribute type</button>
+            </div>
           </div>
           <div id="addBatchField" style="display:none">
           </div>

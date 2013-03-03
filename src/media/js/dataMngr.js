@@ -5,6 +5,7 @@ var links;
 var key_node_map = {};
 var name_node_map = {};
 var key_link_map = {};
+var brodmann_map = {};
 var userId = 3;
 var nodesTable = $('#nodesDisplay').dataTable();
 var linksTable = $('#linksDisplay').dataTable();
@@ -45,6 +46,7 @@ d3.select("#bt-addLink").on("click", displayAddBrainLinkField);
 d3.select("#bt-addBatch").on("click", displayAddFromFileField);
 d3.select("#bt-addNodeSubmit").on("click", addBrainNode);
 d3.select("#bt-addLinkSubmit").on("click", addBrainLink);
+d3.select('#bt-addLinkAttrSubmit').on('click', addBrainLinkAttr);
 
 // ================ Misc Processing Functions ================ //
 
@@ -61,6 +63,14 @@ function constructMaps() {
     	var key_pair = curr_link.sourceKey + "-" + curr_link.targetKey;
     	key_link_map[key_pair] = curr_link;
     }
+}
+
+function constructBrodmannMap(data) {
+	var num_area = data.length;
+	for (var i = 0; i < num_area; ++i) {
+		var area = data[i];
+		brodmann_map[area.id] = area.name;
+	}
 }
 
 function bindSelections() {
@@ -152,6 +162,30 @@ function addBrainLink() {
         async: false
     });
 }
+
+function addBrainLinkAttr() {
+	var attrName = $('[name="newAttrName"]').val();
+	var attrType = $('#attrType').val();
+	console.log(attrName);
+	console.log(attrType);	
+    $.ajax({
+        type: "POST",
+        url: "../php/addLinkAttr.php",
+        data: {attrName: attrName, attrType: attrType}
+        error: function(data) {
+            console.log("Failed");
+            console.log(data);
+        },
+        success: function(link) {
+            console.log("Successfully passed data to php.");
+            console.log(link);
+            console.log($.parseJSON(link));
+            addLinkToDisplay($.parseJSON(link));
+        },
+        async: false
+    });
+}
+
 /*
  * [TODO]
  */
@@ -176,9 +210,14 @@ function populateNodesTable() {
     }
 }
 
+/*
+ * TODO: need to be updated to work with dataTable
+ */
 function addNodeEntry(node) {
+	console.log(brodmann_map[node.brodmannKey]);
     $('#nodesTable > tbody:last').append('<tr><td>' + node.name + '</td><td>' +
-        node.depth + '</td><td>' + node.parentName + '</td><td>' + node.notes +
+        node.depth + '</td><td>' + node.parentName + '</td><td>' + node.notes + 
+        '</td></td>' + brodmann_map[node.brodmannKey] +
         '</td></tr>');
 }
 
@@ -371,6 +410,7 @@ function getBrodmannAreas() {
             console.log(result);
             var data = $.parseJSON(result);
             populateBrodmannAreas(data);
+            constructBrodmannMap(data);
         },
         async: true
     });

@@ -18,6 +18,7 @@ var node_out_neighbor_map;
 // User specific data
 var link_rating_map; // Key: link id. Value: user rating for the link.
 var record_rating_map; // Key: record id. Value: user rating for the record.
+var brodmann_map;
 var dataset_list;
 var uid;
 var user_datasets = {};

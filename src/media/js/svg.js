@@ -182,7 +182,10 @@ function nodeClick(d) {
 // When mousing over, highlight itself and the neighbors
 function nodeMouseOver(node, svg) {
     /* testing */
-    $('[title="Areas 3, 1 & 2 - Primary Somatosensory Cortex"]').mouseover();    
+    console.log(node);
+    var brodmann_title = brodmann_map[node.brodmannKey];
+    console.log('[title="' + brodmann_title + '"]');
+    $('[title="' + brodmann_title + '"]').mouseover();    
     if (current_mode === mode.search) { return; }
     svg.selectAll('.circular.node')
         .classed('nofocus', function(d) {
