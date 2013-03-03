@@ -4,30 +4,42 @@ var nodes;
 var links;
 var key_node_map = {};
 var name_node_map = {};
+var key_link_map = {};
 var userId = 3;
-var mutex = 1;
-
-
 var nodesTable = $('#nodesDisplay').dataTable();
 var linksTable = $('#linksDisplay').dataTable();
+var selectMutex = 2;
 
 //on tr hover append delete button on last th
 var deleteIcon;
 $('table').on("mouseenter", "tr", function() {
-    deleteIcon = $(this).find('td:last').append('<span onclick="deleteRow(this)"><i class="icon-trash"></i> Delete</span>');
+	console.log($(this));
+	var tableID = $(this).context.parentNode.parentNode.id;
+	var content;
+	if (tableID === "nodesDisplay") {
+		var nodeName = $(this).context.children[0].innerText;
+		var nodeID = name_node_map[nodeName].key;
+		content = '<span onclick="deleteNodeRow(this,' + nodeID + ')"><i class="icon-trash"></i> Delete</span>';
+		console.log(content);
+	}
+	else if (tableID === "linksDisplay") {
+		var startName = $(this).context.children[0].innerText;
+		var endName = $(this).context.children[1].innerText;
+		var startID = name_node_map[startName].key;
+		var endID = name_node_map[endName].key;
+		var linkID = key_link_map[startID + "-" + endID].key;
+		content = '<span onclick="deleteLinkRow(this,' + linkID + ')"><i class="icon-trash"></i> Delete</span>'; 
+		console.log(content);
+	}
+//	deleteIcon = $(this).find('td:last').append('<span onclick="deleteRow(this)"><i class="icon-trash"></i> Delete</span>');
+	deleteIcon = $(this).find('td:last').append(content);
 });
 
 $('table').on("mouseleave", "tr", function() {
     $(deleteIcon).find('span').remove();
 });
-
-//pass tr element
-function deleteRow(node) {
-    nodesTable.fnDeleteRow($(node).closest('tr').get()[0]);
-}
-
+getBrodmannAreas();
 getBrainData(datasetKey);
-$('.chzn-select').chosen({allow_single_deselect: true});
 d3.select("#bt-addNode").on("click", displayAddBrainNodeField);
 d3.select("#bt-addLink").on("click", displayAddBrainLinkField);
 d3.select("#bt-addBatch").on("click", displayAddFromFileField);
@@ -36,22 +48,26 @@ d3.select("#bt-addLinkSubmit").on("click", addBrainLink);
 
 // ================ Misc Processing Functions ================ //
 
-function waitForDataLoading() {
-    if (mutex > 0) {
-        setTimeout(function() {waitForDataLoading();}, 1000);
-    }
-    else {
-        renderPage();
-    }
-}
-
-function constructNodesTable() {
+function constructMaps() {
     var num_nodes = nodes.length;
     for (var i = 0; i < num_nodes; ++i) {
         var curr_node = nodes[i];
         key_node_map[curr_node.key] = curr_node;
         name_node_map[curr_node.name] = curr_node;
     }
+    var num_links = links.length;
+    for (var i = 0; i < num_links; ++i) {
+    	var curr_link = links[i];
+    	var key_pair = curr_link.sourceKey + "-" + curr_link.targetKey;
+    	key_link_map[key_pair] = curr_link;
+    }
+}
+
+function bindSelections() {
+	if (selectMutex === 0) {
+		console.log("111");
+		$('.chzn-select').chosen({allow_single_deselect: true});
+	}
 }
 
 
@@ -64,13 +80,22 @@ function constructNodesTable() {
  */
 function addBrainNode() {
     var nodeName = $('[name="nodeName"]').val();
+    if (nodeName === "") {
+    	alert("Cannot add node: empty node name is not allowed.");
+    	return;	
+    }
     var nodeDepth = parseInt($('[name="nodeDepth"]').val());
     var parentKey = $('#nodeParent').val();
     if (parentKey === "") {
         parentKey = -1;
     }
+    var brodmannKey = $('#brodmannArea').val();
+    if (brodmannKey === "") {
+    	brodmannKey = -1;
+    }
     var notes = $('[name="nodeNotes"]').val();
-    var newData = {userID: userId, datasetKey: datasetKey, nodeName: nodeName, parentKey: parentKey, depth: nodeDepth, notes: notes};
+    var newData = {userID: userId, datasetKey: datasetKey, nodeName: nodeName, parentKey: parentKey, depth: nodeDepth, notes: notes, brodmannKey: parseInt(brodmannKey)};
+    console.log(newData);
     $.ajax({
         type: "POST",
         url: "../php/addBrainNode.php",
@@ -79,10 +104,21 @@ function addBrainNode() {
             console.log("Failed");
             console.log(data);
         },
-        success: function(node) {
+        success: function(result) {
             console.log("Successfully passed data to php.");
-            console.log($.parseJSON(node));
-            addNodeToDisplay($.parseJSON(node));
+            console.log(result);
+            // duplication: 1062
+            console.log(parseInt(result));
+            if (parseInt(result) === 1062) {
+            	alert("Cannot add node: a node with the same name already exists in the dataset."); }
+            else {
+            	try {
+		            console.log($.parseJSON(result));
+    		        addNodeToDisplay($.parseJSON(result));
+    		    } catch(e) {
+    		    	alert("Cannot add node: unknown database error occurred during node insertion.");
+    		    }
+    		}
         },
         async: false
     });
@@ -109,6 +145,7 @@ function addBrainLink() {
         },
         success: function(link) {
             console.log("Successfully passed data to php.");
+            console.log(link);
             console.log($.parseJSON(link));
             addLinkToDisplay($.parseJSON(link));
         },
@@ -183,7 +220,20 @@ function populateOptions() {
         $('#sourceName').append(new Option(node.name, key, false, false));
         $('#targetName').append(new Option(node.name, key, false, false));
     }
-    $('.chzn-select').chosen({allow_single_deselect: true});
+    selectMutex -= 1;
+    bindSelections();
+}
+
+function populateBrodmannAreas(brodmannAreas) {
+	console.log(brodmannAreas);
+	var num_area = brodmannAreas.length;
+	for (var i = 0; i < num_area; ++i) {
+		var area = brodmannAreas[i];
+		$('#brodmannArea').append(new Option(area.name, area.id, false, false));
+	}
+	console.log("???");
+    selectMutex -= 1;
+    bindSelections();
 }
 
 function addNodeToDisplay(node) {
@@ -241,6 +291,29 @@ function displayAddFromFileField() {
     $('#addBatchField').css('display', 'block');
 }
 
+//pass tr element
+/*
+ * 1. display a warning
+ * 2. remove the element from the database
+ * 3. remove the element from the display
+ */
+function deleteNodeRow(row, nodeKey) {
+	var choice = confirm("Are you sure you want to delete the selected node? If a node is deleted, the associated links will also be deleted. Click OK to confirm.");
+	if (choice) {
+	    nodesTable.fnDeleteRow($(row).closest('tr').get()[0]);
+	    deleteNode(nodeKey);
+	}
+}
+
+function deleteLinkRow(row, linkKey) {
+	var choice = confirm("Are you sure you want to delete the selected link? Click OK to confirm.");
+	console.log(item);
+	if (choice) {
+	    linksTable.fnDeleteRow($(row).closest('tr').get()[0]);
+	    deleteLink(linkKey);
+	}
+}
+
 // ================ Database Query Functions ================ //
 
 function getUserId() {
@@ -254,6 +327,7 @@ function getUserId() {
         },
         success: function(data) {
             console.log("Success");
+            console.log(data);
             uid = data;
         },
         async: false
@@ -272,13 +346,69 @@ function getBrainData(datasetKey) {
         },
         success: function(result) {
             console.log("Successfully passed data to php.");
+            console.log(result);
             var data = $.parseJSON(result);
             nodes = data.nodes;
             links = data.links;
-            constructNodesTable();
+            constructMaps();
             populateBrainDataTable();
             populateOptions();
         },
         async: false
     });
+}
+
+function getBrodmannAreas() {
+    $.ajax({
+        type: "GET",
+        url: "../php/getBrodmannAreas.php",
+        error: function(data) {
+        console.log("Failed");
+            console.log(data);
+        },
+        success: function(result) {
+            console.log("Successfully passed data to php.");
+            console.log(result);
+            var data = $.parseJSON(result);
+            populateBrodmannAreas(data);
+        },
+        async: true
+    });
+}
+
+function deleteNode(nodeKey) {
+	console.log(nodeKey);
+    $.ajax({
+        type: "POST",
+        url: "../php/deleteBrainNode.php",
+        data: {nodeKey: nodeKey},
+        error: function(data) {
+        console.log("Failed");
+            console.log(data);
+        },
+        success: function(result) {
+            console.log("Successfully passed data to php.");
+            console.log(result);
+        },
+        async: false
+    });	
+}
+
+function deleteLink(linkKey) {
+	console.log(linkKey);
+    $.ajax({
+        type: "POST",
+        url: "../php/deleteBrainLink.php",
+        data: {linkKey: linkKey},
+        error: function(data) {
+        console.log("Failed");
+            console.log(data);
+        },
+        success: function(result) {
+            console.log("Successfully passed data to php.");
+            console.log(result);
+
+        },
+        async: false
+    });	
 }

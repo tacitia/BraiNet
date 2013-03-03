@@ -62,7 +62,6 @@
 
       <!--User action buttons-->
 
-<!--
       <div id="datasetControl">
         <table><tr>
           <td><button id="bt-addNode" class="btn">Add a brain region/cell group</button></td>
@@ -77,6 +76,10 @@
               <option></option>
             </select>
             <input type="text" placeholder="Notes" name="nodeNotes" class="input-xxlarge">
+            <select data-placeholder="Brodmann area" class="chzn-select"
+style="width:250px;" id="brodmannArea">
+				<option</option>
+			</select>
             <button id="bt-addNodeSubmit" class="btn" type="submit">Add</button>
           </div>
           <div id="addLinkField" style="display:none">
@@ -93,7 +96,6 @@
           </div>
         </div>
       </div>
--->
 
     <!--LIBRARIES-->
     <script type="text/javascript" src="../lib/datatables/media/js/jquery.js"></script>

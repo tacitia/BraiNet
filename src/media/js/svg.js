@@ -182,7 +182,7 @@ function nodeClick(d) {
 // When mousing over, highlight itself and the neighbors
 function nodeMouseOver(node, svg) {
     /* testing */
-//    $('[title="Areas 3, 1 & 2 - Primary Somatosensory Cortex"]').mouseover();    
+    $('[title="Areas 3, 1 & 2 - Primary Somatosensory Cortex"]').mouseover();    
     if (current_mode === mode.search) { return; }
     svg.selectAll('.circular.node')
         .classed('nofocus', function(d) {
@@ -209,7 +209,7 @@ function nodeMouseOver(node, svg) {
 }
 
 function nodeMouseOut(node, svg) {
-//    $('[title="Areas 3, 1 & 2 - Primary Somatosensory Cortex"]').mouseout();    
+    $('[title="Areas 3, 1 & 2 - Primary Somatosensory Cortex"]').mouseout();    
     if (current_mode === mode.search) { return; }
     svg.selectAll('.circular.node').classed('nofocus', false);
     svg.selectAll('.circular.link').classed('hidden', false);

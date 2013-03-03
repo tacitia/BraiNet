@@ -164,6 +164,7 @@ function renderCanvas() {
 
 function setupUIElements() {
     appendNodesAsOptions(active_node_map);
+    $(area).css(data-map-highlight, '{"stroke":false,"fillColor":"ff0000","fillOpacity":0.6}');
 }
 
 function waitForDataLoading() {

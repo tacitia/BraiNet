@@ -637,6 +637,7 @@ function getBrainData(datasetKey) {
         },
         success: function(result) {
             console.log("Successfully passed data to php.");
+            console.log(result);
             var data = $.parseJSON(result);
             var nodes = data.nodes;
             var links = data.links;
