@@ -5,6 +5,8 @@
 	$sourceKey = $_POST['source'];
 	$targetKey = $_POST['target'];
 	$notes = $_POST['notes'];
+	$attrKey = $_POST['attrKey'];
+	$attrValue = $_POST['attrValue'];
 
     $con = mysql_connect("localhost", "tacitia_brainIDC", "Ophelia621");
     if (!$con) {
@@ -15,30 +17,10 @@
     }
 
     mysql_select_db("tacitia_brainData", $con);
-    
-    /*
-    $brainData = array();
-
-    $nodeTableName = $datasetName . '_nodes';
-    $linkTableName = $datasetName . '_links';
-    
-    $result = mysql_query("
-        SELECT * FROM " . $nodeTableName;
-    ", $con);
-    
-    while ($row = mysql_fetch_array($result)) {
-        
-    }*/
 
     echo mysql_error($con) . "\n";
 
-	/*
-    echo json_encode($result);
-    */
-    
-    mysql_query("INSERT INTO user_links (sourceKey, targetKey, userID, datasetKey, notes)
-VALUES ('$sourceKey','$targetKey','$userId', '$datasetKey', '$notes')");
-
+	// Check if the link already exists
     $query = "SELECT * FROM user_links 
     WHERE sourceKey = " . $sourceKey . " AND targetKey = " . $targetKey . 
     " AND datasetKey = " . $datasetKey;
@@ -50,14 +32,52 @@ VALUES ('$sourceKey','$targetKey','$userId', '$datasetKey', '$notes')");
     	    echo ' caused exception: ',  $e->getMessage(), "\n";
     }
 
+	// If the link does not exist, insert a new link
+	if (mysql_num_rows($result) == 0) {
+	    mysql_query("INSERT INTO user_links (sourceKey, targetKey, userID, datasetKey, notes) VALUES ('$sourceKey','$targetKey','$userId', '$datasetKey', '$notes')");   
+	}
+	
+	// Now retrieve the link
+    $query = "SELECT * FROM user_links 
+    WHERE sourceKey = " . $sourceKey . " AND targetKey = " . $targetKey . 
+    " AND datasetKey = " . $datasetKey;
+
+    try{
+        	$result = mysql_query($query, $con);
+    }catch(Exception $e){
+    	    echo 'SQL Query: '.$query;
+    	    echo ' caused exception: ',  $e->getMessage(), "\n";
+    }
+	
     $link = array();
-    while ($row = mysql_fetch_array($result)) {
-        $link['key'] = $row['key'];
+	$linkKey;
+	while ($row = mysql_fetch_array($result)) {
+    	$link['key'] = $row['key'];
+    	$linkKey = $row['key'];
         $link['sourceKey'] = $row['sourceKey'];
         $link['targetKey'] = $row['targetKey'];
-        $link['datasetKey'] = $row['datasetKey'];
-        $link['notes'] = $row['notes'];
+    	$link['datasetKey'] = $row['datasetKey'];
+   	    $link['notes'] = $row['notes'];
     }
+
+	// Insert the attributes
+	mysql_query("INSERT INTO link_attributes(linkKey, attributeKey, attrValue) VALUES 
+	('$linkKey', '$attrKey', '$attrValue')");
+	
+	// Retrieve all attributes
+	$attrs = array();
+	
+	$query = "SELECT * FROM link_attributes WHERE linkKey = " . $linkKey;
+
+    try{
+        	$result = mysql_query($query, $con);
+    }catch(Exception $e){
+    	    echo 'SQL Query: '.$query;
+    	    echo ' caused exception: ',  $e->getMessage(), "\n";
+    }
+	
+	
+//	$link['attrs'] = $attrs;
 
     echo json_encode($link);
     

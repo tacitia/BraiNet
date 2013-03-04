@@ -9,7 +9,7 @@ var brodmann_map = {};
 var userId = 3;
 var nodesTable = $('#nodesDisplay').dataTable();
 var linksTable = $('#linksDisplay').dataTable();
-var selectMutex = 2;
+var selectMutex = 3;
 
 //on tr hover append delete button on last th
 var deleteIcon;
@@ -41,6 +41,7 @@ $('table').on("mouseleave", "tr", function() {
 });
 getBrodmannAreas();
 getBrainData(datasetKey);
+getLinkAttrs();
 d3.select("#bt-addNode").on("click", displayAddBrainNodeField);
 d3.select("#bt-addLink").on("click", displayAddBrainLinkField);
 d3.select("#bt-addBatch").on("click", displayAddFromFileField);
@@ -144,7 +145,8 @@ function addBrainLink() {
     var sourceKey = $('#sourceName').val();
     var targetKey = $('#targetName').val();
     var notes = $('[name="linkNotes"]').val();
-    var linkData = {user: userId, dataset: datasetKey, source: sourceKey, target: targetKey, notes: notes};
+    var attrKey = $('#attrName').val();
+    var linkData = {user: userId, dataset: datasetKey, source: sourceKey, target: targetKey, notes: notes, attrKey: attrKey};
     $.ajax({
         type: "POST",
         url: "../php/addBrainLink.php",
@@ -171,16 +173,15 @@ function addBrainLinkAttr() {
     $.ajax({
         type: "POST",
         url: "../php/addLinkAttr.php",
-        data: {attrName: attrName, attrType: attrType}
+        data: {datasetKey: datasetKey, attrName: attrName, attrType: attrType},
         error: function(data) {
             console.log("Failed");
             console.log(data);
         },
-        success: function(link) {
+        success: function(data) {
             console.log("Successfully passed data to php.");
-            console.log(link);
-            console.log($.parseJSON(link));
-            addLinkToDisplay($.parseJSON(link));
+            console.log(data);
+            updateLinkAttrOptions($.parseJSON(data));
         },
         async: false
     });
@@ -261,6 +262,22 @@ function populateOptions() {
     }
     selectMutex -= 1;
     bindSelections();
+}
+
+function populateLinkAttrOptions(linkAttrs) {
+	var num_attr = linkAttrs.length;
+	for (var i = 0; i < num_attr; ++i) {
+		var attr = linkAttrs[i];
+		$('#attrName').append(new Option(attr.name, attr.type, false, false));
+	}
+	
+	selectMutex -= 1;
+	bindSelections();
+}
+
+function updateLinkAttrOptions(link) {
+	$('#attrName').append(new Option(link.name, link.key, false, false));
+    $('#attrName').trigger('liszt:updated');
 }
 
 function populateBrodmannAreas(brodmannAreas) {
@@ -414,6 +431,26 @@ function getBrodmannAreas() {
         },
         async: true
     });
+}
+
+function getLinkAttrs() {
+    $.ajax({
+        type: "GET",
+        url: "../php/getLinkAttr.php",
+        data: {datasetKey: datasetKey},
+        error: function(data) {
+        console.log("Failed");
+            console.log(data);
+        },
+        success: function(result) {
+            console.log("Successfully passed data to php.");
+            console.log(result);
+            var data = $.parseJSON(result);
+            populateLinkAttrOptions();
+        },
+        async: true
+    });
+}	
 }
 
 function deleteNode(nodeKey) {
