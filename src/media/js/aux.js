@@ -423,6 +423,15 @@ function initActiveLinks(link_map) {
     for (var key in link_map) {
         var curr_link = link_map[key];
         if (curr_link.source.depth === 1 && curr_link.target.depth === 1) {
+        	if (curr_link.base_children.length > 20) {
+	 	       	curr_link.strength = "strong";
+	 	  	}
+	 	  	else if (curr_link.base_children.length > 1) {
+	 	  		curr_link.strength = "moderate";
+	 	  	}
+	 	  	else {
+	 	  		curr_link.strength = "weak";
+	 	  	}
             active_data_links.push(curr_link);
         }
     }

@@ -49,15 +49,19 @@
     	    echo ' caused exception: ',  $e->getMessage(), "\n";
     }
 	
-    $link = array();
+    $links = array();
 	$linkKey;
 	while ($row = mysql_fetch_array($result)) {
-    	$link['key'] = $row['key'];
+		$link = array();
+    	//$link['key'] = $row['key'];
     	$linkKey = $row['key'];
         $link['sourceKey'] = $row['sourceKey'];
         $link['targetKey'] = $row['targetKey'];
     	$link['datasetKey'] = $row['datasetKey'];
    	    $link['notes'] = $row['notes'];
+   	    $link['attributes'] = array();
+   	    
+   	    $links[$linkKey] = $link;
     }
 
 	// Insert the attributes
@@ -76,10 +80,14 @@
     	    echo ' caused exception: ',  $e->getMessage(), "\n";
     }
 	
-	
-//	$link['attrs'] = $attrs;
+//	$link['attrs'] = $attrs;	
+	while ($row = mysql_fetch_array($result)) {
+		$linkKey = $row['linkKey'];
+		$key = $row['attributeKey'];
+		$value = $row['attrValue'];
+		$links[$linkKey]['attributes'][$key] = $value;
+	}
 
     echo json_encode($link);
-    
 	mysql_close($con);
 ?>

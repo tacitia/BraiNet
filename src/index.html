@@ -139,11 +139,7 @@
             <div style="background-color:#062db8; height:20px; width:20px; position:absolute; top:105px;"></div>
             <p style="position:absolute; left:25px; top:105px;">Bidirectional connection</p>
           </div>
-          <div id="legend-feature" style="position:relative">
-            <h4>Feature Color</h4></br>
-          </div>
         </div><!--END LEGEND-->
-
         <!--OPTIONS-->
         <div id="options" class="tab-pane fade in">
           <table>
@@ -152,37 +148,39 @@
               <td class="tab-column-1">Feature</td>
               <td class="tab-column-2">
                 <select data-placeholder="Choose an attribute" class="chzn-select" style="width:250px;" id="attrSelect">
-                  <option></option>
+                  <option>Connection strength</option>
                 </select>
               </td>
             </tr>
-            <tr>
+<!--            <tr>
               <td class="tab-column-1">Scale</td>
               <td class="tab-column-2">
                 <select data-placeholder="Choose a scale" class="chzn-select" style="width:250px;" id="scaleSelect">
                   <option></option>
                 </select>
               </td>
-            </tr>
-          </table>
-          <br/>
-          <table>
-            <tr><td class="tab-column-1"><h4>General</h4></td></tr>
+            </tr> -->
             <tr>
-              <td class="tab-column-1">Level of detail</td>
-              <td class="tab-column-2"><select data-placeholder="Choose a level" class="chzn-select" style="width:250px;" id="lodSelect">
-                  <option></option>
-                  <option>Region</option>
-                  <option>Cell</option>
-              </select></td>
-            </tr>
-            <tr>
-              <td class="tab-column-1">Tension</td>
-              <td class="tab-column-2"><input id="tension" type="range" min=0 max=100 value=85 step=1>
-                <span id="tensionValue">0.85</span>
+              <td class="tab-column-1">Aggregation scheme</td>
+              <td class="tab-column-2">
+                <select data-placeholder="Choose an aggregation scheme" class="chzn-select" style="width:250px;" id="aggrSelect">
+                  <option>Sum</option>
+                  <option>Max</option>
+                  <option>Min</option>
+                </select>
               </td>
             </tr>
           </table>
+          <br/>
+          <div id="legend-feature" style="position:relative">
+            <h4>Legend</h4></br>
+            <div style="background-color:#90f; opacity: 0.8; height:20px; width:20px; position:absolute; top:35px;"></div>
+            <p style="position:absolute; left:25px; top:35px;">Strong</p>
+            <div style="background-color:#90f; opacity: 0.4; height:20px; width:20px; position:absolute; top:70px;"></div>
+            <p style="position:absolute; left:25px; top:70px;">Moderate</p>
+            <div style="background-color:#90f; opacity: 0.2; height:20px; width:20px; position:absolute; top:105px;"></div>
+            <p style="position:absolute; left:25px; top:105px;">Weak</p>
+          </div>
         </div><!--END OPTIONS-->
 
         <!--SEARCH-->

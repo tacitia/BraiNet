@@ -126,6 +126,8 @@ function addBrainNode() {
             	try {
 		            console.log($.parseJSON(result));
     		        addNodeToDisplay($.parseJSON(result));
+    		        $('#addNodeField').find("input").val('');
+    		        $('#addNodeField').find("select").val('');
     		    } catch(e) {
     		    	alert("Cannot add node: unknown database error occurred during node insertion.");
     		    }
@@ -160,8 +162,11 @@ function addBrainLink() {
             console.log(link);
             console.log($.parseJSON(link));
             addLinkToDisplay($.parseJSON(link));
+            $('#addLinkField').find("input").val('');
+    		$('#addLinkField').find("select").val('');
         },
         async: false
+        
     });
 }
 
@@ -302,7 +307,8 @@ function addNodeToDisplay(node) {
     nodes.push(node);
     key_node_map[node.key] = node;
     name_node_map[node.name] = node;
-    addNodeEntry(node);
+    //addNodeEntry(node);
+    nodesTable.fnAddData([node.name, node.depth, node.parentName, node.notes, node.brodmannKey]);
     addNodeToOptions(node);
 }
 
@@ -451,7 +457,7 @@ function getLinkAttrs() {
         async: true
     });
 }	
-}
+
 
 function deleteNode(nodeKey) {
 	console.log(nodeKey);

@@ -155,10 +155,10 @@ function renderCanvas() {
             .attr("height", vis_height)
             .append('g');
 
-    // Render the arcs
-    enterCircularNodes();
     // Render the links
     enterCircularLinks();
+    // Render the arcs
+    enterCircularNodes();
     updateCircularTexts();
 
 //    updateForceLayout();

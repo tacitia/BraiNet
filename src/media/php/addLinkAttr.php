@@ -12,13 +12,17 @@
 //        echo 'Connection successful' . "\n";
     }
 
+	mysql_select_db("tacitia_brainData", $con);
+
+    echo mysql_error($con) . "\n";
+    
     mysql_query("INSERT INTO dataset_attributes (datasetKey, attrName, attrType)
-VALUES (‘$datasetKey', '$attrName', '$attrType')");
+VALUES ('$datasetKey', '$attrName', '$attrType')");
 
 	echo mysql_error();
 
-    $query = "SELECT * dataset_attributes WHERE datasetKey = " . $datasetKey .
-    '  AND attrName = "' . $attrName . '"';
+    $query = "SELECT * FROM dataset_attributes WHERE datasetKey = " . $datasetKey .
+    " AND attrName = '" . $attrName . "'";
 	
 	$result = mysql_query($query, $con);
 	if(!$result) die("SELECT dataset attributes failed: ".mysql_error());
@@ -30,6 +34,7 @@ VALUES (‘$datasetKey', '$attrName', '$attrType')");
         $attr['name'] = $row['attrName'];
         $attr['type'] = $row['attrType'];
         $attrs[] = $attr;
+        
     }
 	
     echo json_encode($attrs);

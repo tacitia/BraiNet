@@ -200,6 +200,21 @@ function nodeMouseOver(node, svg) {
         .classed('hidden', function(d) {
             return d.source.key !== node.key && d.target.key !== node.key; 
         });
+    svg.selectAll('.circular.link')
+    	.classed('outLink', function(d) {
+    		var reverted_link = active_node_link_map[d.target.key + '-' + d.source.key];
+    		return d.source.key === node.key && reverted_link === undefined;
+    	});
+    svg.selectAll('.circular.link')
+    	.classed('inLink', function(d) {
+    		var reverted_link = active_node_link_map[d.target.key + '-' + d.source.key];
+    		return d.target.key === node.key && reverted_link === undefined;
+    	});
+    svg.selectAll('.circular.link')
+    	.classed('biLink', function(d) {
+    		var reverted_link = active_node_link_map[d.target.key + '-' + d.source.key];
+    		return reverted_link !== undefined;
+    	});
     svg.selectAll('.circular.text')
         .classed('visible', function(d) {
             var dKey = d.key;
@@ -216,6 +231,9 @@ function nodeMouseOut(node, svg) {
     if (current_mode === mode.search) { return; }
     svg.selectAll('.circular.node').classed('nofocus', false);
     svg.selectAll('.circular.link').classed('hidden', false);
+    svg.selectAll('.circular.link').classed('inLink', false);
+    svg.selectAll('.circular.link').classed('outLink', false);
+    svg.selectAll('.circular.link').classed('biLink', false);
     updateCircularTexts();
 }
 
@@ -233,6 +251,7 @@ function linkClick(d) {
 }
 
 function linkMouseOver(link, svg) {
+	console.log(link.base_children.length);
     svg.selectAll('.circular.node')
         .classed('nofocus', function(d) {
             return d.key !== link.source.key && d.key !== link.target.key;
@@ -240,7 +259,7 @@ function linkMouseOver(link, svg) {
     svg.selectAll('.circular.link')
         .classed('hidden', function(d) {
             return d.key !== link.key;
-        });
+        }); 	
     svg.selectAll('.circular.text')
         .classed('visible', function(d) {
             return d.key === link.source.key || d.key === link.target.key;
@@ -370,6 +389,17 @@ function enterCircularLinks() {
             })
         .attr("class", "circular link")
         .attr('stroke-width', function(d) { return Math.ceil(d.base_children.length / 100) + 'px'; })
+        .attr('opacity', function(d) {
+        	if (d.strength === "strong") {
+        		return 0.8;
+        	}
+        	else if (d.strength === "moderate") {
+        		return 0.4;
+        	}
+        	else {
+        		return 0.2;
+        	}
+        })
         .attr("id", function(d) { return "circ-link-" + d.key; })
         .on("mouseover", function(d) { linkMouseOver(d, svg_circular); })
         .on("mouseout", function(d) { linkMouseOut(d, svg_circular); })
