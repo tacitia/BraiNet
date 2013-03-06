@@ -11,7 +11,7 @@
 
     mysql_select_db("tacitia_brainData", $con);
         
-    $query = "SELECT * dataset_attributes WHERE datasetKey = " . $datasetKey;
+    $query = "SELECT * FROM dataset_attributes WHERE datasetKey = " . $datasetKey;
 	
 	$result = mysql_query($query, $con);
 	if(!$result) die("SELECT dataset attributes failed: ".mysql_error());

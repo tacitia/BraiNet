@@ -54,7 +54,7 @@
 	while ($row = mysql_fetch_array($result)) {
 		$link = array();
     	//$link['key'] = $row['key'];
-    	$linkKey = $row['key'];
+    	$linkKey = (string)$row['key'];
         $link['sourceKey'] = $row['sourceKey'];
         $link['targetKey'] = $row['targetKey'];
     	$link['datasetKey'] = $row['datasetKey'];
@@ -63,13 +63,15 @@
    	    
    	    $links[$linkKey] = $link;
     }
+    //echo $linkKey;
+    //echo $links;
 
 	// Insert the attributes
 	mysql_query("INSERT INTO link_attributes(linkKey, attributeKey, attrValue) VALUES 
 	('$linkKey', '$attrKey', '$attrValue')");
 	
 	// Retrieve all attributes
-	$attrs = array();
+	//$attrs = array();
 	
 	$query = "SELECT * FROM link_attributes WHERE linkKey = " . $linkKey;
 
@@ -82,12 +84,13 @@
 	
 //	$link['attrs'] = $attrs;	
 	while ($row = mysql_fetch_array($result)) {
-		$linkKey = $row['linkKey'];
-		$key = $row['attributeKey'];
+		$linkKey = (string)$row['linkKey'];
+	
+		$key = (string)$row['attributeKey'];
 		$value = $row['attrValue'];
 		$links[$linkKey]['attributes'][$key] = $value;
 	}
 
-    echo json_encode($link);
+    echo json_encode($links);
 	mysql_close($con);
 ?>
