@@ -14,11 +14,11 @@ var selectMutex = 3;
 //on tr hover append delete button on last th
 var deleteIcon;
 $('table').on("mouseenter", "tr", function() {
-	console.log($(this));
 	var tableID = $(this).context.parentNode.parentNode.id;
 	var content;
 	if (tableID === "nodesDisplay") {
 		var nodeName = $(this).context.children[0].innerText;
+		if (name_node_map[nodeName] === undefined) { return; }
 		var nodeID = name_node_map[nodeName].key;
 		content = '<span onclick="deleteNodeRow(this,' + nodeID + ')"><i class="icon-trash"></i> Delete</span>';
 		console.log(content);
@@ -26,11 +26,12 @@ $('table').on("mouseenter", "tr", function() {
 	else if (tableID === "linksDisplay") {
 		var startName = $(this).context.children[0].innerText;
 		var endName = $(this).context.children[1].innerText;
+		if (name_node_map[startName] === undefined) { return; }
+		if (name_node_map[endName] === undefined) { return; }
 		var startID = name_node_map[startName].key;
 		var endID = name_node_map[endName].key;
 		var linkID = key_link_map[startID + "-" + endID].key;
 		content = '<span onclick="deleteLinkRow(this,' + linkID + ')"><i class="icon-trash"></i> Delete</span>'; 
-		console.log(content);
 	}
 //	deleteIcon = $(this).find('td:last').append('<span onclick="deleteRow(this)"><i class="icon-trash"></i> Delete</span>');
 	deleteIcon = $(this).find('td:last').append(content);
@@ -126,8 +127,8 @@ function addBrainNode() {
             	try {
 		            console.log($.parseJSON(result));
     		        addNodeToDisplay($.parseJSON(result));
-    		        $('#addNodeField').find("input").val('');
-    		        $('#addNodeField').find("select").val('');
+//    		        $('#addNodeField').find("input").val('');
+//    		        $('#addNodeField').find("select").val('');
     		    } catch(e) {
     		    	alert("Cannot add node: unknown database error occurred during node insertion.");
     		    }
@@ -148,7 +149,8 @@ function addBrainLink() {
     var targetKey = $('#targetName').val();
     var notes = $('[name="linkNotes"]').val();
     var attrKey = $('#attrName').val();
-    var linkData = {user: userId, dataset: datasetKey, source: sourceKey, target: targetKey, notes: notes, attrKey: attrKey};
+    var attrValue = $('#attrValue').val();
+    var linkData = {user: userId, dataset: datasetKey, source: sourceKey, target: targetKey, notes: notes, attrKey: attrKey, attrValue: attrValue};
     $.ajax({
         type: "POST",
         url: "../php/addBrainLink.php",
@@ -160,10 +162,9 @@ function addBrainLink() {
         success: function(link) {
             console.log("Successfully passed data to php.");
             console.log(link);
-            console.log($.parseJSON(link));
             addLinkToDisplay($.parseJSON(link));
-            $('#addLinkField').find("input").val('');
-    		$('#addLinkField').find("select").val('');
+//            $('#addLinkField').find("input").val('');
+//    		$('#addLinkField').find("select").val('');
         },
         async: false
         
@@ -212,7 +213,8 @@ function populateNodesTable() {
         nodesTable.fnAddData([String(node.name),
                          String(node.depth),
                          String(node.parentName),
-                         String(node.notes)]);
+                         String(node.notes),
+                         String(node.brodmannKey)]);
     }
 }
 
@@ -244,18 +246,6 @@ function populateLinksTable() {
                               String(target_node.name),
                               String(link.notes)]);
     }
-
-    /* Can't get this to work - works with a 'tr' selector
-    linksTable.selectAll(':not(.tableTitle)')
-        .data(links)
-        .enter()
-        .append('tr')
-        .html(function(d) {
-            console.log(d);
-            var source_node = key_node_map[parseInt(d.sourceKey)];
-            var target_node = key_node_map[parseInt(d.targetKey)];
-            return '<td>' + source_node.name + '</td><td>' + target_node.name + '</td>';
-        }); */
 }
 
 function populateOptions() {
@@ -273,26 +263,29 @@ function populateLinkAttrOptions(linkAttrs) {
 	var num_attr = linkAttrs.length;
 	for (var i = 0; i < num_attr; ++i) {
 		var attr = linkAttrs[i];
-		$('#attrName').append(new Option(attr.name, attr.type, false, false));
+		$('#attrName').append(new Option(attr.name, attr.key, false, false));
 	}
 	
 	selectMutex -= 1;
 	bindSelections();
 }
 
-function updateLinkAttrOptions(link) {
-	$('#attrName').append(new Option(link.name, link.key, false, false));
+function updateLinkAttrOptions(linkAttrs) {
+	var num_attr = linkAttrs.length;
+	for (var i = 0; i < num_attr; ++i) {
+		var attr = linkAttrs[i];
+		$('#attrName').append(new Option(attr.name, attr.key, false, false));
+	}
     $('#attrName').trigger('liszt:updated');
 }
 
 function populateBrodmannAreas(brodmannAreas) {
-	console.log(brodmannAreas);
+//	console.log(brodmannAreas);
 	var num_area = brodmannAreas.length;
 	for (var i = 0; i < num_area; ++i) {
 		var area = brodmannAreas[i];
 		$('#brodmannArea').append(new Option(area.name, area.id, false, false));
 	}
-	console.log("???");
     selectMutex -= 1;
     bindSelections();
 }
@@ -308,13 +301,26 @@ function addNodeToDisplay(node) {
     key_node_map[node.key] = node;
     name_node_map[node.name] = node;
     //addNodeEntry(node);
-    nodesTable.fnAddData([node.name, node.depth, node.parentName, node.notes, node.brodmannKey]);
+    nodesTable.fnAddData([String(node.name), 
+    					  String(node.depth), 
+    					  String(node.parentName), 
+    					  String(node.notes), 
+    					  String(node.brodmannKey)]);
     addNodeToOptions(node);
 }
 
 function addLinkToDisplay(link) {
     links.push(link);
-    addLinkEntry(link);
+//    addLinkEntry(link);
+    var source_node = key_node_map[parseInt(link.sourceKey)];
+    var target_node = key_node_map[parseInt(link.targetKey)];
+    console.log(link);
+    console.log(link.sourceKey);
+    console.log(key_node_map);
+    console.log(source_node);
+    linksTable.fnAddData([String(source_node.name),
+                          String(target_node.name),
+                          String(link.notes)]);
 }
 
 function addNodeToOptions(node) {
@@ -369,7 +375,6 @@ function deleteNodeRow(row, nodeKey) {
 
 function deleteLinkRow(row, linkKey) {
 	var choice = confirm("Are you sure you want to delete the selected link? Click OK to confirm.");
-	console.log(item);
 	if (choice) {
 	    linksTable.fnDeleteRow($(row).closest('tr').get()[0]);
 	    deleteLink(linkKey);
@@ -407,8 +412,8 @@ function getBrainData(datasetKey) {
             console.log(data);
         },
         success: function(result) {
-            console.log("Successfully passed data to php.");
-            console.log(result);
+            console.log("GetBrainData.php: successfully passed data to php.");
+//            console.log(result);
             var data = $.parseJSON(result);
             nodes = data.nodes;
             links = data.links;
@@ -429,8 +434,8 @@ function getBrodmannAreas() {
             console.log(data);
         },
         success: function(result) {
-            console.log("Successfully passed data to php.");
-            console.log(result);
+            console.log("GetBordmannAreas: successfully passed data to php.");
+//            console.log(result);
             var data = $.parseJSON(result);
             populateBrodmannAreas(data);
             constructBrodmannMap(data);
@@ -441,7 +446,7 @@ function getBrodmannAreas() {
 
 function getLinkAttrs() {
     $.ajax({
-        type: "GET",
+        type: "POST",
         url: "../php/getLinkAttr.php",
         data: {datasetKey: datasetKey},
         error: function(data) {
@@ -452,7 +457,7 @@ function getLinkAttrs() {
             console.log("Successfully passed data to php.");
             console.log(result);
             var data = $.parseJSON(result);
-            populateLinkAttrOptions();
+            populateLinkAttrOptions(data);
         },
         async: true
     });

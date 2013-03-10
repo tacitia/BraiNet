@@ -24,6 +24,8 @@
     $query = "SELECT * FROM user_links 
     WHERE sourceKey = " . $sourceKey . " AND targetKey = " . $targetKey . 
     " AND datasetKey = " . $datasetKey;
+    
+//    echo $query;
 
     try{
         	$result = mysql_query($query, $con);
@@ -49,10 +51,10 @@
     	    echo ' caused exception: ',  $e->getMessage(), "\n";
     }
 	
-    $links = array();
+//    $links = array();
 	$linkKey;
+	$link = array();
 	while ($row = mysql_fetch_array($result)) {
-		$link = array();
     	//$link['key'] = $row['key'];
     	$linkKey = (string)$row['key'];
         $link['sourceKey'] = $row['sourceKey'];
@@ -61,7 +63,7 @@
    	    $link['notes'] = $row['notes'];
    	    $link['attributes'] = array();
    	    
-   	    $links[$linkKey] = $link;
+//   	    $links[$linkKey] = $link;
     }
     //echo $linkKey;
     //echo $links;
@@ -88,9 +90,10 @@
 	
 		$key = (string)$row['attributeKey'];
 		$value = $row['attrValue'];
-		$links[$linkKey]['attributes'][$key] = $value;
+		$link['attributes'][$key] = $value;
+//		$links[$linkKey]['attributes'][$key] = $value;
 	}
 
-    echo json_encode($links);
+    echo json_encode($link);
 	mysql_close($con);
 ?>

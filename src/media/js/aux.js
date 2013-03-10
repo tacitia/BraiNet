@@ -187,6 +187,9 @@ function constructUserNodesMaps(datasetKey, nodes) {
             else { node.parent = null; }
         }
     }
+    
+    console.log("!!!");
+    console.log(user_node_map);
 
     user_datasets[datasetKey].node_map = user_node_map;
     user_datasets[datasetKey].node_in_neighbor_map = user_in_neighbor_map;
@@ -213,6 +216,10 @@ function constructUserLinksMaps(datasetKey, links) {
         dataset.node_in_neighbor_map[target_key].push(source_key);
         dataset.node_out_neighbor_map[source_key].push(target_key);
     }
+    
+    console.log("???");
+    console.log(user_link_map);
+    
     dataset.link_map = user_link_map;
     dataset.node_link_map = user_node_link_map;
 }

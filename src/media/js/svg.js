@@ -388,8 +388,8 @@ function enterCircularLinks() {
                 return curves(coors);
             })
         .attr("class", "circular link")
-        .attr('stroke-width', function(d) { return Math.ceil(d.base_children.length / 100) + 'px'; })
-        .attr('opacity', function(d) {
+        .attr('stroke-width', function(d) { return Math.max(1,  Math.ceil(d.base_children.length / 100)) + 'px'; })
+/*        .attr('opacity', function(d) {
         	if (d.strength === "strong") {
         		return 0.8;
         	}
@@ -398,8 +398,8 @@ function enterCircularLinks() {
         	}
         	else {
         		return 0.2;
-        	}
-        })
+        	} 
+        }) */
         .attr("id", function(d) { return "circ-link-" + d.key; })
         .on("mouseover", function(d) { linkMouseOver(d, svg_circular); })
         .on("mouseout", function(d) { linkMouseOut(d, svg_circular); })
