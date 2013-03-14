@@ -152,6 +152,7 @@ function dimNonSearchResults() {
 
 
 function nodeClick(d) {
+	console.log(d3.event);
     if (d3.event.shiftKey) {
         if (enable_piwik) { piwikTracker.trackPageView('Combine node in circular view'); }
         if (enable_owa) { OWATracker.trackAction('Viz', 'Combine circular node', d.name); }
@@ -162,6 +163,14 @@ function nodeClick(d) {
         var parent = active_node_map[d.parent]; 
         var nodes_to_remove = findActiveDescends(parent);
         combineRegions(parent, nodes_to_remove);
+    }
+    else if (d3.event.altKey) {
+    	if (current_mode === mode.exploration) {
+	    	current_mode = mode.fixation;
+	    }
+	    else if (current_mode === mode.fixation) {
+	    	current_mode = mode.exploration;
+	    }
     }
     else {
         if (enable_piwik) { piwikTracker.trackPageView('Expand node in circular view'); }
@@ -183,6 +192,7 @@ function nodeClick(d) {
 function nodeMouseOver(node, svg) {
     /* testing */
     console.log(node);
+    if (current_mode === mode.search || current_mode === mode.fixation) { return; }
     var brodmann_title = brodmann_map[node.brodmannKey];
     console.log('[title="' + brodmann_title + '"]');
     $('[title="' + brodmann_title + '"]').mouseover();    
@@ -227,6 +237,7 @@ function nodeMouseOver(node, svg) {
 }
 
 function nodeMouseOut(node, svg) {
+    if (current_mode === mode.search || current_mode === mode.fixation) { return; }
     $('[title="Areas 3, 1 & 2 - Primary Somatosensory Cortex"]').mouseout();    
     if (current_mode === mode.search) { return; }
     svg.selectAll('.circular.node').classed('nofocus', false);
@@ -251,7 +262,7 @@ function linkClick(d) {
 }
 
 function linkMouseOver(link, svg) {
-	console.log(link.base_children.length);
+    if (current_mode === mode.search || current_mode === mode.fixation) { return; }
     svg.selectAll('.circular.node')
         .classed('nofocus', function(d) {
             return d.key !== link.source.key && d.key !== link.target.key;
@@ -267,7 +278,7 @@ function linkMouseOver(link, svg) {
 }
 
 function linkMouseOut(link, svg) {
-    if (current_mode === mode.search) { return; }
+    if (current_mode === mode.search || current_mode === mode.fixation) { return; }
     svg.selectAll('.circular.node').classed('nofocus', false);
     svg.selectAll('.circular.link').classed('hidden', false);
     updateCircularTexts();

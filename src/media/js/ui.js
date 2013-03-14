@@ -75,13 +75,8 @@ function searchButtonClick() {
     }
     if (enable_tracking) {
         trackAction("Search", selected_source.name + '-' + selected_target.name);
-/*        currentActionData.actionBasic = "Search";
-        currentActionData.actionDetail = selected_source.name + '-' + selected_target.name;
-        endTime = new Date();
-        currentActionData.timeElapsed = (endTime - startTime) / 1000;
-        currentActionData.time = endTime.toString();
-        recordActionData();*/
     }
+    current_mode = mode.search;
     var paths = calculatePaths(max_hop);
     populateForceElements(paths);
     updateForceLayout();
@@ -92,6 +87,10 @@ function clearButtonClick() {
     if (enable_piwik) {
         piwikTracker.trackPageView('Click clear button');
     }
+    current_mode = mode.exploration;
+    svg_circular.selectAll('.circular.node').classed('nofocus', false);
+    svg_circular.selectAll('.circular.link').classed('hidden', false);
+    updateCircularTexts();
 }
 
 /* TODO: Also need to handle the case that the input is the parent of some of the 
