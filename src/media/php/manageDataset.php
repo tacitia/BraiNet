@@ -5,11 +5,11 @@
     <title>Brain Circuits Diagram</title>
 
     <!--Stylesheets-->
-    <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="../lib/chosen/chosen.css" />
-    <link rel="stylesheet" href="../css/style-ui.css" type="text/css" charset="utf-8">
-    <link rel="stylesheet" href="../css/colors.css" type="text/css" charset="utf-8">
-    <link rel="stylesheet" href="../lib/jquery-ui/css/redmond/jquery-ui.css" />
+    <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap.min.css" media="all" />
+    <link rel="stylesheet" href="../lib/chosen/chosen.css" media="all" />
+    <link rel="stylesheet" href="../css/style-ui.css" media="all" type="text/css" charset="utf-8">
+    <link rel="stylesheet" href="../css/colors.css" media="all" type="text/css" charset="utf-8">
+    <link rel="stylesheet" href="../lib/jquery-ui/css/redmond/jquery-ui.css" media="all" />
 
     <!-- HTML5 shim, IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>

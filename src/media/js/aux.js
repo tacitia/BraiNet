@@ -566,7 +566,7 @@ function saveSessionData() {
     sessionLength /= 1000;
     $.ajax({        
        type: "POST",
-       url: "/media/php/writeActionData.php",
+       url: "media/php/writeActionData.php",
        data: {actionDataArray : actionData, sessionLength : sessionLength, userID: uid},
        error: function(data) {
             console.log("Failed");
@@ -583,7 +583,7 @@ function saveSessionData() {
 function populateUserId() {
     $.ajax({
         type: "POST",
-        url: "/media/php/getUserID.php",
+        url: "media/php/getUserID.php",
         error: function(data) {
             console.log("Failed");
             console.log(data);
@@ -600,7 +600,7 @@ function populateUserId() {
 function populateDatasets(uid) {
     $.ajax({
         type: "POST",
-        url: "/media/php/getDatasetByUserId.php",
+        url: "media/php/getDatasetByUserId.php",
         data: {userID: uid},
         error: function(data) {
             console.log("Failed");
@@ -623,7 +623,7 @@ function populateDatasets(uid) {
 function createDataset(datasetName, userID) {
     $.ajax({
         type: "POST",
-        url: "/media/php/addDataset.php",
+        url: "media/php/addDataset.php",
         data: {datasetName: datasetName, userID: userID},
         error: function(data) {
             console.log("Failed");
@@ -642,7 +642,7 @@ function createDataset(datasetName, userID) {
 function getBrainData(datasetKey) {
     $.ajax({
         type: "POST",
-        url: "/media/php/getBrainData.php",
+        url: "media/php/getBrainData.php",
         data: {datasetKey: datasetKey},
         error: function(data) {
         console.log("Failed");
@@ -672,7 +672,7 @@ function getBrainData(datasetKey) {
 function getBrodmannAreas() {
     $.ajax({
         type: "GET",
-        url: "/media/php/getBrodmannAreas.php",
+        url: "media/php/getBrodmannAreas.php",
         error: function(data) {
         console.log("Failed");
             console.log(data);
