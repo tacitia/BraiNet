@@ -121,20 +121,38 @@ function updateCircularLayout(new_num, new_delta) {
     exitCircularLinks();
 
     // Add the new links and new nodes resulted from the split
-    enterCircularNodes();
     enterCircularLinks();    
+    enterCircularNodes();
+
 
     for (var i = 0; i < new_num; ++i) {
         var datum = active_data_nodes[i];
         calculateArcPositions(datum, 0, new_delta, i);
     }
 
-    updateCircularNodes();
     updateCircularLinks();
+    updateCircularNodes();
     updateCircularTexts();
 }
 
+function dimNonSearchResults() {
+    svg_circular.selectAll('.circular.node')
+        .classed('nofocus', function(d) {
+            return ($.inArray(d, active_data_nodes_force) < 0);
+        });
+    svg_circular.selectAll('.circular.link')
+        .classed('hidden', function(d) {
+            return ($.inArray(d, active_data_links_force) < 0);
+        });
+    svg_circular.selectAll('.circular.text')
+        .classed('visible', function(d) {
+            return ($.inArray(d, active_data_nodes_force) >= 0) ;
+        });    
+}
+
+
 function nodeClick(d) {
+	console.log(d3.event);
     if (d3.event.shiftKey) {
         if (enable_piwik) { piwikTracker.trackPageView('Combine node in circular view'); }
         if (enable_owa) { OWATracker.trackAction('Viz', 'Combine circular node', d.name); }
@@ -145,6 +163,14 @@ function nodeClick(d) {
         var parent = active_node_map[d.parent]; 
         var nodes_to_remove = findActiveDescends(parent);
         combineRegions(parent, nodes_to_remove);
+    }
+    else if (d3.event.altKey) {
+    	if (current_mode === mode.exploration) {
+	    	current_mode = mode.fixation;
+	    }
+	    else if (current_mode === mode.fixation) {
+	    	current_mode = mode.exploration;
+	    }
     }
     else {
         if (enable_piwik) { piwikTracker.trackPageView('Expand node in circular view'); }
@@ -164,6 +190,12 @@ function nodeClick(d) {
 
 // When mousing over, highlight itself and the neighbors
 function nodeMouseOver(node, svg) {
+    /* testing */
+    console.log(node);
+    if (current_mode === mode.search || current_mode === mode.fixation) { return; }
+    var brodmann_title = brodmann_map[node.brodmannKey];
+    console.log('[title="' + brodmann_title + '"]');
+    $('[title="' + brodmann_title + '"]').mouseover();    
     if (current_mode === mode.search) { return; }
     svg.selectAll('.circular.node')
         .classed('nofocus', function(d) {
@@ -175,9 +207,24 @@ function nodeMouseOver(node, svg) {
                 ($.inArray(dKey, outNeighbors) < 0);
         });
     svg.selectAll('.circular.link')
-        .classed('nofocus', function(d) {
+        .classed('hidden', function(d) {
             return d.source.key !== node.key && d.target.key !== node.key; 
         });
+    svg.selectAll('.circular.link')
+    	.classed('outLink', function(d) {
+    		var reverted_link = active_node_link_map[d.target.key + '-' + d.source.key];
+    		return d.source.key === node.key && reverted_link === undefined;
+    	});
+    svg.selectAll('.circular.link')
+    	.classed('inLink', function(d) {
+    		var reverted_link = active_node_link_map[d.target.key + '-' + d.source.key];
+    		return d.target.key === node.key && reverted_link === undefined;
+    	});
+    svg.selectAll('.circular.link')
+    	.classed('biLink', function(d) {
+    		var reverted_link = active_node_link_map[d.target.key + '-' + d.source.key];
+    		return reverted_link !== undefined;
+    	});
     svg.selectAll('.circular.text')
         .classed('visible', function(d) {
             var dKey = d.key;
@@ -190,9 +237,14 @@ function nodeMouseOver(node, svg) {
 }
 
 function nodeMouseOut(node, svg) {
+    if (current_mode === mode.search || current_mode === mode.fixation) { return; }
+    $('[title="Areas 3, 1 & 2 - Primary Somatosensory Cortex"]').mouseout();    
     if (current_mode === mode.search) { return; }
     svg.selectAll('.circular.node').classed('nofocus', false);
-    svg.selectAll('.circular.link').classed('nofocus', false);
+    svg.selectAll('.circular.link').classed('hidden', false);
+    svg.selectAll('.circular.link').classed('inLink', false);
+    svg.selectAll('.circular.link').classed('outLink', false);
+    svg.selectAll('.circular.link').classed('biLink', false);
     updateCircularTexts();
 }
 
@@ -210,14 +262,15 @@ function linkClick(d) {
 }
 
 function linkMouseOver(link, svg) {
+    if (current_mode === mode.search || current_mode === mode.fixation) { return; }
     svg.selectAll('.circular.node')
         .classed('nofocus', function(d) {
             return d.key !== link.source.key && d.key !== link.target.key;
         });
     svg.selectAll('.circular.link')
-        .classed('nofocus', function(d) {
+        .classed('hidden', function(d) {
             return d.key !== link.key;
-        });
+        }); 	
     svg.selectAll('.circular.text')
         .classed('visible', function(d) {
             return d.key === link.source.key || d.key === link.target.key;
@@ -225,9 +278,9 @@ function linkMouseOver(link, svg) {
 }
 
 function linkMouseOut(link, svg) {
-    if (current_mode === mode.search) { return; }
+    if (current_mode === mode.search || current_mode === mode.fixation) { return; }
     svg.selectAll('.circular.node').classed('nofocus', false);
-    svg.selectAll('.circular.link').classed('nofocus', false);
+    svg.selectAll('.circular.link').classed('hidden', false);
     updateCircularTexts();
 }
 
@@ -346,7 +399,18 @@ function enterCircularLinks() {
                 return curves(coors);
             })
         .attr("class", "circular link")
-        .attr('stroke-width', function(d) { return Math.ceil(d.base_children.length / 100) + 'px'; })
+        .attr('stroke-width', function(d) { return Math.max(1,  Math.ceil(d.base_children.length / 100)) + 'px'; })
+/*        .attr('opacity', function(d) {
+        	if (d.strength === "strong") {
+        		return 0.8;
+        	}
+        	else if (d.strength === "moderate") {
+        		return 0.4;
+        	}
+        	else {
+        		return 0.2;
+        	} 
+        }) */
         .attr("id", function(d) { return "circ-link-" + d.key; })
         .on("mouseover", function(d) { linkMouseOver(d, svg_circular); })
         .on("mouseout", function(d) { linkMouseOut(d, svg_circular); })

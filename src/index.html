@@ -36,7 +36,7 @@
       </ul>
       <div id="util-content" class="tab-content">
 
-        <!--INFO-->
+        <!--INFO-->    <link rel="stylesheet" href="media/lib/jquery-ui/css/redmond/jquery-ui.css" />
         <div id="info" class="tab-pane fade in active">
             <div id="conn-info" style="height:100px">
                 <h4>Connection information</h4>
@@ -44,6 +44,38 @@
                 <p class="exp"><i>Click on a connection and the basic connection information will be displayed here.</i></p>
                 <p id="src-name"></p>
                 <p id="tgt-name"></p>
+            </div>
+            <div id="anatomy-map">
+                <img src="media/img/brodmann-lateral.png" usemap="#brainmap" class="map">
+                <map name="brainmap">
+                    <area title="Areas 3, 1 & 2 - Primary Somatosensory Cortex" coords="255,93,298,118" 
+                        alt="Areas 3, 1 & 2 - Primary Somatosensory Cortex" shape="rect" />    
+					<area href="/wiki/Brodmann_area_4" shape="rect" coords="237,61,262,86" alt="Area 4 - Primary Motor Cortex" title="Area 4 - Primary Motor Cortex" />
+					<area href="/wiki/Brodmann_area_5" shape="rect" coords="301,72,326,97" alt="Area 5 - Somatosensory Association Cortex" title="Area 5 - Somatosensory Association Cortex" />
+					<area href="/wiki/Brodmann_area_6" shape="rect" coords="189,81,214,106" alt="Area 6 - Premotor cortex and Supplementary Motor Cortex (Secondary Motor Cortex)(Supplementary motor area)" title="Area 6 - Premotor cortex and Supplementary Motor Cortex (Secondary Motor Cortex)(Supplementary motor area)" />
+					<area href="/wiki/Brodmann_area_7" shape="rect" coords="346,89,371,114" alt="Area 7 - Somatosensory Association Cortex" title="Area 7 - Somatosensory Association Cortex" />
+					<area href="/wiki/Brodmann_area_8" shape="rect" coords="130,54,155,79" alt="Area 8 - Includes Frontal eye fields" title="Area 8 - Includes Frontal eye fields" />
+					<area href="/wiki/Brodmann_area_9" shape="rect" coords="69,81,94,106" alt="Area 9 - Dorsolateral prefrontal cortex" title="Area 9 - Dorsolateral prefrontal cortex" />
+					<area href="/wiki/Brodmann_area_10" shape="rect" coords="16,165,41,190" alt="Area 10 - Anterior prefrontal cortex" title="Area 10 - Anterior prefrontal cortex" />
+					<area href="/wiki/Brodmann_area_11" shape="rect" coords="33,214,58,239" alt="Area 11 - Orbitofrontal area" title="Area 11 - Orbitofrontal area" />
+					<area href="/wiki/Brodmann_area_17" shape="rect" coords="446,230,471,255" alt="Area 17 - Primary visual cortex (V1)" title="Area 17 - Primary visual cortex (V1)" />
+					<area href="/wiki/Brodmann_area_18" shape="rect" coords="417,214,443,239" alt="Area 18 - Secondary visual cortex (V2)" title="Area 18 - Secondary visual cortex (V2)" />
+					<area href="/wiki/Brodmann_area_19" shape="rect" coords="385,193,411,218" alt="Area 19 - Associative visual cortex (V3)" title="Area 19 - Associative visual cortex (V3)" />	
+					<area href="/wiki/Brodmann_area_20" shape="rect" coords="214,277,239,302" alt="Area 20 - Inferior temporal gyrus" title="Area 20 - Inferior temporal gyrus" />
+					<area href="/wiki/Brodmann_area_21" shape="rect" coords="237,246,262,271" alt="Area 21 - Middle temporal gyrus" title="Area 21 - Middle temporal gyrus" />
+					<area href="/wiki/Brodmann_area_22" shape="rect" coords="318,209,343,234" alt="Area 22 - Superior temporal gyrus" title="Area 22 - Superior temporal gyrus" />
+					<area href="/wiki/Brodmann_area_37" shape="rect" coords="337,242,362,267" alt="Area 37 - Fusiform gyrus" title="Area 37 - Fusiform gyrus" />
+					<area href="/wiki/Brodmann_area_38" shape="rect" coords="125,253,151,278" alt="Area 38 - Temporopolar area" title="Area 38 - Temporopolar area" />
+					<area href="/wiki/Brodmann_area_39" shape="rect" coords="353,154,379,179" alt="Area 39 - Angular gyrus" title="Area 39 - Angular gyrus" />
+					<area href="/wiki/Brodmann_area_40" shape="rect" coords="286,158,311,183" alt="Area 40 - Supramarginal gyrus" title="Area 40 - Supramarginal gyrus" />
+					<area href="/wiki/Brodmann_area_41_%26_42" shape="rect" coords="268,197,294,222" alt="Area 41 - Primary and Auditory Association Cortex" title="Area 41 - Primary and Auditory Association Cortex" />
+					<area href="/wiki/Brodmann_area_41_%26_42" shape="rect" coords="295,206,317,231" alt="Area 42 - Primary and Auditory Association Cortex" title="Area 42 - Primary and Auditory Association Cortex" />
+					<area href="/wiki/Brodmann_area_43" shape="rect" coords="208,184,234,209" alt="Area 43 - Primary gustatory cortex" title="Area 43 - Primary gustatory cortex" />
+					<area href="/wiki/Brodmann_area_44" shape="rect" coords="141,177,167,202" alt="Area 44 - pars opercularis, part of Broca's area" title="Area 44 - pars opercularis, part of Broca's area" />
+					<area href="/wiki/Brodmann_area_45" shape="rect" coords="110,189,135,214" alt="Area 45 - pars triangularis, Broca's area" title="Area 45 - pars triangularis, Broca's area" />
+					<area href="/wiki/Brodmann_area_46" shape="rect" coords="72,129,98,154" alt="Area 46 - Dorsolateral prefrontal cortex" title="Area 46 - Dorsolateral prefrontal cortex" />
+					<area href="/wiki/Brodmann_area_47" shape="rect" coords="73,205,98,230" alt="Area 47 - Inferior prefontal gyrus" title="Area 47 - Inferior prefontal gyrus" />
+                </map>
             </div>
             <div id="region-info">
                 <h4>Brain Region information</h4>
@@ -53,7 +85,7 @@
 <!--                <div id="source-region-info" class="accordion-group">
                     <div class="accordion-heading">
                         <a class="accordion-toggle" data-toggle="collapse" data-parent="#region-info" href="#source-info-content">
-                            Source region
+                            Source region    <link rel="stylesheet" href="media/lib/jquery-ui/css/redmond/jquery-ui.css" />
                         </a>
                     </div>
                     <div id="source-info-content" class="accordion-body collapse in">
@@ -107,11 +139,7 @@
             <div style="background-color:#062db8; height:20px; width:20px; position:absolute; top:105px;"></div>
             <p style="position:absolute; left:25px; top:105px;">Bidirectional connection</p>
           </div>
-          <div id="legend-feature" style="position:relative">
-            <h4>Feature Color</h4></br>
-          </div>
         </div><!--END LEGEND-->
-
         <!--OPTIONS-->
         <div id="options" class="tab-pane fade in">
           <table>
@@ -120,37 +148,39 @@
               <td class="tab-column-1">Feature</td>
               <td class="tab-column-2">
                 <select data-placeholder="Choose an attribute" class="chzn-select" style="width:250px;" id="attrSelect">
-                  <option></option>
+                  <option>Connection strength</option>
                 </select>
               </td>
             </tr>
-            <tr>
+<!--            <tr>
               <td class="tab-column-1">Scale</td>
               <td class="tab-column-2">
                 <select data-placeholder="Choose a scale" class="chzn-select" style="width:250px;" id="scaleSelect">
                   <option></option>
                 </select>
               </td>
-            </tr>
-          </table>
-          <br/>
-          <table>
-            <tr><td class="tab-column-1"><h4>General</h4></td></tr>
+            </tr> -->
             <tr>
-              <td class="tab-column-1">Level of detail</td>
-              <td class="tab-column-2"><select data-placeholder="Choose a level" class="chzn-select" style="width:250px;" id="lodSelect">
-                  <option></option>
-                  <option>Region</option>
-                  <option>Cell</option>
-              </select></td>
-            </tr>
-            <tr>
-              <td class="tab-column-1">Tension</td>
-              <td class="tab-column-2"><input id="tension" type="range" min=0 max=100 value=85 step=1>
-                <span id="tensionValue">0.85</span>
+              <td class="tab-column-1">Aggregation scheme</td>
+              <td class="tab-column-2">
+                <select data-placeholder="Choose an aggregation scheme" class="chzn-select" style="width:250px;" id="aggrSelect">
+                  <option>Sum</option>
+                  <option>Max</option>
+                  <option>Min</option>
+                </select>
               </td>
             </tr>
           </table>
+          <br/>
+          <div id="legend-feature" style="position:relative">
+            <h4>Legend</h4></br>
+            <div style="background-color:#90f; opacity: 0.8; height:20px; width:20px; position:absolute; top:35px;"></div>
+            <p style="position:absolute; left:25px; top:35px;">Strong</p>
+            <div style="background-color:#90f; opacity: 0.4; height:20px; width:20px; position:absolute; top:70px;"></div>
+            <p style="position:absolute; left:25px; top:70px;">Moderate</p>
+            <div style="background-color:#90f; opacity: 0.2; height:20px; width:20px; position:absolute; top:105px;"></div>
+            <p style="position:absolute; left:25px; top:105px;">Weak</p>
+          </div>
         </div><!--END OPTIONS-->
 
         <!--SEARCH-->
@@ -265,7 +295,7 @@
         <li class="active"><a href="#notes" data-toggle="tab">Notes</a></li>
         <li><a href="#paper-list" data-toggle="tab">Publications</a></li>
         <li><a href="#bams-list" data-toggle="tab">BAMS records</a></li>
-<!-->        <li><a href="#sub-con-list" data-toggle="tab">Sub-connections</a></li> -->
+<!--        <li><a href="#sub-con-list" data-toggle="tab">Sub-connections</a></li> -->
       </ul>
       <div class="tab-content" style="padding:20px">
         <div id="notes" class="tab-pane fade in active">
@@ -309,10 +339,10 @@
     <script type="text/javascript" src="media/lib/d3.v2.js"></script>
     <script type="text/javascript" src="media/lib/chosen/chosen.jquery.js"></script>
     <script type="text/javascript" src="media/lib/jquery-ui/js/jquery-ui.js"></script>
-
+    <script type="text/javascript" src="media/lib/jquery.maphilight.min.js"></script>
+    
     <!--TODO: brainmap and script should be compressed as one file-->
     <script type="text/javascript" src="media/js/brainCircuits.js"></script>
-    <script type="text/javascript" src="media/js/brainMap.js"></script>
 
     <!-- Piwik -->
     <script type="text/javascript">

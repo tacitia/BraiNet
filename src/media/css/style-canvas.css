@@ -22,6 +22,7 @@
 
 .link {
     stroke: #ccc;
+//	stroke: #90f;
     stroke-opacity: 1;
     fill: none;
 /*    stroke-width: 3px; */
@@ -35,6 +36,20 @@
     stroke-opacity: 0;
 }
 
+.link.inLink {
+	stroke: #f30;
+	stroke-opacity: 0.5;
+}
+
+.link.outLink {
+	stroke: #6c3;
+	stroke-opacity: 0.5;
+}
+
+.link.biLink {
+	stroke: #33f;
+	stroke-opacity: 0.5;
+}
 
 /*   Arc    */
 

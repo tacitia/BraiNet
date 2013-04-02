@@ -158,7 +158,15 @@ function constructUserNodesMaps(datasetKey, nodes) {
     var num_nodes = nodes.length;
     for (var i = 0; i < num_nodes; ++i) {
         var node = nodes[i];
+        console.log(node);
         node.key = parseInt(node.key);
+        if (node.brodmannKey === undefined) {
+        	node.brodmannKey = -1;
+        	// TODO: propagate the information down the hierarchy.
+        }
+        else {
+        	node.brodmannKey = node.brodmannKey[0];
+        }
 //        console.log(node.key);
         node.depth = parseInt(node.depth);
         node.parent = (node.parentKey === null) ? null : parseInt(node.parentKey);
@@ -168,8 +176,6 @@ function constructUserNodesMaps(datasetKey, nodes) {
         user_in_neighbor_map[node.key] = [];
         user_out_neighbor_map[node.key] = [];
     }
-
-    console.log(user_node_map);
     
     for (var key in user_node_map) {
         var node = user_node_map[key];
@@ -188,9 +194,6 @@ function constructUserNodesMaps(datasetKey, nodes) {
 }
 
 
-/*
- * TODO: extend this to handle user entered notes
- */
 function constructUserLinksMaps(datasetKey, links) {    
     var user_link_map = {};
     var user_node_link_map = {};
@@ -210,6 +213,7 @@ function constructUserLinksMaps(datasetKey, links) {
         dataset.node_in_neighbor_map[target_key].push(source_key);
         dataset.node_out_neighbor_map[source_key].push(target_key);
     }
+    
     dataset.link_map = user_link_map;
     dataset.node_link_map = user_node_link_map;
 }
@@ -420,6 +424,15 @@ function initActiveLinks(link_map) {
     for (var key in link_map) {
         var curr_link = link_map[key];
         if (curr_link.source.depth === 1 && curr_link.target.depth === 1) {
+        	if (curr_link.base_children.length > 20) {
+	 	       	curr_link.strength = "strong";
+	 	  	}
+	 	  	else if (curr_link.base_children.length > 1) {
+	 	  		curr_link.strength = "moderate";
+	 	  	}
+	 	  	else {
+	 	  		curr_link.strength = "weak";
+	 	  	}
             active_data_links.push(curr_link);
         }
     }
@@ -553,7 +566,7 @@ function saveSessionData() {
     sessionLength /= 1000;
     $.ajax({        
        type: "POST",
-       url: "media/php/writeActionData.php",
+       url: "/media/php/writeActionData.php",
        data: {actionDataArray : actionData, sessionLength : sessionLength, userID: uid},
        error: function(data) {
             console.log("Failed");
@@ -570,7 +583,7 @@ function saveSessionData() {
 function populateUserId() {
     $.ajax({
         type: "POST",
-        url: "media/php/getUserID.php",
+        url: "/media/php/getUserID.php",
         error: function(data) {
             console.log("Failed");
             console.log(data);
@@ -587,7 +600,7 @@ function populateUserId() {
 function populateDatasets(uid) {
     $.ajax({
         type: "POST",
-        url: "media/php/getDatasetByUserId.php",
+        url: "/media/php/getDatasetByUserId.php",
         data: {userID: uid},
         error: function(data) {
             console.log("Failed");
@@ -610,7 +623,7 @@ function populateDatasets(uid) {
 function createDataset(datasetName, userID) {
     $.ajax({
         type: "POST",
-        url: "media/php/addDataset.php",
+        url: "/media/php/addDataset.php",
         data: {datasetName: datasetName, userID: userID},
         error: function(data) {
             console.log("Failed");
@@ -629,7 +642,7 @@ function createDataset(datasetName, userID) {
 function getBrainData(datasetKey) {
     $.ajax({
         type: "POST",
-        url: "media/php/getBrainData.php",
+        url: "/media/php/getBrainData.php",
         data: {datasetKey: datasetKey},
         error: function(data) {
         console.log("Failed");
@@ -637,6 +650,7 @@ function getBrainData(datasetKey) {
         },
         success: function(result) {
             console.log("Successfully passed data to php.");
+            console.log(result);
             var data = $.parseJSON(result);
             var nodes = data.nodes;
             var links = data.links;
@@ -655,6 +669,24 @@ function getBrainData(datasetKey) {
     });
 }
 
+function getBrodmannAreas() {
+    $.ajax({
+        type: "GET",
+        url: "/media/php/getBrodmannAreas.php",
+        error: function(data) {
+        console.log("Failed");
+            console.log(data);
+        },
+        success: function(result) {
+            console.log("Successfully passed data to php.");
+            console.log(result);
+            var data = $.parseJSON(result);
+            constructBrodmannMap(data);
+        },
+        async: true
+    });
+}
+
 // ================ Misc Functions ================ //
 
 /*
@@ -670,6 +702,15 @@ function contains(array, element) {
         }
     }
     return -1;
+}
+
+function constructBrodmannMap(data) {
+	brodmann_map = {};
+	var num_area = data.length;
+	for (var i = 0; i < num_area; ++i) {
+		var area = data[i];
+		brodmann_map[area.id] = area.name;
+	}
 }
 
 /*

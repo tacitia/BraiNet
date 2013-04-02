@@ -75,6 +75,7 @@ d3.json("media/data/test_link.json", function (data) {
 });
 
 populateUserId();
+getBrodmannAreas();
 waitForDataLoading();
 
 /*******
@@ -91,8 +92,10 @@ d3.select('#bt-createDatasets').on('click', createDatasetButtonClick);
 d3.select('#bt-manageDatasets').on('click', manageDatasetButtonClick);
 d3.select('#bt-applyDataset').on('click', applyDatasetButtonClick);
 d3.select("#maxHop").on("change", setMaxHop);
+//d3.selectAll('area').attr('data-map-highlight', '{"stroke":false,"fillColor":"ff0000","fillOpacity":0.6}');
 $('#sourceSelect').change(sourceSearchInput);
 $('#targetSelect').change(targetSearchInput);
+$('.map').maphilight();
 window.onbeforeunload=saveSessionData;
 window.onload=startSession;
 /*******
@@ -152,10 +155,10 @@ function renderCanvas() {
             .attr("height", vis_height)
             .append('g');
 
-    // Render the arcs
-    enterCircularNodes();
     // Render the links
     enterCircularLinks();
+    // Render the arcs
+    enterCircularNodes();
     updateCircularTexts();
 
 //    updateForceLayout();
@@ -163,6 +166,7 @@ function renderCanvas() {
 
 function setupUIElements() {
     appendNodesAsOptions(active_node_map);
+    d3.selectAll('area').attr('data-map-highlight', '{"stroke":false,"fillColor":"ff0000","fillOpacity":0.6}');
 }
 
 function waitForDataLoading() {
