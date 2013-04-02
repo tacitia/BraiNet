@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>brainCircuits</title>
+    <title>Brain Circuits Diagram</title>
 
     <!--Stylesheets-->
     <link rel="stylesheet" href="media/lib/bootstrap/css/bootstrap.min.css" />
@@ -18,18 +18,86 @@
     <![endif]-->
   </head>
   <body>
+    <div id="test">
+    </div>
+    <div id="user">
+        <a href="signin.html" target="_blank">Sign In</a>
+        <span>&nbsp &nbsp &nbsp</span>
+        <a href="http://hivizexplorer.com/lazarus/" target="_blank">Message Board</a>
+    </div>
     <!--UTIL TAB RIGHT-->
     <div id="util">
       <ul class="nav nav-tabs">
-        <li class="active"><a href="#legend" data-toggle="tab">Legend</a></li>
+        <li class="active"><a href="#info" data-toggle="tab">Info</a></li>
+        <li><a href="#legend" data-toggle="tab">Legend</a></li>
         <li><a href="#options" data-toggle="tab">Options</a></li>
         <li><a href="#search" data-toggle="tab">Search</a></li>
-        <li><a href="#help" data-toggle="tab">Help</a></li>
+        <li><a href="#manage-data" data-toggle="tab">Manage Data</a></li>
       </ul>
       <div id="util-content" class="tab-content">
 
+        <!--INFO-->
+        <div id="info" class="tab-pane fade in active">
+            <div id="conn-info" style="height:100px">
+                <h4>Connection information</h4>
+                <p>&nbsp</p>
+                <p class="exp"><i>Click on a connection and the basic connection information will be displayed here.</i></p>
+                <p id="src-name"></p>
+                <p id="tgt-name"></p>
+            </div>
+            <div id="region-info">
+                <h4>Brain Region information</h4>
+                <p>&nbsp</p>
+                <p><i>Region information will be available in future updates</i></p>
+                
+<!--                <div id="source-region-info" class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#region-info" href="#source-info-content">
+                            Source region
+                        </a>
+                    </div>
+                    <div id="source-info-content" class="accordion-body collapse in">
+                        <div class="accordion-inner accordion-content">
+                            <div class="tab-content">
+                                <ul class="nav nav-tabs">
+                                    <li class="active"><a href="#source-slice" data-toggle="tab">Anatomical image</a></li>
+                                    <li><a href="#source-wiki" data-toggle="tab">Other resources</a></li>
+                                </ul>
+                                <div id="source-slice" class="slice tap-pane fade in active">
+                                </div>
+                                <div id="source-wiki" class="wiki tap-pane fade in">
+                                    <iframe src="http://en.wikipedia.org/wiki/Cerebrum"></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="target-region-info" class="accordion-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#region-info" href="#target-info-content">
+                            Target region
+                        </a>
+                    </div>
+                    <div id="target-info-content" class="accordion-body collapse">
+                        <div class="accordion-inner accordion-content">
+                            <div class="tab-content">
+                                <ul class="nav nav-tabs">
+                                    <li class="active"><a href="#target-slice" data-toggle="tab">Anatomical image</a></li>
+                                    <li><a href="#target-wiki" data-toggle="tab">Other resources</a></li>
+                                </ul>
+                                <div id="target-slice" class="slice tap-pane fade in active">
+                                </div>
+                                <div id="target-wiki" class="wiki tap-pane fade in">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+        </div><!--END INFO-->
+
         <!--LEGEND-->
-        <div id="legend" class="tab-pane fade in active">
+        <div id="legend" class="tab-pane fade in">
           <div id="legend-primary" style="position:relative; height:150px;">
             <h4>Primary</h4></br>
             <div style="background-color:#2ca02c; height:20px; width:20px; position:absolute; top:35px;"></div>
@@ -108,7 +176,7 @@
             <tr>
               <td class="tab-column-1">Number of intermediate connections</td>
               <td class="tab-column-2">
-                <input id="maxHop" type="range" min=1 max=5 value=1 step=1>
+                <input id="maxHop" type="range" min=0 max=3 value=1 step=1>
                 <span id="maxHopValue">1</span>
               </td>
             </tr>
@@ -121,30 +189,35 @@
             </tr>
           </table>
           </div>
-          <!--Search Results-->
-          <!--
-          <div id="localCon" class="localCon">
-            <h4>Search Results</h4>
-          </div>
-          -->
-          <!---List Link Connections (Search Results)-->
-          <div id="search-results" class="tab-content">
-            <ul class="nav nav-tabs">
-              <li class="active"><a href="#paper-list" data-toggle="tab">Show literature list</a></li>
-              <li><a href="#sub-con-list" data-toggle="tab">Show sub-connection list</a></li>
-            </ul>
-            <div id="paper-list" class="tab-pane fade in active search-results-contents">
-              <p class="search-results-exp explanation"><i>Search for the connections between two brain regions and the relevant literature will be displayed here.</i></p>
-            </div>
-            <div id="sub-con-list" class="tab-pane fade in search-results-contents">
-              <p class="search-results-exp explanation"><i>Search for the connections between two brain regions and the underlying sub-connections will be displayed here.</i></p>
-            </div>
-          </div>
-
         </div><!--END SEARCH-->
 
+        <!--MANAGE DATA-->
+        <div id="manage-data" class="tab-pane fade in">
+            <div id="createDatasetSuccessAlert" class="alert alert-success" style="display:none">
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+              Dataset created successfully. Select and edit the new dataset to add nodes and links.
+            </div>
+            <div id="create">
+			<p>Create Dataset:</p>
+				<input type="text" placeholder="Name" name="datasetName">
+				<button class="btn" id="bt-createDatasets">Create Dataset</button>
+			</div>
+            <div id="select">
+                <p>Stored Datasets:</p>
+                <select data-placeholder="Select Dataset" class="chzn-select" style="width:250px;" id="dataSelect">
+                  <option></option>
+                </select>
+            </div>
+            <div id="edit">
+              <button class="btn" id="bt-manageDatasets">Edit</button>
+            </div>
+	        <div id="apply">
+              <button class="btn btn-primary" id="bt-applyDataset">Display</button>
+            </div>
+        </div><!--END MANAGE DATA-->
+
         <!--HELP-->
-        <div id="help" class="tab-pane fade in">
+<!--        <div id="help" class="tab-pane fade in">
           <p>
             <a href="http://www.youtube.com/watch?v=PyPHzxaCEfU&feature=youtu.be">Demo video</a>
             Tips: <br/>
@@ -157,11 +230,11 @@
             or click clear to clear the highlighted connections <br/><br/>
             3. To adjust the level of details: use the "Max depth" slider
           </p>
-        </div><!--END HELP-->
+        </div>--><!--END HELP-->
 
       </div><!--END UTIL CONTENT-->
     <!--References and Link Details-->
-    <div id="detail" class="tabbable tabs-top detail-panel">
+<!--    <div id="detail" class="tabbable tabs-left detail-panel">
       <h4>Connection Details</h4>
       <span id="ref-src">Source: no selection </span><br/>
       <span id="ref-tgt">Target: no selection </span><br/>
@@ -169,18 +242,46 @@
       </ul>
       <div id="detail-content-pane" class="tab-content">
       </div>
-    </div>
+    </div> -->
     </div><!--END UTIL RIGHT-->
 
-    <!--
-    <div id="legend" class="legend">
-      <h3>Legend</h3>
+    <div id="canvas">
+      <div id="canvas-body"">
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="#canvas-circular" data-toggle="tab">Circular view</a></li>
+        <li><a href="#canvas-force" data-toggle="tab">Force-directed view</a></li>
+      </ul>
+      <div id="canvas-content" class="tab-content">
+        <div id="canvas-circular" class="tab-pane fade in active">
+        </div>
+        <div id="canvas-force" class="tab-pane fade in">
+        </div>
+      </div>
+      </div>
     </div>
-    -->
-
-    <div id="canvas"></div>
-
-
+    <!---List Link Connections (Search Results)-->
+    <div id="search-results" style="position:absolute;top:1000px; width: 800px; height: 400px">
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="#notes" data-toggle="tab">Notes</a></li>
+        <li><a href="#paper-list" data-toggle="tab">Publications</a></li>
+        <li><a href="#bams-list" data-toggle="tab">BAMS records</a></li>
+<!-->        <li><a href="#sub-con-list" data-toggle="tab">Sub-connections</a></li> -->
+      </ul>
+      <div class="tab-content" style="padding:20px">
+        <div id="notes" class="tab-pane fade in active">
+          <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and the notes will be displayed here.(Only available for user defined datasets.)</i></p>
+        </div>
+        <div id="paper-list" class="tab-pane fade in">
+          <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and the relevant literature will be displayed here.(Only available for pre-loaded datasets.)</i></p>
+        </div>
+        <div id="bams-list" class="tab-pane fade in">
+          <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and the relevant BAMS records will be displayed here.(Only available for pre-loaded datasets.)</i></p>
+        </div>
+<!--        <div id="sub-con-list" class="tab-pane fade in">
+          <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and the underlying sub-connections will be displayed here.</i></p>
+        </div> -->
+      </div>
+    </div>
 
     <!-- MODAL WINDOW - User Study
     <div class="modal hide fade" id="messageBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:600px;">
@@ -210,10 +311,10 @@
     <script type="text/javascript" src="media/lib/jquery-ui/js/jquery-ui.js"></script>
 
     <!--TODO: brainmap and script should be compressed as one file-->
-    <script type="text/javascript" src="media/js/script.js"></script>
+    <script type="text/javascript" src="media/js/brainCircuits.js"></script>
     <script type="text/javascript" src="media/js/brainMap.js"></script>
 
-    <!-- Piwik --> 
+    <!-- Piwik -->
     <script type="text/javascript">
     var pkBaseURL = (("https:" == document.location.protocol) ? "https://hivizexplorer.com/piwik/" : "http://hivizexplorer.com/piwik/");
     document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
