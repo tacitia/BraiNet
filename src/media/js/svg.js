@@ -172,6 +172,11 @@ function nodeClick(d) {
 	    	current_mode = mode.exploration;
 	    }
     }
+    else if (d3.event.metaKey) {
+    	// Todo: remove the node from the current view
+    	// Todo: have a list that displays the removed nodes, so that the user can 
+    	// add them back when needed
+    }
     else {
         if (enable_piwik) { piwikTracker.trackPageView('Expand node in circular view'); }
         if (enable_owa) { OWATracker.trackAction('Viz', 'Expand circular node', d.name); }
@@ -197,15 +202,6 @@ function nodeMouseOver(node, svg) {
     console.log('[title="' + brodmann_title + '"]');
     $('[title="' + brodmann_title + '"]').mouseover();    
     if (current_mode === mode.search) { return; }
-    svg.selectAll('.circular.node')
-        .classed('nofocus', function(d) {
-            var dKey = d.key;
-            var nodeKey = node.key;
-            var inNeighbors = active_node_in_neighbor_map[nodeKey];
-            var outNeighbors = active_node_out_neighbor_map[nodeKey];
-            return dKey !== nodeKey && ($.inArray(dKey, inNeighbors) < 0) &&
-                ($.inArray(dKey, outNeighbors) < 0);
-        });
     svg.selectAll('.circular.link')
         .classed('hidden', function(d) {
             return d.source.key !== node.key && d.target.key !== node.key; 
@@ -225,6 +221,15 @@ function nodeMouseOver(node, svg) {
     		var reverted_link = active_node_link_map[d.target.key + '-' + d.source.key];
     		return reverted_link !== undefined;
     	});
+    svg.selectAll('.circular.node')
+        .classed('nofocus', function(d) {
+            var dKey = d.key;
+            var nodeKey = node.key;
+            var inNeighbors = active_node_in_neighbor_map[nodeKey];
+            var outNeighbors = active_node_out_neighbor_map[nodeKey];
+            return dKey !== nodeKey && ($.inArray(dKey, inNeighbors) < 0) &&
+                ($.inArray(dKey, outNeighbors) < 0);
+        });    	
     svg.selectAll('.circular.text')
         .classed('visible', function(d) {
             var dKey = d.key;
@@ -358,7 +363,6 @@ function forceLinkMouseOver(link) {
 }
 
 function forceLinkMouseOut(d) {
-    if (current_mode === mode.search) { return; }
     svg_force.selectAll('.nodelink.node').classed('nofocus', false);
     svg_force.selectAll('.nodelink.link').classed('nofocus', false);
     svg_force.selectAll('.nodelink.text').classed('visible', true);
@@ -511,7 +515,7 @@ function updateForceLayout() {
                                        l.source.group != l.target.group ? t[1] : 2/t[1]) + 20;
               })
               .linkStrength(1)
-              //.gravity(0.01)
+ //             .gravity(0)
               .charge(-6000)
               .friction(0.5)
               .start();

@@ -122,7 +122,15 @@ function sourceSearchInput() {
             expandRegion(parent, siblings, svg_circular);
         }
     }
-    highlightNode(input_node, "focus", true, true, svg_circular);
+    svg_circular.selectAll('.circular.node')
+        .classed('nofocus', function(d) {
+            return d !== selected_source && d !== selected_target;
+        });
+    svg_circular.selectAll('.circular.text')
+        .classed('visible', function(d) {
+            return d === selected_source || d === selected_target;
+        });
+//    highlightNode(input_node, "focus", true, true, svg_circular);
     if (enable_owa) {
         OWATracker.trackAction('UI', 'Set source', selected_source.name);
     }
@@ -156,7 +164,19 @@ function targetSearchInput() {
             expandRegion(parent, siblings, svg_circular);
         }
     }
-    highlightNode(input_node, "focus", true, true, svg_circular);
+    svg_circular.selectAll('.circular.link')
+        .classed('hidden', function(d) {
+            return d.source.key !== selected_source.key && d.target.key !== selected_target.key; 
+        });
+    svg_circular.selectAll('.circular.node')
+        .classed('nofocus', function(d) {
+            return d !== selected_source && d !== selected_target;
+        });
+    svg_circular.selectAll('.circular.text')
+        .classed('visible', function(d) {
+            return d === selected_source || d === selected_target;
+        });
+//    highlightNode(input_node, "focus", true, true, svg_circular);
     if (enable_owa) {
         OWATracker.trackAction('UI', 'Set target', selected_target.name);
     }
