@@ -1,6 +1,3 @@
-/* @override 
-	http://localhost:8888/braincircuiviz/src/media/css/style-ui.css */
-
 body {
     /*make everything not selectable*/
     -webkit-touch-callout: none;
@@ -10,65 +7,42 @@ body {
     -ms-user-select: none;
     user-select: none;
     font: 13px sans-serif;
-    box-sizing: border-box;
 }
+html,body { height:100%; }
 
-::-webkit-scrollbar {
-    width: 12px;
+#content {
+	width:1280px;
+	margin:0px auto;
 }
- 
-::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
-    border-radius: 10px;
-}
- 
-::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
-}
-
 /* Navigation */
 
 #util {
     padding: 20px;
     background-color: rgba(240,245,255,0.9);
-    position: absolute;
-    right: 0px;
-    top:45px;
-    width: 32%;
-    height: 100%;
-    /*border-left:thick solid #ccc;
-    border-top:thick solid #ccc;*/
-    box-sizing: border-box;
+	width: 440px;
+	height: 100%;
+	position: relative;
+	float:right;
 }
-#canvas {
 
-    background-color: rgba(255,255,255,0.9);
-    position: absolute;
-    left: 0px;
-    top: 45px;
-    min-width: 825px;
-    width: 67%;
-    height: 850px;
-    /*border-left:thick solid #ccc;
-    border-top:thick solid #ccc;*/
-    box-sizing: border-box;
-}
-#canvas-body {
-    width:800px;
-    margin: 0px auto;
-}
 #user {
     padding: 10px;
     background-color: rgba(255,255,255,0.9);
-    position: absolute;
     top: 0px;
     right: 0px;
     height: 20px;
 }
+#canvas {
+	position:relative;
+	left: 0px;
+	top: 0px;
+	width: 800px;
+	float:left;
+	margin-top: 20px;
+}
+
 .tab-content {
-    /*height: 100%;*/
-    height:100%;
+	height: 100%;
 }
 .tab-column-1 {
     height: 30px;
@@ -80,7 +54,6 @@ body {
 
 .localCon {
     margin-top: 20px;
-    max-height: 200px;
     /*position: absolute;*/
     /*right: 20px;*/
     /*top: 20px;*/
@@ -93,12 +66,9 @@ body {
 }
 
 #search-results {
-    /*position: absolute;*/
-    /*right: 20px;*/
-    /*top: 400px;*/
-    /*width: 350px;*/
-    /*height: 50%;*/
-    top: 300px;
+	position: absolute;
+	top: 650px;
+	width: 800px;
 }
 
 .search-results-contents {

@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="media/css/style-ui.css" media="all" type="text/css" charset="utf-8">
     <link rel="stylesheet" href="media/css/style-canvas.css" media="all" type="text/css" charset="utf-8">
     <link rel="stylesheet" href="media/css/colors.css" media="all" type="text/css" charset="utf-8">
-    <link rel="stylesheet" href="media/lib/jquery-ui/css/redmond/jquery-ui.css" media="all" />
 
     <!-- HTML5 shim, IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -18,8 +17,7 @@
     <![endif]-->
   </head>
   <body>
-    <div id="test">
-    </div>
+    <div id="content">
     <div id="user">
         <a href="signin.html" target="_blank">Sign In</a>
         <span>&nbsp &nbsp &nbsp</span>
@@ -36,9 +34,8 @@
       </ul>
       <div id="util-content" class="tab-content">
 
-        <!--INFO-->    <link rel="stylesheet" href="media/lib/jquery-ui/css/redmond/jquery-ui.css" />
         <div id="info" class="tab-pane fade in active">
-            <div id="conn-info" style="height:100px">
+            <div id="conn-info">
                 <h4>Connection information</h4>
                 <p>&nbsp</p>
                 <p class="exp"><i>Click on a connection and the basic connection information will be displayed here.</i></p>
@@ -290,7 +287,7 @@
       </div>
     </div>
     <!---List Link Connections (Search Results)-->
-    <div id="search-results" style="position:absolute;top:1000px; width: 800px; height: 400px">
+    <div id="search-results">
       <ul class="nav nav-tabs">
         <li class="active"><a href="#notes" data-toggle="tab">Notes</a></li>
         <li><a href="#paper-list" data-toggle="tab">Publications</a></li>
@@ -338,7 +335,6 @@
     <script type="text/javascript" src="media/lib/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="media/lib/d3.v2.min.js"></script>
     <script type="text/javascript" src="media/lib/chosen/chosen.jquery.js"></script>
-    <script type="text/javascript" src="media/lib/jquery-ui/js/jquery-ui.js"></script>
     <script type="text/javascript" src="media/lib/jquery.maphilight.min.js"></script>
     
     <!--TODO: brainmap and script should be compressed as one file-->
@@ -356,5 +352,6 @@
     } catch( err ) {}
     </script><noscript><p><img src="http://hivizexplorer.com/piwik/piwik.php?idsite=3" style="border:0" alt="" /></p></noscript>
     <!-- End Piwik Tracking Code -->
+    </div>
 </body>
 </html>

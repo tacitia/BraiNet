@@ -49,8 +49,8 @@ var links;
 var force;
 
 // SVG display parameters
-var vis_width = 1000;
-var vis_height = 1000;
+var vis_width = 800;
+var vis_height = 600;
 var inner_radius = Math.min(vis_width, vis_height) * 0.32;
 var outer_radius = inner_radius * 1.2;
 
