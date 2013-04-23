@@ -146,7 +146,7 @@ function dimNonSearchResults() {
         });
     svg_circular.selectAll('.circular.text')
         .classed('visible', function(d) {
-            return ($.inArray(d, active_data_nodes_force) >= 0) ;
+            return ($.inArray(d, active_data_nodes_force) >= 0);
         });    
 }
 
