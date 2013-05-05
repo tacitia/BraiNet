@@ -173,6 +173,12 @@ function nodeClick(d) {
 	    }
     }
     else if (d3.event.metaKey) {
+    	active_data_nodes.splice($.inArray(d, active_data_nodes), 1);
+    	var new_num = active_data_nodes.length;
+    	updateCircularLayout(new_num, 2 * Math.PI / new_num);
+    	ignored_nodes.push(d);
+    	d.isIgnored = true;
+    	
     	// Todo: remove the node from the current view
     	// Todo: have a list that displays the removed nodes, so that the user can 
     	// add them back when needed

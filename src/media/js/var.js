@@ -39,6 +39,7 @@ var active_node_link_map;
 var active_node_in_neighbor_map;
 var active_node_out_neighbor_map;
 var active_link_map;
+var ignored_nodes = [];
 
 // SVG display variables
 var svg_circular;

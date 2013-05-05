@@ -102,23 +102,6 @@ window.onload=startSession;
     End of UI elements action binding section
 *******/
 
-/*
-node_neighbor_map = {};
-node_neighbor_map[2] = [{node: node_map[3]}, {node: node_map[6]}, {node: node_map[7]}];
-node_neighbor_map[3] = [{node: node_map[2]}, {node: node_map[4]}, {node: node_map[5]}];
-node_neighbor_map[4] = [{node: node_map[6]}, {node: node_map[3]}];
-node_neighbor_map[5] = [{node: node_map[7]}, {node: node_map[3]}];
-node_neighbor_map[6] = [{node: node_map[4]}, {node: node_map[2]}];
-node_neighbor_map[7] = [{node: node_map[5]}, {node: node_map[2]}];
-
-paper_map = {};
-paper_map[1] = {key: 1, title: "paper 1", url: "http://pubmed"};
-paper_map[2] = {key: 2, title: "paper 2", url: "http://pubmed"};
-
-bams_map = {};
-bams_map[1] = {key: 1, url: ""};
-*/
-
 function renderCanvas() {
     // Assign colors to
     assignColors(active_node_map);
