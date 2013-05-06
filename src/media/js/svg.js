@@ -173,9 +173,18 @@ function nodeClick(d) {
 	    }
     }
     else if (d3.event.metaKey) {
+    	// remove the selected node and associated links from active_data_nodes/links
     	active_data_nodes.splice($.inArray(d, active_data_nodes), 1);
+    	var link_length = active_data_links.length;
+    	while (link_length--) {
+        	var curr_link = active_data_links[link_length];
+        	if (curr_link.source === d || curr_link.target === d) {
+            	active_data_links.splice(link_length, 1);
+        	}
+    	}
     	var new_num = active_data_nodes.length;
     	updateCircularLayout(new_num, 2 * Math.PI / new_num);
+    	// add the selected node to black list
     	ignored_nodes.push(d);
     	d.isIgnored = true;
     	
