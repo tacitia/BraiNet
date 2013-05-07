@@ -34,7 +34,7 @@
 	LEFT JOIN 
 		(SELECT np.node, un.key as parent, np.depth, un.name as parentName 
 		FROM " . $parentTableName . " np 
-		LEFT JOIN user_nodes un 
+		LEFT JOIN " . $nodeTableName . " un 
 		ON un.key = np.parent) as parents
 	ON nodes.key = parents.node WHERE nodes.datasetKey = ".$datasetKey;
     
