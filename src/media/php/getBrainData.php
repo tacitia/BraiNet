@@ -29,7 +29,7 @@
     
     $nodes_query = "
     SELECT 	nodes.key, nodes.name, parents.parent as parentKey, 
-    		parents.parentName as parentName, parents.depth, nodes.userID, nodes.datasetKey, nodes.notes, nodes.brodmannKey
+    		parents.parentName as parentName, parents.depth, nodes.datasetKey, nodes.notes, nodes.brodmannKey
 	FROM " . $nodeTableName . " nodes 
 	LEFT JOIN 
 		(SELECT np.node, un.key as parent, np.depth, un.name as parentName 
