@@ -1,5 +1,4 @@
 function appendNodesAsOptions(node_map) {
-    //console.log(node_map);
     for (var key in node_map) {
         var d = node_map[key];
         $('#sourceSelect').append(new Option(d.name, key, false, false));
@@ -19,10 +18,8 @@ function updateOptions() {
 }
 
 function populateDatasetUI() {
-    console.log("testing user id");
-    console.log(uid);
+	$('#dataSelect').append(new Option('BAMS(public)', 2130));
     var num_datasets = dataset_list.length;
-    console.log(dataset_list);
     for (var i = 0; i < num_datasets; ++i) {
         var curr_dataset = dataset_list[i];
         $('#dataSelect').append(new Option(curr_dataset[1], curr_dataset[0]));

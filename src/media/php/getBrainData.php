@@ -12,20 +12,28 @@
         //echo 'Connection successful' . "\n";
     }
 
-    mysql_select_db("tacitia_brainData", $con);
+    mysql_select_db("brainconnect_brainData", $con);
     
     $brainData = array();
-
-    $nodeTableName = 'user_nodes';//not used
+	
+    $nodeTableName = 'user_nodes';
     $linkTableName = 'user_links';
+    $parentTableName = 'node_parents';
+    
+    // Use pubmed tables if the dataset is a system table
+    if ($datasetKey == 2130) {
+    	$nodeTableName = 'public_nodes';
+    	$linkTableName = 'pubmed_links';
+    	$parentTableName = 'public_node_parents';
+    }
     
     $nodes_query = "
     SELECT 	nodes.key, nodes.name, parents.parent as parentKey, 
     		parents.parentName as parentName, parents.depth, nodes.userID, nodes.datasetKey, nodes.notes, nodes.brodmannKey
-	FROM user_nodes nodes 
+	FROM " . $nodeTableName . " nodes 
 	LEFT JOIN 
 		(SELECT np.node, un.key as parent, np.depth, un.name as parentName 
-		FROM node_parents np 
+		FROM " . $parentTableName . " np 
 		LEFT JOIN user_nodes un 
 		ON un.key = np.parent) as parents
 	ON nodes.key = parents.node WHERE nodes.datasetKey = ".$datasetKey;
