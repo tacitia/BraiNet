@@ -160,7 +160,7 @@ function constructUserNodesMaps(datasetKey, nodes) {
         var node = nodes[i];
         console.log(node);
         node.key = parseInt(node.key);
-        if (node.brodmannKey === undefined) {
+        if (node.brodmannKey === undefined || node.brodmannKey === null) {
         	node.brodmannKey = -1;
         	// TODO: propagate the information down the hierarchy.
         }
@@ -645,7 +645,7 @@ function getBrainData(datasetKey) {
         url: "media/php/getBrainData.php",
         data: {datasetKey: datasetKey},
         error: function(data) {
-        console.log("Failed");
+        console.log("Warning: call to getBrainData.php Failed");
             console.log(data);
         },
         success: function(result) {
