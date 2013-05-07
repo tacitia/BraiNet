@@ -418,7 +418,7 @@ function enterCircularLinks() {
                 return curves(coors);
             })
         .attr("class", "circular link")
-        .attr('stroke-width', function(d) { return Math.min(20, Math.max(1,  Math.ceil(d.base_children.length / 100))) + 'px'; })
+        .attr('stroke-width', function(d) { return Math.min(10, Math.max(1,  Math.ceil(d.base_children.length / 100))) + 'px'; })
 /*        .attr('opacity', function(d) {
         	if (d.strength === "strong") {
         		return 0.8;
