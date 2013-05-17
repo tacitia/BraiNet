@@ -18,7 +18,7 @@ function updateOptions() {
 }
 
 function populateDatasetUI() {
-	$('#dataSelect').append(new Option('BAMS(public)', 2130));
+	$('#dataSelect').append(new Option('BAMS (public)', 2130));
     var num_datasets = dataset_list.length;
     for (var i = 0; i < num_datasets; ++i) {
         var curr_dataset = dataset_list[i];

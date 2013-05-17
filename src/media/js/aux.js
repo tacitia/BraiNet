@@ -14,8 +14,8 @@ function visualizeUserData(dataset_key) {
     computeCircularNodesParameters(active_data_nodes);
     initActiveLinks(dataset.link_map);
     clearCanvases();
-    enterCircularNodes();
     enterCircularLinks();
+    enterCircularNodes();
     updateCircularTexts();
 }
 
@@ -146,8 +146,6 @@ function constructUserDataMaps(datasetKey, nodes, links) {
     constructUserLinksMaps(datasetKey, links);
     constructLinkHierarchy(datasetKey, links);
     assignColors(user_datasets[datasetKey].node_map);
-    console.log("Color assigned");
-    console.log(user_datasets[datasetKey]);
 }
 
 function constructUserNodesMaps(datasetKey, nodes) {
@@ -158,7 +156,6 @@ function constructUserNodesMaps(datasetKey, nodes) {
     var num_nodes = nodes.length;
     for (var i = 0; i < num_nodes; ++i) {
         var node = nodes[i];
-        console.log(node);
         node.key = parseInt(node.key);
         if (node.brodmannKey === undefined || node.brodmannKey === null) {
         	node.brodmannKey = -1;
@@ -167,7 +164,6 @@ function constructUserNodesMaps(datasetKey, nodes) {
         else {
         	node.brodmannKey = node.brodmannKey[0];
         }
-//        console.log(node.key);
         node.depth = parseInt(node.depth);
         node.parent = (node.parentKey === null) ? null : parseInt(node.parentKey);
         node.circ = {};
@@ -179,7 +175,6 @@ function constructUserNodesMaps(datasetKey, nodes) {
     
     for (var key in user_node_map) {
         var node = user_node_map[key];
-//        console.log(node);
         if (node.parent !== null) { 
             var parent_node = user_node_map[node.parent];
             // TODO fix this in the test_node
