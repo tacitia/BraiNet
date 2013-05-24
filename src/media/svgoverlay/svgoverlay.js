@@ -122,7 +122,10 @@ function appendStructuresAsOptions() {
 function selectStructure() {
 	var id = this.value;
 	var title = _structures[id].name;
+	console.log(struct_img_map[id]);
+	console.log(curr_image_id);
 	if (struct_img_map[id] !== curr_image_id) {
+		curr_image_id = struct_img_map[id];
 		updateImages();
 	}
 	selPath = $("path[oldtitle='" + title + "']");
