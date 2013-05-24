@@ -135,7 +135,7 @@ function selectStructure() {
 function retrieveStructImageMap() {
 	$.ajax({
 		type: "GET",
-		url: ".s/getStructImgMap.php",
+		url: "./getStructImgMap.php",
         error: function(data) {
             console.log("Failed");
             console.log(data);
