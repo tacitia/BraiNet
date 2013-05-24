@@ -21,12 +21,12 @@ var IMG_DOWNLOAD_PATH = API_PATH + "section_image_download/";
 var STRUCTURES_URL = API_PATH + "data/Structure/query.json?criteria=[graph_id$eq1]&num_rows=all";
 
 // Default parameters for the demo.  Change these via the URL string.
-var SECTION_IMAGE_ID = 100960224;
+var curr_image_id = 100960224;
 var DOWNSAMPLE = 4;
 
 var urlVars = getUrlVars();
 if ('id' in urlVars)
-	SECTION_IMAGE_ID =  urlVars.id;
+	curr_image_id =  urlVars.id;
 if ('downsample' in urlVars)
 	DOWNSAMPLE = urlVars.downsample;
 
@@ -54,7 +54,6 @@ function download_structures(on_success) {
 			var s = response.msg[i];
 			_structures[s.id] = s;
 		}
-		appendStructuresAsOptions();
 		on_success();
 	});
 }
@@ -113,7 +112,7 @@ function getUrlVars()
 }
 
 function appendStructuresAsOptions() {
-    for (var key in _structures) {
+    for (var key in struct_img_map) {
         var d = _structures[key];
         $('#structSelect').append(new Option(d.name, key, false, false));
     }
@@ -123,6 +122,9 @@ function appendStructuresAsOptions() {
 function selectStructure() {
 	var id = this.value;
 	var title = _structures[id].name;
+	if (struct_image_map[id] !== curr_image_id) {
+		updateImages();
+	}
 	selPath = $("path[oldtitle='" + title + "']");
 	selPath.attr('class', 'hover');
 	selPath.qtip('toggle', true);
@@ -153,6 +155,11 @@ function retrieveStructImageMap() {
 	});
 }
 
+function updateImages() {
+		download_svg(format_url(SVG_DOWNLOAD_PATH, curr_image_id, args));
+		download_img(format_url(IMG_DOWNLOAD_PATH, curr_image_id, args));
+}
+
 // When the page is read, download the structures.  When that's finished, download the SVG 
 // and image.
 $(function() {
@@ -161,7 +168,7 @@ $(function() {
 	download_structures(function() {
 		$("#chart").css("background","");
 		args = { downsample: DOWNSAMPLE };
-		download_svg(format_url(SVG_DOWNLOAD_PATH, SECTION_IMAGE_ID, args));
-		download_img(format_url(IMG_DOWNLOAD_PATH, SECTION_IMAGE_ID, args));
+		updateImages();
+		appendStructuresAsOptions();
 	});
 });
