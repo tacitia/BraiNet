@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <title>Structure SVG Overlay</title>
+	<link rel="stylesheet" href="jquery-ui-1.10.0/css/ui-lightness/jquery-ui-1.10.0.custom.css">
+	<link rel="stylesheet" href="stylesheets/examples.css">
+	<link rel="stylesheet" href="stylesheets/main.css">
+    <link rel="stylesheet" href="chosen/chosen.css" media="all" />
+	<link type="text/css" rel="stylesheet" href="qTip2/jquery.qtip.min.css" />
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"> </ script>					<script type="text/javascript src="jquery-ui-1.10.0/js/jquery-ui-1.10.0.custom.min.js"></script>
+    <script type="text/javascript" src="chosen/chosen.jquery.min.js"></script>
+	<script type="text/javascript" src="svgoverlay.js"></script>
+	<script type="text/javascript" src="qTip2/jquery.qtip.min.js"></script>
+  </head>
+  <body>
+	<h1> Structure SVG Overlay </h1>
+	<div id="content">
+      <div id="chart">
+		<div id="container"> 
+		  <div id="svg"></div>
+		  <div id="img"></div>
+		</div>
+	  </div>
+	  <div id="input">
+	  	<select data-placeholder="Choose a brain area" class="chzn-select" style="width:250px;" id="structSelect">
+          <option></option>
+        </select>
+	  </div>
+	</div>
+  </body>
+  <script type="text/javascript">
+	$(document).ready()
+	{
+	$('#structSelect').change(selectStructure);
+	}
+  </script>
+</html>
