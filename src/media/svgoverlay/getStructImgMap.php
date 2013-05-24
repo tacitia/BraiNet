@@ -1,6 +1,5 @@
 <? 
 	/* this function retrieves the mapping between structures and section images (for allen brain institute)*/
-	echo "???";
 	    
     $con = mysql_connect("localhost", "tacitia_brainIDC", "Ophelia621");
     if (!$con) {
@@ -27,7 +26,7 @@
 			$map[] = $record;
 		}
 		
-	    echo json_encode($result);
+	    echo json_encode($map);
     
     }catch(Exception $e){
 		echo "exception while processing brain data: ",  $e->getMessage(), "\n";
