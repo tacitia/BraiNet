@@ -33,6 +33,7 @@ if ('downsample' in urlVars)
 // A hash from structure id to structure meta info, which will be 
 // initialized later.
 var _structures = {};
+var struct_img_map = {};
 
 // State variables
 var prevSel = null;
@@ -142,7 +143,12 @@ function retrieveStructImageMap() {
         },
         success: function(data) {
             console.log("Success");
-            console.log(data);
+            var temp_map = $.parseJSON(data);
+            for (var i = 0; i < temp_map.length; ++i) {
+            	var pair = temp_map[i];
+            	struct_img_map[pair.structKey] = pair.imageKey;
+            }
+            console.log(struct_img_map);
         }		
 	});
 }
