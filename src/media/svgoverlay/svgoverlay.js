@@ -78,7 +78,7 @@ function download_svg(url) {
 		}, function() {
 			$(this).attr("class","");
 		});
-		console.log("???);
+		console.log("???");
 		if (prevSel != null) {
 			selPath.attr('class', 'hover');
 			selPath.qtip('toggle', true);			
