@@ -80,8 +80,8 @@ function download_svg(url) {
 		});
 		console.log(selPath);
 		if (selPath !== null) {
-			selPath.attr('class', 'hover');
-			selPath.qtip('toggle', true);			
+			$(selPath).attr('class', 'hover');
+			$(selPath).qtip('toggle', true);			
 		}
 	});
 }
@@ -125,26 +125,26 @@ function selectStructure() {
 	// If it's a "cancel selection" action
 	if (id === "") {
 		if (selPath !== null) {
-			selPath.attr('class', '');
-			selPath.qtip('toggle', false);
+			$(selPath).attr('class', '');
+			$(selPath).qtip('toggle', false);
 			selPath = null;
 		}	
 		return;
 	}
 	var title = _structures[id].name;
 	if (selPath !== null) {
-		selPath.attr('class', '');
-		selPath.qtip('toggle', false);
+		$(selPath).attr('class', '');
+		$(selPath).qtip('toggle', false);
 	}
-	selPath = $("path[oldtitle='" + title + "']");
+	selPath = "path[oldtitle='" + title + "']";
 	
 	if (struct_img_map[id] !== curr_image_id) {
 		curr_image_id = struct_img_map[id];
 		updateImages();
 	}
 	else {
-		selPath.attr('class', 'hover');
-		selPath.qtip('toggle', true);
+		$(selPath).attr('class', 'hover');
+		$(selPath).qtip('toggle', true);
 	}
 }
 
