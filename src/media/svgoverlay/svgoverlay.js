@@ -69,11 +69,6 @@ function download_svg(url) {
 				var id = $(this).attr('structure_id');
 				return _structures[$(this).attr('structure_id')].name; 
 			});
-/*			.tooltip({
-				show: false,
-				hide: false,
-				track: true,
-			});*/
 		$('path').qtip();
 
 		// When hovering over a path, add the 'hover' class, which just makes
@@ -83,6 +78,7 @@ function download_svg(url) {
 		}, function() {
 			$(this).attr("class","");
 		});
+		console.log("???);
 		if (prevSel != null) {
 			selPath.attr('class', 'hover');
 			selPath.qtip('toggle', true);			
