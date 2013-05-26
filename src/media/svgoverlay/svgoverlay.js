@@ -36,7 +36,7 @@ var _structures = {};
 var struct_img_map = {};
 
 // State variables
-var prevSel = null;
+var selPath = null;
 
 // A helper function that makes a url out of a path, database id, 
 // and argument array.
@@ -78,8 +78,7 @@ function download_svg(url) {
 		}, function() {
 			$(this).attr("class","");
 		});
-		console.log("???");
-		if (prevSel != null) {
+		if (selPath !== null) {
 			selPath.attr('class', 'hover');
 			selPath.qtip('toggle', true);			
 		}
@@ -122,27 +121,30 @@ function appendStructuresAsOptions() {
 
 function selectStructure() {
 	var id = this.value;
+	// If it's a "cancel selection" action
 	if (id === "") {
-		if (prevSel !== null) {
-			prevSel.attr('class', '');
-			prevSel.qtip('toggle', false);
-			prevSel = null;
+		if (selPath !== null) {
+			selPath.attr('class', '');
+			selPath.qtip('toggle', false);
+			selPath = null;
 		}	
 		return;
 	}
 	var title = _structures[id].name;
+	if (selPath !== null) {
+		selPath.attr('class', '');
+		selPath.qtip('toggle', false);
+	}
+	selPath = $("path[oldtitle='" + title + "']");
+	
 	if (struct_img_map[id] !== curr_image_id) {
 		curr_image_id = struct_img_map[id];
 		updateImages();
 	}
-	selPath = $("path[oldtitle='" + title + "']");
-	selPath.attr('class', 'hover');
-	selPath.qtip('toggle', true);
-	if (prevSel !== null) {
-		prevSel.attr('class', '');
-		prevSel.qtip('toggle', false);
+	else {
+		selPath.attr('class', 'hover');
+		selPath.qtip('toggle', true);
 	}
-	prevSel = selPath;
 }
 
 function retrieveStructImageMap() {
@@ -160,7 +162,6 @@ function retrieveStructImageMap() {
             	var pair = temp_map[i];
             	struct_img_map[pair.structKey] = pair.imageKey;
             }
-            console.log(struct_img_map);
         }		
 	});
 }
