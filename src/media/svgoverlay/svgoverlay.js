@@ -91,6 +91,7 @@ function download_img(url) {
 	var image = new Image;
 
 	image.onload = function() {
+		$("#img").empty();
 		$("#img").append(image);
 	};
 
