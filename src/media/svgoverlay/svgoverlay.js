@@ -83,11 +83,11 @@ function download_svg(url) {
 		}, function() {
 			$(this).attr("class","");
 		});
+		if (prevSel != null) {
+			selPath.attr('class', 'hover');
+			selPath.qtip('toggle', true);			
+		}
 	});
-	if (prevSel != null) {
-		selPath.attr('class', 'hover');
-		selPath.qtip('toggle', true);			
-	}
 }
 
 // Make an AJAX query to download the section image and append it to the DOM.
@@ -126,7 +126,14 @@ function appendStructuresAsOptions() {
 
 function selectStructure() {
 	var id = this.value;
-	console.log(id);
+	if (id === "") {
+		if (prevSel !== null) {
+			prevSel.attr('class', '');
+			prevSel.qtip('toggle', false);
+			prevSel = null;
+		}	
+		return;
+	}
 	var title = _structures[id].name;
 	if (struct_img_map[id] !== curr_image_id) {
 		curr_image_id = struct_img_map[id];
