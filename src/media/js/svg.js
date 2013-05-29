@@ -168,11 +168,11 @@ function nodeClick(d) {
     	// Fix on the clicked node
     	if (current_mode === mode.exploration) {
 	    	current_mode = mode.fixation;
-	    	selectStructure(d.name);
+	    	selectStructure(d.name, false);
 	    }
 	    else if (current_mode === mode.fixation) {
 	    	current_mode = mode.exploration;
-	    	selectStructure("");
+	    	selectStructure(d.name, true);
 	    }
     }
     else if (d3.event.metaKey) {

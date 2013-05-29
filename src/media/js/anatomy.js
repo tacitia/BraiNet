@@ -114,6 +114,8 @@ function getUrlVars()
 }
 
 function selectStructure(title, isCancel) {
+	console.log("selectStructure");
+	console.log(title);
 	var selPath = "path[oldtitle='" + title + "']";
 	if (isCancel) {
 		$(selPath).attr('class', '');
