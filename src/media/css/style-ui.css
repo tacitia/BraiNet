@@ -218,6 +218,22 @@ html,body { height:100%; }
 	margin-left: 10px;
 }
 
+#anatomy-map #svg {
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+
+#anatomy-map #img {
+	left: 0;
+	top: 0;
+}
+	  
+#anatomy-map .hover {
+	stroke-width: 20;
+}
+
+
 /* @end */
 
 

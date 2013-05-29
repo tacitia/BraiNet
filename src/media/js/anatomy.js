@@ -150,7 +150,7 @@ function retrieveStructImageMap() {
 // When the page is read, download the structures.  When that's finished, download the SVG 
 // and image.
 $(function() {
-	$("#anatomy-map").css("background","no-repeat center url(\"img/loading.gif\")");
+	$("#anatomy-map").css("background","no-repeat center url(\"/img/loading.gif\")");
 	retrieveStructImageMap();
 	download_structures(function() {
 		$("#anatomy-map").css("background","");
