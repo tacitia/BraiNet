@@ -67,9 +67,7 @@ function download_svg(url) {
 		$("path")
 			.attr('title', function() { 
 				var id = $(this).attr('structure_id');
-				console.log(id);
-				console.log(_structures);
-				return _structures[id].name; 
+				return (id === undefined) ? 'unknown' : _structures[id].name; 
 			});
 /*			.tooltip({
 				show: false,
