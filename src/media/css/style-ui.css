@@ -225,8 +225,8 @@ html,body { height:100%; }
 }
 
 #anatomy-map #img {
-	left: 0;
-	top: 0;
+	left: 20;
+	top: 100;
 }
 	  
 #anatomy-map .hover {
