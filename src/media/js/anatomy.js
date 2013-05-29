@@ -21,12 +21,12 @@ var IMG_DOWNLOAD_PATH = API_PATH + "section_image_download/";
 var STRUCTURES_URL = API_PATH + "data/Structure/query.json?criteria=[graph_id$eq1]&num_rows=all";
 
 // Default parameters for the demo.  Change these via the URL string.
-var SECTION_IMAGE_ID = 100960224;
+var curr_image_id = 100960224;
 var DOWNSAMPLE = 5;
 
 var urlVars = getUrlVars();
 if ('id' in urlVars)
-	SECTION_IMAGE_ID =  urlVars.id;
+	curr_image_id =  urlVars.id;
 if ('downsample' in urlVars)
 	DOWNSAMPLE = urlVars.downsample;
 
