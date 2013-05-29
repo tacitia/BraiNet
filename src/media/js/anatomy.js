@@ -64,7 +64,7 @@ function download_svg(url) {
 
 		// Retrieve all paths in the SVG and add a 'title' attribute.  The
 		// 'title' attribute is displayed in the jQuery UI tooltip.
-		$("path")
+		$("#anatomy-map path")
 			.attr('title', function() { 
 				var id = $(this).attr('structure_id');
 				return (id === undefined) ? 'unknown' : _structures[id].name; 
@@ -74,11 +74,11 @@ function download_svg(url) {
 				hide: false,
 				track: true,
 			});*/
-		$('path').qtip();
+		$('#anatomy-map path').qtip();
 
 		// When hovering over a path, add the 'hover' class, which just makes
 		// the outline thicker.
-		$("path").hover(function() {
+		$("#anatomy-map path").hover(function() {
 			$(this).attr("class","hover")
 		}, function() {
 			$(this).attr("class","");
