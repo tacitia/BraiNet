@@ -165,11 +165,14 @@ function nodeClick(d) {
         combineRegions(parent, nodes_to_remove);
     }
     else if (d3.event.altKey) {
+    	// Fix on the clicked node
     	if (current_mode === mode.exploration) {
 	    	current_mode = mode.fixation;
+	    	selectStructure(d.name);
 	    }
 	    else if (current_mode === mode.fixation) {
 	    	current_mode = mode.exploration;
+	    	selectStructure("");
 	    }
     }
     else if (d3.event.metaKey) {
@@ -188,7 +191,6 @@ function nodeClick(d) {
     	ignored_nodes.push(d);
     	d.isIgnored = true;
     	
-    	// Todo: remove the node from the current view
     	// Todo: have a list that displays the removed nodes, so that the user can 
     	// add them back when needed
     }

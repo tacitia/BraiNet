@@ -33,9 +33,9 @@ if ('downsample' in urlVars)
 // A hash from structure id to structure meta info, which will be 
 // initialized later.
 var _structures = {};
+var struct_img_map = {};
 
-// State variables
-var prevSel = null;
+var tempSelPath = null;
 
 // A helper function that makes a url out of a path, database id, 
 // and argument array.
@@ -67,13 +67,9 @@ function download_svg(url) {
 		$("#anatomy-map path")
 			.attr('title', function() { 
 				var id = $(this).attr('structure_id');
-				return (id === undefined) ? 'unknown' : _structures[id].name; 
+				return _structures[id].name; 
 			});
-/*			.tooltip({
-				show: false,
-				hide: false,
-				track: true,
-			});*/
+
 		$('#anatomy-map path').qtip();
 
 		// When hovering over a path, add the 'hover' class, which just makes
@@ -83,6 +79,11 @@ function download_svg(url) {
 		}, function() {
 			$(this).attr("class","");
 		});
+		if (tempSelPath !== null) {
+			$(tempSelPath).attr('class', 'hover');
+			$(tempSelPath).qtip('toggle', true);
+			tempSelPath = null;			
+		}
 	});
 }
 
@@ -91,6 +92,7 @@ function download_img(url) {
 	var image = new Image;
 
 	image.onload = function() {
+		$("#anatomy-map #img").empty();
 		$("#anatomy-map #img").append(image);
 	};
 
@@ -111,25 +113,33 @@ function getUrlVars()
 	return vars;
 }
 
-function appendStructuresAsOptions() {
-    for (var key in _structures) {
-        var d = _structures[key];
-        $('#structSelect').append(new Option(d.name, key, false, false));
-    }
-    $('.chzn-select').chosen({allow_single_deselect: true});
-}
-
-function selectStructure() {
-	var id = this.value;
-	var title = _structures[id].name;
-	selPath = $("path[oldtitle='" + title + "']");
-	selPath.attr('class', 'hover');
-	selPath.qtip('toggle', true);
-	if (prevSel !== null) {
-		prevSel.attr('class', '');
-		prevSel.qtip('toggle', false);
+function selectStructure(title, isCancel) {
+	var selPath = "path[oldtitle='" + title + "']";
+	if (isCancel) {
+		$(selPath).attr('class', '');
+		$(selPath).qtip('toggle', false);
+		selPath = null;		
+		return;
 	}
-	prevSel = selPath;
+	
+	// Get the structure id for the given title
+	var id = null;
+	for (var key in _structures) {
+		if (_structures[id].name === title) {
+			id = key;
+			break;
+		}
+	}
+	
+	if (struct_img_map[id] !== curr_image_id) {
+		curr_image_id = struct_img_map[id];
+		tempSelPath = selPath;
+		updateImages();
+	}
+	else {
+		$(selPath).attr('class', 'hover');
+		$(selPath).qtip('toggle', true);
+	}
 }
 
 function retrieveStructImageMap() {
@@ -142,9 +152,18 @@ function retrieveStructImageMap() {
         },
         success: function(data) {
             console.log("Success");
-            console.log(data);
+            var temp_map = $.parseJSON(data);
+            for (var i = 0; i < temp_map.length; ++i) {
+            	var pair = temp_map[i];
+            	struct_img_map[pair.structKey] = pair.imageKey;
+            }
         }		
 	});
+}
+
+function updateImages() {
+		download_svg(format_url(SVG_DOWNLOAD_PATH, curr_image_id, args));
+		download_img(format_url(IMG_DOWNLOAD_PATH, curr_image_id, args));
 }
 
 // When the page is read, download the structures.  When that's finished, download the SVG 
@@ -155,7 +174,6 @@ $(function() {
 	download_structures(function() {
 		$("#anatomy-map").css("background","");
 		args = { downsample: DOWNSAMPLE };
-		download_svg(format_url(SVG_DOWNLOAD_PATH, SECTION_IMAGE_ID, args));
-		download_img(format_url(IMG_DOWNLOAD_PATH, SECTION_IMAGE_ID, args));
+		updateImages();
 	});
 });
