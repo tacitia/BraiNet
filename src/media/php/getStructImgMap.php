@@ -21,12 +21,12 @@
 		
 		while ($row = mysql_fetch_array($result)) {		
 			$record = array();
-			$link['structKey'] = $row['structKey'];
-			$link['imageKey'] = $row['imageKey'];
+			$record['structKey'] = $row['structKey'];
+			$record['imageKey'] = $row['imageKey'];
 			$map[] = $record;
 		}
 		
-	    echo json_encode($result);
+	    echo json_encode($map);
     
     }catch(Exception $e){
 		echo "exception while processing brain data: ",  $e->getMessage(), "\n";
