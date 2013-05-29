@@ -22,7 +22,7 @@ var STRUCTURES_URL = API_PATH + "data/Structure/query.json?criteria=[graph_id$eq
 
 // Default parameters for the demo.  Change these via the URL string.
 var SECTION_IMAGE_ID = 100960224;
-var DOWNSAMPLE = 4;
+var DOWNSAMPLE = 5;
 
 var urlVars = getUrlVars();
 if ('id' in urlVars)
@@ -135,7 +135,7 @@ function selectStructure() {
 function retrieveStructImageMap() {
 	$.ajax({
 		type: "GET",
-		url: "php/getStructImgMap.php",
+		url: "/php/getStructImgMap.php",
         error: function(data) {
             console.log("Failed");
             console.log(data);
@@ -150,7 +150,7 @@ function retrieveStructImageMap() {
 // When the page is read, download the structures.  When that's finished, download the SVG 
 // and image.
 $(function() {
-	$("#anatomy-map").css("background","no-repeat center url(\"images/loading.gif\")");
+	$("#anatomy-map").css("background","no-repeat center url(\"img/loading.gif\")");
 	retrieveStructImageMap();
 	download_structures(function() {
 		$("#anatomy-map").css("background","");
