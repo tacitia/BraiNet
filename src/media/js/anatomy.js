@@ -53,7 +53,6 @@ function download_structures(on_success) {
 			var s = response.msg[i];
 			_structures[s.id] = s;
 		}
-		appendStructuresAsOptions();
 		on_success();
 	});
 }
