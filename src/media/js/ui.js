@@ -193,6 +193,8 @@ function targetSearchInput() {
  */
 function datasetSelect() {
 	var datasetName = $('[name="datasetName"]').val();
+	console.log(datasetName);
+	console.log(datasetName.length);
 	if (endsWith(datasetName, '(public)')) {
 		$('#bt-cloneDatasets').css('display', 'block');
 	}
