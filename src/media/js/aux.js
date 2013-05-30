@@ -731,6 +731,9 @@ function constructBrodmannMap(data) {
 	}
 }
 
+function endsWith(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
 /*
 function generateKeyForNodeLinkMap(a, b) {
     var min_key = Math.min(a.key, b.key);

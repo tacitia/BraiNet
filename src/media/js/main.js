@@ -96,6 +96,7 @@ d3.select("#maxHop").on("change", setMaxHop);
 //d3.selectAll('area').attr('data-map-highlight', '{"stroke":false,"fillColor":"ff0000","fillOpacity":0.6}');
 $('#sourceSelect').change(sourceSearchInput);
 $('#targetSelect').change(targetSearchInput);
+$('#dataSelect').change(datasetSelect);
 $('.map').maphilight();
 window.onbeforeunload=saveSessionData;
 window.onload=startSession;

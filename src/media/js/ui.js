@@ -187,6 +187,20 @@ function targetSearchInput() {
     }
 }
 
+
+/*
+ * Hide the clone dataset button if the dataset is not public
+ */
+function datasetSelect() {
+	var datasetName = $('[name="datasetName"]').val();
+	if (endsWith(datasetName, '(public)')) {
+		$('#bt-cloneDatasets').css('display', 'block');
+	}
+	else {
+		$('#bt-cloneDatasets').css('display', 'none');
+	}
+}
+
 function clearSearchResult() {
 
 }
