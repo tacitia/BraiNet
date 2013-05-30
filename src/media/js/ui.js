@@ -45,6 +45,11 @@ function manageDatasetButtonClick() {
     window.open(url, 'Manage Datasets', 'width=800, height=800');
 }
 
+
+function cloneDatasetButtonClick() {
+	cloneDataset($('[name="datasetName"]').val(), uid);	
+}
+
 /*
  * 1. Get the name of the selected dataset
  * 2. Get the content of the selected dataset

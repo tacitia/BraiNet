@@ -9,7 +9,7 @@
         //echo 'Connection successful' . "\n";
     }
 
-    mysql_select_db("tacitia_brainData", $con);
+    mysql_select_db("brainconnect_brainData", $con);
         
     $query = "SELECT * FROM dataset_attributes WHERE datasetKey = " . $datasetKey;
 	

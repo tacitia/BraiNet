@@ -12,7 +12,7 @@
 //        echo 'Connection successful' . "\n";
     }
 
-	mysql_select_db("tacitia_brainData", $con);
+	mysql_select_db("brainconnect_brainData", $con);
 
     echo mysql_error($con) . "\n";
     

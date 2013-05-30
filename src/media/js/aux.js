@@ -613,13 +613,13 @@ function populateDatasets(uid) {
 
 /*
  * 1. Add the dataset in the database
- * 2. Add the dataset in the 
+ * 2. Add the dataset in the UI
  */
 function createDataset(datasetName, userID) {
     $.ajax({
         type: "POST",
         url: "media/php/addDataset.php",
-        data: {datasetName: datasetName, userID: userID},
+        data: {datasetName: datasetName, userID: userID, isClone: false},
         error: function(data) {
             console.log("Failed");
             console.log(data);
@@ -632,6 +632,29 @@ function createDataset(datasetName, userID) {
         },
         async: true
     });
+}
+
+/*
+ * 1. Add the dataset in the database
+ * 2. Add the dataset in the UI
+ */
+function cloneDataset(datasetName, userID) {
+    $.ajax({
+        type: "POST",
+        url: "media/php/addDataset.php",
+        data: {datasetName: datasetName, userID: userID, isClone: true},
+        error: function(data) {
+            console.log("AddDatset Failed.");
+            console.log(data);
+        },
+        success: function(datasetID) {
+            console.log("AddDataset Success.");
+            $('#dataSelect').append(new Option(datasetName.replace('(public)', '(personal copy)'), datasetID));
+            $('#dataSelect').trigger('liszt:updated');
+            $('#createDatasetSuccessAlert').show();
+        },
+        async: true
+    });	
 }
 
 function getBrainData(datasetKey) {

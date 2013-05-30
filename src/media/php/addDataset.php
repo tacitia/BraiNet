@@ -10,7 +10,7 @@
         //echo 'Connection successful' . "\n";
     }
 
-    mysql_select_db("tacitia_brainData", $con);
+    mysql_select_db("brainconnect_brainData", $con);
     
     mysql_query("INSERT INTO user_datasets (name, userID)
 VALUES ('$datasetName', '$userID')");
