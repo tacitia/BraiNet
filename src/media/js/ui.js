@@ -192,7 +192,7 @@ function targetSearchInput() {
  * Hide the clone dataset button if the dataset is not public
  */
 function datasetSelect() {
-	var datasetName = $('[name="datasetName"]').val();
+	var datasetName = $('#dataSelect :selected').text();
 	console.log(datasetName);
 	console.log(datasetName.length);
 	if (endsWith(datasetName, '(public)')) {
