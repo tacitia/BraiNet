@@ -615,11 +615,11 @@ function populateDatasets(uid) {
  * 1. Add the dataset in the database
  * 2. Add the dataset in the UI
  */
-function createDataset(datasetName, userID) {
+function createDataset(datasetName, userID, origDatasetID) {
     $.ajax({
         type: "POST",
         url: "media/php/addDataset.php",
-        data: {datasetName: datasetName, userID: userID, isClone: false},
+        data: {datasetName: datasetName, userID: userID, isClone: false, origDatasetID: origDatasetID},
         error: function(data) {
             console.log("Failed");
             console.log(data);
@@ -638,18 +638,18 @@ function createDataset(datasetName, userID) {
  * 1. Add the dataset in the database
  * 2. Add the dataset in the UI
  */
-function cloneDataset(datasetName, userID) {
+function cloneDataset(datasetName, userID, origDatasetID) {
     $.ajax({
         type: "POST",
         url: "media/php/addDataset.php",
-        data: {datasetName: datasetName, userID: userID, isClone: true},
+        data: {datasetName: datasetName, userID: userID, isClone: true, origDatasetID: origDatasetID},
         error: function(data) {
             console.log("AddDatset Failed.");
             console.log(data);
         },
         success: function(datasetID) {
             console.log("AddDataset Success.");
-            $('#dataSelect').append(new Option(datasetName.replace('(public)', '(personal copy)'), datasetID));
+            $('#dataSelect').append(new Option(datasetName, datasetID));
             $('#dataSelect').trigger('liszt:updated');
             $('#createDatasetSuccessAlert').show();
         },

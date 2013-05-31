@@ -1,6 +1,8 @@
 <? 
     $datasetName = $_POST['datasetName']; 	/*string*/
     $userID = $_POST['userID'];			/*int*/
+    $isClone = $_POST['isClone'];		/*bool*/
+    $origDatasetID = $_POST['origDatasetID'];	/*int*/
     
     $con = mysql_connect("localhost", "tacitia_brainIDC", "Ophelia621");
     if (!$con) {
@@ -12,8 +14,8 @@
 
     mysql_select_db("brainconnect_brainData", $con);
     
-    mysql_query("INSERT INTO user_datasets (name, userID)
-VALUES ('$datasetName', '$userID')");
+    mysql_query("INSERT INTO user_datasets (name, userID, isClone, origin)
+VALUES ('$datasetName', '$userID', '$isClone', '$origDatasetID')");
 
     $query = "SELECT * FROM user_datasets 
     WHERE name = '" . $datasetName. "' AND userID = " . $userID;

@@ -217,6 +217,7 @@ html,body { height:100%; }
 	float: left;
 	margin-bottom: 10px;
 	margin-left: 10px;
+	display:none;
 }
 
 #bt-applyDataset {

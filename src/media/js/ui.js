@@ -31,7 +31,7 @@ function populateDatasetUI() {
  * 2. Call the corresponding backend function
  */
 function createDatasetButtonClick() {
-    createDataset($('[name="datasetName"]').val(), uid);
+    createDataset($('[name="datasetName"]').val(), uid, 0);
 }
 
 /*
@@ -47,7 +47,9 @@ function manageDatasetButtonClick() {
 
 
 function cloneDatasetButtonClick() {
-	cloneDataset($('[name="datasetName"]').val(), uid);	
+	var datasetName = $('#dataSelect :selected').text().replace('(public)', '(personal copy)');
+	var datasetID = $('#dataSelect').val();
+	cloneDataset(datasetName, uid, datasetID);	
 }
 
 /*
@@ -193,8 +195,6 @@ function targetSearchInput() {
  */
 function datasetSelect() {
 	var datasetName = $('#dataSelect :selected').text();
-	console.log(datasetName);
-	console.log(datasetName.length);
 	if (endsWith(datasetName, '(public)')) {
 		$('#bt-cloneDatasets').css('display', 'block');
 	}
