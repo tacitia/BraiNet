@@ -49,6 +49,8 @@ function manageDatasetButtonClick() {
 function cloneDatasetButtonClick() {
 	var datasetName = $('#dataSelect :selected').text().replace('(public)', '(personal copy)');
 	var datasetID = $('#dataSelect').val();
+	console.log(datasetName);
+	console.log(datasetID);
 	cloneDataset(datasetName, uid, datasetID);	
 }
 
