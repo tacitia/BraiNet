@@ -415,6 +415,7 @@ function getBrainData(datasetKey) {
             console.log("GetBrainData.php: successfully passed data to php.");
 //            console.log(result);
             var data = $.parseJSON(result);
+            console.log(data);
             nodes = data.nodes;
             links = data.links;
             constructMaps();

@@ -649,7 +649,6 @@ function cloneDataset(datasetName, userID, origDatasetID) {
         },
         success: function(datasetID) {
             console.log("AddDataset Success.");
-            console.log(datasetID);
             $('#dataSelect').append(new Option(datasetName, datasetID));
             $('#dataSelect').trigger('liszt:updated');
             $('#createDatasetSuccessAlert').show();

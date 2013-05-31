@@ -2,7 +2,7 @@
 	/* this function uses dataset id to 
 	retrieve all nodes and links in that dataset */ 
 	
-    $datasetKey = $_POST['datasetKey']; 
+    $datasetKey = $_POST['datasetKey'];
     
     $con = mysql_connect("localhost", "tacitia_brainIDC", "Ophelia621");
     if (!$con) {
@@ -13,7 +13,17 @@
     }
 
     mysql_select_db("brainconnect_brainData", $con);
+
+	/* Determine if the dataset is cloned or not */
+	$query = "SELECT isClone FROM user_datasets WHERE key = " . $datasetKey;
+	$result = mysql_query($query, $con) or die("SELECT isClone failed: ".mysql_error());
+	$isClone = 0;
+
+    while ($row = mysql_fetch_array($result)) {
+        $isClone = $row["isClone"];
+    }
     
+    /* Get the main data */ 
     $brainData = array();
 	
     $nodeTableName = 'user_nodes';
@@ -44,6 +54,10 @@
     
     $nodes_result = mysql_query($nodes_query, $con) or die("SELECT nodes failed: ".mysql_error());
 
+	/* Get the difference data*/
+
+
+	/* Produce the final nodes and links to be returned */
     try{
 		$nodes = array(); 
 		while ($row = mysql_fetch_array($nodes_result)) {
@@ -57,7 +71,6 @@
 			$node['notes'] = $row['notes'];
 			$node['brodmannKey'] = $row['brodmannKey'];
 			$nodes[] = $node;
-			//array_push($nodes, $row);
 		}
 		
 		$links_result = mysql_query($links_query, $con);
@@ -73,7 +86,6 @@
 			$link['datasetKey'] = $row['datasetKey'];
 			$link['notes'] = $row['notes'];
 			$links[] = $link;
-			//array_push($links, $row);
 		}
 		
 		$result = array();

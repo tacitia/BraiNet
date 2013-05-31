@@ -116,8 +116,8 @@ style="width:250px;" id="brodmannArea">
     <script type="text/javascript" src="../lib/datatables/media/js/jquery.dataTables.min.js"></script>
 
     <script type="text/javascript" src="../lib/bootstrap/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="../lib/d3.v2.js"></script>
-    <script type="text/javascript" src="../lib/chosen/chosen.jquery.js"></script>
+    <script type="text/javascript" src="../lib/d3.v2.min.js"></script>
+    <script type="text/javascript" src="../lib/chosen/chosen.jquery.min.js"></script>
     <script type="text/javascript" src="../lib/jquery-ui/js/jquery-ui.js"></script>
 
 

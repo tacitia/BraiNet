@@ -49,8 +49,6 @@ function manageDatasetButtonClick() {
 function cloneDatasetButtonClick() {
 	var datasetName = $('#dataSelect :selected').text().replace('(public)', '(personal copy)');
 	var datasetID = $('#dataSelect').val();
-	console.log(datasetName);
-	console.log(datasetID);
 	cloneDataset(datasetName, uid, datasetID);	
 }
 
@@ -199,9 +197,11 @@ function datasetSelect() {
 	var datasetName = $('#dataSelect :selected').text();
 	if (endsWith(datasetName, '(public)')) {
 		$('#bt-cloneDatasets').css('display', 'block');
+		$('#bt-applyDataset').css('display', 'none');
 	}
 	else {
 		$('#bt-cloneDatasets').css('display', 'none');
+		$('#bt-applyDataset').css('display', 'block');
 	}
 }
 
