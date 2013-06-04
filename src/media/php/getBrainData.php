@@ -97,6 +97,7 @@
 		/* Get the difference data*/
 		$query = "SELECT `diff` FROM `diff_nodes` WHERE `userID` = " . $userID . " AND `origin` = " . $origin;
 		echo $query;
+		echo "???";
 		echo $origin;
 		$results = mysql_query($query, $con) or die("SELECT diff node failed: ".mysql_error());
 		$diff_nodes = array();
