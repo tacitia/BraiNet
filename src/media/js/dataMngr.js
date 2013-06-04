@@ -6,7 +6,7 @@ var key_node_map = {};
 var name_node_map = {};
 var key_link_map = {};
 var brodmann_map = {};
-var userId = 3;
+var userId = 0;
 var nodesTable = $('#nodesDisplay').dataTable();
 var linksTable = $('#linksDisplay').dataTable();
 var selectMutex = 3;
@@ -41,7 +41,7 @@ $('table').on("mouseleave", "tr", function() {
     $(deleteIcon).find('span').remove();
 });
 getBrodmannAreas();
-getBrainData(datasetKey);
+getBrainData(datasetKey, userId);
 getLinkAttrs();
 d3.select("#bt-addNode").on("click", displayAddBrainNodeField);
 d3.select("#bt-addLink").on("click", displayAddBrainLinkField);
@@ -402,11 +402,11 @@ function getUserId() {
     return uid;
 }
 
-function getBrainData(datasetKey) {
+function getBrainData(datasetKey, userID) {
     $.ajax({
         type: "POST",
         url: "../php/getBrainData.php",
-        data: {datasetKey: datasetKey},
+        data: {datasetKey: datasetKey, userID: userID},
         error: function(data) {
         console.log("Failed");
             console.log(data);

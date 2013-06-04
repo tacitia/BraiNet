@@ -19,6 +19,7 @@ function updateOptions() {
 
 function populateDatasetUI() {
 	$('#dataSelect').append(new Option('BAMS (public)', 2130));
+	$('#dataSelect').append(new Option('Pubmed (public)', 1000002));
     var num_datasets = dataset_list.length;
     for (var i = 0; i < num_datasets; ++i) {
         var curr_dataset = dataset_list[i];
@@ -64,7 +65,7 @@ function applyDatasetButtonClick() {
         return;
     }
     if (user_datasets[datasetID] === undefined) {
-	    getBrainData(datasetID);
+	    getBrainData(datasetID, uid);
     }
     else {
     }
@@ -197,11 +198,11 @@ function datasetSelect() {
 	var datasetName = $('#dataSelect :selected').text();
 	if (endsWith(datasetName, '(public)')) {
 		$('#bt-cloneDatasets').css('display', 'block');
-		$('#bt-applyDataset').css('display', 'none');
+		$('#bt-manageDatasets').css('display', 'none');
 	}
 	else {
 		$('#bt-cloneDatasets').css('display', 'none');
-		$('#bt-applyDataset').css('display', 'block');
+		$('#bt-manageDatasets').css('display', 'block');
 	}
 }
 

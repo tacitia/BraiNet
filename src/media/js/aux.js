@@ -657,11 +657,11 @@ function cloneDataset(datasetName, userID, origDatasetID) {
     });	
 }
 
-function getBrainData(datasetKey) {
+function getBrainData(datasetKey, userID) {
     $.ajax({
         type: "POST",
         url: "media/php/getBrainData.php",
-        data: {datasetKey: datasetKey},
+        data: {datasetKey: datasetKey, userID: userID},
         error: function(data) {
         console.log("Warning: call to getBrainData.php Failed");
             console.log(data);
