@@ -1,5 +1,7 @@
 <? 
     $nodeKey = $_POST['nodeKey'];			/*int*/
+    $isClone = $_POST['isClone'];
+    $origin = $_POST['origin'];
     
     $con = mysql_connect("localhost", "tacitia_brainIDC", "Ophelia621");
     if (!$con) {
@@ -22,11 +24,14 @@
     //but right now, we just update all immediate child parent and set it to -1
     //also need to delete all links associated with the node
 
-	echo "DELETE FROM user_nodes WHERE user_nodes.key = ".$nodeKey;
-	
-    mysql_query("UPDATE node_parents SET parent = -1 WHERE parent = ".$nodeKey) or die("an error occured when updating parent");;
-    mysql_query("DELETE FROM user_nodes WHERE user_nodes.key = ".$nodeKey) or die("an error occured when deleting node");;
-    mysql_query("DELETE FROM user_links WHERE sourceKey = ".$nodeKey." OR targetKey = ".$nodeKey) or die("an error occured when deleting node's links");
+	if ($isClone) {
+		mysql_query("INSERT INTO diff_nodes (nodeKey, diff) VALUES ('$nodeKey', 'Delete')") or die("an error occurred when deleting cloned node");
+	}
+	else {
+    	mysql_query("UPDATE node_parents SET parent = -1 WHERE parent = ".$nodeKey) or die("an error occured when updating parent");
+    	mysql_query("DELETE FROM user_nodes WHERE user_nodes.key = ".$nodeKey) or die("an error occured when deleting node");
+    	mysql_query("DELETE FROM user_links WHERE sourceKey = ".$nodeKey." OR targetKey = ".$nodeKey) or die("an error occured when deleting node's links");
+    }
 
 	mysql_close($con);
 ?>

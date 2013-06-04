@@ -476,7 +476,7 @@ function deleteNode(nodeKey) {
             console.log(data);
         },
         success: function(result) {
-            console.log("Successfully passed data to php.");
+            console.log("Successfully deleted brain node.");
             console.log(result);
         },
         async: false
@@ -494,7 +494,7 @@ function deleteLink(linkKey) {
             console.log(data);
         },
         success: function(result) {
-            console.log("Successfully passed data to php.");
+            console.log("Successfully deleted brain link.");
             console.log(result);
 
         },
