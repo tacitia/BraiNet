@@ -37,7 +37,7 @@
     // TODO: populate public_links table and change it here
     if ($datasetKey == 2130 || ($isClone && $origin == 2130)) {
     	$nodeTableName = 'public_nodes';
-    	$linkTableName = 'pubmed_links';
+    	$linkTableName = 'public_links';
     	$parentTableName = 'public_node_parents';
     }
     else if ($datasetKey == 1000002 || ($isClone && $origin == 1000002)) {
