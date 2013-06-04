@@ -34,15 +34,21 @@
     $parentTableName = 'node_parents';
     
     // Use pubmed tables if the dataset is a system table
+    // TODO: populate public_links table and change it here
     if ($datasetKey == 2130 || ($isClone && $origin == 2130)) {
     	$nodeTableName = 'public_nodes';
-    	$linkTableName = 'public_links';
+    	$linkTableName = 'pubmed_links';
     	$parentTableName = 'public_node_parents';
     }
     else if ($datasetKey == 1000002 || ($isClone && $origin == 1000002)) {
     	$nodeTableName = 'public_nodes';
     	$linkTableName = 'pubmed_links';
     	$parentTableName = 'public_node_parents';
+    }
+    
+    $queryDatasetKey = $datasetKey;
+    if ($isClone) {
+    	$queryDatasetKey = $origin;
     }
     
     $nodes_query = "
@@ -54,12 +60,10 @@
 		FROM " . $parentTableName . " np 
 		LEFT JOIN " . $nodeTableName . " un 
 		ON un.key = np.parent) as parents
-	ON nodes.key = parents.node WHERE nodes.datasetKey = ".$datasetKey;
+	ON nodes.key = parents.node WHERE nodes.datasetKey = ".$queryDatasetKey;
     
-    $links_query = "SELECT * FROM " .$linkTableName." WHERE datasetKey = ".$datasetKey;
-    
-    //echo $links_query;
-    
+    $links_query = "SELECT * FROM " .$linkTableName." WHERE datasetKey = ".$queryDatasetKey;
+        
     $nodes_result = mysql_query($nodes_query, $con) or die("SELECT nodes failed: ".mysql_error());
 
 
@@ -91,31 +95,32 @@
 			$link['targetKey'] = $row['targetKey'];
 			$link['datasetKey'] = $row['datasetKey'];
 			$link['notes'] = $row['notes'];
+			$link['numPub'] = $row['numPub'];
 			$links[] = $link;
 		}
 
-		/* Get the difference data*/
-		$query = "SELECT `diff` FROM `diff_nodes` WHERE `userID` = " . $userID . " AND `origin` = " . $origin;
-		echo $query;
-		echo "???";
-		echo $origin;
-		$results = mysql_query($query, $con) or die("SELECT diff node failed: ".mysql_error());
-		$diff_nodes = array();
-		while ($row = mysql_fetch_array($results)) {
-			$diff_node = array();
-			$diff_node['nodeKey'] = $row['nodeKey'];
-			$diff_node['diff'] = $row['diff'];
-			$diff_nodes[] = $diff_node;
-		}
 
-		$query = "SELECT `diff` FROM `diff_links` WHERE `userID`  = " . $userID . " AND `origin` = " . $origin;
-		$results = mysql_query($query, $con) or die("SELECT diff link failed: ".mysql_error());
+		$diff_nodes = array();
 		$diff_links = array();
-		while ($row = mysql_fetch_array($results)) {
-			$diff_link = array();
-			$diff_link['linkKey'] = $row['linkKey'];
-			$diff_link['diff'] = $row['diff'];
-			$diff_links[] = $diff_link;
+		if ($isClone) {
+			/* Get the difference data*/
+			$query = "SELECT `diff` FROM `diff_nodes` WHERE `userID` = " . $userID . " AND `origin` = " . $origin;
+			$results = mysql_query($query, $con) or die("SELECT diff node failed: ".mysql_error());
+			while ($row = mysql_fetch_array($results)) {
+				$diff_node = array();
+				$diff_node['nodeKey'] = $row['nodeKey'];
+				$diff_node['diff'] = $row['diff'];
+				$diff_nodes[] = $diff_node;
+			}
+
+			$query = "SELECT `diff` FROM `diff_links` WHERE `userID`  = " . $userID . " AND `origin` = " . $origin;
+			$results = mysql_query($query, $con) or die("SELECT diff link failed: ".mysql_error());
+			while ($row = mysql_fetch_array($results)) {
+				$diff_link = array();
+				$diff_link['linkKey'] = $row['linkKey'];
+				$diff_link['diff'] = $row['diff'];
+				$diff_links[] = $diff_link;
+			}
 		}
 		
 		$result = array();
