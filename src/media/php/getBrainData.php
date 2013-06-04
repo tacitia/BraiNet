@@ -62,6 +62,8 @@
 		ON un.key = np.parent) as parents
 	ON nodes.key = parents.node WHERE nodes.datasetKey = ".$queryDatasetKey;
     
+    echo $nodes_query;
+    
     $links_query = "SELECT * FROM " .$linkTableName." WHERE datasetKey = ".$queryDatasetKey;
         
     $nodes_result = mysql_query($nodes_query, $con) or die("SELECT nodes failed: ".mysql_error());
