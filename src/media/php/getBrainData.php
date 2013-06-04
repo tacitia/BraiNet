@@ -96,7 +96,8 @@
 
 		/* Get the difference data*/
 		$query = "SELECT `diff` FROM `diff_nodes` WHERE `userID`  = " . $userID . " AND `origin` = " . $origin;
-		$results = mysql_query($query, $con) or die("SELECT isClone failed: ".mysql_error());
+		echo $query;
+		$results = mysql_query($query, $con) or die("SELECT diff node failed: ".mysql_error());
 		$diff_nodes = array();
 		while ($row = mysql_fetch_array($results)) {
 			$diff_node = array();
@@ -106,7 +107,7 @@
 		}
 
 		$query = "SELECT `diff` FROM `diff_links` WHERE `userID`  = " . $userID . " AND `origin` = " . $origin;
-		$results = mysql_query($query, $con) or die("SELECT isClone failed: ".mysql_error());
+		$results = mysql_query($query, $con) or die("SELECT diff link failed: ".mysql_error());
 		$diff_links = array();
 		while ($row = mysql_fetch_array($results)) {
 			$diff_link = array();
