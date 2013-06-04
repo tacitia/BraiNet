@@ -16,7 +16,7 @@
     mysql_select_db("brainconnect_brainData", $con);
 
 	/* Determine if the dataset is cloned or not */
-	$query = "SELECT `isClone` FROM `user_datasets` WHERE `key` = " . $datasetKey;
+	$query = "SELECT `isClone`, `origin` FROM `user_datasets` WHERE `key` = " . $datasetKey;
 	$result = mysql_query($query, $con) or die("SELECT isClone failed: ".mysql_error());
 	$isClone = 0;
 	$origin = 0;
