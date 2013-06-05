@@ -402,6 +402,6 @@
 }(window.database = window.database || {}, jQuery));
 
 $(document).ready(function() {
-	getBrainData(datasetProperties.key, datasetProperties.userID);
-	getLinkAttrs();
+	database.getBrainData(datasetProperties.key, datasetProperties.userID);
+	database.getLinkAttrs();
 });
