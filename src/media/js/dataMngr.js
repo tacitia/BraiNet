@@ -175,7 +175,7 @@
 (function() {
 	d3.select("#bt-addNodeSubmit").on("click", addBrainNode);
 	d3.select("#bt-addLinkSubmit").on("click", addBrainLink);
-	d3.select('#bt-addLinkAttrSubmit').on('click', addBrainLinkAttr);
+	d3.select('#bt-addLinkAttrSubmit').on('click', addLinkAttr);
 
 	/*
 	 * 1. Retrieve node information from the UI
