@@ -24,7 +24,7 @@
     	}
     	var num_links = data.links.length;
     	for (var i = 0; i < num_links; ++i) {
-    		var curr_link = links[i];
+    		var curr_link = data.links[i];
     		var key_pair = curr_link.sourceKey + "-" + curr_link.targetKey;
     		data.key_link_map[key_pair] = curr_link;
     	};
