@@ -100,11 +100,11 @@
 		console.log("editNodeRow");
     	var nodeData = nodesTable.fnGetData(row);
    	 	var jqTds = $('>td', row);
-    	jqTds[0].innerHTML = '<input type="text" value="'+aData[0]+'">';
-    	jqTds[1].innerHTML = '<input type="text" value="'+aData[1]+'">';
-    	jqTds[2].innerHTML = '<input type="text" value="'+aData[2]+'">';
-    	jqTds[3].innerHTML = '<input type="text" value="'+aData[3]+'">';
-    	jqTds[4].innerHTML = '<input type="text" value="'+aData[4]+'">';
+    	jqTds[0].innerHTML = '<input type="text" value="'+nodeData[0]+'">';
+    	jqTds[1].innerHTML = '<input type="text" value="'+nodeData[1]+'">';
+    	jqTds[2].innerHTML = '<input type="text" value="'+nodeData[2]+'">';
+    	jqTds[3].innerHTML = '<input type="text" value="'+nodeData[3]+'">';
+    	jqTds[4].innerHTML = '<input type="text" value="'+nodeData[4]+'">';
 	};
 	
 	dt.addNodeRow = function(node) {
