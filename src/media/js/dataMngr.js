@@ -211,6 +211,12 @@
 		var linkData = {user: userId, dataset: datasetKey, source: sourceKey, target: targetKey, notes: notes, attrKey: attrKey, attrValue: attrValue};
 		database.addBrainLink(linkData);
 	}
+	
+	function addLinkAttr() {
+		var attrName = $('[name="newAttrName"]').val();
+		var attrType = $('#attrType').val();
+		database.addLinkAttr(attrName, attrType);		
+	}
 
 
 }());
@@ -372,9 +378,7 @@ getLinkAttrs();
 				true);
 	};	
 
-	db.addLinkAttr = function() {
-		var attrName = $('[name="newAttrName"]').val();
-		var attrType = $('#attrType').val();
+	db.addLinkAttr = function(attrName, attrType) {
 		var successFun = function(result) {
 			uiControl.updateLinkAttrOptions($.parseJSON(result));
 		};
