@@ -98,8 +98,9 @@
 	
 	dt.editNodeRow = function(row, nodeKey) {
 		console.log("editNodeRow");
-    	var nodeData = nodesTable.fnGetData(row);
-   	 	var jqTds = $('>td', row);
+    	var nodeData = nodesTable.fnGetData($(row));
+    	console.log(nodeData);
+   	 	var jqTds = $('>td', $(row));
     	jqTds[0].innerHTML = '<input type="text" value="'+nodeData[0]+'">';
     	jqTds[1].innerHTML = '<input type="text" value="'+nodeData[1]+'">';
     	jqTds[2].innerHTML = '<input type="text" value="'+nodeData[2]+'">';
