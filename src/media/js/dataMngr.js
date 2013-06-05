@@ -290,10 +290,6 @@
 	
 }(window.uiControl = window.uiControls || {}, jQuery));
 
-
-getBrainData(datasetKey, userId);
-getLinkAttrs();
-
 (function(db, $, undefined) {
 	var postToPhp = function(file, data, successFun, async) {
 		$.ajax({
@@ -404,3 +400,8 @@ getLinkAttrs();
 	};
 
 }(window.database = window.database || {}, jQuery));
+
+$(document).ready(function() {
+	getBrainData(datasetProperties.key, datasetProperties.userID);
+	getLinkAttrs();
+});
