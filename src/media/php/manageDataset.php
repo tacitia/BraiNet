@@ -40,7 +40,7 @@
             <th>Depth</th>
             <th>Location</th>
             <th>Notes</th>
-            <th>Brodmann Area</th>
+            <th></th>
           </tr>
         </thead>
 
