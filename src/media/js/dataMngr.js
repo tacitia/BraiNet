@@ -96,11 +96,12 @@
 	}
 
 	
-	dt.editNodeRow = function(row, nodeKey) {
+	dt.editNodeRow = function(icon, nodeKey) {
 		console.log("editNodeRow");
-    	var nodeData = nodesTable.fnGetData($(row));
+		row = $(icon).parents('tr')[0];
+    	var nodeData = nodesTable.fnGetData(row);
     	console.log(nodeData);
-   	 	var jqTds = $('>td', $(row));
+   	 	var jqTds = $('>td', row);
     	jqTds[0].innerHTML = '<input type="text" value="'+nodeData[0]+'">';
     	jqTds[1].innerHTML = '<input type="text" value="'+nodeData[1]+'">';
     	jqTds[2].innerHTML = '<input type="text" value="'+nodeData[2]+'">';
