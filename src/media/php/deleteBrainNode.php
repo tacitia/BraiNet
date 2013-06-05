@@ -2,6 +2,7 @@
     $nodeKey = $_POST['nodeKey'];			/*int*/
     $isClone = $_POST['isClone'];
     $origin = $_POST['origin'];
+    $userID = $_POST['userID'];
     
     $con = mysql_connect("localhost", "tacitia_brainIDC", "Ophelia621");
     if (!$con) {
@@ -25,7 +26,7 @@
     //also need to delete all links associated with the node
 
 	if ($isClone) {
-		mysql_query("INSERT INTO diff_nodes (nodeKey, diff) VALUES ('$nodeKey', 'Delete')") or die("an error occurred when deleting cloned node");
+		mysql_query("INSERT INTO diff_nodes (nodeKey, diff, userID, origin) VALUES ('$nodeKey', 'Delete', '$userID', '$origin')") or die("an error occurred when deleting cloned node");
 	}
 	else {
     	mysql_query("UPDATE node_parents SET parent = -1 WHERE parent = ".$nodeKey) or die("an error occured when updating parent");
