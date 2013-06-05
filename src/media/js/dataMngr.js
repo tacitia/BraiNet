@@ -38,6 +38,8 @@
 	var nodesTable = $('#nodesDisplay').dataTable();
 	var linksTable = $('#linksDisplay').dataTable();
 	var deleteIcon = null;
+	var editIcon = null;
+	var cellEditing = null;
 
 	//on tr hover append delete button on last th
 	$('table').on("mouseenter", "tr", function() {
@@ -47,7 +49,8 @@
 			var nodeName = $(this).context.children[0].innerText;
 			if (data.name_node_map[nodeName] === undefined) { return; }
 			var nodeID = data.name_node_map[nodeName].key;
-			content = '<span onclick="dataTable.deleteNodeRow(this,' + nodeID + ')"><i class="icon-trash"></i> Delete</span>';
+			contentD = '<span onclick="dataTable.deleteNodeRow(this,' + nodeID + ')"><i class="icon-trash"></i> Delete</span>';
+			contentE = '<span onclick="dataTable.editNodeRow(this,' + nodeID + ')"><i class="icon-pencil"></i> Edit</span>';
 		}
 		else if (tableID === "linksDisplay") {
 			var startName = $(this).context.children[0].innerText;
@@ -57,13 +60,16 @@
 			var startID = data.name_node_map[startName].key;
 			var endID = data.name_node_map[endName].key;
 			var linkID = data.key_link_map[startID + "-" + endID].key;
-			content = '<span onclick="dataTable.deleteLinkRow(this,' + linkID + ')"><i class="icon-trash"></i> Delete</span>'; 
+			contentD = '<span onclick="dataTable.deleteLinkRow(this,' + linkID + ')"><i class="icon-trash"></i> Delete</span>'; 
+			contentE = '<span onclick="dataTable.editLinkRow(this,' + linkID + ')"><i class="icon-pencil"></i> Edit</span>';
 		}
-		deleteIcon = $(this).find('td:last').append(content);
+		deleteIcon = $(this).find('td:last').append(contentD);
+		editIcon = $(this).find('td:last').append(contentE);
 	});
 
 	$('table').on("mouseleave", "tr", function() {
     	$(deleteIcon).find('span').remove();
+    	$(editIcon).find('span').remove();
 	});
 
 
@@ -88,6 +94,18 @@
 			database.deleteLink(linkKey);
 		}
 	}
+
+	
+	dt.editNodeRow = function(row, nodeKey) {
+		console.log("editNodeRow);
+    	var nodeData = nodesTable.fnGetData(row);
+   	 	var jqTds = $('>td', row);
+    	jqTds[0].innerHTML = '<input type="text" value="'+aData[0]+'">';
+    	jqTds[1].innerHTML = '<input type="text" value="'+aData[1]+'">';
+    	jqTds[2].innerHTML = '<input type="text" value="'+aData[2]+'">';
+    	jqTds[3].innerHTML = '<input type="text" value="'+aData[3]+'">';
+    	jqTds[4].innerHTML = '<input type="text" value="'+aData[4]+'">';
+	};
 	
 	dt.addNodeRow = function(node) {
 		nodesTable.fnAddData([String(node.name), 
@@ -134,6 +152,7 @@
 								  String(link.notes)]);
 		}
 	}
+
 
 }(window.dataTable = window.dataTable || {}, jQuery));
 
