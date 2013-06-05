@@ -387,7 +387,7 @@ getLinkAttrs();
 
 	db.deleteNode = function(nodeKey) {
 		postToPhp("deleteBrainNode.php",
-				{nodeKey: nodeKey, isClone: isClone, datasetProperties.origin: datasetProperties.origin, userID: datasetProperties.userID},
+				{nodeKey: nodeKey, isClone: datasetProperties.isClone, origin: datasetProperties.origin, userID: datasetProperties.userID},
 				null,
 				false);
 	};
