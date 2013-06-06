@@ -116,8 +116,7 @@
 		nodesTable.fnUpdate( jqInputs[1].value, row, 1, false );
 		nodesTable.fnUpdate( jqInputs[2].value, row, 2, false );
 		nodesTable.fnUpdate( jqInputs[3].value, row, 3, false );
-		nodesTable.fnUpdate( jqInputs[4].value, row, 4, false );
-		nodesTable.fnUpdate( '', row, 5, false );
+		nodesTable.fnUpdate( '', row, 4, false );
 	};
 	
 	dt.addNodeRow = function(node) {
