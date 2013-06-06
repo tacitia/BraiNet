@@ -44,6 +44,7 @@
 	//on tr hover append delete button on last th
 	$('table').on("mouseenter", "tr", function() {
 		console.log("???");
+		console.log(tableID);
 		var tableID = $(this).context.parentNode.parentNode.id;
 		var content = null;
 		if (tableID === "nodesDisplay") {
