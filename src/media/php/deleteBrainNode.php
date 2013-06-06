@@ -25,6 +25,9 @@
     //but right now, we just update all immediate child parent and set it to -1
     //also need to delete all links associated with the node
 
+	echo $nodeKey;
+	echo $userID;
+	
 	if ($isClone) {
 		mysql_query("INSERT INTO diff_nodes (nodeKey, diff, userID, origin) VALUES ('$nodeKey', 'Delete', '$userID', '$origin')") or die("an error occurred when deleting cloned node");
 	}
