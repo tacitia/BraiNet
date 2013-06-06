@@ -43,6 +43,7 @@
 
 	//on tr hover append delete button on last th
 	$('table').on("mouseenter", "tr", function() {
+		console.log("???");
 		var tableID = $(this).context.parentNode.parentNode.id;
 		var content = null;
 		if (tableID === "nodesDisplay") {
@@ -63,6 +64,7 @@
 			contentD = '<span onclick="dataTable.deleteLinkRow(this,' + linkID + ')"><i class="icon-trash"></i> Delete</span>'; 
 			contentE = '<span onclick="dataTable.editLinkRow(this,' + linkID + ')"><i class="icon-pencil"></i> Edit</span>';
 		}
+		console.log($(this).find('td:last'));
 		deleteIcon = $(this).find('td:last').append(contentD);
 		editIcon = $(this).find('td:last').append(contentE);
 	});
@@ -110,8 +112,6 @@
 	dt.saveNodeRow = function(icon, nodeKey) {
 		var row = $(icon).parents('tr')[0];
 		var jqInputs = $('input', row);
-		console.log(row);
-		console.log(nodesTable.fnGetData(row));
 		nodesTable.fnUpdate( jqInputs[0].value, row, 0, false );
 		nodesTable.fnUpdate( jqInputs[1].value, row, 1, false );
 		nodesTable.fnUpdate( jqInputs[2].value, row, 2, false );
