@@ -108,10 +108,10 @@
 	};
 	
 	dt.saveNodeRow = function(icon, nodeKey) {
-		var row = $(icon).parents('tr')[0];
-		var jqInputs = $('input', row);
-		console.log(row);
-		console.log(nodesTable.fnGetData(row));
+//		var row = $(icon).parents('tr')[0];
+//		var jqInputs = $('input', row);
+//		console.log(row);
+//		console.log(nodesTable.fnGetData(row));
 /*		nodesTable.fnUpdate( jqInputs[0].value, row, 0, false );
 		nodesTable.fnUpdate( jqInputs[1].value, row, 1, false );
 		nodesTable.fnUpdate( jqInputs[2].value, row, 2, false );
