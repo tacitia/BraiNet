@@ -109,13 +109,22 @@
 	
 	dt.saveNodeRow = function(icon, nodeKey) {
 		var row = $(icon).parents('tr')[0];
+    	var nodeData = nodesTable.fnGetData(row);
+   	 	var jqTds = $('>td', row);
+    	jqTds[0].innerHTML = nodeData[0];
+    	jqTds[1].innerHTML = nodeData[1];
+    	jqTds[2].innerHTML = nodeData[2];
+    	jqTds[3].innerHTML = nodeData[3];
+		jqTds[4].innerHTML = '';
+
+/*		var row = $(icon).parents('tr')[0];
 		var jqInputs = $('input', row);
 		nodesTable.fnUpdate( jqInputs[0].value, row, 0, false );
 		nodesTable.fnUpdate( jqInputs[1].value, row, 1, false );
 		nodesTable.fnUpdate( jqInputs[2].value, row, 2, false );
 		nodesTable.fnUpdate( jqInputs[3].value, row, 3, false );
 		nodesTable.fnUpdate( jqInputs[4].value, row, 4, false );
-		nodesTable.fnUpdate( '', row, 5, false );
+		nodesTable.fnUpdate( '', row, 5, false ); */
 	};
 	
 	dt.addNodeRow = function(node) {
@@ -402,7 +411,7 @@
 				{datasetKey: datasetProperties.key},
 				successFun,
 				true);
-	};	
+	};
 
 	db.addLinkAttr = function(attrName, attrType) {
 		var successFun = function(result) {
@@ -428,6 +437,13 @@
 				null, 
 				false);
 	};
+	
+	db.updateNode = function(nodeKey) {
+		postToPhp("updateBrainNode.php",
+	}
+	
+	db.updateLink = function(linkKey) {
+	}
 
 }(window.database = window.database || {}, jQuery));
 
