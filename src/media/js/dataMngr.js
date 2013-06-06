@@ -97,10 +97,8 @@
 
 	
 	dt.editNodeRow = function(icon, nodeKey) {
-		console.log("editNodeRow");
 		var row = $(icon).parents('tr')[0];
     	var nodeData = nodesTable.fnGetData(row);
-    	console.log(nodeData);
    	 	var jqTds = $('>td', row);
     	jqTds[0].innerHTML = '<input type="text" value="'+nodeData[0]+'">';
     	jqTds[1].innerHTML = '<input type="text" value="'+nodeData[1]+'">';
@@ -118,7 +116,6 @@
 		nodesTable.fnUpdate( jqInputs[3].value, row, 3, false );
 		nodesTable.fnUpdate( jqInputs[4].value, row, 4, false );
 		nodesTable.fnUpdate( '', row, 5, false );
-		nodesTable.fnDraw();
 	};
 	
 	dt.addNodeRow = function(node) {
