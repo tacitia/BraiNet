@@ -439,11 +439,11 @@
 	};
 	
 	db.updateNode = function(nodeKey) {
-		postToPhp("updateBrainNode.php",
-	}
+//		postToPhp("updateBrainNode.php",
+	};
 	
 	db.updateLink = function(linkKey) {
-	}
+	};
 
 }(window.database = window.database || {}, jQuery));
 
