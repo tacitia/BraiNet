@@ -231,7 +231,7 @@
 		var parentKey = $('#nodeParent').val();
 		if (parentKey === "") parentKey = -1;
 		var notes = $('[name="nodeNotes"]').val();
-		var nodeData = {userID: userId, datasetKey: datasetKey, nodeName: nodeName, parentKey: parentKey, depth: nodeDepth, notes: notes, brodmannKey: -1};
+		var nodeData = {userID: datasetProperties.userID, datasetKey: datasetProperties.key, nodeName: nodeName, parentKey: parentKey, depth: nodeDepth, notes: notes, brodmannKey: -1};
 		database.addBrainNode(nodeData);
 	}
 
@@ -247,7 +247,7 @@
 		var notes = $('[name="linkNotes"]').val();
 		var attrKey = $('#attrName').val();
 		var attrValue = $('#attrValue').val();
-		var linkData = {user: userId, dataset: datasetKey, source: sourceKey, target: targetKey, notes: notes, attrKey: attrKey, attrValue: attrValue};
+		var linkData = {userID: datasetProperties.userID, datasetKey: datasetProperties.key, source: sourceKey, target: targetKey, notes: notes, attrKey: attrKey, attrValue: attrValue};
 		database.addBrainLink(linkData);
 	}
 	

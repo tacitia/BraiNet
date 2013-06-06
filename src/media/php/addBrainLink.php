@@ -1,7 +1,7 @@
 <? 
     /* all int*/
-    $datasetKey = $_POST['dataset']; 
-	$userId = $_POST['user'];
+    $datasetKey = $_POST['datasetKey']; 
+	$userId = $_POST['userID'];
 	$sourceKey = $_POST['source'];
 	$targetKey = $_POST['target'];
 	$notes = $_POST['notes'];
