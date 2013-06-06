@@ -98,7 +98,7 @@
 	
 	dt.editNodeRow = function(icon, nodeKey) {
 		console.log("editNodeRow");
-		row = $(icon).parents('tr')[0];
+		var row = $(icon).parents('tr')[0];
     	var nodeData = nodesTable.fnGetData(row);
     	console.log(nodeData);
    	 	var jqTds = $('>td', row);
@@ -106,7 +106,19 @@
     	jqTds[1].innerHTML = '<input type="text" value="'+nodeData[1]+'">';
     	jqTds[2].innerHTML = '<input type="text" value="'+nodeData[2]+'">';
     	jqTds[3].innerHTML = '<input type="text" value="'+nodeData[3]+'">';
-    	jqTds[4].innerHTML = '<input type="text" value="'+nodeData[4]+'">';
+		jqTds[4].innerHTML = '<a href="" onclick="dataTable.saveNodeRow(this,' + nodeID + ')">Save</a>';
+	};
+	
+	dt.saveNodeRow = function(icon, nodeKey) {
+		var row = $(icon).parents('tr')[0];
+		var jqInputs = $('input', row);
+		nodesTable.fnUpdate( jqInputs[0].value, row, 0, false );
+		nodesTable.fnUpdate( jqInputs[1].value, row, 1, false );
+		nodesTable.fnUpdate( jqInputs[2].value, row, 2, false );
+		nodesTable.fnUpdate( jqInputs[3].value, row, 3, false );
+		nodesTable.fnUpdate( jqInputs[4].value, row, 4, false );
+		nodesTable.fnUpdate( '', row, 5, false );
+		nodesTable.fnDraw();
 	};
 	
 	dt.addNodeRow = function(node) {
@@ -139,7 +151,8 @@
 							 String(node.depth),
 							 String(node.parentName),
 							 String(node.notes),
-							 String(node.brodmannKey)]);
+							 String(node.brodmannKey)],
+							 "");
 		}
 	}
 
@@ -424,5 +437,5 @@
 
 $(document).ready(function() {
 	database.getBrainData(datasetProperties.key, datasetProperties.userID);
-	database.getLinkAttrs();
+//	database.getLinkAttrs();
 });
