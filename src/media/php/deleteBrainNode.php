@@ -33,7 +33,7 @@
 	}
 	else {
     	mysql_query("UPDATE node_parents SET parent = -1 WHERE parent = ".$nodeKey) or die("an error occured when updating parent");
-    	mysql_query("DELETE FROM user_nodes WHERE user_nodes.key = ".$nodeKey) or die("an error occured when deleting node");
+    	mysql_query("DELETE FROM user_nodes WHERE key = " . $nodeKey) or die("an error occured when deleting node");
     	mysql_query("DELETE FROM user_links WHERE sourceKey = ".$nodeKey." OR targetKey = ".$nodeKey) or die("an error occured when deleting node's links");
     }
     
