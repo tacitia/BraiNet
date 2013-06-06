@@ -25,6 +25,9 @@
         select {
             width:75px;
         }
+        body {
+        	margin:20px;
+        }
     </style>
   </head>
   <body>
@@ -40,7 +43,7 @@
             <th>Depth</th>
             <th>Location</th>
             <th>Notes</th>
-            <th></th>
+            <th style="width:100px"></th>
           </tr>
         </thead>
 

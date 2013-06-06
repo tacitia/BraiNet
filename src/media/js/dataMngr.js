@@ -106,7 +106,7 @@
     	jqTds[1].innerHTML = '<input type="text" value="'+nodeData[1]+'">';
     	jqTds[2].innerHTML = '<input type="text" value="'+nodeData[2]+'">';
     	jqTds[3].innerHTML = '<input type="text" value="'+nodeData[3]+'">';
-		jqTds[4].innerHTML = '<a href="" onclick="dataTable.saveNodeRow(this,' + nodeID + ')">Save</a>';
+		jqTds[4].innerHTML = '<a href="" onclick="dataTable.saveNodeRow(this,' + nodeKey + ')">Save</a>';
 	};
 	
 	dt.saveNodeRow = function(icon, nodeKey) {
