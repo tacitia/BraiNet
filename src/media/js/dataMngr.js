@@ -104,20 +104,20 @@
     	jqTds[1].innerHTML = '<input type="text" value="'+nodeData[1]+'">';
     	jqTds[2].innerHTML = '<input type="text" value="'+nodeData[2]+'">';
     	jqTds[3].innerHTML = '<input type="text" value="'+nodeData[3]+'">';
-		jqTds[4].innerHTML = '<a href="" onclick="dataTable.saveNodeRow(this,' + nodeKey + ')">Save</a>';
+		jqTds[4].innerHTML = '<button class="btn btn-link" onclick="dataTable.saveNodeRow(this,' + nodeKey + ')">Save</button>';
 	};
 	
 	dt.saveNodeRow = function(icon, nodeKey) {
-//		var row = $(icon).parents('tr')[0];
-//		var jqInputs = $('input', row);
-//		console.log(row);
-//		console.log(nodesTable.fnGetData(row));
-/*		nodesTable.fnUpdate( jqInputs[0].value, row, 0, false );
+		var row = $(icon).parents('tr')[0];
+		var jqInputs = $('input', row);
+		console.log(row);
+		console.log(nodesTable.fnGetData(row));
+		nodesTable.fnUpdate( jqInputs[0].value, row, 0, false );
 		nodesTable.fnUpdate( jqInputs[1].value, row, 1, false );
 		nodesTable.fnUpdate( jqInputs[2].value, row, 2, false );
 		nodesTable.fnUpdate( jqInputs[3].value, row, 3, false );
 		nodesTable.fnUpdate( jqInputs[4].value, row, 4, false );
-		nodesTable.fnUpdate( '', row, 5, false ); */
+		nodesTable.fnUpdate( '', row, 5, false );
 	};
 	
 	dt.addNodeRow = function(node) {
