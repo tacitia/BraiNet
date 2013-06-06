@@ -125,8 +125,8 @@
 		nodesTable.fnAddData([String(node.name), 
 							  String(node.depth), 
 							  String(node.parentName), 
-							  String(node.notes), 
-							  String(node.brodmannKey)]);	
+							  String(node.notes),
+							  ""]);	
 	};
 	
 	dt.addLinkRow = function(link) {
@@ -151,8 +151,7 @@
 							 String(node.depth),
 							 String(node.parentName),
 							 String(node.notes),
-							 String(node.brodmannKey)],
-							 "");
+							 ""]);
 		}
 	}
 
