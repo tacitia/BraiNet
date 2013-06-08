@@ -121,15 +121,15 @@
 	function saveNodeUpdates(nodeKey, jqInputs, nodeData) {
 		var nodeName = null;
 		var notes = null;
-		console.log(jqInputs);
+		var nodeData = state.currEditRow;
 		console.log(nodeData);
-		if (jqInputs[0] !== nodeData[0]) {
+		if (jqInputs[0].value !== nodeData[0]) {
 			var origNode = data.name_node_map[nodeData[0]];
-			nodeName = jqInputs[0];
+			nodeName = jqInputs[0].value;
 			origNode.name = nodeName;
 			data.name_node_map[nodeName] = origNode;
 		}
-		if (jqInputs[3] !== nodeData[3]) {
+		if (jqInputs[3].value !== nodeData[3]) {
 			notes = jqInputs[3];
 		}
 		
@@ -166,6 +166,9 @@
 		nodesTable.fnUpdate( jqInputs[3].value, row, 3, false );
 		nodesTable.fnUpdate( '', row, 4, false );
 		saveNodeUpdates(nodeKey, jqInputs, nodeData);
+		state.currEditNode = null;
+		state.currEditRow = null;
+		state.currEditTable = null;
 	};
 	
 	dt.addNodeRow = function(node) {
