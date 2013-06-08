@@ -123,7 +123,6 @@
 		var nodeName = null;
 		var notes = null;
 		var node = state.currEditNode;
-		console.log(node);
 		if (jqInputs[0].value !== node.name) {
 			nodeName = jqInputs[0].value;
 			node.name = nodeName;
@@ -136,7 +135,6 @@
 		}
 		
 		database.updateNode(nodeKey, nodeName, notes);	
-		console.log(data.name_node_map[nodeName]);		
 	}
 	
 	dt.editNodeRow = function(icon, nodeKey) {
