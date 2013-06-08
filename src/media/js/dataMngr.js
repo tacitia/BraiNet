@@ -123,6 +123,7 @@
 		var nodeName = null;
 		var notes = null;
 		var node = state.currEditNode;
+		console.log(node);
 		if (jqInputs[0].value !== node.name) {
 			nodeName = jqInputs[0].value;
 			node.name = nodeName;
@@ -130,8 +131,8 @@
 			// Warning: the original name is still a key to the node
 		}
 		if (jqInputs[3].value !== node.notes) {
-			notes = jqInputs[3];
-			node.notes = jqInputs[3];
+			notes = jqInputs[3].value;
+			node.notes = jqInputs[3].value;
 		}
 		
 		database.updateNode(nodeKey, nodeName, notes);	
