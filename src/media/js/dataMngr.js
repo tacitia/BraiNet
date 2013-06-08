@@ -122,18 +122,20 @@
 	function saveNodeUpdates(nodeKey, jqInputs, nodeData) {
 		var nodeName = null;
 		var notes = null;
-		console.log(state.currEditNode);
-		if (jqInputs[0].value !== nodeData[0]) {
-			var origNode = data.name_node_map[state.oldNodeName];
+		var node = state.currEditNode;
+		if (jqInputs[0].value !== node.name) {
 			nodeName = jqInputs[0].value;
-			origNode.name = nodeName;
-			data.name_node_map[nodeName] = origNode;
+			node.name = nodeName;
+			data.name_node_map[nodeName] = node;
+			// Warning: the original name is still a key to the node
 		}
-		if (jqInputs[3].value !== nodeData[3]) {
+		if (jqInputs[3].value !== node.notes) {
 			notes = jqInputs[3];
+			node.notes = jqInputs[3];
 		}
 		
-		database.updateNode(nodeKey, nodeName, notes);			
+		database.updateNode(nodeKey, nodeName, notes);	
+		console.log(data.name_node_map[nodeName]);		
 	}
 	
 	dt.editNodeRow = function(icon, nodeKey) {
