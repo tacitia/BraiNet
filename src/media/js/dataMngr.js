@@ -121,7 +121,8 @@
 	function saveNodeUpdates(nodeKey, jqInputs, nodeData) {
 		var nodeName = null;
 		var notes = null;
-		var nodeData = state.currEditRow;
+		var nodeData = state.currEditNode;
+		console.log(nodeData);
 		if (jqInputs[0].value !== nodeData[0]) {
 			var origNode = data.name_node_map[nodeData[0]];
 			nodeName = jqInputs[0].value;
