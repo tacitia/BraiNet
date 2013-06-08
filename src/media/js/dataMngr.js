@@ -8,6 +8,13 @@
 	dsp.origin = 2130;	
 }(window.datasetProperties = window.datasetProperties || {}, jQuery));
 
+(function(state, $, undefined) {
+	state.currEditNode = null;
+	state.currEditLink = null;
+	state.currEditRow = null;
+	state.currEditTable = null;
+}(window.state = window.state || {}, jQuery));
+
 (function(data, $, undefined) {
 	data.nodes = null;
 	data.links = null;
@@ -43,9 +50,7 @@
 
 	//on tr hover append delete button on last th
 	$('table').on("mouseenter", "tr", function() {
-		console.log("???");
 		var tableID = $(this).context.parentNode.parentNode.id;
-		console.log(tableID);
 		var content = null;
 		if (tableID === "nodesDisplay") {
 			var nodeName = $(this).context.children[0].innerText;
@@ -65,7 +70,6 @@
 			contentD = '<span onclick="dataTable.deleteLinkRow(this,' + linkID + ')"><i class="icon-trash"></i> Delete</span>'; 
 			contentE = '<span onclick="dataTable.editLinkRow(this,' + linkID + ')"><i class="icon-pencil"></i> Edit</span>';
 		}
-		console.log($(this).find('td:last'));
 		deleteIcon = $(this).find('td:last').append(contentD);
 		editIcon = $(this).find('td:last').append(contentE);
 	});
@@ -74,6 +78,8 @@
     	$(deleteIcon).find('span').remove();
     	$(editIcon).find('span').remove();
 	});
+	
+	/* */
 
 
 	/* Public methods */
@@ -98,14 +104,51 @@
 		}
 	}
 
+	function restoreRow() {
+		var table = state.currEditTable;
+		var row = state.currEditRow;
+		
+		var data = $table.fnGetData(row);
+		var jqTds = $('>td', row);
+
+		for ( var i=0, iLen=jqTds.length ; i<iLen ; i++ ) {
+			$table.fnUpdate( data[i], row, i, false );
+		}
+
+		$table.fnDraw();
+	}
+	
+	function saveNodeUpdates(nodeKey, jqInputs, nodeData) {
+		var nodeName = null;
+		var notes = null;
+		console.log(jqInputs);
+		console.log(nodeData);
+		if (jqInputs[0] !== nodeData[0]) {
+			nodeName = jqInputs[0];
+		}
+		if (jqInputs[3] !== nodeData[3]) {
+			notes = jqInputs[3];
+		}
+		
+		database.updateBrainNode(nodeKey, nodeName, notes);			
+	}
 	
 	dt.editNodeRow = function(icon, nodeKey) {
+		if (state.currEditRow !== null) {
+			restoreRow();
+		}
 		var row = $(icon).parents('tr')[0];
     	var nodeData = nodesTable.fnGetData(row);
+    	state.currEditNode = nodeData;
+    	state.currEditLink = null;
+    	state.currEditRow = row;
+    	state.currEditTable = nodesTable;
+    	
+    	/* TODO: let the user modify location and depth */
    	 	var jqTds = $('>td', row);
     	jqTds[0].innerHTML = '<input type="text" value="'+nodeData[0]+'">';
-    	jqTds[1].innerHTML = '<input type="text" value="'+nodeData[1]+'">';
-    	jqTds[2].innerHTML = '<input type="text" value="'+nodeData[2]+'">';
+//    	jqTds[1].innerHTML = '<input type="text" value="'+nodeData[1]+'">';
+//   	jqTds[2].innerHTML = '<input type="text" value="'+nodeData[2]+'">';
     	jqTds[3].innerHTML = '<input type="text" value="'+nodeData[3]+'">';
 		jqTds[4].innerHTML = '<button class="btn btn-link" onclick="dataTable.saveNodeRow(this,' + nodeKey + ')">Save</button>';
 	};
@@ -113,11 +156,13 @@
 	dt.saveNodeRow = function(icon, nodeKey) {
 		var row = $(icon).parents('tr')[0];
 		var jqInputs = $('input', row);
+		var nodeData = nodesTable.fnGetData(row);
 		nodesTable.fnUpdate( jqInputs[0].value, row, 0, false );
 		nodesTable.fnUpdate( jqInputs[1].value, row, 1, false );
 		nodesTable.fnUpdate( jqInputs[2].value, row, 2, false );
 		nodesTable.fnUpdate( jqInputs[3].value, row, 3, false );
 		nodesTable.fnUpdate( '', row, 4, false );
+		saveNodeUpdates(nodeKey, jqInputs, nodeData);
 	};
 	
 	dt.addNodeRow = function(node) {
@@ -431,8 +476,11 @@
 				false);
 	};
 	
-	db.updateNode = function(nodeKey) {
-//		postToPhp("updateBrainNode.php",
+	db.updateNode = function(nodeKey, nodeName, notes) {
+		postToPhp("updateBrainNode.php",
+				{nodeKey: nodeKey, nodeName: nodeName, userID: datasetProperties.userID, notes: notes, isClone: datasetProperties.isClone, origin: datasetProperties.origin},
+				null,
+				true);
 	};
 	
 	db.updateLink = function(linkKey) {
