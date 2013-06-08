@@ -20,6 +20,8 @@
     }
     else {
     	if ($nodeName) {
+    		echo $nodeKey;
+    		echo "UPDATE user_nodes SET `name` = '$nodeName' WHERE `key` = '$nodeKey'";
     		mysql_query("UPDATE user_nodes SET `name` = '$nodeName' WHERE `key` = '$nodeKey'") or die("an error occurred when updating node name");
     	}
     	if ($notes) {
