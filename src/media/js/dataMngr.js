@@ -122,7 +122,6 @@
 		var nodeName = null;
 		var notes = null;
 		var nodeData = state.currEditRow;
-		console.log(nodeData);
 		if (jqInputs[0].value !== nodeData[0]) {
 			var origNode = data.name_node_map[nodeData[0]];
 			nodeName = jqInputs[0].value;
@@ -146,6 +145,7 @@
     	state.currEditLink = null;
     	state.currEditRow = row;
     	state.currEditTable = nodesTable;
+    	console.log(nodeData);
     	
     	/* TODO: let the user modify location and depth */
    	 	var jqTds = $('>td', row);
