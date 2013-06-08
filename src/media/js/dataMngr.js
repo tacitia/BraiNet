@@ -13,6 +13,7 @@
 	state.currEditLink = null;
 	state.currEditRow = null;
 	state.currEditTable = null;
+	state.oldNodeName = null;
 }(window.state = window.state || {}, jQuery));
 
 (function(data, $, undefined) {
@@ -121,10 +122,9 @@
 	function saveNodeUpdates(nodeKey, jqInputs, nodeData) {
 		var nodeName = null;
 		var notes = null;
-		var nodeData = state.currEditNode;
-		console.log(nodeData);
+		console.log(state.currEditNode);
 		if (jqInputs[0].value !== nodeData[0]) {
-			var origNode = data.name_node_map[nodeData[0]];
+			var origNode = data.name_node_map[state.oldNodeName];
 			nodeName = jqInputs[0].value;
 			origNode.name = nodeName;
 			data.name_node_map[nodeName] = origNode;
@@ -133,7 +133,7 @@
 			notes = jqInputs[3];
 		}
 		
-		database.updateBrainNode(nodeKey, nodeName, notes);			
+		database.updateNode(nodeKey, nodeName, notes);			
 	}
 	
 	dt.editNodeRow = function(icon, nodeKey) {
@@ -142,11 +142,10 @@
 		}
 		var row = $(icon).parents('tr')[0];
     	var nodeData = nodesTable.fnGetData(row);
-    	state.currEditNode = nodeData;
+    	state.currEditNode = data.name_node_map[nodeData[0]];
     	state.currEditLink = null;
     	state.currEditRow = row;
     	state.currEditTable = nodesTable;
-    	console.log(nodeData);
     	
     	/* TODO: let the user modify location and depth */
    	 	var jqTds = $('>td', row);
