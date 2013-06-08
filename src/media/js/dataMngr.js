@@ -124,7 +124,7 @@
 		console.log(jqInputs);
 		console.log(nodeData);
 		if (jqInputs[0] !== nodeData[0]) {
-			var origNode = name_node_map[nodeData[0]];
+			var origNode = data.name_node_map[nodeData[0]];
 			nodeName = jqInputs[0];
 			origNode.name = nodeName;
 			data.name_node_map[nodeName] = origNode;
