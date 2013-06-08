@@ -124,7 +124,10 @@
 		console.log(jqInputs);
 		console.log(nodeData);
 		if (jqInputs[0] !== nodeData[0]) {
+			var origNode = name_node_map[nodeData[0]];
 			nodeName = jqInputs[0];
+			origNode.name = nodeName;
+			data.name_node_map[nodeName] = origNode;
 		}
 		if (jqInputs[3] !== nodeData[3]) {
 			notes = jqInputs[3];
@@ -147,8 +150,8 @@
     	/* TODO: let the user modify location and depth */
    	 	var jqTds = $('>td', row);
     	jqTds[0].innerHTML = '<input type="text" value="'+nodeData[0]+'">';
-//    	jqTds[1].innerHTML = '<input type="text" value="'+nodeData[1]+'">';
-//   	jqTds[2].innerHTML = '<input type="text" value="'+nodeData[2]+'">';
+     	jqTds[1].innerHTML = '<input type="text" value="'+nodeData[1]+'">';
+	   	jqTds[2].innerHTML = '<input type="text" value="'+nodeData[2]+'">';
     	jqTds[3].innerHTML = '<input type="text" value="'+nodeData[3]+'">';
 		jqTds[4].innerHTML = '<button class="btn btn-link" onclick="dataTable.saveNodeRow(this,' + nodeKey + ')">Save</button>';
 	};
