@@ -186,7 +186,7 @@
     	/* TODO: let the user modify location and depth */
    	 	var jqTds = $('>td', row);
    	 	jqTds[0].innerHTML = linkData[0];
-   	 	jqTds[0].innerHTML = linkData[1];
+   	 	jqTds[1].innerHTML = linkData[1];
 //    	jqTds[0].innerHTML = '<input type="text" value="'+linkData[0]+'">';
 //     	jqTds[1].innerHTML = '<input type="text" value="'+linkData[1]+'">';
 	   	jqTds[2].innerHTML = '<input type="text" value="'+linkData[2]+'">';
