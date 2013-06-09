@@ -20,6 +20,7 @@
 	data.nodes = null;
 	data.links = null;
 	data.key_node_map = {};
+	data.key_pair_link_map = {};
 	data.key_link_map = {};
 	data.name_node_map = {};
 	
@@ -34,7 +35,8 @@
     	for (var i = 0; i < num_links; ++i) {
     		var curr_link = data.links[i];
     		var key_pair = curr_link.sourceKey + "-" + curr_link.targetKey;
-    		data.key_link_map[key_pair] = curr_link;
+    		data.key_pair_link_map[key_pair] = curr_link;
+    		data.key_link_map[curr_link.key] = curr_link;
     	};
 	};
 	
@@ -67,7 +69,7 @@
 			if (data.name_node_map[endName] === undefined) { return; }
 			var startID = data.name_node_map[startName].key;
 			var endID = data.name_node_map[endName].key;
-			var linkID = data.key_link_map[startID + "-" + endID].key;
+			var linkID = data.key_pair_link_map[startID + "-" + endID].key;
 			contentD = '<span onclick="dataTable.deleteLinkRow(this,' + linkID + ')"><i class="icon-trash"></i> Delete</span>'; 
 			contentE = '<span onclick="dataTable.editLinkRow(this,' + linkID + ')"><i class="icon-pencil"></i> Edit</span>';
 		}
