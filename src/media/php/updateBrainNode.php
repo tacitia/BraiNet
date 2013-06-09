@@ -21,9 +21,10 @@
     }
     else {
     	if ($nodeName) {
-    		echo $nodeKey;
-    		echo "UPDATE user_nodes SET `name` = '$nodeName' WHERE `key` = '$nodeKey'";
-    		mysql_query("UPDATE user_nodes SET `name` = '$nodeName' WHERE `key` = '$nodeKey'") or die("an error occurred when updating node name");
+    		echo "UPDATE `user_nodes` SET `name` = '$nodeName' WHERE `key` = '$nodeKey'";
+    		mysql_query("UPDATE user_nodes SET `name` = '$nodeName' WHERE `key` = '$nodeKey'");
+    		echo mysql_error();
+    		 //or die("an error occurred when updating node name");
     	}
     	if ($notes) {
 			mysql_query("UPDATE user_nodes SET `notes` = '$notes' WHERE `key` = '$nodeKey'") or die("an error occurred when updating node notes");
