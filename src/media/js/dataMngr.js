@@ -176,6 +176,8 @@
     	var linkData = linksTable.fnGetData(row);
     	state.currEditNode = null;
     	state.currEditLink = data.key_link_map[linkKey];
+    	console.log(linkKey);
+    	console.log(data.key_link_map);
     	state.currEditRow = row;
     	state.currEditTable = linksTable;
     	
