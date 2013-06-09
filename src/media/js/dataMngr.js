@@ -111,14 +111,14 @@
 		var table = state.currEditTable;
 		var row = state.currEditRow;
 		
-		var data = $table.fnGetData(row);
+		var data = table.fnGetData(row);
 		var jqTds = $('>td', row);
 
 		for ( var i=0, iLen=jqTds.length ; i<iLen ; i++ ) {
-			$table.fnUpdate( data[i], row, i, false );
+			table.fnUpdate( data[i], row, i, false );
 		}
 
-		$table.fnDraw();
+		table.fnDraw();
 	}
 	
 	function saveNodeUpdates(nodeKey, jqInputs) {
