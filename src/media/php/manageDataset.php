@@ -28,6 +28,9 @@
         body {
         	margin:20px;
         }
+        .section {
+        	margin:20px;
+        }
     </style>
   </head>
   <body>
@@ -36,7 +39,8 @@
         echo '<span id="datasetID" style="display:none">' . $_GET["datasetID"] . '</span>'
       ?>
 
-	  <h3>Brain Regions</h3>
+	  <div class="section">
+	  <h3>Brain regions</h3>
       <table class="table table-bordered table-striped" cellpadding="0" cellspacing="0" border="0" class="display" id="nodesDisplay">
         <thead>
           <tr>
@@ -51,7 +55,9 @@
         <tbody>
         </tbody>
       </table>
+      </div>
 
+	  <div class="section">
 	  <h3>Connections</h3>
       <table class="table table-bordered table-striped" cellpadding="0" cellspacing="0" border="0" class="display" id="linksDisplay">
         <thead>
@@ -66,9 +72,12 @@
         <tbody>
         </tbody>
       </table>
-
+	  </div>
+	
       <!--User action buttons-->
 
+	  <div class="section">
+	  <h3>Add new data</h3>
       <div id="datasetControl">
         <table><tr>
           <td><button id="bt-addNode" class="btn">Add a brain region/cell group</button></td>
@@ -115,6 +124,7 @@ style="width:250px;" id="brodmannArea">
           <div id="addBatchField" style="display:none">
           </div>
         </div>
+      </div>
       </div>
 
     <!--LIBRARIES-->
