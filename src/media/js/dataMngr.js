@@ -185,8 +185,10 @@
     	
     	/* TODO: let the user modify location and depth */
    	 	var jqTds = $('>td', row);
-    	jqTds[0].innerHTML = '<input type="text" value="'+linkData[0]+'">';
-     	jqTds[1].innerHTML = '<input type="text" value="'+linkData[1]+'">';
+   	 	jqTds[0].innerHTML = linkData[0];
+   	 	jqTds[0].innerHTML = linkData[1];
+//    	jqTds[0].innerHTML = '<input type="text" value="'+linkData[0]+'">';
+//     	jqTds[1].innerHTML = '<input type="text" value="'+linkData[1]+'">';
 	   	jqTds[2].innerHTML = '<input type="text" value="'+linkData[2]+'">';
 		jqTds[3].innerHTML = '<button class="btn btn-link" onclick="dataTable.saveLinkRow(this,' + linkKey + ')">Save</button>';
 	};	
@@ -208,9 +210,10 @@
 	dt.saveLinkRow = function(icon, linkKey) {
 		var row = $(icon).parents('tr')[0];
 		var jqInputs = $('input', row);
-		linksTable.fnUpdate( jqInputs[0].value, row, 0, false );
-		linksTable.fnUpdate( jqInputs[1].value, row, 1, false );
-		linksTable.fnUpdate( jqInputs[2].value, row, 2, false );
+		console.log(jqInputs);
+//		linksTable.fnUpdate( jqInputs[0].value, row, 0, false );
+//		linksTable.fnUpdate( jqInputs[1].value, row, 1, false );
+		linksTable.fnUpdate( jqInputs[0].value, row, 2, false );
 		linksTable.fnUpdate( '', row, 3, false );
 		saveLinkUpdates(linkKey, jqInputs);
 		state.currEditLink = null;
