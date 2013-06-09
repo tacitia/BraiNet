@@ -21,7 +21,7 @@
     		mysql_query("INSERT INTO diff_nodes (nodeKey, diff, userID, origin, content) VALUES ('$nodeKey', 'Rename', '$userID', '$origin', '$nodeName')") or die("an error occurred when updating node name" . mysql_error());
     	}
     	if ($notes) {
-			mysql_query("INSERT INTO diff_nodes (nodeKey, diff, userID, origin, content) VALUES ('$nodeKey', 'AddNote', '$userID', '$origin', '$notes')") or die("an error occurred when updating node notes" . mysql_error());
+			mysql_query("INSERT INTO diff_nodes (nodeKey, diff, userID, origin, content) VALUES ('$nodeKey', 'ChangeNote', '$userID', '$origin', '$notes')") or die("an error occurred when updating node notes" . mysql_error());
     	}
     }
     else {

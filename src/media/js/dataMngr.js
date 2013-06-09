@@ -119,7 +119,7 @@
 		$table.fnDraw();
 	}
 	
-	function saveNodeUpdates(nodeKey, jqInputs, nodeData) {
+	function saveNodeUpdates(nodeKey, jqInputs) {
 		var nodeName = null;
 		var notes = null;
 		var node = state.currEditNode;
@@ -135,6 +135,17 @@
 		}
 		
 		database.updateNode(nodeKey, nodeName, notes);	
+	}
+
+	function saveLinkpdates(linkKey, jqInputs) {
+		var notes = null;
+		var link = state.currEditLink;
+		if (jqInputs[2].value !== link.notes) {
+			notes = jqInputs[2].value;
+			link.notes = jqInputs[2].value;
+		}
+		
+		database.updateLink(linkKey, notes);	
 	}
 	
 	dt.editNodeRow = function(icon, nodeKey) {
@@ -157,17 +168,48 @@
 		jqTds[4].innerHTML = '<button class="btn btn-link" onclick="dataTable.saveNodeRow(this,' + nodeKey + ')">Save</button>';
 	};
 	
+	dt.editLinkRow = function(icon, linkKey) {
+		if (state.currEditRow !== null) {
+			restoreRow();
+		}
+		var row = $(icon).parents('tr')[0];
+    	var linkData = linksTable.fnGetData(row);
+    	state.currEditNode = null;
+    	state.currEditLink = data.key_link_map[linkKey];
+    	state.currEditRow = row;
+    	state.currEditTable = linksTable;
+    	
+    	/* TODO: let the user modify location and depth */
+   	 	var jqTds = $('>td', row);
+    	jqTds[0].innerHTML = '<input type="text" value="'+linkData[0]+'">';
+     	jqTds[1].innerHTML = '<input type="text" value="'+linkData[1]+'">';
+	   	jqTds[2].innerHTML = '<input type="text" value="'+linkData[2]+'">';
+		jqTds[3].innerHTML = '<button class="btn btn-link" onclick="dataTable.saveLinkRow(this,' + linkKey + ')">Save</button>';
+	};	
+	
 	dt.saveNodeRow = function(icon, nodeKey) {
 		var row = $(icon).parents('tr')[0];
 		var jqInputs = $('input', row);
-		var nodeData = nodesTable.fnGetData(row);
 		nodesTable.fnUpdate( jqInputs[0].value, row, 0, false );
 		nodesTable.fnUpdate( jqInputs[1].value, row, 1, false );
 		nodesTable.fnUpdate( jqInputs[2].value, row, 2, false );
 		nodesTable.fnUpdate( jqInputs[3].value, row, 3, false );
 		nodesTable.fnUpdate( '', row, 4, false );
-		saveNodeUpdates(nodeKey, jqInputs, nodeData);
+		saveNodeUpdates(nodeKey, jqInputs);
 		state.currEditNode = null;
+		state.currEditRow = null;
+		state.currEditTable = null;
+	};
+
+	dt.saveLinkRow = function(icon, linkKey) {
+		var row = $(icon).parents('tr')[0];
+		var jqInputs = $('input', row);
+		linksTable.fnUpdate( jqInputs[0].value, row, 0, false );
+		linksTable.fnUpdate( jqInputs[1].value, row, 1, false );
+		linksTable.fnUpdate( jqInputs[2].value, row, 2, false );
+		linksTable.fnUpdate( '', row, 3, false );
+		saveLinkUpdates(linkKey, jqInputs);
+		state.currEditLink = null;
 		state.currEditRow = null;
 		state.currEditTable = null;
 	};
@@ -490,7 +532,11 @@
 				true);
 	};
 	
-	db.updateLink = function(linkKey) {
+	db.updateLink = function(linkKey, notes) {
+		postToPhp("updateBrainLink.php",
+				{linkKey: linkKey, userID: datasetProperties.userID, notes: notes, isClone: datasetProperties.isClone, origin: datasetProperties.origin},
+				null,
+				true);
 	};
 
 }(window.database = window.database || {}, jQuery));
