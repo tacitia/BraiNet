@@ -142,9 +142,9 @@
 	function saveLinkUpdates(linkKey, jqInputs) {
 		var notes = null;
 		var link = state.currEditLink;
-		if (jqInputs[2].value !== link.notes) {
-			notes = jqInputs[2].value;
-			link.notes = jqInputs[2].value;
+		if (jqInputs[0].value !== link.notes) {
+			notes = jqInputs[0].value;
+			link.notes = jqInputs[0].value;
 		}
 		
 		database.updateLink(linkKey, notes);	
