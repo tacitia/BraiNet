@@ -227,7 +227,8 @@
 		var target_node = data.key_node_map[parseInt(link.targetKey)];
 		linksTable.fnAddData([String(source_node.name),
 							  String(target_node.name),
-							  String(link.notes)]);
+							  String(link.notes),
+							  ""]);
 	};
 
 	dt.populateBrainDataTable = function() {
@@ -256,7 +257,8 @@
 			var target_node = data.key_node_map[parseInt(link.targetKey)];
 			linksTable.fnAddData([String(source_node.name),
 								  String(target_node.name),
-								  String(link.notes)]);
+								  String(link.notes),
+								  ""]);
 		}
 	}
 
