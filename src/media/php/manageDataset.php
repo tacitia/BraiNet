@@ -32,10 +32,11 @@
   </head>
   <body>
       <?php
-        echo '<h2>' . $_GET["datasetName"] . '</h2>';
+        echo '<h2>Dataset: ' . $_GET["datasetName"] . '</h2>';
         echo '<span id="datasetID" style="display:none">' . $_GET["datasetID"] . '</span>'
       ?>
 
+	  <h3>Brain Regions</h3>
       <table class="table table-bordered table-striped" cellpadding="0" cellspacing="0" border="0" class="display" id="nodesDisplay">
         <thead>
           <tr>
@@ -51,6 +52,7 @@
         </tbody>
       </table>
 
+	  <h3>Connections</h3>
       <table class="table table-bordered table-striped" cellpadding="0" cellspacing="0" border="0" class="display" id="linksDisplay">
         <thead>
           <tr>
