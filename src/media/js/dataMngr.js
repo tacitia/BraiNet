@@ -137,7 +137,7 @@
 		database.updateNode(nodeKey, nodeName, notes);	
 	}
 
-	function saveLinkpdates(linkKey, jqInputs) {
+	function saveLinkUpdates(linkKey, jqInputs) {
 		var notes = null;
 		var link = state.currEditLink;
 		if (jqInputs[2].value !== link.notes) {
