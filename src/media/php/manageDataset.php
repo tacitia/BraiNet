@@ -57,6 +57,7 @@
             <th>Start</th>
             <th>End</th>
             <th>Notes</th>
+            <th style="width:100px"></th>
           </tr>
         </thead>
 
