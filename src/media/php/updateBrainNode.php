@@ -11,6 +11,7 @@
     $notes = mysql_real_escape_string($notes);
     
     if ($isClone) {
+    	echo "???";
     	if ($nodeName) {
     		mysql_query("INSERT INTO diff_nodes (nodeKey, diff, userID, origin, content) VALUES ('$nodeKey', 'Rename', '$userID', '$origin', '$nodeName')") or die("an error occurred when updating node name");
     	}
