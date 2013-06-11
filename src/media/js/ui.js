@@ -43,7 +43,7 @@ function manageDatasetButtonClick() {
     var datasetID = $('#dataSelect').val();
     var isClone = endsWith(datasetName, '(personal copy)') ? 1 : 0;
     var url = "media/php/manageDataset.php?datasetName=" + datasetName + 
-                "&datasetID=" + datasetID + "&isClone=" + ;
+                "&datasetID=" + datasetID + "&isClone=" + isClone;
     window.open(url, 'Manage Datasets', 'width=800, height=800');
 }
 
