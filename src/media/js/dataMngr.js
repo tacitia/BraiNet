@@ -4,8 +4,8 @@
 	dsp.name = $('#datasetName').text(); 
 	dsp.key = parseInt($('#datasetID').text());
 	dsp.userID = 0;
-	dsp.isClone = 0; // TODO: work with real data from database
-	dsp.origin = 2130;	
+	dsp.isClone = parseInt($('#datasetID').text());
+	dsp.origin = 2130;
 }(window.datasetProperties = window.datasetProperties || {}, jQuery));
 
 (function(state, $, undefined) {

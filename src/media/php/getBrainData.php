@@ -102,6 +102,8 @@
 
 		$diff_nodes = array();
 		$diff_links = array();
+		$extra_nodes = array();
+		$extra_links = array();
 		if ($isClone) {
 			/* Get the difference data*/
 			$query = "SELECT `diff` FROM `diff_nodes` WHERE `userID` = " . $userID . " AND `origin` = " . $origin;
@@ -110,6 +112,7 @@
 				$diff_node = array();
 				$diff_node['nodeKey'] = $row['nodeKey'];
 				$diff_node['diff'] = $row['diff'];
+				$diff_node['content'] = $row['content'];
 				$diff_nodes[] = $diff_node;
 			}
 
@@ -119,9 +122,12 @@
 				$diff_link = array();
 				$diff_link['linkKey'] = $row['linkKey'];
 				$diff_link['diff'] = $row['diff'];
+				$diff_node['content'] = $row['content'];
 				$diff_links[] = $diff_link;
 			}
 		}
+		
+
 		
 		$result = array();
 		$result['nodes'] = $nodes;

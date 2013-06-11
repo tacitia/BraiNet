@@ -74,8 +74,8 @@ d3.json("media/data/test_link.json", function (data) {
     mutex -= 1;
 });
 
-populateUserId();
-getBrodmannAreas();
+database.populateUserId();
+database.getBrodmannAreas();
 waitForDataLoading();
 
 /*******

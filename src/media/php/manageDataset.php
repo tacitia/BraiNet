@@ -36,7 +36,8 @@
   <body>
       <?php
         echo '<h2>Dataset: ' . $_GET["datasetName"] . '</h2>';
-        echo '<span id="datasetID" style="display:none">' . $_GET["datasetID"] . '</span>'
+        echo '<span id="datasetID" style="display:none">' . $_GET["datasetID"] . '</span>';
+        echo '<span id="isClone" style="display:none">' . $_GET["isClone"] . '</span>';
       ?>
 
 	  <div class="section">

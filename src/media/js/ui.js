@@ -32,7 +32,7 @@ function populateDatasetUI() {
  * 2. Call the corresponding backend function
  */
 function createDatasetButtonClick() {
-    createDataset($('[name="datasetName"]').val(), uid, 0);
+    database.createDataset($('[name="datasetName"]').val(), uid, 0);
 }
 
 /*
@@ -41,8 +41,9 @@ function createDatasetButtonClick() {
 function manageDatasetButtonClick() {
     var datasetName = $('#dataSelect :selected').text();
     var datasetID = $('#dataSelect').val();
+    var isClone = endsWith(datasetName, '(personal copy)') ? 1 : 0;
     var url = "media/php/manageDataset.php?datasetName=" + datasetName + 
-                "&datasetID=" + datasetID;
+                "&datasetID=" + datasetID + "&isClone=" + ;
     window.open(url, 'Manage Datasets', 'width=800, height=800');
 }
 
@@ -50,7 +51,7 @@ function manageDatasetButtonClick() {
 function cloneDatasetButtonClick() {
 	var datasetName = $('#dataSelect :selected').text().replace('(public)', '(personal copy)');
 	var datasetID = $('#dataSelect').val();
-	cloneDataset(datasetName, uid, datasetID);	
+	database.cloneDataset(datasetName, uid, datasetID);	
 }
 
 /*
@@ -65,7 +66,7 @@ function applyDatasetButtonClick() {
         return;
     }
     if (user_datasets[datasetID] === undefined) {
-	    getBrainData(datasetID, uid);
+	    database.getBrainData(datasetID, uid);
     }
     else {
     }

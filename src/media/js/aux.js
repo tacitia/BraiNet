@@ -140,220 +140,218 @@ function stash(d) {
 }
 
 // ================ Data Structure Functions ================ //
-function constructUserDataMaps(datasetKey, nodes, links) {
-    user_datasets[datasetKey] = {};
-    constructUserNodesMaps(datasetKey, nodes);
-    constructUserLinksMaps(datasetKey, links);
-    constructLinkHierarchy(datasetKey, links);
-    assignColors(user_datasets[datasetKey].node_map);
-}
+(function(dm, $, undefined) {
 
-function constructUserNodesMaps(datasetKey, nodes) {
-    var user_node_map = {};
-    var user_in_neighbor_map = {};
-    var user_out_neighbor_map = {};
+	dm.mergeDiffs = function(nodes, links, diff_nodes, diff_links) {
+		console.log(diff_nodes);
+		console.log(diff_links);
+		for (var i = 0; i < diff_nodes.length; ++i) {
+			diff_entry = diff_nodes[i];
+			switch (diff_entry.diff) {
+				case 'AddNode': 
+					break;
+				case 'Rename':
+					break;
+				case 'ChangeNote':
+					break;
+			}
+		}
+	};
+	
+	dm.constructUserDataMaps = function(datasetKey, nodes, links) {
+		user_datasets[datasetKey] = {};
+		constructUserNodesMaps(datasetKey, nodes);
+		constructUserLinksMaps(datasetKey, links);
+		constructLinkHierarchy(datasetKey, links);
+		assignColors(user_datasets[datasetKey].node_map);
+	};
+	
+	function constructUserNodesMaps(datasetKey, nodes) {
+		var user_node_map = {};
+		var user_in_neighbor_map = {};
+		var user_out_neighbor_map = {};
 
-    var num_nodes = nodes.length;
-    for (var i = 0; i < num_nodes; ++i) {
-        var node = nodes[i];
-        node.key = parseInt(node.key);
-        if (node.brodmannKey === undefined || node.brodmannKey === null) {
-        	node.brodmannKey = -1;
-        	// TODO: propagate the information down the hierarchy.
-        }
-        else {
-        	node.brodmannKey = node.brodmannKey[0];
-        }
-        node.depth = parseInt(node.depth);
-        node.parent = (node.parentKey === null) ? null : parseInt(node.parentKey);
-        node.circ = {};
-        node.children = [];
-        user_node_map[node.key] = node;
-        user_in_neighbor_map[node.key] = [];
-        user_out_neighbor_map[node.key] = [];
-    }
-    
-    for (var key in user_node_map) {
-        var node = user_node_map[key];
-        if (node.parent !== null) { 
-            var parent_node = user_node_map[node.parent];
-            // TODO fix this in the test_node
-            if (parent_node !== undefined) { parent_node.children.push(node.key); }
-            else { node.parent = null; }
-        }
-    }
+		var num_nodes = nodes.length;
+		for (var i = 0; i < num_nodes; ++i) {
+			var node = nodes[i];
+			node.key = parseInt(node.key);
+			node.depth = parseInt(node.depth);
+			node.parent = (node.parentKey === null) ? null : parseInt(node.parentKey);
+			node.circ = {};
+			node.children = [];
+			user_node_map[node.key] = node;
+			user_in_neighbor_map[node.key] = [];
+			user_out_neighbor_map[node.key] = [];
+		}
+	
+		for (var key in user_node_map) {
+			var node = user_node_map[key];
+			if (node.parent !== null) { 
+				var parent_node = user_node_map[node.parent];
+				// TODO fix this in the test_node
+				if (parent_node !== undefined) { parent_node.children.push(node.key); }
+				else { node.parent = null; }
+			}
+		}
 
-    user_datasets[datasetKey].node_map = user_node_map;
-    user_datasets[datasetKey].node_in_neighbor_map = user_in_neighbor_map;
-    user_datasets[datasetKey].node_out_neighbor_map = user_out_neighbor_map;
-}
+		user_datasets[datasetKey].node_map = user_node_map;
+		user_datasets[datasetKey].node_in_neighbor_map = user_in_neighbor_map;
+		user_datasets[datasetKey].node_out_neighbor_map = user_out_neighbor_map;
+	}
 
 
-function constructUserLinksMaps(datasetKey, links) {    
-    var user_link_map = {};
-    var user_node_link_map = {};
-    var dataset = user_datasets[datasetKey];
+	function constructUserLinksMaps(datasetKey, links) {    
+		var user_link_map = {};
+		var user_node_link_map = {};
+		var dataset = user_datasets[datasetKey];
 
-    var num_links = links.length;
-    for (var i = 0; i < num_links; ++i) {
-        var raw_link = links[i];
-        var source_key = parseInt(raw_link.sourceKey);
-        var target_key = parseInt(raw_link.targetKey);
-        var link = {key: parseInt(raw_link.key), source: dataset.node_map[source_key], 
-            target: dataset.node_map[target_key], notes: raw_link.notes, paper: raw_link.paper,
-            children: [], isDerived: false, base_children: []};
-        user_link_map[link.key] = link;
-        var key_pair = link.source.key + "-" + link.target.key;
-        user_node_link_map[key_pair] = link;
-        dataset.node_in_neighbor_map[target_key].push(source_key);
-        dataset.node_out_neighbor_map[source_key].push(target_key);
-    }
-    
-    dataset.link_map = user_link_map;
-    dataset.node_link_map = user_node_link_map;
-}
+		var num_links = links.length;
+		for (var i = 0; i < num_links; ++i) {
+			var raw_link = links[i];
+			var source_key = parseInt(raw_link.sourceKey);
+			var target_key = parseInt(raw_link.targetKey);
+			var link = {key: parseInt(raw_link.key), source: dataset.node_map[source_key], 
+				target: dataset.node_map[target_key], notes: raw_link.notes, paper: raw_link.paper,
+				children: [], isDerived: false, base_children: []};
+			user_link_map[link.key] = link;
+			var key_pair = link.source.key + "-" + link.target.key;
+			user_node_link_map[key_pair] = link;
+			dataset.node_in_neighbor_map[target_key].push(source_key);
+			dataset.node_out_neighbor_map[source_key].push(target_key);
+		}
+	
+		dataset.link_map = user_link_map;
+		dataset.node_link_map = user_node_link_map;
+	}
 
-/*
- * TODO: could use some performance improvement
- */
-function constructLinkHierarchy(datasetKey, links) {
-    var num_link = links.length;
-    var max_link_key = 0;
-    for (var i = 0; i < num_link; ++i) {
-        var link_key = parseInt(links[i].key);
-        if (link_key > max_link_key) {
-            max_link_key = link_key;
-        }
-    }
-    var dataset = user_datasets[datasetKey];
-    // 1. initiate children
-    // 2. check parent existence
-    // 3. optionally create parent and add a child
-    for (var i = 0; i < num_link; ++i) {
-        var link_key = parseInt(links[i].key);
-        var link = dataset.link_map[link_key];
-        var source = link.source;
-        var target = link.target;
-        var source_parent_node = dataset.node_map[source.parent];
-        var target_parent_node = dataset.node_map[target.parent];
-        var base_children = [];
-        var num_base_child = link.base_children.length;        
-        for (var j = 0; j < num_base_child; ++j) {
-            base_children.push(link.base_children[j]);
-        }
-        if (!link.isDerived) {
-            base_children.push(link.key);
-            num_base_child += 1;
-        }
-        
-/*        console.log(base_children);
-        console.log(num_base_child);
-        console.log(link);
-        console.log(link_key);
-            console.log(source.parent !== null);
-            console.log(target.parent !== null);
-            console.log(source.parent !== target.parent);
-            if (source_parent_node !== undefined) {
-                console.log($.inArray(target.key, source_parent_node.children) < 0);
-            }
-            if (target_parent_node !== undefined) {
-                console.log($.inArray(source.key, target_parent_node.children) < 0);    
-            }
-            console.log(source.parent !== target.key);
-            console.log(target.parent !== source.key); */
-        
-        if (source.parent !== null && source.parent !== target.key && 
-                $.inArray(target.key, source_parent_node.children) < 0) {
-            var key_pair = source.parent + "-" + target.key;
-            var srcParentLink = dataset.node_link_map[key_pair];
-            if (srcParentLink === undefined) {
-                max_link_key += 1;
-                var srcParentLink = {key: max_link_key, 
-                source: dataset.node_map[parseInt(source.parent)],
-                target: target, notes: 'Meta link', children: [link_key], isDerived: true, 
-                base_children: base_children, paper: []};
-                dataset.link_map[max_link_key] = srcParentLink;
-                dataset.node_link_map[key_pair] = srcParentLink;
-                dataset.node_in_neighbor_map[target.key].push(source.parent);
-                dataset.node_out_neighbor_map[source.parent].push(target.key);
-                links.push(srcParentLink);
-                num_link += 1;
-            }
-            else {
-                if ($.inArray(link_key, srcParentLink.children) < 0) {
-                    srcParentLink.children.push(link_key);
-                }
-                for (var j = 0; j < num_base_child; ++j) {
-                    var base_child = base_children[j];
-                    if ($.inArray(base_child, srcParentLink.base_children) < 0) {
-                        srcParentLink.base_children.push(base_child);
-                    }
-                }
-            }
-        }
-        if (target.parent !== null && target.parent !== source.key &&
-                $.inArray(source.key, target_parent_node.children) < 0) {
-            var key_pair = source.key + "-" + target.parent;
-            var tgtParentLink = dataset.node_link_map[key_pair];
-            if (tgtParentLink === undefined) {
-                max_link_key += 1;
-                var tgtParentLink = {key: max_link_key, 
-                source: source,
-                target: dataset.node_map[parseInt(target.parent)], 
-                notes: 'Meta link', children: [link_key], isDerived: true, 
-                base_children: base_children, paper: []};
-                dataset.link_map[max_link_key] = tgtParentLink;
-                dataset.node_link_map[key_pair] = tgtParentLink;
-                dataset.node_in_neighbor_map[target.parent].push(source.key);
-                dataset.node_out_neighbor_map[source.key].push(target.parent);
-                links.push(tgtParentLink);
-                num_link += 1;
-            }
-            else {
-                if ($.inArray(link_key, tgtParentLink.children) < 0) {
-                    tgtParentLink.children.push(link_key);
-                }
-                for (var j = 0; j < num_base_child; ++j) {
-                    var base_child = base_children[j];
-                    if ($.inArray(base_child, tgtParentLink.base_children) < 0) {
-                        tgtParentLink.base_children.push(base_child);
-                    }
-                }          
-            }
-        } 
-        if (source.parent !== null && target.parent !== null && source.parent !== target.parent &&
-                $.inArray(target.key, source_parent_node.children) < 0 &&
-                $.inArray(source.key, target_parent_node.children) < 0) {
-            var key_pair = source.parent + "-" + target.parent;
-            var parentLink = dataset.node_link_map[key_pair];
-            if (parentLink === undefined) {
-                max_link_key += 1;
-                var parentLink = {key: max_link_key, 
-                source: dataset.node_map[parseInt(source.parent)],
-                target: dataset.node_map[parseInt(target.parent)], 
-                notes: 'Meta link', children: [link_key], isDerived: true, 
-                base_children: base_children, paper: []};
-                dataset.link_map[max_link_key] = parentLink;
-                dataset.node_link_map[key_pair] = parentLink;
-                dataset.node_in_neighbor_map[target.parent].push(source.parent);
-                dataset.node_out_neighbor_map[source.parent].push(target.parent);
-                links.push(parentLink);
-                num_link += 1;
-            }
-            else {
-                if ($.inArray(link_key, parentLink.children) < 0) {            
-                    parentLink.children.push(link_key);
-                }
-                for (var j = 0; j < num_base_child; ++j) {
-                    var base_child = base_children[j];
-                    if ($.inArray(base_child, parentLink.base_children) < 0) {
-                        parentLink.base_children.push(base_child);
-                    }
-                }
-            }
-        } 
-    }
-}
+	/*
+	 * TODO: could use some performance improvement
+	 */
+	function constructLinkHierarchy(datasetKey, links) {
+		var num_link = links.length;
+		var max_link_key = 0;
+		for (var i = 0; i < num_link; ++i) {
+			var link_key = parseInt(links[i].key);
+			if (link_key > max_link_key) {
+				max_link_key = link_key;
+			}
+		}
+		var dataset = user_datasets[datasetKey];
+		// 1. initiate children
+		// 2. check parent existence
+		// 3. optionally create parent and add a child
+		for (var i = 0; i < num_link; ++i) {
+			var link_key = parseInt(links[i].key);
+			var link = dataset.link_map[link_key];
+			var source = link.source;
+			var target = link.target;
+			var source_parent_node = dataset.node_map[source.parent];
+			var target_parent_node = dataset.node_map[target.parent];
+			var base_children = [];
+			var num_base_child = link.base_children.length;        
+			for (var j = 0; j < num_base_child; ++j) {
+				base_children.push(link.base_children[j]);
+			}
+			if (!link.isDerived) {
+				base_children.push(link.key);
+				num_base_child += 1;
+			}
+		
+			if (source.parent !== null && source.parent !== target.key && 
+					$.inArray(target.key, source_parent_node.children) < 0) {
+				var key_pair = source.parent + "-" + target.key;
+				var srcParentLink = dataset.node_link_map[key_pair];
+				if (srcParentLink === undefined) {
+					max_link_key += 1;
+					var srcParentLink = {key: max_link_key, 
+					source: dataset.node_map[parseInt(source.parent)],
+					target: target, notes: 'Meta link', children: [link_key], isDerived: true, 
+					base_children: base_children, paper: []};
+					dataset.link_map[max_link_key] = srcParentLink;
+					dataset.node_link_map[key_pair] = srcParentLink;
+					dataset.node_in_neighbor_map[target.key].push(source.parent);
+					dataset.node_out_neighbor_map[source.parent].push(target.key);
+					links.push(srcParentLink);
+					num_link += 1;
+				}
+				else {
+					if ($.inArray(link_key, srcParentLink.children) < 0) {
+						srcParentLink.children.push(link_key);
+					}
+					for (var j = 0; j < num_base_child; ++j) {
+						var base_child = base_children[j];
+						if ($.inArray(base_child, srcParentLink.base_children) < 0) {
+							srcParentLink.base_children.push(base_child);
+						}
+					}
+				}
+			}
+			if (target.parent !== null && target.parent !== source.key &&
+					$.inArray(source.key, target_parent_node.children) < 0) {
+				var key_pair = source.key + "-" + target.parent;
+				var tgtParentLink = dataset.node_link_map[key_pair];
+				if (tgtParentLink === undefined) {
+					max_link_key += 1;
+					var tgtParentLink = {key: max_link_key, 
+					source: source,
+					target: dataset.node_map[parseInt(target.parent)], 
+					notes: 'Meta link', children: [link_key], isDerived: true, 
+					base_children: base_children, paper: []};
+					dataset.link_map[max_link_key] = tgtParentLink;
+					dataset.node_link_map[key_pair] = tgtParentLink;
+					dataset.node_in_neighbor_map[target.parent].push(source.key);
+					dataset.node_out_neighbor_map[source.key].push(target.parent);
+					links.push(tgtParentLink);
+					num_link += 1;
+				}
+				else {
+					if ($.inArray(link_key, tgtParentLink.children) < 0) {
+						tgtParentLink.children.push(link_key);
+					}
+					for (var j = 0; j < num_base_child; ++j) {
+						var base_child = base_children[j];
+						if ($.inArray(base_child, tgtParentLink.base_children) < 0) {
+							tgtParentLink.base_children.push(base_child);
+						}
+					}          
+				}
+			} 
+			if (source.parent !== null && target.parent !== null && source.parent !== target.parent &&
+					$.inArray(target.key, source_parent_node.children) < 0 &&
+					$.inArray(source.key, target_parent_node.children) < 0) {
+				var key_pair = source.parent + "-" + target.parent;
+				var parentLink = dataset.node_link_map[key_pair];
+				if (parentLink === undefined) {
+					max_link_key += 1;
+					var parentLink = {key: max_link_key, 
+					source: dataset.node_map[parseInt(source.parent)],
+					target: dataset.node_map[parseInt(target.parent)], 
+					notes: 'Meta link', children: [link_key], isDerived: true, 
+					base_children: base_children, paper: []};
+					dataset.link_map[max_link_key] = parentLink;
+					dataset.node_link_map[key_pair] = parentLink;
+					dataset.node_in_neighbor_map[target.parent].push(source.parent);
+					dataset.node_out_neighbor_map[source.parent].push(target.parent);
+					links.push(parentLink);
+					num_link += 1;
+				}
+				else {
+					if ($.inArray(link_key, parentLink.children) < 0) {            
+						parentLink.children.push(link_key);
+					}
+					for (var j = 0; j < num_base_child; ++j) {
+						var base_child = base_children[j];
+						if ($.inArray(base_child, parentLink.base_children) < 0) {
+							parentLink.base_children.push(base_child);
+						}
+					}
+				}
+			} 
+		}
+	}	
+	
+}(window.dataModel = window.dataModel || {}, jQuery));
+
 
 function findActiveParent(node) {
     var result = node;
@@ -553,157 +551,136 @@ function paperClick() {
     }
 }
 
-// ================ Database Query Functions ================ //
+(function(db, $, undefined) {
+	var postToPhp = function(file, data, successFun, async) {
+		$.ajax({
+			type: "POST",
+			url: "media/php/" + file,
+			data: data,
+			error: function(data) {
+				console.log("Failed when calling " + file);
+				console.log(data);
+			},
+			success: function(result) {
+				console.log("Successfully called " + file);
+				if (successFun) successFun(result);
+			},
+			async: async
+		});	
+	};
+	
+	var getFromPhp = function(file, successFun, async) {
+		$.ajax({
+			type: "GET",
+			url: "media/php/" + file,
+			error: function(data) {
+				console.log("Failed when calling " + file);
+				console.log(data);
+			},
+			success: function(result) {
+				console.log("Successfully called " + file);
+				if (successFun) successFun(result);
+			},
+			async: async
+		});	
+	};	
+	
+	db.createDataset = function(datasetName, userID, origDatasetID) {
+		var successFun = function(datasetID) {
+			$('#dataSelect').append(new Option(datasetName, datasetID));
+			$('#dataSelect').trigger('liszt:updated');
+			$('#createDatasetSuccessAlert').show();
+		};
+		postToPhp("addDataset.php",
+				{datasetName: datasetName, userID: userID, isClone: false, origDatasetID: origDatasetID},
+				successFun,
+				true);
+	};
 
-function saveSessionData() {
-    sessionEndTime = new Date();
-    var sessionLength = sessionEndTime - sessionStartTime;
-    sessionLength /= 1000;
-    $.ajax({        
-       type: "POST",
-       url: "media/php/writeActionData.php",
-       data: {actionDataArray : actionData, sessionLength : sessionLength, userID: uid},
-       error: function(data) {
-            console.log("Failed");
-            console.log(data);
-       },
-       success: function(data) {
-            console.log("Successfully passed data to php.");
-            console.log(data);
-       },
-       async: false
-    });
-}
+	db.cloneDataset = function(datasetName, userID, origDatasetID) {
+		var successFun = function(datasetID) {
+			$('#dataSelect').append(new Option(datasetName, datasetID));
+			$('#dataSelect').trigger('liszt:updated');
+			$('#createDatasetSuccessAlert').show();
+		};
+		postToPhp("addDataset.php",
+				{datasetName: datasetName, userID: userID, isClone: true, origDatasetID: origDatasetID},
+				successFun,
+				true);
 
-function populateUserId() {
-    $.ajax({
-        type: "POST",
-        url: "media/php/getUserID.php",
-        error: function(data) {
-            console.log("Failed");
-            console.log(data);
-        },
-        success: function(data) {
-            console.log("Success");
-            uid = data;
-            populateDatasets(uid);
-        },
-        async: false
-    });
-}
+	}	
 
-function populateDatasets(uid) {
-    $.ajax({
-        type: "POST",
-        url: "media/php/getDatasetByUserId.php",
-        data: {userID: uid},
-        error: function(data) {
-            console.log("Failed");
-            console.log(data);
-        },
-        success: function(data) {
-            console.log("Populate dataset success");
-            console.log(data);
-            dataset_list = $.parseJSON(data);
-            populateDatasetUI();
-        },
-        async: false
-    });
-}
+	db.saveSessionData = function() {
+		sessionEndTime = new Date();
+		var sessionLength = sessionEndTime - sessionStartTime;
+		sessionLength /= 1000;
+		postToPhp("writeActionData.php",
+				{actionDataArray : actionData, sessionLength : sessionLength, userID: uid},
+				null,
+				false);
+	}
 
-/*
- * 1. Add the dataset in the database
- * 2. Add the dataset in the UI
- */
-function createDataset(datasetName, userID, origDatasetID) {
-    $.ajax({
-        type: "POST",
-        url: "media/php/addDataset.php",
-        data: {datasetName: datasetName, userID: userID, isClone: false, origDatasetID: origDatasetID},
-        error: function(data) {
-            console.log("Failed");
-            console.log(data);
-        },
-        success: function(datasetID) {
-            console.log("Success");
-            $('#dataSelect').append(new Option(datasetName, datasetID));
-            $('#dataSelect').trigger('liszt:updated');
-            $('#createDatasetSuccessAlert').show();
-        },
-        async: true
-    });
-}
+	db.populateUserId = function() {
+		var successFun = function(result) {
+			uid = result;
+			db.populateDatasets(uid);
+		};
+		postToPhp('getUserID.php',
+				null,
+				successFun,
+				false);
+	}
 
-/*
- * 1. Add the dataset in the database
- * 2. Add the dataset in the UI
- */
-function cloneDataset(datasetName, userID, origDatasetID) {
-    $.ajax({
-        type: "POST",
-        url: "media/php/addDataset.php",
-        data: {datasetName: datasetName, userID: userID, isClone: true, origDatasetID: origDatasetID},
-        error: function(data) {
-            console.log("AddDatset Failed.");
-            console.log(data);
-        },
-        success: function(datasetID) {
-            console.log("AddDataset Success.");
-            $('#dataSelect').append(new Option(datasetName, datasetID));
-            $('#dataSelect').trigger('liszt:updated');
-            $('#createDatasetSuccessAlert').show();
-        },
-        async: true
-    });	
-}
+	db.populateDatasets = function(uid) {
+		var successFun = function(result) {
+			dataset_list = $.parseJSON(result);
+			populateDatasetUI();
+		};
+		postToPhp('getDatasetByUserID.php',
+				{userID: uid},
+				successFun,
+				false);
+	}
 
-function getBrainData(datasetKey, userID) {
-    $.ajax({
-        type: "POST",
-        url: "media/php/getBrainData.php",
-        data: {datasetKey: datasetKey, userID: userID},
-        error: function(data) {
-        console.log("Warning: call to getBrainData.php Failed");
-            console.log(data);
-        },
-        success: function(result) {
-            console.log("Successfully passed data to php.");
-            console.log(result);
-            var data = $.parseJSON(result);
-            var nodes = data.nodes;
-            var links = data.links;
-            constructUserDataMaps(datasetKey, nodes, links);
-            var dataset = user_datasets[datasetKey];
-            active_node_map = dataset.node_map;
-            active_node_link_map = dataset.node_link_map;
-            active_node_in_neighbor_map = dataset.node_in_neighbor_map;
-            active_node_out_neighbor_map = dataset.node_out_neighbor_map;
-            active_link_map = dataset.link_map;
-            updateOptions();
-            visualizeUserData(datasetKey);
-            is_preloaded_data = false;
-        },
-        async: false
-    });
-}
 
-function getBrodmannAreas() {
-    $.ajax({
-        type: "GET",
-        url: "media/php/getBrodmannAreas.php",
-        error: function(data) {
-        console.log("Failed");
-            console.log(data);
-        },
-        success: function(result) {
-            console.log("Successfully passed data to php.");
-            console.log(result);
-            var data = $.parseJSON(result);
-            constructBrodmannMap(data);
-        },
-        async: true
-    });
-}
+
+	db.getBrainData = function(datasetKey, userID) {
+		var successFun = function(result) {
+			var data = $.parseJSON(result);
+			var nodes = data.nodes;
+			var links = data.links;
+			if (data.diff_nodes.length > 0 || data.diff_links.length >　0) {
+				dataModel.mergeDiffs(nodes, links, data.diff_nodes, data.diff_links);
+			}
+			constructUserDataMaps(datasetKey, nodes, links);
+			var dataset = user_datasets[datasetKey];
+			active_node_map = dataset.node_map;
+			active_node_link_map = dataset.node_link_map;
+			active_node_in_neighbor_map = dataset.node_in_neighbor_map;
+			active_node_out_neighbor_map = dataset.node_out_neighbor_map;
+			active_link_map = dataset.link_map;
+			updateOptions();
+			visualizeUserData(datasetKey);
+			is_preloaded_data = false;
+		};
+		phpToPhp('getBrainData.php',
+				{datasetKey: datasetKey, userID: userID}, 
+				successFun,
+				false);
+	}
+
+	db.getBrodmannAreas = function() {
+		var successFun = function(result) {
+			var data = $.parseJSON(result);
+			constructBrodmannMap(data);
+		};
+		getFromPhp('getBrodmannAreas.php',
+				successFun,
+				true);
+	}
+	
+}(window.database = window.database || {}, jQuery));
+
 
 // ================ Misc Functions ================ //
 
