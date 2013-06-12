@@ -186,7 +186,7 @@ function stash(d) {
 		assignColors(user_datasets[datasetKey].node_map);
 	};
 	
-	function constructUserNodesMaps(datasetKey, nodes) {
+	dm.constructUserNodesMaps = function(datasetKey, nodes) {
 		var user_node_map = {};
 		var user_in_neighbor_map = {};
 		var user_out_neighbor_map = {};
@@ -220,7 +220,7 @@ function stash(d) {
 	}
 
 
-	function constructUserLinksMaps(datasetKey, links) {    
+	dm.constructUserLinksMaps = function(datasetKey, links) {    
 		var user_link_map = {};
 		var user_node_link_map = {};
 		var dataset = user_datasets[datasetKey];
@@ -247,7 +247,7 @@ function stash(d) {
 	/*
 	 * TODO: could use some performance improvement
 	 */
-	function constructLinkHierarchy(datasetKey, links) {
+	dm.constructLinkHierarchy = function(datasetKey, links) {
 		var num_link = links.length;
 		var max_link_key = 0;
 		for (var i = 0; i < num_link; ++i) {
@@ -656,7 +656,7 @@ function paperClick() {
 			dataset_list = $.parseJSON(result);
 			populateDatasetUI();
 		};
-		postToPhp('getDatasetByUserID.php',
+		postToPhp('getDatasetByUserId.php',
 				{userID: uid},
 				successFun,
 				false);

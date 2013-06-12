@@ -98,7 +98,7 @@ $('#sourceSelect').change(sourceSearchInput);
 $('#targetSelect').change(targetSearchInput);
 $('#dataSelect').change(datasetSelect);
 $('.map').maphilight();
-window.onbeforeunload=saveSessionData;
+window.onbeforeunload=database.saveSessionData;
 window.onload=startSession;
 /*******
     End of UI elements action binding section
@@ -166,9 +166,9 @@ function waitForDataLoading() {
        active_link_map = link_map; */
         var datasetKey = 'pre_1'; 
         user_datasets[datasetKey] = {};
-        constructUserNodesMaps(datasetKey, pre_nodes);
-        constructUserLinksMaps(datasetKey, pre_links);
-        constructLinkHierarchy(datasetKey, pre_links);
+        dataModel.constructUserNodesMaps(datasetKey, pre_nodes);
+        dataModel.constructUserLinksMaps(datasetKey, pre_links);
+        dataModel.constructLinkHierarchy(datasetKey, pre_links);
 //        assignColors(user_datasets[datasetKey].node_map);
         active_node_map = user_datasets['pre_1'].node_map;
         active_node_link_map = user_datasets['pre_1'].node_link_map;
