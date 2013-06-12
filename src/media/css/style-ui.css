@@ -20,9 +20,7 @@ html,body { height:100%; }
 
 /* Navigation */
 #util {
-    padding: 20px;
-    background-color: rgba(240,245,255,0.9);
-	width: 440px;
+	width: 400px;
 	height: 100%;
 	position: relative;
 	float:right;
@@ -35,13 +33,13 @@ html,body { height:100%; }
     right: 0px;
 }
 #canvas {
+	background-color:rgba(0,0,0,.02);
 	position:relative;
 	left: 0px;
 	top: 0px;
 	width: 800px;
 	float:left;
 	margin-top: 10px;
-	padding-top: 20px;
 }
 
 .tab-content {
