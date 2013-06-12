@@ -29,16 +29,10 @@
 
     <!--UTIL TAB RIGHT-->
     <div id="util">
-      <ul class="nav nav-tabs">
-        <li class="active"><a href="#info" data-toggle="tab">Info</a></li>
-        <li><a href="#legend" data-toggle="tab">Legend</a></li>
-        <li><a href="#options" data-toggle="tab">Options</a></li>
-        <li><a href="#search" data-toggle="tab">Search</a></li>
-        <li><a href="#manage-data" data-toggle="tab">Manage Data</a></li>
-      </ul>
-      <div id="util-content" class="tab-content">
 
-        <div id="info" class="tab-pane fade in active">
+      <div id="util-content">
+
+        <div id="info" class="util-section">
             <div id="conn-info">
                 <h4>Connection information</h4>
                 <p>&nbsp</p>
@@ -55,55 +49,11 @@
                 <h4>Brain Region information</h4>
                 <p>&nbsp</p>
                 <p><i>Region information will be available in future updates</i></p>
-                
-<!--                <div id="source-region-info" class="accordion-group">
-                    <div class="accordion-heading">
-                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#region-info" href="#source-info-content">
-                            Source region    <link rel="stylesheet" href="media/lib/jquery-ui/css/redmond/jquery-ui.css" />
-                        </a>
-                    </div>
-                    <div id="source-info-content" class="accordion-body collapse in">
-                        <div class="accordion-inner accordion-content">
-                            <div class="tab-content">
-                                <ul class="nav nav-tabs">
-                                    <li class="active"><a href="#source-slice" data-toggle="tab">Anatomical image</a></li>
-                                    <li><a href="#source-wiki" data-toggle="tab">Other resources</a></li>
-                                </ul>
-                                <div id="source-slice" class="slice tap-pane fade in active">
-                                </div>
-                                <div id="source-wiki" class="wiki tap-pane fade in">
-                                    <iframe src="http://en.wikipedia.org/wiki/Cerebrum"></iframe>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div id="target-region-info" class="accordion-group">
-                    <div class="accordion-heading">
-                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#region-info" href="#target-info-content">
-                            Target region
-                        </a>
-                    </div>
-                    <div id="target-info-content" class="accordion-body collapse">
-                        <div class="accordion-inner accordion-content">
-                            <div class="tab-content">
-                                <ul class="nav nav-tabs">
-                                    <li class="active"><a href="#target-slice" data-toggle="tab">Anatomical image</a></li>
-                                    <li><a href="#target-wiki" data-toggle="tab">Other resources</a></li>
-                                </ul>
-                                <div id="target-slice" class="slice tap-pane fade in active">
-                                </div>
-                                <div id="target-wiki" class="wiki tap-pane fade in">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div> -->
             </div>
         </div><!--END INFO-->
 
         <!--LEGEND-->
-        <div id="legend" class="tab-pane fade in">
+        <div id="legend" class="util-section">
           <div id="legend-primary" style="position:relative; height:150px;">
             <h4>Primary</h4></br>
             <div style="background-color:#2ca02c; height:20px; width:20px; position:absolute; top:35px;"></div>
@@ -115,7 +65,7 @@
           </div>
         </div><!--END LEGEND-->
         <!--OPTIONS-->
-        <div id="options" class="tab-pane fade in">
+        <div id="options" class="util-section">
           <table>
             <tr><td class="tab-column-1"><h4>Edge color</h4></td></tr>
             <tr>
@@ -126,14 +76,6 @@
                 </select>
               </td>
             </tr>
-<!--            <tr>
-              <td class="tab-column-1">Scale</td>
-              <td class="tab-column-2">
-                <select data-placeholder="Choose a scale" class="chzn-select" style="width:250px;" id="scaleSelect">
-                  <option></option>
-                </select>
-              </td>
-            </tr> -->
             <tr>
               <td class="tab-column-1">Aggregation scheme</td>
               <td class="tab-column-2">
@@ -158,7 +100,7 @@
         </div><!--END OPTIONS-->
 
         <!--SEARCH-->
-        <div id="search" class="tab-pane fade in">
+        <div id="search" class="util-section">
           <div id="search-settings">
           <table>
             <tr>
@@ -196,7 +138,7 @@
         </div><!--END SEARCH-->
 
         <!--MANAGE DATA-->
-        <div id="manage-data" class="tab-pane fade in">
+        <div id="manage-data" class="util-section">
             <div id="createDatasetSuccessAlert" class="alert alert-success" style="display:none">
               <button type="button" class="close" data-dismiss="alert">&times;</button>
               Dataset created successfully. Select and edit the new dataset to add nodes and links.

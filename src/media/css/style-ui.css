@@ -110,6 +110,11 @@ html,body { height:100%; }
     font: 13px sans-serif;
 }
 
+.util-section {
+	width: 100%;
+	padding: 10px;
+}
+
 /*#util li {*/
 /*float:left;*/
 /*display:block;*/
