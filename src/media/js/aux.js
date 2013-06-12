@@ -142,27 +142,47 @@ function stash(d) {
 // ================ Data Structure Functions ================ //
 (function(dm, $, undefined) {
 
-	dm.mergeDiffs = function(nodes, links, diff_nodes, diff_links) {
+	function mergeDiffs(datasetKey, nodes, links, diff_nodes, diff_links) {
 		console.log(diff_nodes);
 		console.log(diff_links);
+		var node_map = user_datasets[datasetKey].node_map;
+		var link_map = user_datasets[datasetKey].link_map;
 		for (var i = 0; i < diff_nodes.length; ++i) {
 			diff_entry = diff_nodes[i];
 			switch (diff_entry.diff) {
-				case 'AddNode': 
+				case 'AddNode':
+					var newNode = {key: diff_entry.nodeKey, name: null, depth: 0, parent: null, notes: null};
+					nodes.push(newNode);
+					node_map[newNode.key] = newNode;
 					break;
 				case 'Rename':
+					node_map[diff_entry.nodeKey].name = diff_entry.content;
 					break;
 				case 'ChangeNote':
+					node_map[diff_entry.nodeKey].notes = diff_entry.content;
+					break;
+			}
+		}
+		for (var i = 0; i < diff_links.length; ++i) {
+			diff_entry = diff_links[i];
+			switch (diff_entry.diff) {
+				case 'AddLink':
+					break;
+				case 'ChangeNode':
+					link_map[diff_entry.linkKey].notes = diff_entry.content;
 					break;
 			}
 		}
 	};
 	
-	dm.constructUserDataMaps = function(datasetKey, nodes, links) {
+	dm.constructUserDataMaps = function(datasetKey, nodes, links, diff_nodes, diff_links) {
 		user_datasets[datasetKey] = {};
 		constructUserNodesMaps(datasetKey, nodes);
 		constructUserLinksMaps(datasetKey, links);
 		constructLinkHierarchy(datasetKey, links);
+		if (diff_nodes.length > 0 || diff_links.length > 0) {
+			mergeDiffs(datasetKey, nodes, links, diff_nodes, diff_links);				
+		}
 		assignColors(user_datasets[datasetKey].node_map);
 	};
 	
@@ -647,12 +667,7 @@ function paperClick() {
 	db.getBrainData = function(datasetKey, userID) {
 		var successFun = function(result) {
 			var data = $.parseJSON(result);
-			var nodes = data.nodes;
-			var links = data.links;
-			if (data.diff_nodes.length > 0 || data.diff_links.length >　0) {
-				dataModel.mergeDiffs(nodes, links, data.diff_nodes, data.diff_links);
-			}
-			constructUserDataMaps(datasetKey, nodes, links);
+			dataModel.constructUserDataMaps(datasetKey, data.nodes, data.links, data.diff_nodes, data.diff_links);
 			var dataset = user_datasets[datasetKey];
 			active_node_map = dataset.node_map;
 			active_node_link_map = dataset.node_link_map;
@@ -710,6 +725,17 @@ function constructBrodmannMap(data) {
 
 function endsWith(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
+
+function findMaxElement(array, key) {
+	var max = 0;
+	var length = array.length;
+	for (var i = 0; i < length; ++i) {
+		var elem = array[i][key];
+		console.log(elem);
+		max = (elem > max) ? elem : max;
+	}
+	return max;
 }
 /*
 function generateKeyForNodeLinkMap(a, b) {

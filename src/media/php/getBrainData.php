@@ -102,8 +102,6 @@
 
 		$diff_nodes = array();
 		$diff_links = array();
-		$extra_nodes = array();
-		$extra_links = array();
 		if ($isClone) {
 			/* Get the difference data*/
 			$query = "SELECT `diff` FROM `diff_nodes` WHERE `userID` = " . $userID . " AND `origin` = " . $origin;
