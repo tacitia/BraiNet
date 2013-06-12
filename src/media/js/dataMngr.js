@@ -466,7 +466,7 @@
 		postToPhp("getBrainData.php",
 				{datasetKey: datasetProperties.key, userID: datasetProperties.userID},
 				successFun,
-				false);
+				true);
 	};
 	
 	db.addBrainNode = function(nodeData) {
