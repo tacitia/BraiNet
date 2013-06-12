@@ -28,7 +28,7 @@
         </div>
     </div>
     <div id="titlebar">
-    	<div class="module-title" style="width:800px">
+    	<div class="module-title" style="width:800px; float:left">
     		<h2>Canvas</h2>
     	</div>
 		<div class="module-title" style="width:400px">
@@ -40,7 +40,7 @@
 
       <div id="util-content">
 
-        <div id="info" class="util-section">
+        <div id="info" class="util-section card">
             <div id="conn-info">
                 <h4>Connection information</h4>
                 <p>&nbsp</p>
@@ -61,7 +61,7 @@
         </div><!--END INFO-->
 
         <!--LEGEND-->
-        <div id="legend" class="util-section">
+        <div id="legend" class="util-section card">
           <div id="legend-primary" style="position:relative; height:150px;">
             <h4>Primary</h4></br>
             <div style="background-color:#2ca02c; height:20px; width:20px; position:absolute; top:35px;"></div>
@@ -73,7 +73,7 @@
           </div>
         </div><!--END LEGEND-->
         <!--OPTIONS-->
-        <div id="options" class="util-section">
+        <div id="options" class="util-section card">
           <table>
             <tr><td class="tab-column-1"><h4>Edge color</h4></td></tr>
             <tr>
@@ -108,7 +108,7 @@
         </div><!--END OPTIONS-->
 
         <!--SEARCH-->
-        <div id="search" class="util-section">
+        <div id="search" class="util-section card">
           <div id="search-settings">
           <table>
             <tr>
@@ -146,7 +146,7 @@
         </div><!--END SEARCH-->
 
         <!--MANAGE DATA-->
-        <div id="manage-data" class="util-section">
+        <div id="manage-data" class="util-section card">
             <div id="createDatasetSuccessAlert" class="alert alert-success" style="display:none">
               <button type="button" class="close" data-dismiss="alert">&times;</button>
               Dataset created successfully. Select and edit the new dataset to add nodes and links.
@@ -193,7 +193,7 @@
   </div>
   <!--END UTIL RIGHT-->
 
-    <div id="canvas">
+    <div id="canvas" card>
       <div id="canvas-body">
       <ul class="nav nav-tabs">
         <li class="active"><a href="#canvas-circular" data-toggle="tab">Circular view</a></li>

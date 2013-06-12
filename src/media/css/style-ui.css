@@ -46,6 +46,13 @@ html,body { height:100%; }
 	float:left;
 }
 
+.card {
+	box-shadow: 2px 2px 1px #d8d8d8;
+	border-radius: 3px;
+	border: 1px solid #e5e5e5;
+	background-color: #fff;
+}
+
 .tab-content {
 	height: 100%;
 }
@@ -117,10 +124,7 @@ html,body { height:100%; }
 .util-section {
 	width: 100%;
 	padding: 10px;
-	border-radius: 3px;
-	border: 1px solid #e5e5e5;
 	margin: 10px 0 20px 0;
-	background-color: #fff;
 }
 
 /*#util li {*/
