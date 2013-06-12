@@ -1,1 +1,1 @@
-java -jar compiler.jar --js var.js main.js svg.js aux.js ui.js anatomy.js --js_output_file brainCircuits.js
+java -jar compiler.jar --js var.js aux.js main.js svg.js ui.js anatomy.js --js_output_file brainCircuits.js
