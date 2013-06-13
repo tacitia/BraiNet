@@ -20,6 +20,10 @@ body {
 }
 html,body { height:100%; }
 
+#webtitle {
+	margin: 20px;
+}
+
 #content {
 	width:1280px;
 	margin:0px auto;
