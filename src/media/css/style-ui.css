@@ -1,3 +1,12 @@
+body,
+input,
+button,
+select,
+textarea,
+.navbar-search .search-query {
+	font-family: 'Actor', sans-serif;
+}
+
 body {
     /*make everything not selectable*/
     -webkit-touch-callout: none;
@@ -6,7 +15,6 @@ body {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-	font-family: 'Actor', sans-serif;
     font: 13px sans-serif;
     background-color: rgba(0,0,0,.02);
 }
