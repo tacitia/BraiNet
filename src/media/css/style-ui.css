@@ -21,7 +21,7 @@ body {
 html,body { height:100%; }
 
 #webtitle {
-	margin: 20px;
+	margin: 20px 0 20px 0;
 }
 
 #content {
