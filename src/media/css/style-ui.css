@@ -6,6 +6,7 @@ body {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+	font-family: 'Actor', sans-serif;
     font: 13px sans-serif;
     background-color: rgba(0,0,0,.02);
 }
@@ -51,6 +52,7 @@ html,body { height:100%; }
 	border-radius: 3px;
 	border: 1px solid #e5e5e5;
 	background-color: #fff;
+	margin: 10px 0 20px 0;
 }
 
 .tab-content {
@@ -78,8 +80,6 @@ html,body { height:100%; }
 }
 
 #search-results {
-	position: absolute;
-	top: 650px;
 	width: 800px;
 }
 
@@ -124,7 +124,6 @@ html,body { height:100%; }
 .util-section {
 	width: 100%;
 	padding: 10px;
-	margin: 10px 0 20px 0;
 }
 
 /*#util li {*/

@@ -65,8 +65,9 @@
 
         <!--LEGEND-->
         <div id="legend" class="util-section card">
+          <h3>Edge Color Legend</h3>
           <div id="legend-primary" style="position:relative; height:150px;">
-            <h4>Primary</h4></br>
+            <h4>Default (by directionality)</h4></br>
             <div style="background-color:#2ca02c; height:20px; width:20px; position:absolute; top:35px;"></div>
             <p style="position:absolute; left:25px; top:35px;">Source region / Outgoing connecion</p>
             <div style="background-color:#d62728; height:20px; width:20px; position:absolute; top:70px;"></div>
@@ -74,11 +75,8 @@
             <div style="background-color:#062db8; height:20px; width:20px; position:absolute; top:105px;"></div>
             <p style="position:absolute; left:25px; top:105px;">Bidirectional connection</p>
           </div>
-        </div><!--END LEGEND-->
-        <!--OPTIONS-->
-        <div id="options" class="util-section card">
           <table>
-            <tr><td class="tab-column-1"><h4>Edge color</h4></td></tr>
+            <tr><td class="tab-column-1"><h4>Optional (by custom features)</h4></td></tr>
             <tr>
               <td class="tab-column-1">Feature</td>
               <td class="tab-column-2">
@@ -107,8 +105,9 @@
             <p style="position:absolute; left:25px; top:70px;">Moderate</p>
             <div style="background-color:#90f; opacity: 0.2; height:20px; width:20px; position:absolute; top:105px;"></div>
             <p style="position:absolute; left:25px; top:105px;">Weak</p>
-          </div>
-        </div><!--END OPTIONS-->
+          </div>          
+        </div><!--END LEGEND-->
+        <!--OPTIONS-->
 
         <!--SEARCH-->
         <div id="search" class="util-section card">
@@ -211,7 +210,7 @@
       </div>
     </div>
     <!-- List Link Connections (Search Results) -->
-    <div id="search-results">
+    <div id="search-results" class="card">
       <ul class="nav nav-tabs">
         <li class="active"><a href="#paper-list" data-toggle="tab">Publications</a></li>
         <li><a href="#notes" data-toggle="tab">Notes</a></li>
