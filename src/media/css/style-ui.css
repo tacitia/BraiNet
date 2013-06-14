@@ -75,11 +75,6 @@ html,body { height:100%; }
 	margin-top: 10px;
 }
 
-.module-title {
-	position:relative;
-	float:left;
-}
-
 .card {
 	box-shadow: 2px 2px 1px #d8d8d8;
 	border-radius: 3px;
@@ -91,6 +86,16 @@ html,body { height:100%; }
 .multi-col {
 	position:relative;
 	float:left;	
+}
+
+.lf-col-left {
+	position:relative;
+	float:left;
+}
+
+.lf-col-right {
+	position:relative;
+	float:right;
 }
 
 .legend-label {
@@ -255,10 +260,6 @@ html,body { height:100%; }
     margin-left: auto;
     margin-right: auto;
     overflow-y: scroll;
-}
-
-#create {
-	margin-bottom: 35px;
 }
 
 #bt-createDatasets {

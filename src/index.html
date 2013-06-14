@@ -33,10 +33,10 @@
     </div>
     <div id="content">
     <div id="titlebar">
-    	<div class="module-title" style="width:800px; float:left">
+    	<div style="width:800px; float:left">
     		<h2>Canvas</h2>
     	</div>
-		<div class="module-title" style="width:400px; float:right">
+		<div style="width:400px; float:right">
     		<h2>Control Panel</h2>
 		</div>
     </div>
@@ -68,21 +68,21 @@
         <!--LEGEND-->
         <div id="legend" class="util-section card">
           <h3 class="control-section-title">Edge Color Legend</h3>
-          <div id="legend-primary" style="position:relative; height:150px;">
+          <div id="legend-primary">
             <h4>Default (by directionality)</h4></br>
             <div>
               <div class="legend-block multi-col" style="background-color:#2ca02c;"></div>
-              <div class="multi-col"><p>Source region / Outgoing connecion</p></div>
+              <div class="legend-label multi-col"><p>Source region / Outgoing connecion</p></div>
               <div class="clear"></div>
             </div>
             <div>
               <div class="legend-block multi-col" style="background-color:#d62728;"></div>
-              <div class="multi-col"><p>Target region / Incoming connecion</p></div>
+              <div class="legend-label multi-col"><p>Target region / Incoming connecion</p></div>
               <div class="clear"></div>
             </div>
             <div>
               <div class="legend-block multi-col" style="background-color:#062db8;"></div>
-              <div class="multi-col"><p>Bidirectional connection</p></div>
+              <div class="legend-label multi-col"><p>Bidirectional connection</p></div>
               <div class="clear"></div>
             </div>
           </div>
@@ -108,20 +108,20 @@
             </tr>
           </table>
           <br/>
-          <div id="legend-feature" style="position:relative">
+          <div id="legend-feature">
             <div>
               <div class="legend-block multi-col" style="background-color:#90f; opacity: 0.8;"></div>
-              <div class="multi-col"><p>Strong</p></div>
+              <div class="legend-label multi-col"><p>Strong</p></div>
               <div class="clear"></div>
             </div>
             <div>
               <div class="legend-block multi-col" style="background-color:#90f; opacity: 0.4;"></div>
-              <div class="multi-col"><p>Moderate</p></div>
+              <div class="legend-label multi-col"><p>Moderate</p></div>
               <div class="clear"></div>
             </div>
             <div>
               <div class="legend-block multi-col" style="background-color:#90f; opacity: 0.2;"></div>
-              <div class="multi-col"><p>Weak</p></div>
+              <div class="legend-label multi-col"><p>Weak</p></div>
               <div class="clear"></div>
             </div>
           </div>          
@@ -130,6 +130,7 @@
 
         <!--SEARCH-->
         <div id="search" class="util-section card">
+          <h4>Indirect Connection Search</h4>
           <div id="search-settings">
           <table>
             <tr>
@@ -157,12 +158,11 @@
             </tr>
           </table>
           </br>
-          <table>
-            <tr>
-              <td style="width:350px"><button id="bt-search" class="btn">Show connectivity for selected regions</button></td>
-              <td style="width:50px;"><button id="bt-clear" class="btn btn-warning">Clear</button></td>
-            </tr>
-          </table>
+          <div>
+            <div class="lf-col-left"><button id="bt-search" class="btn">Show connectivity for selected regions</button></div>
+            <div class="lf-col-right"><button id="bt-clear" class="btn btn-warning">Clear</button></div>
+            <div class="clear"></div>
+          </div>
           </div>
         </div><!--END SEARCH-->
 
