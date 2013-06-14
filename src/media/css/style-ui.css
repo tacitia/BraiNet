@@ -84,7 +84,7 @@ html,body { height:100%; }
 	margin: 0 0 15px 0;
 }
 
-.double-column {
+.multi-col {
 	position:relative;
 	float:left;	
 }
