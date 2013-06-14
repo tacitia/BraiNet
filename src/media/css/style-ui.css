@@ -7,6 +7,11 @@ textarea,
 	font-family: 'Actor', sans-serif !important;
 }
 
+a {
+	color: #76a7c8;
+	font-size: 15px;
+}
+
 body {
     /*make everything not selectable*/
     -webkit-touch-callout: none;
@@ -23,6 +28,8 @@ html,body { height:100%; }
 #head-section {
 	width: 100%;
 	height: auto;
+	box-shadow: 2px 2px 1px rgba(0,0,0,0.5);
+	padding: 10px;
 }
 
 #webtitle {
@@ -31,7 +38,7 @@ html,body { height:100%; }
 
 #content {
 	width:1280px;
-	margin:0px auto;
+	margin:30px auto;
 	position: relative;
 	height: 100%;
 }
