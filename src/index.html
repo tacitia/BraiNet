@@ -36,7 +36,7 @@
     	<div style="width:800px; float:left">
     		<h2>Canvas</h2>
     	</div>
-		<div style="width:400px; float:right">
+		<div style="width:350px; float:right">
     		<h2>Control Panel</h2>
 		</div>
     </div>
@@ -44,8 +44,17 @@
     <div id="util">
 
       <div id="util-content">
+		
+		<div id="anatomy" class="util-section card">
+	 	  <h3>Anatomical Reference</h3>
+          <div id="anatomy-map">
+		  	<div id="svg"></div>
+		  	<div id="img"></div>
+		  </div>		  
+		</div>
 
         <div id="info" class="util-section card">
+	 	  <h3>Connection and Region Information</h3>
             <div id="conn-info">
                 <h4>Connection information</h4>
                 <p>&nbsp</p>
@@ -53,11 +62,6 @@
                 <p id="src-name"></p>
                 <p id="tgt-name"></p>
             </div>
-
-            <div id="anatomy-map">
-		  		<div id="svg"></div>
-		  		<div id="img"></div>
-			</div>
             <div id="region-info">
                 <h4>Brain Region information</h4>
                 <p>&nbsp</p>
@@ -184,14 +188,16 @@
                   <option></option>
                 </select>
             </div>
-            <div id="edit">
+            <div id="edit" class="multi-col">
               <button class="btn" id="bt-manageDatasets">Edit</button>
             </div>
-            <div id="clone">
+            <div id="clone" class="multi-col">
               <button class="btn" id="bt-cloneDatasets">Clone</button>
             </div>
-	        <div id="apply">
+	        <div id="apply" class="multi-col">
               <button class="btn btn-primary" id="bt-applyDataset">Display</button>
+            </div>
+            <div class="clear">
             </div>
         </div><!--END MANAGE DATA-->
 

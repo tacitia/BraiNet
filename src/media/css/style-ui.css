@@ -54,7 +54,7 @@ html,body { height:100%; }
 
 /* Navigation */
 #util {
-	width: 400px;
+	width: 350px;
 	height: 100%;
 	position: relative;
 	float:right;
@@ -179,7 +179,7 @@ html,body { height:100%; }
 
 .util-section {
 	width: 100%;
-	padding: 10px;
+	padding: 20px;
 }
 
 /*#util li {*/
