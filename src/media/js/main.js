@@ -18,7 +18,7 @@
 		console.log("???");
 		notesDisplay.css('display', 'none');
 		notesInput.css('display', 'block');
-		saveButton.css('visibility', 'visible');		
+		saveButton.css('display', 'block');		
 	};
 	
 	cn.saveButtonClick = function() {
@@ -27,7 +27,7 @@
 		// Update notes in the database
 		notesDisplay.css('display', 'block');
 		notesInput.css('display', 'none');
-		saveButton.css('visibility', 'hidden');
+		saveButton.css('display', 'none');
 		notesDisplay.value(notes);
 		updateNotes();	
 	};
