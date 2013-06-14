@@ -45,10 +45,11 @@ function createDatasetButtonClick() {
 	};
 	
 	cn.editButtonClick = function() {
+		console.log("???");
 		notesDisplay.css('display', 'none');
 		notesInput.css('display', 'block');
 		saveButton.css('visibility', 'visible');		
-	}
+	};
 	
 	cn.saveButtonClick = function() {
 		var notes = notesInput.value();
@@ -59,7 +60,7 @@ function createDatasetButtonClick() {
 		saveButton.css('visibility', 'hidden');
 		notesDisplay.value(notes);
 		updateNotes();	
-	}
+	};
 	
 })(window.connNotes = window.connNotes || {}, jQuery);
 
