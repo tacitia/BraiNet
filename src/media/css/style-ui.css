@@ -42,11 +42,11 @@ html,body { height:100%; }
 
 #webtitle {
 	margin: 0 auto;
-	width: 1280px;
+	width: 1260px;
 }
 
 #content {
-	width:1280px;
+	width:1240px;
 	margin:30px auto;
 	position: relative;
 	height: 100%;
