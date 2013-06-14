@@ -4,6 +4,36 @@
     Script 1: main routine
 */
 
+
+(function(cn, $, undefined){
+	var notesDisplay = $('conn-note-display');
+	var notesInput = $('conn-note-input');
+	var saveButton = $('conn-note-save');
+	
+	var updateNotes = function() {
+
+	};
+	
+	cn.editButtonClick = function() {
+		console.log("???");
+		notesDisplay.css('display', 'none');
+		notesInput.css('display', 'block');
+		saveButton.css('visibility', 'visible');		
+	};
+	
+	cn.saveButtonClick = function() {
+		var notes = notesInput.value();
+		// Update notes for the connection
+		// Update notes in the database
+		notesDisplay.css('display', 'block');
+		notesInput.css('display', 'none');
+		saveButton.css('visibility', 'hidden');
+		notesDisplay.value(notes);
+		updateNotes();	
+	};
+	
+})(window.connNotes = window.connNotes || {}, jQuery);
+
 /*******
     Data loading section
 *******/
