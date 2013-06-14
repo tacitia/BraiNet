@@ -67,18 +67,18 @@
 
         <!--LEGEND-->
         <div id="legend" class="util-section card">
-          <h3>Edge Color Legend</h3>
+          <h3 class="control-section-title">Edge Color Legend</h3>
           <div id="legend-primary" style="position:relative; height:150px;">
             <h4>Default (by directionality)</h4></br>
-            <div style="background-color:#2ca02c; height:20px; width:20px; position:absolute; top:35px;"></div>
-            <p style="position:absolute; left:25px; top:35px;">Source region / Outgoing connecion</p>
-            <div style="background-color:#d62728; height:20px; width:20px; position:absolute; top:70px;"></div>
-            <p style="position:absolute; left:25px; top:70px;">Target region / Incoming connecion</p>
-            <div style="background-color:#062db8; height:20px; width:20px; position:absolute; top:105px;"></div>
-            <p style="position:absolute; left:25px; top:105px;">Bidirectional connection</p>
+            <div class="legend-block double-dolumn" style="background-color:#2ca02c;"></div>
+            <div class="double-column"><p>Source region / Outgoing connecion</p></div>
+            <div class="legend-block double-dolumn" style="background-color:#d62728;"></div>
+            <div class="double-column"><p>Target region / Incoming connecion</p></div>
+            <div class="legend-block double-dolumn" style="background-color:#062db8;"></div>
+            <div class="double-column"><p>Bidirectional connection</p></div>
           </div>
           <table>
-            <tr><td class="tab-column-1"><h4>Optional (by custom features)</h4></td></tr>
+            <h4>Optional (by custom features)</h4>
             <tr>
               <td class="tab-column-1">Feature</td>
               <td class="tab-column-2">
@@ -100,7 +100,6 @@
           </table>
           <br/>
           <div id="legend-feature" style="position:relative">
-            <h4>Legend</h4></br>
             <div style="background-color:#90f; opacity: 0.8; height:20px; width:20px; position:absolute; top:35px;"></div>
             <p style="position:absolute; left:25px; top:35px;">Strong</p>
             <div style="background-color:#90f; opacity: 0.4; height:20px; width:20px; position:absolute; top:70px;"></div>
