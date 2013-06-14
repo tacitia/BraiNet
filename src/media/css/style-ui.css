@@ -89,6 +89,10 @@ html,body { height:100%; }
 	float:left;	
 }
 
+.clear {
+	clear:both;
+}
+
 .legend-block {
 	width: 20px;
 	height: 20px;
