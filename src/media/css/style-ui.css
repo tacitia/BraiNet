@@ -12,6 +12,14 @@ a {
 	font-size: 15px;
 }
 
+h3 {
+	margin: 0 0 15px 0;
+}
+
+h4 {
+	margin: 5px 0 5px 0;
+}
+
 body {
     /*make everything not selectable*/
     -webkit-touch-callout: none;
@@ -80,13 +88,13 @@ html,body { height:100%; }
 	margin: 10px 0 20px 0;
 }
 
-.control-section-title {
-	margin: 0 0 15px 0;
-}
-
 .multi-col {
 	position:relative;
 	float:left;	
+}
+
+.legend-label {
+	margin-left: 10px; 
 }
 
 .clear {
