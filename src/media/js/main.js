@@ -16,7 +16,6 @@
 	
 	cn.editButtonClick = function() {
 		console.log("???");
-		console.log(notesDisplay);
 		notesDisplay.css('display', 'none');
 		notesInput.css('display', 'block');
 		saveButton.css('visibility', 'visible');		
