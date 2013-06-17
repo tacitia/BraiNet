@@ -16,9 +16,6 @@
 		d3.rgb(255, 237, 111).toString()
 	];
 
-	var inner_radius = Math.min(vis_width, vis_height) * 0.32;
-	var outer_radius = inner_radius * 1.2;
-
 	sd.circNodes = null;
 	sd.circLinks = null;
 	sd.forceNodes = null;
@@ -238,7 +235,7 @@
 		datum.circ.start_angle = start_angle + delta * i;
 		datum.circ.end_angle = start_angle + delta * (i+1);
 		var angle = delta * (i + 0.5) + start_angle;
-		var radius = inner_radius + (outer_radius - inner_radius) / 2;
+		var radius = svgRenderer.inner_radius + (svgRenderer.outer_radius - svgRenderer.inner_radius) / 2;
 		datum.circ.x = radius * Math.cos(Math.PI / 2 - angle);
 		datum.circ.y = -radius * Math.sin(Math.PI / 2 - angle);
 	}
@@ -255,6 +252,8 @@
 	// SVG display parameters
 	var vis_width = 800;
 	var vis_height = 600;
+	var inner_radius = Math.min(vis_width, vis_height) * 0.32;
+	var outer_radius = inner_radius * 1.2;
 
 	var svg_circular;
 	var svg_force;
