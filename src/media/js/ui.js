@@ -46,7 +46,7 @@
 		$('#targetSelect').find('option').remove();
 		$('#sourceSelect').trigger('liszt:updated');
 		$('#targetSelect').trigger('liszt:updated');
-		appendNodesAsOptions(activeDataset.maps.node_map);
+		sui.appendNodesAsOptions(activeDataset.maps.node_map);
 	};
 
 	sui.searchButtonClick = function() {
