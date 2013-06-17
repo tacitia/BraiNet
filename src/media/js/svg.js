@@ -180,7 +180,7 @@
 	 * TODO: Assign the groups when formatting the data, and then assign the colors
 	 * based on the group IDs
 	 */
-	function assignColors(node_map) {
+	sd.assignColors = function(node_map) {
 		var num_level1_nodes = 0;
 		var queue = [];
 		for (var key in node_map) {
@@ -213,7 +213,7 @@
 			}
 			queue.splice(0, 1);
 		}
-	}
+	};
 
 	function calculateArcPositions(datum, start_angle, delta, i) {
 		datum.circ.start_angle = start_angle + delta * i;
