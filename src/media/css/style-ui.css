@@ -33,6 +33,10 @@ body {
 }
 html,body { height:100%; }
 
+.removed {
+	display: none;
+}
+
 #head-section {
 	width: 100%;
 	height: auto;

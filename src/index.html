@@ -60,12 +60,12 @@
                 <p class="exp"><i>Click on a connection and the basic connection information will be displayed here.</i></p>
                 <p id="src-name"></p>
                 <p id="tgt-name"></p>
-                <div id="conn-notes">
+                <div id="conn-notes" class="removed">
                   <div class="multi-col" style="margin-right:10px"><p>Notes:</p></div>
                   <div class="multi-col">
-                    <textarea id="conn-note-input" rows="3" style="display:none;">Add a note...</textarea>
-                    <div id="conn-note-display" style="width:220px;">No notes found.</div>
-                    <button id="conn-note-save" class="btn btn-success" style="display:none">Save</button>
+                    <textarea id="conn-note-input" rows="3" class="removed">Add a note...</textarea>
+                    <p id="conn-note-display" style="width:220px;">No notes found.</p>
+                    <button id="conn-note-save" class="btn btn-success" class="removed">Save</button>
                   </div>
                   <div class="multi-col">
                     <i id="conn-note-edit" class="icon-edit"></i>  
@@ -301,7 +301,15 @@
 	<script type="text/javascript" src="media/lib/qTip2/jquery.qtip.min.js"></script>
     
     <!--TODO: brainmap and script should be compressed as one file-->
-    <script type="text/javascript" src="media/js/brainCircuits.js"></script>
+    <script type="text/javascript" src="media/js/misc.js"></script>
+    <script type="text/javascript" src="media/js/state.js"></script>
+    <script type="text/javascript" src="media/js/action.js"></script>
+    <script type="text/javascript" src="media/js/db.js"></script>
+    <script type="text/javascript" src="media/js/data.js"></script>
+    <script type="text/javascript" src="media/js/svg.js"></script>
+    <script type="text/javascript" src="media/js/ui.js"></script>
+    <script type="text/javascript" src="media/js/anatomy.js"></script>
+    <script type="text/javascript" src="media/js/main.js"></script>
 
     <!-- Piwik -->
     <!--
