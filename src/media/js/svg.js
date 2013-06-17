@@ -90,7 +90,7 @@
 			var curr_node = maps.node_map[key];
 			if (curr_node.depth === 1) {
 				curr_node.isActive = true;
-				circNodes.push(curr_node);
+				sd.circNodes.push(curr_node);
 			}
 			var num_links = 0;
 			num_links += maps.node_in_neighbor_map[key].length;
@@ -112,7 +112,7 @@
 				else {
 					curr_link.strength = "weak";
 				}
-				circLinks.push(curr_link);
+				sd.circLinks.push(curr_link);
 			}
 		}
 	}
