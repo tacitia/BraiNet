@@ -99,7 +99,7 @@
 			searchUI.updateOptions();
 			svgRenderer.renderData(datasetKey);
 		};
-		phpToPhp('getBrainData.php',
+		postToPhp('getBrainData.php',
 				{datasetKey: datasetKey, userID: userID}, 
 				successFun,
 				true);
