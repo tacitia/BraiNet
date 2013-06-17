@@ -252,8 +252,8 @@
 	// SVG display parameters
 	var vis_width = 800;
 	var vis_height = 600;
-	var inner_radius = Math.min(vis_width, vis_height) * 0.32;
-	var outer_radius = inner_radius * 1.2;
+	sr.inner_radius = Math.min(vis_width, vis_height) * 0.32;
+	sr.outer_radius = inner_radius * 1.2;
 
 	var svg_circular;
 	var svg_force;
@@ -560,11 +560,11 @@
 	function nodeMouseOver(node, svg) {
 		/* testing */
 		console.log(node);
-		if (current_mode === mode.search || current_mode === mode.fixation) { return; }
+		if (state.currMode === customEnum.mode.search || state.currMode === customEnum.mode.fixation) { return; }
 		var brodmann_title = brodmann_map[node.brodmannKey];
 		console.log('[title="' + brodmann_title + '"]');
 		$('[title="' + brodmann_title + '"]').mouseover();    
-		if (current_mode === mode.search) { return; }
+		if (state.currMode === customEnum.mode.search) { return; }
 		svg.selectAll('.circular.link')
 			.classed('hidden', function(d) {
 				return d.source.key !== node.key && d.target.key !== node.key; 
