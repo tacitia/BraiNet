@@ -1,5 +1,21 @@
 (function(sd, $, undefined) {
 
+	// Constants
+	var colorPalette = [
+		d3.rgb(141, 211, 199).toString(),
+		d3.rgb(255, 255, 179).toString(),
+		d3.rgb(190, 186, 218).toString(),
+		d3.rgb(251, 128, 114).toString(),
+		d3.rgb(128, 177, 211).toString(),
+		d3.rgb(253, 180, 98).toString(),
+		d3.rgb(179, 222, 105).toString(),
+		d3.rgb(252, 205, 229).toString(),
+		d3.rgb(217, 217, 217).toString(),
+		d3.rgb(188, 128, 189).toString(),
+		d3.rgb(204, 235, 197).toString(),
+		d3.rgb(255, 237, 111).toString()
+	];
+
 	sd.circNodes = null;
 	sd.circLinks = null;
 	sd.forceNodes = null;
@@ -238,22 +254,6 @@
 	var vis_height = 600;
 	var inner_radius = Math.min(vis_width, vis_height) * 0.32;
 	var outer_radius = inner_radius * 1.2;
-
-	// Constants
-	var colorPalette = [
-		d3.rgb(141, 211, 199).toString(),
-		d3.rgb(255, 255, 179).toString(),
-		d3.rgb(190, 186, 218).toString(),
-		d3.rgb(251, 128, 114).toString(),
-		d3.rgb(128, 177, 211).toString(),
-		d3.rgb(253, 180, 98).toString(),
-		d3.rgb(179, 222, 105).toString(),
-		d3.rgb(252, 205, 229).toString(),
-		d3.rgb(217, 217, 217).toString(),
-		d3.rgb(188, 128, 189).toString(),
-		d3.rgb(204, 235, 197).toString(),
-		d3.rgb(255, 237, 111).toString()
-	];
 
 	var svg_circular;
 	var svg_force;
