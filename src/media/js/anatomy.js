@@ -154,7 +154,6 @@ function retrieveStructImageMap() {
         success: function(data) {
             console.log("Success");
             var temp_map = $.parseJSON(data);
-            console.log(temp_map);
             for (var i = 0; i < temp_map.length; ++i) {
             	var pair = temp_map[i];
             	struct_img_map[pair.structKey] = pair.imageKey;
