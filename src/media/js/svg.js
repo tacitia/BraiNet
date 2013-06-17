@@ -252,8 +252,10 @@
 	// SVG display parameters
 	var vis_width = 800;
 	var vis_height = 600;
-	sr.inner_radius = Math.min(vis_width, vis_height) * 0.32;
-	sr.outer_radius = inner_radius * 1.2;
+	var inner_radius = Math.min(vis_width, vis_height) * 0.32;
+	var outer_radius = inner_radius * 1.2;
+	sr.inner_radius = inner_radius;
+	sr.outer_radius = outer_radius;
 
 	var svg_circular;
 	var svg_force;
