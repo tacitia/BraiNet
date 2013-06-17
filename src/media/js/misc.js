@@ -1,0 +1,49 @@
+
+(function(ce, $, undefined) {
+
+	ce.directionType = {
+		"in": 1,
+		"out": 2,
+		"bi": 3
+	};
+
+	ce.mode = {
+		exploration: 1, //browsing
+		search: 2,      //when search button is clicked
+		fixation: 3     //when clicked on a node
+	};
+
+}(window.customEnum = window.customEnum || {}, jQuery));
+
+(function(g, $, undefined) {
+	/*
+		This function should be used to determine if an array contains a given
+		element if that object might differ slightly from the version stored in
+		the array (but will still have the same key)
+	*/
+	g.contains = function(array, element) {
+		var length = array.length;
+		for (var i = 0; i < length; ++i) {
+			if (element.key === array[i].key) {
+				return i;
+			}
+		}
+		return -1;
+	};
+
+	g.endsWith = function(str, suffix) {
+		return str.indexOf(suffix, str.length - suffix.length) !== -1;
+	};
+
+	g.findMaxElement = function(array, key) {
+		var max = 0;
+		var length = array.length;
+		for (var i = 0; i < length; ++i) {
+			var elem = array[i][key];
+			console.log(elem);
+			max = (elem > max) ? elem : max;
+		}
+		return max;
+	};
+
+})(window.generic = window.generic || {}, jQuery);
