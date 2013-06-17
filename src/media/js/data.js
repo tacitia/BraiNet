@@ -44,7 +44,7 @@
 		if (diff_nodes.length > 0 || diff_links.length > 0) {
 			mergeDiffs(datasetKey, nodes, links, diff_nodes, diff_links);				
 		}
-		assignColors(user.datasets[datasetKey].node_map);
+		svgData.assignColors(user.datasets[datasetKey].node_map);
 	};
 	
 	var constructNodesMaps = function(datasetKey, nodes) {
