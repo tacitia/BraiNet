@@ -108,7 +108,7 @@
 	/*
 	 * TODO: could use some performance improvement
 	 */
-	dm.constructLinkHierarchy = function(datasetKey, links) {
+	var constructLinkHierarchy = function(datasetKey, links) {
 		var num_link = links.length;
 		var max_link_key = 0;
 		for (var i = 0; i < num_link; ++i) {

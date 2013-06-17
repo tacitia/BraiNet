@@ -41,10 +41,10 @@
 										",time:" + (currentTime - startTime) + ";";
 	}
 
-	function startSession() {
+	ua.startSession = function() {
 		sessionStartTime = new Date();
 		startTime = new Date();
 		document.onmousemove = recordMouseMovement;
-	}
+	};
 	
 }(window.userAction = window.userAction || {}, jQuery));

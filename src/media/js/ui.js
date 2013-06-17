@@ -14,7 +14,7 @@
 		$('#targetSelect').change(searchUI.targetSearchInput);
 		$('#dataSelect').change(datasetManager.datasetSelect);
 		window.onbeforeunload=database.saveSessionData;
-		window.onload=startSession;
+		window.onload=userAction.startSession;
 	};
 
 	ui.setupUIElements = function() {
