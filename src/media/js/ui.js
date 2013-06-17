@@ -18,18 +18,7 @@
 	};
 
 	ui.setupUIElements = function() {
-		ui.appendNodesAsOptions(active_node_map);
-	};
-	
-	ui.appendNodesAsOptions = function(node_map) {
-		for (var key in node_map) {
-			var d = node_map[key];
-			$('#sourceSelect').append(new Option(d.name, key, false, false));
-			$('#targetSelect').append(new Option(d.name, key, false, false));
-		}
-		$('.chzn-select').chosen({allow_single_deselect: true});
-		$('#sourceSelect').trigger('liszt:updated');
-		$('#targetSelect').trigger('liszt:updated');
+		searchUI.appendNodesAsOptions(active_node_map);
 	};
 
 }(window.ui = window.ui || {}, jQuery));
@@ -40,6 +29,17 @@
 	// State variables
 	sui.selected_source = null;
 	sui.selected_target = null;
+
+	sui.appendNodesAsOptions = function(node_map) {
+		for (var key in node_map) {
+			var d = node_map[key];
+			$('#sourceSelect').append(new Option(d.name, key, false, false));
+			$('#targetSelect').append(new Option(d.name, key, false, false));
+		}
+		$('.chzn-select').chosen({allow_single_deselect: true});
+		$('#sourceSelect').trigger('liszt:updated');
+		$('#targetSelect').trigger('liszt:updated');
+	};
 
 	sui.updateOptions = function() {
 		$('#sourceSelect').find('option').remove();
