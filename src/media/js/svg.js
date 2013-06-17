@@ -87,7 +87,7 @@
 
 	function initActiveNodes(maps) {
 		for (var key in maps.node_map) {
-			var curr_node = node_map[key];
+			var curr_node = maps.node_map[key];
 			if (curr_node.depth === 1) {
 				curr_node.isActive = true;
 				circNodes.push(curr_node);
