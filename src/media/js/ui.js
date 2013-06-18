@@ -334,13 +334,21 @@
 		var num_child = cl.link.base_children.length;
 		for (var i = 0; i < num_child; ++i) {
 			var child = activeDataset.maps.link_map[cl.link.base_children[i]];
-			content_html += '<tr class="childRow"><td>' + child.source.name + '</td><td>' + child.target.name +
+			content_html += '<tr class="childRow" id="childRow-' + i + '"><td>' + child.source.name + '</td><td>' + child.target.name +
 				'</td><td>' + child.notes + '</td></tr>';
 		}
 		content_html += '</table>';
 		content.html(content_html);
 		
 		d3.selectAll('.childRow').on('click', childLinkClick);
+	}
+
+	function childLinkClick() {
+		var id = $(this).attr('id');
+		var id_num = id.substring(9);
+		console.log(id_num);
+		var childLink = cl.link.base_children[id_num];
+		cl.updateChosenLink(childLink);
 	}
 
 	function displayPublications() {	
@@ -385,9 +393,6 @@
 		}
 	}
 
-	function childLinkClick() {
-		console.log(this);
-//		cl.updateChosenLink();
-	}
+
 	
 })(window.chosenLink = window.chosenLink || {}, jQuery);
