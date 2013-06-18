@@ -560,38 +560,34 @@
 
 	// When mousing over, highlight itself and the neighbors
 	function nodeMouseOver(node, svg) {
-		/* testing */
-		console.log(node);
 		if (state.currMode === customEnum.mode.search || state.currMode === customEnum.mode.fixation) { return; }
-		var brodmann_title = brodmann_map[node.brodmannKey];
-		console.log('[title="' + brodmann_title + '"]');
-		$('[title="' + brodmann_title + '"]').mouseover();    
-		if (state.currMode === customEnum.mode.search) { return; }
+  		var maps = activeDataset.maps;
+  
 		svg.selectAll('.circular.link')
 			.classed('hidden', function(d) {
 				return d.source.key !== node.key && d.target.key !== node.key; 
 			});
 		svg.selectAll('.circular.link')
 			.classed('outLink', function(d) {
-				var reverted_link = active_node_link_map[d.target.key + '-' + d.source.key];
+				var reverted_link = maps.node_link_map[d.target.key + '-' + d.source.key];
 				return d.source.key === node.key && reverted_link === undefined;
 			});
 		svg.selectAll('.circular.link')
 			.classed('inLink', function(d) {
-				var reverted_link = active_node_link_map[d.target.key + '-' + d.source.key];
+				var reverted_link = maps.node_link_map[d.target.key + '-' + d.source.key];
 				return d.target.key === node.key && reverted_link === undefined;
 			});
 		svg.selectAll('.circular.link')
 			.classed('biLink', function(d) {
-				var reverted_link = active_node_link_map[d.target.key + '-' + d.source.key];
+				var reverted_link = maps.node_link_map[d.target.key + '-' + d.source.key];
 				return reverted_link !== undefined;
 			});
 		svg.selectAll('.circular.node')
 			.classed('nofocus', function(d) {
 				var dKey = d.key;
 				var nodeKey = node.key;
-				var inNeighbors = active_node_in_neighbor_map[nodeKey];
-				var outNeighbors = active_node_out_neighbor_map[nodeKey];
+				var inNeighbors = maps.node_in_neighbor_map[nodeKey];
+				var outNeighbors = maps.node_out_neighbor_map[nodeKey];
 				return dKey !== nodeKey && ($.inArray(dKey, inNeighbors) < 0) &&
 					($.inArray(dKey, outNeighbors) < 0);
 			});    	
@@ -599,17 +595,15 @@
 			.classed('visible', function(d) {
 				var dKey = d.key;
 				var nodeKey = node.key;
-				var inNeighbors = active_node_in_neighbor_map[nodeKey];
-				var outNeighbors = active_node_out_neighbor_map[nodeKey];
+				var inNeighbors = maps.node_in_neighbor_map[nodeKey];
+				var outNeighbors = maps.node_out_neighbor_map[nodeKey];
 				return dKey === nodeKey || ($.inArray(dKey, inNeighbors) >= 0) ||
 					($.inArray(dKey, outNeighbors) >= 0);
 			});
 	}
 
 	function nodeMouseOut(node, svg) {
-		if (current_mode === mode.search || current_mode === mode.fixation) { return; }
-		$('[title="Areas 3, 1 & 2 - Primary Somatosensory Cortex"]').mouseout();    
-		if (current_mode === mode.search) { return; }
+		if (state.currMode === customEnum.mode.search || state.currMode === customEnum.mode.fixation) { return; }
 		svg.selectAll('.circular.node').classed('nofocus', false);
 		svg.selectAll('.circular.link').classed('hidden', false);
 		svg.selectAll('.circular.link').classed('inLink', false);
