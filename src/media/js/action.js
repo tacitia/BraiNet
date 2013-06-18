@@ -23,7 +23,7 @@
 			trackActionCustom(customAction, customObject);
 		}
 	};	
-	userAction.trackActionCustom = function(actionBasicStr, actionDetailStr) {
+	var trackActionCustom = function(actionBasicStr, actionDetailStr) {
 		currentActionData.actionBasic = actionBasicStr;
 		currentActionData.actionDetail = actionDetailStr;
 		endTime = new Date();
