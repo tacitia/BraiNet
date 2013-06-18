@@ -302,6 +302,7 @@
 		cl.link = d;
 		displayMetadata();
 		displayNotes();
+		switchMode('display');
 		displayPublications();
 	};
 	
@@ -343,7 +344,7 @@
 		self_paper_tab.selectAll('p').remove();
 		var content = self_paper_tab.append('div');
 		var content_html = '';
-		if (d.isDerived) {
+		if (cl.link.isDerived) {
 			content_html += '<p>This is a meta link. See the derived connections for more information.</p>';
 		}
 		else {
