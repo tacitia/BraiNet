@@ -331,7 +331,7 @@
 		var content = children_tab.append('div');
 		var content_html = '<p>Children links:</p>';
 		content_html += '<table class="table table-bordered table-striped table-condensed"><tr class="tableTitle"><td>Source</td><td>Target</td><td>Notes</td></tr>';
-		var num_child = d.base_children.length;
+		var num_child = cl.link.base_children.length;
 		for (var i = 0; i < num_child; ++i) {
 			var child = activeDataset.maps.link_map[cl.link.base_children[i]];
 			content_html += '<tr class="childRow"><td>' + child.source.name + '</td><td>' + child.target.name +
