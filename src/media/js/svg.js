@@ -613,15 +613,7 @@
 	}
 
 	function linkClick(d) {
-		if (enable_piwik) {
-			piwikTracker.trackPageView('Click link in circular view');
-		}
-		if (enable_owa) {
-			OWATracker.trackAction('Viz', 'Click circular link', d.source.name + '-' + d.target.name);
-		}
-		if (enable_tracking) {
-			trackAction('Click circular link', d.source.name + '-' + d.target.name);
-		}
+		userAction.trackAction('Click link in circular view', 'Viz', 'Click circular link', d.source.name + '-' + d.target.name, 'Click circular link', d.source.name + '-' + d.target.name);
 		chosenLink.updateChosenLink(d);
 	}
 
@@ -649,15 +641,7 @@
 	}
 
 	function forceNodeClick(d) {
-		if (enable_piwik) {
-			piwikTracker.trackPageView('Click link in nodelink view');
-		}
-		if (enable_owa) {
-			OWATracker.trackAction('Viz', 'Click force node', d.name);
-		}
-		if (enable_tracking) {
-			trackAction('Click force node', d.name);
-		}
+		userAction.trackAction('Click node in nodelink view', 'Viz', 'Click force node', d.name, 'Click force node', d.name);
 	}
 
 	function forceNodeMouseOver(node) {

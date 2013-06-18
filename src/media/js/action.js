@@ -12,7 +12,18 @@
 	var enable_owa = false;
 	var enable_tracking = true;	
 	
-	userAction.trackAction = function(actionBasicStr, actionDetailStr) {
+	userAction.trackAction = function(piwik, owaCategory, owaAction, owaObject, customAction, customObject) {
+		if (enable_piwik) {
+			piwikTracker.trackPageView(piwik);
+		}
+		if (enable_owa) {
+			OWATracker.trackAction(owaCategory, owaAction, owaObject);
+		}
+		if (enable_tracking) {
+			trackActionCustom(customAction, customObject);
+		}
+	};	
+	userAction.trackActionCustom = function(actionBasicStr, actionDetailStr) {
 		currentActionData.actionBasic = actionBasicStr;
 		currentActionData.actionDetail = actionDetailStr;
 		endTime = new Date();
