@@ -347,7 +347,8 @@
 		var id = $(this).attr('id');
 		var id_num = id.substring(9);
 		console.log(id_num);
-		var childLink = cl.link.base_children[id_num];
+		console.log(cl.link.base_children);
+		var childLink = activeDataset.maps.link_map[cl.link.base_children[id_num]];
 		cl.updateChosenLink(childLink);
 	}
 
