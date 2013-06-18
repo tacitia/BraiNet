@@ -295,15 +295,24 @@
 		notesDisplay.text(cl.link.notes);
 		database.updateLink(cl.link.key, cl.link.notes);
 	};
-
-	cl.displayConnectionInfo = function(d) {
+	
+	cl.updateChosenLink = function(d) {
+		cl.link = d;
+		displayMetadata();
+		displayPublications();
+	};
+	
+	function displayMetadata() {
 		d3.selectAll('#conn-info .exp').remove();
 		d3.select('#conn-info #src-name')
-			.html('Source: ' + d.source.name);
+			.html('Source: ' + cl.link.source.name);
 		d3.select('#conn-info #tgt-name')
-			.html('Target: ' + d.target.name);
+			.html('Target: ' + cl.link.target.name);
+	}
 
-		var mirror_link = active_node_link_map[d.target.key + '-' + d.source.key];
+	function displayPublications() {
+	
+		var mirror_link = activeDataset.maps.ode_link_map[d.target.key + '-' + d.source.key];
 
 		if (!is_preloaded_data) {
 			var notes_tab = d3.select('#notes');

@@ -622,11 +622,11 @@
 		if (enable_tracking) {
 			trackAction('Click circular link', d.source.name + '-' + d.target.name);
 		}
-		displayConnectionInfo(d);
+		chosenLink.updateChosenLink(d);
 	}
 
 	function linkMouseOver(link, svg) {
-		if (current_mode === mode.search || current_mode === mode.fixation) { return; }
+		if (state.currMode === customEnum.mode.search || state.currMode === customEnum.mode.fixation) { return; }
 		svg.selectAll('.circular.node')
 			.classed('nofocus', function(d) {
 				return d.key !== link.source.key && d.key !== link.target.key;
@@ -642,7 +642,7 @@
 	}
 
 	function linkMouseOut(link, svg) {
-		if (current_mode === mode.search || current_mode === mode.fixation) { return; }
+		if (state.currMode === customEnum.mode.search || state.currMode === customEnum.mode.fixation) { return; }
 		svg.selectAll('.circular.node').classed('nofocus', false);
 		svg.selectAll('.circular.link').classed('hidden', false);
 		updateCircularTexts();

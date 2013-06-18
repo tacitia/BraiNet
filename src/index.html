@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="media/css/style-ui.css" media="all" type="text/css" charset="utf-8">
     <link rel="stylesheet" href="media/css/style-canvas.css" media="all" type="text/css" charset="utf-8">
     <link rel="stylesheet" href="media/css/colors.css" media="all" type="text/css" charset="utf-8">
+	<link href='/media/lib/arrows/bootstrap-arrows.css' data-angle='stylesheet' type='text/css' />
 	<link href='http://fonts.googleapis.com/css?family=Actor' rel='stylesheet' type='text/css'>
 
     <!-- HTML5 shim, IE6-8 support of HTML5 elements -->
@@ -55,24 +56,6 @@
 
         <div id="info" class="util-section card">
 	 	  <h3>Connection and Region Information</h3>
-            <div id="conn-info">
-                <h4>Connection information</h4>
-                <p class="exp"><i>Click on a connection and the basic connection information will be displayed here.</i></p>
-                <p id="src-name"></p>
-                <p id="tgt-name"></p>
-                <div id="conn-notes" class="removed">
-                  <div class="multi-col" style="margin-right:10px"><p>Notes:</p></div>
-                  <div class="multi-col">
-                    <textarea id="conn-note-input" rows="3" class="removed">Add a note...</textarea>
-                    <p id="conn-note-display" style="width:220px;">No notes found.</p>
-                    <button id="conn-note-save" class="btn btn-success" class="removed">Save</button>
-                  </div>
-                  <div class="multi-col">
-                    <i id="conn-note-edit" class="icon-edit"></i>  
-                  </div>
-                  <div class="clear"></div>
-                </div>
-            </div>
             <div id="region-info">
                 <h4>Brain Region information</h4>
                 <p>&nbsp</p>
@@ -249,27 +232,42 @@
     </div>
     <!-- List Link Connections (Search Results) -->
     <div style="clear:both;"></div>
+
     <div id="search-results" class="card">
-     <ul class="nav nav-tabs">
-        <li class="active"><a href="#paper-list" data-toggle="tab">Publications</a></li>
-        <li><a href="#notes" data-toggle="tab">Notes</a></li>
-        <li><a href="#bams-list" data-toggle="tab">BAMS records</a></li>
-<!--        <li><a href="#sub-con-list" data-toggle="tab">Sub-connections</a></li> -->
-      </ul>
-      <div class="tab-content" style="padding:20px">
-        <div id="notes" class="tab-pane fade in active">
-          <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and the notes will be displayed here.(Only available for user defined datasets.)</i></p>
-        </div>
-        <div id="paper-list" class="tab-pane fade in">
-          <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and the relevant literature will be displayed here.(Only available for pre-loaded datasets.)</i></p>
-        </div>
-        <div id="bams-list" class="tab-pane fade in">
-          <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and the relevant BAMS records will be displayed here.(Only available for pre-loaded datasets.)</i></p>
-        </div>
-<!--        <div id="sub-con-list" class="tab-pane fade in">
-          <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and the underlying sub-connections will be displayed here.</i></p>
-        </div> -->
-      </div> 
+		<div id="conn-info">
+			<h4>Connection information</h4>
+			<p class="exp"><i>Click on a connection and the basic connection information will be displayed here.</i></p>
+			<p id="src-name"></p>
+			<p id="tgt-name"></p>
+			<div id="conn-notes" class="removed">
+			  <div class="multi-col" style="margin-right:10px"><p>Notes:</p></div>
+			  <div class="multi-col">
+				<textarea id="conn-note-input" rows="3" class="removed">Add a note...</textarea>
+				<p id="conn-note-display" style="width:220px;">No notes found.</p>
+				<button id="conn-note-save" class="btn btn-success" class="removed">Save</button>
+			  </div>
+			  <div class="multi-col">
+				<i id="conn-note-edit" class="icon-edit"></i>  
+			  </div>
+			  <div class="clear"></div>
+			</div>
+		</div>
+		 <ul class="nav nav-tabs">
+			<li class="active"><a href="#paper-list" data-toggle="tab">Publications</a></li>
+			<li><a href="#bams-list" data-toggle="tab">BAMS records</a></li>
+	<!--        <li><a href="#sub-con-list" data-toggle="tab">Sub-connections</a></li> -->
+		  </ul>
+		  <div class="tab-content" style="padding:20px">
+			<div id="paper-list" class="tab-pane fade in">
+			  <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and the relevant literature will be displayed here.(Only available for pre-loaded datasets.)</i></p>
+			</div>
+			<div id="bams-list" class="tab-pane fade in">
+			  <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and the relevant BAMS records will be displayed here.(Only available for pre-loaded datasets.)</i></p>
+			</div>
+	<!--        <div id="sub-con-list" class="tab-pane fade in">
+			  <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and the underlying sub-connections will be displayed here.</i></p>
+			</div> -->
+		  </div> 
     </div>
 
     <!-- MODAL WINDOW - User Study
@@ -299,8 +297,8 @@
     <script type="text/javascript" src="media/lib/chosen/chosen.jquery.min.js"></script>
     <script type="text/javascript" src="media/lib/jquery.maphilight.min.js"></script>
 	<script type="text/javascript" src="media/lib/qTip2/jquery.qtip.min.js"></script>
+	<script type="text/javascript" src="media/lib/arrows/bootstrap-arrows.js"></script>
     
-    <!--TODO: brainmap and script should be compressed as one file-->
     <script type="text/javascript" src="media/js/misc.js"></script>
     <script type="text/javascript" src="media/js/state.js"></script>
     <script type="text/javascript" src="media/js/action.js"></script>
