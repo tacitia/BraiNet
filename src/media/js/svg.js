@@ -500,7 +500,6 @@
 
 
 	function nodeClick(d) {
-		console.log(d3.event);
 		if (d3.event.shiftKey) {
 			if (enable_piwik) { piwikTracker.trackPageView('Combine node in circular view'); }
 			if (enable_owa) { OWATracker.trackAction('Viz', 'Combine circular node', d.name); }
