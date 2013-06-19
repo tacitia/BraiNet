@@ -50,7 +50,7 @@
 	};
 
 	sui.searchButtonClick = function() {
-		if (enable_piwik) {
+		/*if (enable_piwik) {
 			piwikTracker.trackPageView('Search:' + selected_source.name + '-' + selected_target.name);
 		}
 		if (enable_owa) {
@@ -58,7 +58,9 @@
 		}
 		if (enable_tracking) {
 			trackAction("Search", selected_source.name + '-' + selected_target.name);
-		}
+		}*/
+		userAction.trackAction('Search:' + selected_source.name + '-' + selected_target.name, 'UI', 'Search', selected_source.name + '-' + selected_target.name, "Search", selected_source.name + '-' + selected_target.name );
+		
 		current_mode = mode.search;
 		var paths = calculatePaths(max_hop);
 		populateForceElements(paths);
@@ -67,9 +69,10 @@
 	};
 
 	sui.clearButtonClick = function() {
-		if (enable_piwik) {
-			piwikTracker.trackPageView('Click clear button');
-		}
+		//if (enable_piwik) {
+		//	piwikTracker.trackPageView('Click clear button');
+		//}
+		userAction.trackAction('Click clear button');
 		current_mode = mode.exploration;
 		svg_circular.selectAll('.circular.node').classed('nofocus', false);
 		svg_circular.selectAll('.circular.link').classed('hidden', false);
@@ -80,9 +83,10 @@
 	 * active nodes
 	 */
 	sui.sourceSearchInput = function() {
-		if (enable_piwik) {
-			piwikTracker.trackPageView('Set search source');
-		}
+		//if (enable_piwik) {
+		//	piwikTracker.trackPageView('Set search source');
+		//}
+		userAction.trackAction('Set search source');
 	
 		// If there exists an old selected_source, reset its status
 		if (selected_source != undefined) {
@@ -114,19 +118,23 @@
 				return d === selected_source || d === selected_target;
 			});
 	//    highlightNode(input_node, "focus", true, true, svg_circular);
+	/*
 		if (enable_owa) {
 			OWATracker.trackAction('UI', 'Set source', selected_source.name);
 		}
 		if (enable_tracking) {
 			trackAction('Set source', selected_source.name);
 		}
+	*/
+		userAction.trackAction(null, 'UI', 'Set source', selected_source.name, 'Set source', selected_source.name);
+		
 	};
 
 	sui.targetSearchInput = function() {
-		if (enable_piwik) {
-			piwikTracker.trackPageView('Set search target');
-		}
-	
+		//if (enable_piwik) {
+		//	piwikTracker.trackPageView('Set search target');
+		//}
+		userAction.trackAction('Set search target');
 		if (selected_target != undefined) {
 			selected_target.fixed = false;
 			highlightNode(selected_target, "focus", false, true, svg_circular);
@@ -160,12 +168,14 @@
 				return d === selected_source || d === selected_target;
 			});
 	//    highlightNode(input_node, "focus", true, true, svg_circular);
-		if (enable_owa) {
+	/*	if (enable_owa) {
 			OWATracker.trackAction('UI', 'Set target', selected_target.name);
 		}
 		if (enable_tracking) {
 			trackAction('Set target', selected_target.name);
 		}
+	*/	
+		userAction.trackAction(null, 'UI', 'Set target', selected_target.name, 'Set target', selected_target.name);
 	};
 
 	sui.clearSearchResult = function() {
@@ -173,7 +183,7 @@
 	};
 
 	sui.setMaxHop = function() {
-		if (enable_piwik) {
+		/*if (enable_piwik) {
 			piwikTracker.trackPageView('Set max hop');
 		}
 		if (enable_owa) {
@@ -181,7 +191,8 @@
 		}
 		if (enable_tracking) {
 			trackAction('Set max hop', this.value);
-		}    
+		} */
+		userAction.trackAction('Set max hop', 'UI', 'Set max hop', this.value, 'Set max hop', this.value);   
 		max_hop = this.value;
 		document.getElementById("maxHopValue").innerHTML = max_hop;
 
@@ -385,13 +396,15 @@
 
 	function paperClick() {
 		var paperName = $(this).text();
+		/*
 		if (enable_owa) {
 			OWATracker.trackAction('UI', 'Click paper', paperName);
 		}
 		if (enable_tracking) {
 			console.log("tracking paper click");
 			trackAction('Click paper', paperName);
-		}
+		}*/
+		userAction.trackAction(null, 'UI', 'Click paper', paperName, 'Click paper', paperName);
 	}
 
 

@@ -151,11 +151,12 @@
 			}
 			counter++;
 			if (counter > 5000) { 
-				if (enable_owa) {
+				/*if (enable_owa) {
 					console.log(selected_source);
 					console.log(selected_target);
 					OWATracker.trackAction('Warning', 'Path size limit reached', selected_source.name + '-' + selected_target + '-' + max_hop);
-				}
+				}*/
+				userAction.trackAction(null, 'Warning', 'Path size limit reached', selected_source.name + '-' + selected_target + '-' + max_hop);
 				console.log("Reached path limit."); break;
 			}
 		}
@@ -501,11 +502,14 @@
 
 	function nodeClick(d) {
 		if (d3.event.shiftKey) {
-			if (enable_piwik) { piwikTracker.trackPageView('Combine node in circular view'); }
+			
+			/*if (enable_piwik) { piwikTracker.trackPageView('Combine node in circular view'); }
 			if (enable_owa) { OWATracker.trackAction('Viz', 'Combine circular node', d.name); }
 			if (enable_tracking) {
 				trackAction('Combine circular node', d.name);
-			}
+			}*/
+			userAction.trackAction('Combine node in circular view', 'Viz', 'Combine circular node', d.name, 'Combine circular node', d.name);
+			
 			if (d.parent === undefined || d.parent === null) { return; } // Ignore top level nodes
 			var parent = active_node_map[d.parent]; 
 			var nodes_to_remove = findActiveDescends(parent);
@@ -542,11 +546,12 @@
 			// add them back when needed
 		}
 		else {
-			if (enable_piwik) { piwikTracker.trackPageView('Expand node in circular view'); }
+			/*if (enable_piwik) { piwikTracker.trackPageView('Expand node in circular view'); }
 			if (enable_owa) { OWATracker.trackAction('Viz', 'Expand circular node', d.name); }
 			if (enable_tracking) {
 				trackAction('Expand circular node', d.name);
-			}        
+			} */
+			userAction.trackAction('Expand node in circular view', 'Viz', 'Expand circular node', d.name, 'Expand circular node', d.name);       
 			var children = [];
 			var ids = d.children;
 			var length = ids.length;
@@ -677,7 +682,7 @@
 	}
 
 	function forceLinkClick(d) {
-		if (enable_piwik) {
+		/*if (enable_piwik) {
 			piwikTracker.trackPageView('Click link in nodelink view');
 		}
 		if (enable_owa) {
@@ -685,7 +690,9 @@
 		}
 		if (enable_tracking) {
 			trackAction('Click force link', d.source.name + '-' + d.target.name);
-		}    
+		} */
+		
+		userAction.trackAction('Click link in nodelink view', 'Viz', 'Click force link', d.source.name + '-' + d.target.name, 'Click force link',      d.source.name + '-' + d.target.name );   
 		displayConnectionInfo(d);
 	}
 
