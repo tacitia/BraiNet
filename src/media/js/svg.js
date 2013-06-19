@@ -232,7 +232,7 @@
 		}
 	};
 
-	sd.calculateArcPositions = function(datum, start_angle, delta, i) {
+	var calculateArcPositions = function(datum, start_angle, delta, i) {
 		datum.circ.start_angle = start_angle + delta * i;
 		datum.circ.end_angle = start_angle + delta * (i+1);
 		var angle = delta * (i + 0.5) + start_angle;
@@ -245,6 +245,8 @@
 		d.circ.old_start_angle = d.circ.start_angle;
 		d.circ.old_end_angle = d.circ.end_angle;
 	}
+	
+	sd.calculateArcPositions = calculateArcPositions;
 
 }(window.svgData = window.svgData || {}, jQuery));
 
