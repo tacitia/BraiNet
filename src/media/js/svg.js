@@ -765,31 +765,34 @@
 	}
 
 	function exitCircularNodes() {
+		var nodes = activeDataset.nodes;
+		
 		svg_circular.selectAll('.circular.node')
-		   .data(active_data_nodes, function(d) {return d.key;})
+		   .data(nodes, function(d) {return d.key;})
 		   .exit().remove();
 
 		svg_circular.selectAll('.circular.text')
-		   .data(active_data_nodes, function(d) {return d.key;})
+		   .data(nodes, function(d) {return d.key;})
 		   .exit().remove();
 	}
 
 	function exitCircularLinks() {
 		svg_circular.selectAll('.circular.link')
-		   .data(active_data_links, function(d) {return d.key;})
+		   .data(activeDataset.links, function(d) {return d.key;})
 		   .exit().remove();
 	}
 
 	function updateCircularNodes() {
+		var nodes = activeDataset.nodes;
 		svg_circular.selectAll(".circular.node")
-			.data(active_data_nodes, function(d) {return d.key;})
+			.data(nodes, function(d) {return d.key;})
 			.transition()
 			.duration(1000)
 			.attr("d", arcs);
 	//        .attrTween("d", arcTween);
 
 		svg_circular.selectAll(".circular.text")
-			.data(active_data_nodes, function(d) {return d.key;})
+			.data(nodes, function(d) {return d.key;})
 			.transition()
 			.duration(1000)
 			.attr('x', function(d) {return d.circ.x;})
@@ -798,7 +801,7 @@
 
 	function updateCircularLinks() {
 		var links = svg_circular.selectAll(".circular.link")
-			.data(active_data_links, function(d) {return d.key;});
+			.data(activeDataset.links, function(d) {return d.key;});
 		
 		
 		links.transition()
