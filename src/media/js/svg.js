@@ -466,7 +466,7 @@
 		svg_force.selectAll('.force').remove();
 	}
 
-	function updateCircularLayout(new_num, new_delta) {
+	var updateCircularLayout = function(new_num, new_delta) {
 		// Remove the nodes and links from canvas
 		exitCircularNodes();
 		exitCircularLinks();
@@ -484,7 +484,9 @@
 		updateCircularLinks();
 		updateCircularNodes();
 		updateCircularTexts();
-	}
+	};
+	
+	sr.updateCircularLayout = updateCircularLayout;
 
 	function dimNonSearchResults() {
 		svg_circular.selectAll('.circular.node')
