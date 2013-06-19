@@ -367,7 +367,7 @@
 
 		for (var i = pos; i < pos + sub_num; ++i) {
 			var datum = sub[i-pos];
-			calculateArcPositions(datum, start_angle, delta, i-pos);
+			svgData.calculateArcPositions(datum, start_angle, delta, i-pos);
 			datum.color = d.color;
 			datum.isActive = true;
 			nodes[i] = datum;
