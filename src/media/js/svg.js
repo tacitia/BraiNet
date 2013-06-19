@@ -319,8 +319,11 @@
 	  * ! TODO: Need to think how to more efficiently add new links !
 	 */
 	function expandRegion(d, sub, svg) {
-		//console.log(svg);
 		// First check the children. If no children, do nothing and return.
+		
+		var nodes = activeDataset.nodes;
+		var links = activeDataset.links;
+		
 		var sub_num = sub.length;
 		if (sub_num < 1) {return;}
 
@@ -332,35 +335,34 @@
 		// Record neighbors of the node being removed
 		var in_neighbors = [];
 		var out_neighbors = [];
-		var link_length = active_data_links.length;
+		var link_length = links.length;
 	
 		// Iterate through all the ative links and locate those associated with d
 		// Remove the expanded node from the data nodes and the corresponding 
 		// links from the data links
 		while (link_length--) {
-			var curr_link = active_data_links[link_length];
+			var curr_link = links[link_length];
 			if (curr_link.source === d) {
 				out_neighbors.push(curr_link.target);
-				active_data_links.splice(link_length, 1);
+				links.splice(link_length, 1);
 			}
 			else if (curr_link.target === d) {
 				in_neighbors.push(curr_link.source);
-				active_data_links.splice(link_length, 1);
+				links.splice(link_length, 1);
 			}
 		}
 
-		var pos = $.inArray(d, active_data_nodes);
-		active_data_nodes[pos].isActive = false;
-	//    active_data_nodes.splice(pos, 1);
+		var pos = $.inArray(d, nodes);
+		nodes[pos].isActive = false;
 	
 		var in_neighbor_num = in_neighbors.length;
 		var out_neighbor_num = out_neighbors.length;
-		var old_num = active_data_nodes.length;
+		var old_num = nodes.length;
 		var new_num = old_num + sub_num - 1;
 		var new_delta = 2 * Math.PI / new_num;
 
 		for (var i = new_num-1; i > pos; --i) {
-			active_data_nodes[i] = active_data_nodes[i-sub_num+1];
+			nodes[i] = nodes[i-sub_num+1];
 		}
 
 		for (var i = pos; i < pos + sub_num; ++i) {
@@ -368,25 +370,21 @@
 			calculateArcPositions(datum, start_angle, delta, i-pos);
 			datum.color = d.color;
 			datum.isActive = true;
-			active_data_nodes[i] = datum;
-	//        var datum = active_data_nodes[i];
-	//        calculateArcPositions(datum, datum.circ.startAngle, new_delta, 0);
+			nodes[i] = datum;
 			for (var j = 0; j < in_neighbor_num; ++j) {
 				var neighbor = in_neighbors[j];
 				var key_pair = neighbor.key + "-" + datum.key;
-				console.log(key_pair);
-				var link = active_node_link_map[key_pair];
+				var link = activeDataset.node_link_map[key_pair];
 				if (link !== undefined) {
-					active_data_links.push(link);
+					links.push(link);
 				}
 			}
 			for (var j = 0; j < out_neighbor_num; ++j) {
 				var neighbor = out_neighbors[j];
 				var key_pair = datum.key + "-" + neighbor.key;
-				console.log(key_pair);
-				var link = active_node_link_map[key_pair];
+				var link = activeDataset.node_link_map[key_pair];
 				if (link !== undefined) {
-					active_data_links.push(link);
+					links.push(link);
 				}
 			}
 		}
@@ -394,15 +392,14 @@
 		for (var i = 0; i < sub_num; ++i) {
 			for (var j = i + 1; j < sub_num; ++j) {
 				var key_pair = sub[i].key + '-' + sub[j].key;
-				console.log(key_pair);
-				var link = active_node_link_map[key_pair];
+				var link = activeDataset.node_link_map[key_pair];
 				if (link !== undefined) {
-					active_data_links.push(link);
+					links.push(link);
 				}
 				key_pair = sub[j].key + '-' + sub[i].key;
-				link = active_node_link_map[key_pair];
+				link = activeDataset.node_link_map[key_pair];
 				if (link !== undefined) {
-					active_data_links.push(link);
+					links.push(link);
 				}
 
 			}
@@ -415,15 +412,18 @@
 	function combineRegions(new_node, nodes_to_remove) {
 		// Iterate through all the active nodes and remove the links associated 
 		// with the nodes to be removed
+		var nodes = activeDataset.nodes;
+		var links = activeDataset.links;
+		
 		var numToRemove = nodes_to_remove.length;
 		var link_length = active_data_links.length;
 		while (link_length--) {
-			var curr_link = active_data_links[link_length];
+			var curr_link = links[link_length];
 			// Iterate through all the siblings and remove associated links
 			for (var i = 0; i < numToRemove; ++i) {
 				var d = nodes_to_remove[i];
 				if (curr_link.source === d || curr_link.target === d) {
-					active_data_links.splice(link_length, 1);
+					links.splice(link_length, 1);
 				}
 			}
 		}
@@ -433,12 +433,12 @@
 		remove_first.isActive = false;
 		new_node.circ = remove_first.circ;
 		new_node.isActive = true;
-		active_data_nodes[first_pos] = new_node;
+		nodes[first_pos] = new_node;
 		for (var i = 1; i < numToRemove; ++i) {
 			var curr_node = nodes_to_remove[i];
 			curr_node.isActive = false;
 			var pos = $.inArray(curr_node, active_data_nodes);
-			active_data_nodes.splice(pos, 1);
+			nodes.splice(pos, 1);
 		}
 		// Update the positions of the nodes
 		var new_num = active_data_nodes.length;
@@ -446,16 +446,16 @@
 		// Add in links for the parent
 		var new_key = new_node.key;
 		for (var i = 0; i < new_num; ++i) {
-			var curr_key = active_data_nodes[i].key;
+			var curr_key = nodes[i].key;
 			var key_pair = new_key + '-' + curr_key;
-			var link = active_node_link_map[key_pair];
+			var link = activeDataset.node_link_map[key_pair];
 			if (link !== undefined) {
-				active_data_links.push(link);
+				links.push(link);
 			}
 			key_pair = curr_key + '-' + new_key;
-			link = active_node_link_map[key_pair];
+			link = activeDataset.node_link_map[key_pair];
 			if (link !== undefined) {
-				active_data_links.push(link);
+				links.push(link);
 			}
 		}
 		// Update the layout
@@ -502,12 +502,6 @@
 
 	function nodeClick(d) {
 		if (d3.event.shiftKey) {
-			
-			/*if (enable_piwik) { piwikTracker.trackPageView('Combine node in circular view'); }
-			if (enable_owa) { OWATracker.trackAction('Viz', 'Combine circular node', d.name); }
-			if (enable_tracking) {
-				trackAction('Combine circular node', d.name);
-			}*/
 			userAction.trackAction('Combine node in circular view', 'Viz', 'Combine circular node', d.name, 'Combine circular node', d.name);
 			
 			if (d.parent === undefined || d.parent === null) { return; } // Ignore top level nodes
@@ -517,26 +511,26 @@
 		}
 		else if (d3.event.altKey) {
 			// Fix on the clicked node
-			if (current_mode === mode.exploration) {
+			if (state.currMode === customEnum.mode.exploration) {
 				current_mode = mode.fixation;
 				selectStructure(d.name, false);
 			}
-			else if (current_mode === mode.fixation) {
+			else if (state.currMode === customEnum.mode.fixation) {
 				current_mode = mode.exploration;
 				selectStructure(d.name, true);
 			}
 		}
 		else if (d3.event.metaKey) {
 			// remove the selected node and associated links from active_data_nodes/links
-			active_data_nodes.splice($.inArray(d, active_data_nodes), 1);
-			var link_length = active_data_links.length;
+			activeDataset.nodes.splice($.inArray(d, active_data_nodes), 1);
+			var link_length = activeDataset.links.length;
 			while (link_length--) {
-				var curr_link = active_data_links[link_length];
+				var curr_link = activeDataset.links[link_length];
 				if (curr_link.source === d || curr_link.target === d) {
-					active_data_links.splice(link_length, 1);
+					activeDataset.links.splice(link_length, 1);
 				}
 			}
-			var new_num = active_data_nodes.length;
+			var new_num = activeDataset.nodes.length;
 			updateCircularLayout(new_num, 2 * Math.PI / new_num);
 			// add the selected node to black list
 			ignored_nodes.push(d);
@@ -546,17 +540,12 @@
 			// add them back when needed
 		}
 		else {
-			/*if (enable_piwik) { piwikTracker.trackPageView('Expand node in circular view'); }
-			if (enable_owa) { OWATracker.trackAction('Viz', 'Expand circular node', d.name); }
-			if (enable_tracking) {
-				trackAction('Expand circular node', d.name);
-			} */
 			userAction.trackAction('Expand node in circular view', 'Viz', 'Expand circular node', d.name, 'Expand circular node', d.name);       
 			var children = [];
 			var ids = d.children;
 			var length = ids.length;
 			for (var i = 0; i < length; ++i) {
-				children.push(active_node_map[ids[i]]);
+				children.push(activeDataset.node_map[ids[i]]);
 			}
 			expandRegion(d, children, svg_circular);
 		}
