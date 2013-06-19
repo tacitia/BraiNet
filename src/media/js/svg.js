@@ -368,8 +368,8 @@
 			}
 		}
 		// Remove the nodes and add the parent node
-		var first_pos = $.inArray(nodes_to_remove[0], active_data_nodes);
-		var remove_first = active_data_nodes[first_pos];
+		var first_pos = $.inArray(nodes_to_remove[0], nodes);
+		var remove_first = nodes[first_pos];
 		remove_first.isActive = false;
 		new_node.circ = remove_first.circ;
 		new_node.isActive = true;
@@ -377,11 +377,11 @@
 		for (var i = 1; i < numToRemove; ++i) {
 			var curr_node = nodes_to_remove[i];
 			curr_node.isActive = false;
-			var pos = $.inArray(curr_node, active_data_nodes);
+			var pos = $.inArray(curr_node, nodes);
 			nodes.splice(pos, 1);
 		}
 		// Update the positions of the nodes
-		var new_num = active_data_nodes.length;
+		var new_num = nodes.length;
 		var new_delta = 2 * Math.PI / new_num;
 		// Add in links for the parent
 		var new_key = new_node.key;
@@ -477,7 +477,7 @@
 
 
 		for (var i = 0; i < new_num; ++i) {
-			var datum = activeDataset.nodes[i];
+			var datum = svgData.circNodes[i];
 			svgData.calculateArcPositions(datum, 0, new_delta, i);
 		}
 
@@ -527,13 +527,15 @@
 			}
 		}
 		else if (d3.event.metaKey) {
-			// remove the selected node and associated links from active_data_nodes/links
-			activeDataset.nodes.splice($.inArray(d, active_data_nodes), 1);
-			var link_length = activeDataset.links.length;
+			// remove the selected node and associated links from svgData.circNodes/circLinks
+			var nodes = svgData.circNodes;
+			var links = svgData.circLinks;
+			nodes.splice($.inArray(d, nodes), 1);
+			var link_length = links.length;
 			while (link_length--) {
-				var curr_link = activeDataset.links[link_length];
+				var curr_link = links[link_length];
 				if (curr_link.source === d || curr_link.target === d) {
-					activeDataset.links.splice(link_length, 1);
+					links.splice(link_length, 1);
 				}
 			}
 			var new_num = activeDataset.nodes.length;
@@ -766,7 +768,7 @@
 	}
 
 	function exitCircularNodes() {
-		var nodes = activeDataset.nodes;
+		var nodes = svgData.circNodes;
 		
 		svg_circular.selectAll('.circular.node')
 		   .data(nodes, function(d) {return d.key;})
@@ -779,12 +781,12 @@
 
 	function exitCircularLinks() {
 		svg_circular.selectAll('.circular.link')
-		   .data(activeDataset.links, function(d) {return d.key;})
+		   .data(svgData.circLinks, function(d) {return d.key;})
 		   .exit().remove();
 	}
 
 	function updateCircularNodes() {
-		var nodes = activeDataset.nodes;
+		var nodes = svgData.circNodes;
 		svg_circular.selectAll(".circular.node")
 			.data(nodes, function(d) {return d.key;})
 			.transition()
@@ -802,7 +804,7 @@
 
 	function updateCircularLinks() {
 		var links = svg_circular.selectAll(".circular.link")
-			.data(activeDataset.links, function(d) {return d.key;});
+			.data(svgData.circLinks, function(d) {return d.key;});
 		
 		
 		links.transition()
