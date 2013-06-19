@@ -478,8 +478,8 @@
 
 
 		for (var i = 0; i < new_num; ++i) {
-			var datum = active_data_nodes[i];
-			calculateArcPositions(datum, 0, new_delta, i);
+			var datum = activeDataset.nodes[i];
+			svgData.calculateArcPositions(datum, 0, new_delta, i);
 		}
 
 		updateCircularLinks();
