@@ -325,6 +325,7 @@
 		
 		var nodes = activeDataset.nodes;
 		var links = activeDataset.links;
+		var maps = activeDataset.maps;
 		
 		var sub_num = sub.length;
 		if (sub_num < 1) {return;}
@@ -376,7 +377,7 @@
 			for (var j = 0; j < in_neighbor_num; ++j) {
 				var neighbor = in_neighbors[j];
 				var key_pair = neighbor.key + "-" + datum.key;
-				var link = activeDataset.node_link_map[key_pair];
+				var link = maps.node_link_map[key_pair];
 				if (link !== undefined) {
 					links.push(link);
 				}
@@ -384,7 +385,7 @@
 			for (var j = 0; j < out_neighbor_num; ++j) {
 				var neighbor = out_neighbors[j];
 				var key_pair = datum.key + "-" + neighbor.key;
-				var link = activeDataset.node_link_map[key_pair];
+				var link = maps.node_link_map[key_pair];
 				if (link !== undefined) {
 					links.push(link);
 				}
@@ -394,12 +395,12 @@
 		for (var i = 0; i < sub_num; ++i) {
 			for (var j = i + 1; j < sub_num; ++j) {
 				var key_pair = sub[i].key + '-' + sub[j].key;
-				var link = activeDataset.node_link_map[key_pair];
+				var link = maps.node_link_map[key_pair];
 				if (link !== undefined) {
 					links.push(link);
 				}
 				key_pair = sub[j].key + '-' + sub[i].key;
-				link = activeDataset.node_link_map[key_pair];
+				link = maps.node_link_map[key_pair];
 				if (link !== undefined) {
 					links.push(link);
 				}
