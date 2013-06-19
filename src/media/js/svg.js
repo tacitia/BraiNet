@@ -232,14 +232,14 @@
 		}
 	};
 
-	function calculateArcPositions(datum, start_angle, delta, i) {
+	sd.calculateArcPositions = function(datum, start_angle, delta, i) {
 		datum.circ.start_angle = start_angle + delta * i;
 		datum.circ.end_angle = start_angle + delta * (i+1);
 		var angle = delta * (i + 0.5) + start_angle;
 		var radius = svgRenderer.inner_radius + (svgRenderer.outer_radius - svgRenderer.inner_radius) / 2;
 		datum.circ.x = radius * Math.cos(Math.PI / 2 - angle);
 		datum.circ.y = -radius * Math.sin(Math.PI / 2 - angle);
-	}
+	};
 
 	function stash(d) {
 		d.circ.old_start_angle = d.circ.start_angle;
