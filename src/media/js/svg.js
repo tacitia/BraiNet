@@ -128,8 +128,7 @@
 		var depth2 = selected_target.depth;
 		var min_depth = Math.min(depth1, depth2);
 		var max_depth = Math.max(depth1, depth2);
-		console.log('map');
-		console.log(active_node_out_neighbor_map);
+
 		while (paths.length > 0 && paths[0].length <= num_hop + 2) {
 			var current_path = paths[0];
 			paths.splice(0, 1);
@@ -246,68 +245,6 @@
 		d.circ.old_end_angle = d.circ.end_angle;
 	}
 	
-	sd.calculateArcPositions = calculateArcPositions;
-
-}(window.svgData = window.svgData || {}, jQuery));
-
-(function(sr, $, undefined) {
-
-	// SVG display parameters
-	var vis_width = 800;
-	var vis_height = 600;
-	var inner_radius = Math.min(vis_width, vis_height) * 0.32;
-	var outer_radius = inner_radius * 1.2;
-	sr.inner_radius = inner_radius;
-	sr.outer_radius = outer_radius;
-
-	var svg_circular;
-	var svg_force;
-	var arcs;
-	var curves;
-	var links;
-	var force;
-
-	/* Prepare the canvas before the data arrives */
-	sr.prepareCanvas = function() {
-		arcs = d3.svg.arc()
-				 .innerRadius(inner_radius)
-				 .outerRadius(outer_radius)
-				 .startAngle(function(d) {return d.circ.start_angle;})
-				 .endAngle(function(d) {return d.circ.end_angle;});
-
-		curves = d3.svg.line()
-				   .x(function(d) {return d.x;})
-				   .y(function(d) {return d.y;})
-				   .interpolate("basis");
-
-		svg_circular = d3.select("#canvas-circular")
-				.append("svg")
-				.attr("width", vis_width)
-				.attr("height", vis_height)
-				.append('g')
-				.attr("transform", "translate(" + (vis_width / 2) + "," + (vis_height / 2) + ")")
-				.append('g');
-
-		svg_force = d3.select("#canvas-force")
-				.append("svg")
-				.attr("width", vis_width)
-				.attr("height", vis_height)
-				.append('g');
-	};
-
-	sr.renderData = function(datasetKey) {
-		svgData.init(datasetKey);
-		clearCanvases();
-		enterCircularLinks();
-		enterCircularNodes();
-		updateCircularTexts();
-	}
-
-	function clearCanvases() {
-		svg_circular.selectAll('.circular').remove();
-		svg_force.selectAll('.force').remove();
-	}
-	
 	/*
 	 * This function gets called when the user clicks on a node. The corresponding
 	 * object is passed in as d. The function does three things:
@@ -320,11 +257,11 @@
 	 /*
 	  * ! TODO: Need to think how to more efficiently add new links !
 	 */
-	function expandRegion(d, sub, svg) {
+	var expandRegion = function(d, sub, svg) {
 		// First check the children. If no children, do nothing and return.
 		
-		var nodes = activeDataset.nodes;
-		var links = activeDataset.links;
+		var nodes = sd.circNodes;
+		var links = sd.circLinks;
 		var maps = activeDataset.maps;
 		
 		var sub_num = sub.length;
@@ -408,15 +345,15 @@
 			}
 		}
 
-		updateCircularLayout(new_num, new_delta);
-	}
+		svgRenderer.updateCircularLayout(new_num, new_delta);
+	};
 
 
-	function combineRegions(new_node, nodes_to_remove) {
+	var combineRegions = function(new_node, nodes_to_remove) {
 		// Iterate through all the active nodes and remove the links associated 
 		// with the nodes to be removed
-		var nodes = activeDataset.nodes;
-		var links = activeDataset.links;
+		var nodes = sd.circNodes;
+		var links = sd.circLinks;
 		
 		var numToRemove = nodes_to_remove.length;
 		var link_length = active_data_links.length;
@@ -462,10 +399,72 @@
 			}
 		}
 		// Update the layout
-		updateCircularLayout(new_num, new_delta);
+		svgRenderer.updateCircularLayout(new_num, new_delta);
+	};
+	
+	sd.calculateArcPositions = calculateArcPositions;
+	sd.expandRegion = expandRegion;
+	sd.combineRegions = combineRegions;
+
+}(window.svgData = window.svgData || {}, jQuery));
+
+(function(sr, $, undefined) {
+
+	// SVG display parameters
+	var vis_width = 800;
+	var vis_height = 600;
+	var inner_radius = Math.min(vis_width, vis_height) * 0.32;
+	var outer_radius = inner_radius * 1.2;
+	sr.inner_radius = inner_radius;
+	sr.outer_radius = outer_radius;
+
+	var svg_circular;
+	var svg_force;
+	var arcs;
+	var curves;
+	var links;
+	var force;
+
+	/* Prepare the canvas before the data arrives */
+	sr.prepareCanvas = function() {
+		arcs = d3.svg.arc()
+				 .innerRadius(inner_radius)
+				 .outerRadius(outer_radius)
+				 .startAngle(function(d) {return d.circ.start_angle;})
+				 .endAngle(function(d) {return d.circ.end_angle;});
+
+		curves = d3.svg.line()
+				   .x(function(d) {return d.x;})
+				   .y(function(d) {return d.y;})
+				   .interpolate("basis");
+
+		svg_circular = d3.select("#canvas-circular")
+				.append("svg")
+				.attr("width", vis_width)
+				.attr("height", vis_height)
+				.append('g')
+				.attr("transform", "translate(" + (vis_width / 2) + "," + (vis_height / 2) + ")")
+				.append('g');
+
+		svg_force = d3.select("#canvas-force")
+				.append("svg")
+				.attr("width", vis_width)
+				.attr("height", vis_height)
+				.append('g');
+	};
+
+	sr.renderData = function(datasetKey) {
+		svgData.init(datasetKey);
+		clearCanvases();
+		enterCircularLinks();
+		enterCircularNodes();
+		updateCircularTexts();
 	}
 
-
+	function clearCanvases() {
+		svg_circular.selectAll('.circular').remove();
+		svg_force.selectAll('.force').remove();
+	}
 
 	function updateCircularLayout(new_num, new_delta) {
 		// Remove the nodes and links from canvas
@@ -512,7 +511,7 @@
 			if (d.parent === undefined || d.parent === null) { return; } // Ignore top level nodes
 			var parent = maps.node_map[d.parent]; 
 			var nodes_to_remove = findActiveDescends(parent);
-			combineRegions(parent, nodes_to_remove);
+			svgData.combineRegions(parent, nodes_to_remove);
 		}
 		else if (d3.event.altKey) {
 			// Fix on the clicked node
@@ -552,7 +551,7 @@
 			for (var i = 0; i < length; ++i) {
 				children.push(maps.node_map[ids[i]]);
 			}
-			expandRegion(d, children, svg_circular);
+			svgData.expandRegion(d, children, svg_circular);
 		}
 	}
 
