@@ -95,6 +95,8 @@
 		var successFun = function(result) {
 			var data = $.parseJSON(result);
 			dataModel.constructDataModel(datasetKey, data.nodes, data.links, data.diff_nodes, data.diff_links);
+			activeDataset.nodes = data.nodes;
+			activeDataset.links = data.links;
 			activeDataset.maps = user.datasets[datasetKey];
 			searchUI.updateOptions();
 			svgRenderer.renderData(datasetKey);

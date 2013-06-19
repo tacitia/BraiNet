@@ -501,11 +501,13 @@
 
 
 	function nodeClick(d) {
+		var maps = activeDataset.maps;
+	
 		if (d3.event.shiftKey) {
 			userAction.trackAction('Combine node in circular view', 'Viz', 'Combine circular node', d.name, 'Combine circular node', d.name);
 			
 			if (d.parent === undefined || d.parent === null) { return; } // Ignore top level nodes
-			var parent = active_node_map[d.parent]; 
+			var parent = maps.node_map[d.parent]; 
 			var nodes_to_remove = findActiveDescends(parent);
 			combineRegions(parent, nodes_to_remove);
 		}
@@ -545,7 +547,7 @@
 			var ids = d.children;
 			var length = ids.length;
 			for (var i = 0; i < length; ++i) {
-				children.push(activeDataset.node_map[ids[i]]);
+				children.push(maps.node_map[ids[i]]);
 			}
 			expandRegion(d, children, svg_circular);
 		}
