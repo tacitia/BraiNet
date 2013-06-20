@@ -32,6 +32,8 @@
     $nodeTableName = 'user_nodes';
     $linkTableName = 'user_links';
     $parentTableName = 'node_parents';
+    $paperTableName = 'pubmed_records';
+    $linkPaperMapTableName = 'user_link_record';
     
     // Use pubmed tables if the dataset is a system table
     // TODO: populate public_links table and change it here
@@ -39,11 +41,15 @@
     	$nodeTableName = 'public_nodes';
     	$linkTableName = 'public_links';
     	$parentTableName = 'public_node_parents';
+    	$paperTableName = 'public_records';
+    	$linkPaperMapTableName = 'public_link_record';
     }
     else if ($datasetKey == 1000002 || ($isClone && $origin == 1000002)) {
     	$nodeTableName = 'public_nodes';
     	$linkTableName = 'pubmed_links';
     	$parentTableName = 'public_node_parents';
+    	$paperTableName = 'pubmed_records';
+    	$linkPaperMapTableName = 'pubmed_link_record';
     }
     
     $queryDatasetKey = $datasetKey;
@@ -96,6 +102,7 @@
 			$link['datasetKey'] = $row['datasetKey'];
 			$link['notes'] = $row['notes'];
 			$link['numPub'] = $row['numPub'];
+						
 			$links[] = $link;
 		}
 
@@ -105,7 +112,7 @@
 		if ($isClone) {
 			/* Get the difference data*/
 			$query = "SELECT `diff` FROM `diff_nodes` WHERE `userID` = " . $userID . " AND `origin` = " . $origin;
-			$results = mysql_query($query, $con) or die("SELECT diff node failed: ".mysql_error());
+			$results = mysql_query($query, $con) or die("SELECT diff node failed: " . mysql_error());
 			while ($row = mysql_fetch_array($results)) {
 				$diff_node = array();
 				$diff_node['nodeKey'] = $row['nodeKey'];
@@ -115,7 +122,7 @@
 			}
 
 			$query = "SELECT `diff` FROM `diff_links` WHERE `userID`  = " . $userID . " AND `origin` = " . $origin;
-			$results = mysql_query($query, $con) or die("SELECT diff link failed: ".mysql_error());
+			$results = mysql_query($query, $con) or die("SELECT diff link failed: " . mysql_error());
 			while ($row = mysql_fetch_array($results)) {
 				$diff_link = array();
 				$diff_link['linkKey'] = $row['linkKey'];
@@ -125,6 +132,27 @@
 			}
 		}
 		
+		$papers = array();
+		$query = "SELECT `pmid`, `title`, `authors`, `source` FROM " . $paperTableName;
+		$results = mysql_query($query, $con) or die("SELECT paper failed: " . mysql_error());
+		while ($row = mysql_fetch_array($results)) {
+			$paper = array();
+			$paper['pmid'] = $row['pmid'];
+			$paper['title'] = $row['title'];
+			$paper['authors'] = $row['authors'];
+			$paper['source'] = $row['source'];
+			$papers[]= $paper;	
+		}
+
+		$link_paper_map = array();
+		$query = "SELECT * FROM" . $linkPaperMapTableName;
+		$results = mysql_query($query, $con) or die("SELECT linkPaperMap failed: " . mysql_error());
+		while ($row = mysql_fetch_array($results)) {
+			$record = array();
+			$record['linkKey'] = $row['linkKey'];
+			$record['pmid'] = $row['PMID'];
+			$link_paper_map[] = $record;
+		}
 
 		
 		$result = array();
@@ -132,6 +160,8 @@
 		$result['links'] = $links;
 		$result['diff_nodes'] = $diff_nodes;
 		$result['diff_links'] = $diff_links;
+		$result['papers'] = $papers;
+		$result['link_paper_map'] = $link_paper_map;
 	    echo json_encode($result);
     
     }catch(Exception $e){

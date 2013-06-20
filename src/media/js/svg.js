@@ -52,7 +52,7 @@
 		return result;
 	}
 
-	function findActiveDescends(node) {
+	var findActiveDescends = function(node) {
 		var num_active_nodes = active_data_nodes.length;
 		var results = [];
 		for (var i = 0; i < num_active_nodes; ++i) {
@@ -69,7 +69,7 @@
 			}
 		}
 		return results;
-	}
+	};
 
 	function findDescAtDepth(node, depth) {
 		var result = [node];
@@ -405,6 +405,7 @@
 	sd.calculateArcPositions = calculateArcPositions;
 	sd.expandRegion = expandRegion;
 	sd.combineRegions = combineRegions;
+	sd.findActiveDescends = findActiveDescends;
 
 }(window.svgData = window.svgData || {}, jQuery));
 
