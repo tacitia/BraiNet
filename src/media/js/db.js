@@ -93,6 +93,7 @@
 
 	db.getBrainData = function(datasetKey, userID) {
 		var successFun = function(result) {
+			console.log(result);
 			var data = $.parseJSON(result);
 			dataModel.constructDataModel(datasetKey, data.nodes, data.links, data.diff_nodes, data.diff_links);
 			activeDataset.nodes = data.nodes;

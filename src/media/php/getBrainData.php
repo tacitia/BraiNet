@@ -145,7 +145,7 @@
 		}
 
 		$link_paper_map = array();
-		$query = "SELECT * FROM" . $linkPaperMapTableName;
+		$query = "SELECT * FROM " . $linkPaperMapTableName;
 		$results = mysql_query($query, $con) or die("SELECT linkPaperMap failed: " . mysql_error());
 		while ($row = mysql_fetch_array($results)) {
 			$record = array();
