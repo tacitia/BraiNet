@@ -89,13 +89,11 @@
 				false);
 	}
 
-
-
 	db.getBrainData = function(datasetKey, userID) {
 		var successFun = function(result) {
 			var data = $.parseJSON(result);
 			console.log(data);
-			dataModel.constructDataModel(datasetKey, data.nodes, data.links, data.diff_nodes, data.diff_links);
+			dataModel.constructDataModel(datasetKey, data);
 			activeDataset.nodes = data.nodes;
 			activeDataset.links = data.links;
 			activeDataset.maps = user.datasets[datasetKey];

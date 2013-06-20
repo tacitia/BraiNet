@@ -35,18 +35,19 @@
 	};
 
 	
-	dm.constructDataModel = function(datasetKey, nodes, links, diff_nodes, diff_links, papers) {
+	dm.constructDataModel = function(datasetKey, data) {
 		user.datasets[datasetKey] = {};
-		constructNodesMaps(datasetKey, nodes);
-		constructLinksMaps(datasetKey, links);
-		constructLinkHierarchy(datasetKey, links);
-//		constructPaperMap(datasetKey, papers);
-		if (diff_nodes.length > 0 || diff_links.length > 0) {
-			mergeDiffs(datasetKey, nodes, links, diff_nodes, diff_links);				
+		constructNodesMaps(datasetKey, data.nodes);
+		constructLinksMaps(datasetKey, data.links);
+		constructLinkHierarchy(datasetKey, data.links);
+		constructPaperMap(datasetKey, data.papers);
+		constructLinkPaperMap(datasetKey, data.link_paper_map)
+		if (data.diff_nodes.length > 0 || data.diff_links.length > 0) {
+			mergeDiffs(datasetKey, data.nodes, data.links, data.diff_nodes, data.diff_links);				
 		}
 		svgData.assignColors(user.datasets[datasetKey].node_map);
 	};
-	
+		
 	var constructNodesMaps = function(datasetKey, nodes) {
 		var node_map = {};
 		var in_neighbor_map = {};
@@ -235,10 +236,23 @@
 		var paper_map = {};
 		var num_paper = papers.length;
 		for (var i = 0; i < num_paper; ++i) {
-			var paper = data[i];
-			paper_map[paper.key] = paper;
+			var paper = papers[i];
+			paper_map[paper.pmid] = paper;
 		} 
 		user.datasets[datasetKey].paper_map = paper_map;
+		console.log(paper_map);
+	};
+	
+	var constructLinkPaperMap = function(datasetKey, records) {
+		var link_paper_map = {};
+		var num_record = records.length;
+		for (var i = 0; i < num_record; ++i) {
+			var record = records[i];
+			var linkKey = parseInt(record.linkKey);
+			if (link_paper_map[linkKey] === undefined) link_paper_map[linkKey] = [];
+			link_paper_map[linkKey].push(record.pmid);
+		}
+		console.log(link_paper_map);
 	};
 	
 	function constructBrodmannMap(data) {
