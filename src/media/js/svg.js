@@ -41,49 +41,50 @@
 		}
 	}
 
-	function findActiveParent(node) {
+	var findActiveParent = function(node) {
 		var result = node;
 		while (result !== undefined && result !== null) {
 			if (result.isActive) {
 				return result;
 			}
-			result = active_node_map[result.parent];
+			result = activeDataset.maps.node_map[result.parent];
 		}
 		return result;
-	}
+	};
 
 	var findActiveDescends = function(node) {
-		var num_active_nodes = active_data_nodes.length;
+		var num_active_nodes = sd.circNodes.length;
+		var node_map = activeDataset.maps.node_map;
 		var results = [];
 		for (var i = 0; i < num_active_nodes; ++i) {
-			var curr_node = active_data_nodes[i];
+			var curr_node = sd.circNodes[i];
 			if (curr_node.parent === undefined || curr_node.parent === null) { continue; }
 			// Check if the input node is a parent of the current active node
-			var parent = active_node_map[curr_node.parent];
+			var parent = node_map[curr_node.parent];
 			while (parent !== undefined && parent !== null) {
 				if (parent === node) {
 					results.push(curr_node);
 					break;
 				}
-				parent = active_node_map[parent.parent];
+				parent = node_map[parent.parent];
 			}
 		}
 		return results;
 	};
 
-	function findDescAtDepth(node, depth) {
+	var findDescAtDepth = function(node, depth) {
 		var result = [node];
 		while (result.length > 0 && result[0].depth < depth) {
 			var curr_node = result[0];
 			var children = curr_node.children;
 			var child_num = children.length;
 			for (var i = 0; i < child_num; ++i) {
-				result.push(active_node_map[children[i]]);
+				result.push(activeDataset.maps.node_map[children[i]]);
 			}
 			result.splice(0, 1);
 		}
 		return result;
-	}
+	};
 
 	function initActiveNodes(maps) {
 		for (var key in maps.node_map) {
@@ -118,14 +119,16 @@
 	}
 
 
-	function calculatePaths(num_hop) {
+	var calculatePaths = function(num_hop) {
+		var maps = activeDataset.maps;
+		
 		var counter = 0;
 		var paths = [];
 		var results = [];
-		paths[0] = [selected_source];
+		paths[0] = [searchUI.selected_source];
 		// Set the min / max depth
-		var depth1 = selected_source.depth;
-		var depth2 = selected_target.depth;
+		var depth1 = searchUI.selected_source.depth;
+		var depth2 = searchUI.selected_target.depth;
 		var min_depth = Math.min(depth1, depth2);
 		var max_depth = Math.max(depth1, depth2);
 
@@ -133,61 +136,57 @@
 			var current_path = paths[0];
 			paths.splice(0, 1);
 			var anchor_node = current_path[current_path.length - 1];
-			if (anchor_node.key === selected_target.key) {
+			if (anchor_node.key === searchUI.selected_target.key) {
 				results.push(current_path);
 				continue;
 			}
 			// If already reaches the maximum length, don't continue counting neighbors
 			if (current_path.length >= num_hop + 2) { continue; }
-			var neighbors = active_node_out_neighbor_map[anchor_node.key];
+			var neighbors = maps.node_out_neighbor_map[anchor_node.key];
 			var neighbor_num = neighbors.length;
 			for (var i = 0; i < neighbor_num; ++i) {
 				var neighbor_id = neighbors[i];
-				var neighbor_node = active_node_map[neighbor_id];
+				var neighbor_node = maps.node_map[neighbor_id];
 				if (neighbor_node.depth >= min_depth && neighbor_node.depth <= max_depth) {
 					paths.push(current_path.concat(neighbor_node));
 				}
 			}
 			counter++;
 			if (counter > 5000) { 
-				/*if (enable_owa) {
-					console.log(selected_source);
-					console.log(selected_target);
-					OWATracker.trackAction('Warning', 'Path size limit reached', selected_source.name + '-' + selected_target + '-' + max_hop);
-				}*/
 				userAction.trackAction(null, 'Warning', 'Path size limit reached', selected_source.name + '-' + selected_target + '-' + max_hop);
 				console.log("Reached path limit."); break;
 			}
 		}
 		return results;
-	}
+	};
+	sd.calculatePaths = calculatePaths;
 
-	function populateForceElements(paths) {
+	var populateForceElements = function(paths) {
 		var num_path = paths.length;
-		active_data_nodes_force = [];
-		active_data_links_force = [];
+		sd.forceNodes = [];
+		sd.forceLinks = [];
 		console.log(paths);
 		for (var i = 0; i < num_path; ++i) {
-			console.log(i);
 			var path = paths[i];
 			var num_link = path.length - 1;
 			for (var j = 0; j < num_link; ++j) {
 				var current_source = path[j];
 				var current_target = path[j+1];
 				var key_pair = current_source.key + "-" + current_target.key;
-				var link = active_node_link_map[key_pair];
-				if ($.inArray(link, active_data_links_force) < 0) {
-					active_data_links_force.push(link);
+				var link = activeDataset.maps.node_link_map[key_pair];
+				if ($.inArray(link, sd.forceLinks) < 0) {
+					sd.forceLinks.push(link);
 				}
-				if ($.inArray(current_source, active_data_nodes_force) < 0) {
-					active_data_nodes_force.push(current_source);
+				if ($.inArray(current_source, sd.forceNodes) < 0) {
+					sd.forceNodes.push(current_source);
 				}
-				if ($.inArray(current_target, active_data_nodes_force) < 0) {
-					active_data_nodes_force.push(current_target);
+				if ($.inArray(current_target, sd.forceNodes) < 0) {
+					sd.forceNodes.push(current_target);
 				}
 			}
 		}
-	}
+	};
+	sd.populateForceElements = populateForceElements;
 
 	/*
 	 * This function is called before rendering the canvas to assign colors to the 
@@ -356,7 +355,7 @@
 		var links = sd.circLinks;
 		
 		var numToRemove = nodes_to_remove.length;
-		var link_length = active_data_links.length;
+		var link_length = links.length;
 		while (link_length--) {
 			var curr_link = links[link_length];
 			// Iterate through all the siblings and remove associated links
@@ -388,12 +387,12 @@
 		for (var i = 0; i < new_num; ++i) {
 			var curr_key = nodes[i].key;
 			var key_pair = new_key + '-' + curr_key;
-			var link = activeDataset.node_link_map[key_pair];
+			var link = activeDataset.maps.node_link_map[key_pair];
 			if (link !== undefined) {
 				links.push(link);
 			}
 			key_pair = curr_key + '-' + new_key;
-			link = activeDataset.node_link_map[key_pair];
+			link = activeDataset.maps.node_link_map[key_pair];
 			if (link !== undefined) {
 				links.push(link);
 			}
@@ -402,11 +401,28 @@
 		svgRenderer.updateCircularLayout(new_num, new_delta);
 	};
 	
+	sd.displayInvisibleNode = function(input_node) {
+		if (!input_node.isActive) {
+			var parent = sd.findActiveParent(input_node);
+			// In this case, the input is on a level higher than the visible nodes
+			if (parent === undefined) {
+				var activeDescs = sd.findActiveDescends(input_node);
+				sd.combineRegions(input_node, activeDescs);
+			}
+			else {
+				var siblings = sd.findDescAtDepth(parent, input_node.depth);
+				sd.expandRegion(parent, siblings, svgRenderer.svg_circular);
+			}
+		}	
+	};
+	
 	sd.calculateArcPositions = calculateArcPositions;
 	sd.expandRegion = expandRegion;
 	sd.combineRegions = combineRegions;
 	sd.findActiveDescends = findActiveDescends;
-
+	sd.findActiveParent = findActiveParent;
+	sd.findDescAtDepth = findDescAtDepth;
+	
 }(window.svgData = window.svgData || {}, jQuery));
 
 (function(sr, $, undefined) {
@@ -425,7 +441,7 @@
 	var curves;
 	var links;
 	var force;
-
+	
 	/* Prepare the canvas before the data arrives */
 	sr.prepareCanvas = function() {
 		arcs = d3.svg.arc()
@@ -446,6 +462,8 @@
 				.append('g')
 				.attr("transform", "translate(" + (vis_width / 2) + "," + (vis_height / 2) + ")")
 				.append('g');
+
+		sr.svg_circular = svg_circular;	
 
 		svg_force = d3.select("#canvas-force")
 				.append("svg")
@@ -489,20 +507,21 @@
 	
 	sr.updateCircularLayout = updateCircularLayout;
 
-	function dimNonSearchResults() {
+	var dimNonSearchResults = function() {
 		svg_circular.selectAll('.circular.node')
 			.classed('nofocus', function(d) {
-				return ($.inArray(d, active_data_nodes_force) < 0);
+				return ($.inArray(d, svgData.forceNodes) < 0);
 			});
 		svg_circular.selectAll('.circular.link')
 			.classed('hidden', function(d) {
-				return ($.inArray(d, active_data_links_force) < 0);
+				return ($.inArray(d, svgData.forceLinks) < 0);
 			});
 		svg_circular.selectAll('.circular.text')
 			.classed('visible', function(d) {
-				return ($.inArray(d, active_data_nodes_force) >= 0);
+				return ($.inArray(d, svgData.forceNodes) >= 0);
 			});    
-	}
+	};
+	sr.dimNonSearchResults = dimNonSearchResults;
 
 
 	function nodeClick(d) {
@@ -513,17 +532,17 @@
 			
 			if (d.parent === undefined || d.parent === null) { return; } // Ignore top level nodes
 			var parent = maps.node_map[d.parent]; 
-			var nodes_to_remove = findActiveDescends(parent);
+			var nodes_to_remove = svgData.findActiveDescends(parent);
 			svgData.combineRegions(parent, nodes_to_remove);
 		}
 		else if (d3.event.altKey) {
 			// Fix on the clicked node
 			if (state.currMode === customEnum.mode.exploration) {
-				current_mode = mode.fixation;
+				state.currMode = customEnum.mode.fixation;
 				selectStructure(d.name, false);
 			}
 			else if (state.currMode === customEnum.mode.fixation) {
-				current_mode = mode.exploration;
+				state.currMode = customEnum.mode.exploration;
 				selectStructure(d.name, true);
 			}
 		}
@@ -539,10 +558,10 @@
 					links.splice(link_length, 1);
 				}
 			}
-			var new_num = activeDataset.nodes.length;
+			var new_num = nodes.length;
 			updateCircularLayout(new_num, 2 * Math.PI / new_num);
 			// add the selected node to black list
-			ignored_nodes.push(d);
+			state.ignored_nodes.push(d);
 			d.isIgnored = true;
 		
 			// Todo: have a list that displays the removed nodes, so that the user can 
@@ -679,17 +698,7 @@
 		svg_force.selectAll('.nodelink.text').classed('visible', true);
 	}
 
-	function forceLinkClick(d) {
-		/*if (enable_piwik) {
-			piwikTracker.trackPageView('Click link in nodelink view');
-		}
-		if (enable_owa) {
-			OWATracker.trackAction('Viz', 'Click force link', d.source.name + '-' + d.target.name);
-		}
-		if (enable_tracking) {
-			trackAction('Click force link', d.source.name + '-' + d.target.name);
-		} */
-		
+	function forceLinkClick(d) {		
 		userAction.trackAction('Click link in nodelink view', 'Viz', 'Click force link', d.source.name + '-' + d.target.name, 'Click force link',      d.source.name + '-' + d.target.name );   
 		displayConnectionInfo(d);
 	}
@@ -829,11 +838,11 @@
 			});    
 	}
 
-	function updateForceLayout() {
+	var updateForceLayout = function() {
 		//this should be incorporated in the node data
 		var num_groups = 0,
 			group_count = {};
-		active_data_nodes_force.forEach(function(d) {
+		sr.forceNodes.forEach(function(d) {
 			if (!group_count[d.group]) {
 				++num_groups;
 				group_count[d.group] = [num_groups, 1];
@@ -845,16 +854,16 @@
 
 		// Set the selected source and selected target to have fixed positions, and 
 		// set their locations
-		selected_source.fixed = true;
-		selected_target.fixed = true;
-		selected_source.x = 200;
-		selected_source.y = 400;
-		selected_target.x = 600;
-		selected_target.y = 400; 
+		searchUI.selected_source.fixed = true;
+		searchUI.selected_target.fixed = true;
+		searchUI.selected_source.x = 200;
+		searchUI.selected_source.y = 400;
+		searchUI.selected_target.x = 600;
+		searchUI.selected_target.y = 400; 
 
 		force = d3.layout.force()
-				  .nodes(active_data_nodes_force)
-				  .links(active_data_links_force)
+				  .nodes(sr.forceNodes)
+				  .links(sr.forceLinks)
 				  //.links([])
 				  .size([vis_width, vis_height])
 				  //still needs work - link distance determined by group size and if
@@ -876,7 +885,7 @@
 		svg_force.selectAll(".text").remove();
 	
 		var link = svg_force.selectAll(".nodelink.link")    
-		   .data(active_data_links_force, function(d) { return d.key; })
+		   .data(sr.forceLinks, function(d) { return d.key; })
 		   .enter().append("svg:line")
 		   .attr("class", "nodelink link")
 		   .style("stroke-width", 3)
@@ -886,7 +895,7 @@
 
 
 		var node = svg_force.selectAll(".nodelink.node")
-		   .data(active_data_nodes_force, function(d) { return d.key; })
+		   .data(sr.forceNodes, function(d) { return d.key; })
 		   .enter().append("svg:circle")
 		   .attr("class", "nodelink node")
 		   .attr("cx", function(d) { return d.x; })
@@ -940,7 +949,9 @@
 			  return "translate(" + d.x + "," + d.y + ")";
 		  });
 	  });
-	}
+	};
+	
+	sr.updateForceLayout = updateForceLayout;
 
 	function highlightNode(node, class_name, value, show_name, svg) {
 		if (node === undefined) {

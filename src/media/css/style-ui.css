@@ -313,6 +313,9 @@ html,body { height:100%; }
 	stroke-width: 20;
 }
 
+.10tb-padding {
+	padding: 10px 0;
+}
 
 /* @end */
 

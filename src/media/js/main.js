@@ -6,4 +6,5 @@ $(document).ready(function() {
 	database.getBrainData(datasetProperties.key, 0);
 	ui.bind();
 	svgRenderer.prepareCanvas();
+	database.populateDatasets(0);
 });

@@ -74,10 +74,64 @@ function download_svg(url) {
 		// When hovering over a path, add the 'hover' class, which just makes
 		// the outline thicker.
 		$("#anatomy-map path").hover(function() {
+			console.log($(this));
 			$(this).attr("class","hover")
 		}, function() {
 			$(this).attr("class","");
 		});
+		
+		$("#anatomy-map path").click(function() {
+			console.log("click");
+			console.log($(this).attr('oldTitle'));
+			// Imp TODO: Change this to work with input data
+			var input_node = activeDataset.maps.name_node_map['Thalamus'];
+			svgData.displayInvisibleNode(input_node);
+
+			var node = input_node;
+			var svg = svgRenderer.svg_circular;
+			var maps = activeDataset.maps;
+			svg.selectAll('.circular.link')
+				.classed('hidden', function(d) {
+					return d.source.key !== node.key && d.target.key !== node.key; 
+				});
+			svg.selectAll('.circular.link')
+				.classed('outLink', function(d) {
+					var reverted_link = maps.node_link_map[d.target.key + '-' + d.source.key];
+					return d.source.key === node.key && reverted_link === undefined;
+				});
+			svg.selectAll('.circular.link')
+				.classed('inLink', function(d) {
+					var reverted_link = maps.node_link_map[d.target.key + '-' + d.source.key];
+					return d.target.key === node.key && reverted_link === undefined;
+				});
+			svg.selectAll('.circular.link')
+				.classed('biLink', function(d) {
+					var reverted_link = maps.node_link_map[d.target.key + '-' + d.source.key];
+					return reverted_link !== undefined;
+				});
+			svg.selectAll('.circular.node')
+				.classed('nofocus', function(d) {
+					var dKey = d.key;
+					var nodeKey = node.key;
+					var inNeighbors = maps.node_in_neighbor_map[nodeKey];
+					var outNeighbors = maps.node_out_neighbor_map[nodeKey];
+					return dKey !== nodeKey && ($.inArray(dKey, inNeighbors) < 0) &&
+						($.inArray(dKey, outNeighbors) < 0);
+				});    	
+			svg.selectAll('.circular.text')
+				.classed('visible', function(d) {
+					var dKey = d.key;
+					var nodeKey = node.key;
+					var inNeighbors = maps.node_in_neighbor_map[nodeKey];
+					var outNeighbors = maps.node_out_neighbor_map[nodeKey];
+					return dKey === nodeKey || ($.inArray(dKey, inNeighbors) >= 0) ||
+						($.inArray(dKey, outNeighbors) >= 0);
+				});
+
+			state.currMode = customEnum.mode.fixation;
+			
+		});
+		
 		if (tempSelPath !== null) {
 			$(tempSelPath).attr('class', 'hover');
 			$(tempSelPath).qtip('toggle', true);
@@ -135,7 +189,7 @@ function selectStructure(title, isCancel) {
 	if (struct_img_map[id] !== curr_image_id) {
 		curr_image_id = struct_img_map[id];
 		tempSelPath = selPath;
-		updateImages();
+		updateImages(args);
 	}
 	else {
 		$(selPath).attr('class', 'hover');
@@ -162,7 +216,7 @@ function retrieveStructImageMap() {
 	});
 }
 
-function updateImages() {
+function updateImages(args) {
 		download_svg(format_url(SVG_DOWNLOAD_PATH, curr_image_id, args));
 		download_img(format_url(IMG_DOWNLOAD_PATH, curr_image_id, args));
 }
@@ -175,6 +229,6 @@ $(function() {
 	download_structures(function() {
 		$("#anatomy-map").css("background","");
 		args = { downsample: DOWNSAMPLE };
-		updateImages();
+		updateImages(args);
 	});
 });

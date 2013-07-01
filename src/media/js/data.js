@@ -52,6 +52,7 @@
 		var node_map = {};
 		var in_neighbor_map = {};
 		var out_neighbor_map = {};
+		var name_node_map = {};
 
 		var num_nodes = nodes.length;
 		for (var i = 0; i < num_nodes; ++i) {
@@ -62,6 +63,7 @@
 			node.circ = {};
 			node.children = [];
 			node_map[node.key] = node;
+			name_node_map[node.name] = node;
 			in_neighbor_map[node.key] = [];
 			out_neighbor_map[node.key] = [];
 		}
@@ -77,6 +79,7 @@
 		}
 
 		user.datasets[datasetKey].node_map = node_map;
+		user.datasets[datasetKey].name_node_map = name_node_map;
 		user.datasets[datasetKey].node_in_neighbor_map = in_neighbor_map;
 		user.datasets[datasetKey].node_out_neighbor_map = out_neighbor_map;
 	};
@@ -252,6 +255,7 @@
 			if (link_paper_map[linkKey] === undefined) link_paper_map[linkKey] = [];
 			link_paper_map[linkKey].push(record.pmid);
 		}
+		user.datasets[datasetKey].link_paper_map = link_paper_map;
 		console.log(link_paper_map);
 	};
 	

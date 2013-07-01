@@ -80,8 +80,9 @@
 
 	db.populateDatasets = function(uid) {
 		var successFun = function(result) {
-			dataset_list = $.parseJSON(result);
-			populateDatasetUI();
+			console.log(result);
+			user.dataset_list = $.parseJSON(result);
+			datasetManager.populateDatasetUI();
 		};
 		postToPhp('getDatasetByUserId.php',
 				{userID: uid},
@@ -97,7 +98,7 @@
 			activeDataset.nodes = data.nodes;
 			activeDataset.links = data.links;
 			activeDataset.maps = user.datasets[datasetKey];
-			searchUI.updateOptions();
+			ui.setupUIElements();
 			svgRenderer.renderData(datasetKey);
 		};
 		postToPhp('getBrainData.php',

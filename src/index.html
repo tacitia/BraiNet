@@ -55,11 +55,45 @@
 		</div>
 
         <div id="info" class="util-section card">
-	 	  <h3>Connection and Region Information</h3>
-            <div id="region-info">
-                <h4>Brain Region information</h4>
-                <p>&nbsp</p>
-                <p><i>Region information will be available in future updates</i></p>
+	 	  <h3>Add Brain regions and connections</h3>
+            <div id="add-node-div">
+                <h4>Add a brain region</h4>
+                <div>
+                  <div class="lf-col-left"><p>Name</p></div>
+                  <div class="lf-col-right"><input id="nodeNameInput" type="text" placeholder="Input the name of the region"></div>
+                  <div class="clear"></div>
+                </div>
+                <div>
+                  <div class="lf-col-left"><p>Located within</p></div>
+                  <div class="lf-col-right"><select data-placeholder="Choose a brain area" class="chzn-select" style="width:250px;" id="parentSelect">
+                    <option></option>
+                  </select></div>
+                  <div class="clear"></div>
+                </div>
+				<div class="10tb-padding"><button id="addNode" class="btn btn-primary">Add brain region</button></div>
+            </div>
+            <div id="add-link-div">
+                <h4>Add a connection</h4>
+                <div>
+                  <div class="lf-col-left"><p>Source</p></div>
+                  <div class="lf-col-right"><select data-placeholder="Choose a brain area" class="chzn-select" style="width:250px;" id="sourceSelect-Manage">
+                    <option></option>
+                  </select></div>
+                  <div class="clear"></div>
+                </div>
+                <div>
+                  <div class="lf-col-left"><p>Target</p></div>
+                  <div class="lf-col-right"><select data-placeholder="Choose a brain area" class="chzn-select" style="width:250px;" id="targetSelect-Manage">
+                    <option></option>
+                  </select></div>
+                  <div class="clear"></div>
+                </div>
+                <div>
+                  <div class="lf-col-left"><p>Pubmed Link</p></div>
+                  <div class="lf-col-right"><input type="text" placeholder="Input the link to a publication about the connection"></div>
+                  <div class="clear"></div>
+				  <div class="10tb-padding"><button id="addLink" class="btn btn-primary">Add connection</button></div>
+                </div>
             </div>
         </div><!--END INFO-->
 
@@ -298,6 +332,7 @@
     <script type="text/javascript" src="media/lib/jquery.maphilight.min.js"></script>
 	<script type="text/javascript" src="media/lib/qTip2/jquery.qtip.min.js"></script>
 	<script type="text/javascript" src="media/lib/arrows/bootstrap-arrows.js"></script>
+    <script type="text/javascript" src="media/lib/datatables/media/js/jquery.dataTables.min.js"></script>
     
     <script type="text/javascript" src="media/js/misc.js"></script>
     <script type="text/javascript" src="media/js/state.js"></script>
