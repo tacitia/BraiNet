@@ -339,8 +339,8 @@
 	function childLinkClick() {
 		var id = $(this).attr('id');
 		var id_num = id.substring(9);
-		console.log(id_num);
-		console.log(cl.link.base_children);
+		//console.log(id_num);
+		//console.log(cl.link.base_children);
 		var childLink = activeDataset.maps.link_map[cl.link.base_children[id_num]];
 		cl.updateChosenLink(childLink);
 	}
@@ -360,11 +360,26 @@
 		}
 		else {
 			content_html += '<table id="pubTable" class="table table-bordered table-striped table-condensed">';
-//			content_html += '<thead><tr class="tableTitle"><th>Publication</th><th>Authors</th><th>Source</th><th style="width:120px">Notes</th><th style="width:60px"></th></tr></thead><tbody></tbody></table>';
+
 			content_html += '<thead><tr class="tableTitle"><th>Publication</th><th>Authors</th><th>Source</th><th>Notes</th><th></th></tr></thead><tbody></tbody></table>';
 			content.html(content_html);
+		/*	$('#exportButton').css(
+			'position','absolute';
+			'left','50%';
+			'border-radius','10px 10px 10px 10px'
+			 );
+		*/
+			$('#exportButton').click(function(){
+				console.log("export button was clicked");
+			
+				});
 			$('#pubTable').dataTable({
 				'bAutoWidth': false,
+				'sDom':'T<"clear">lfrtip',
+				'oTableTools':{
+					'sSwfPath':'media/lib/TableTools/media/swf/copy_csv_xls_pdf.swf'
+					
+					},
 				'aoColumns': [
 					{sWidth: '300px'},
 					{sWidth: '120px'},
@@ -391,9 +406,9 @@
 			var deleteIcon = null;
 			var editIcon = null;
 			$('#pubTable').on("mouseenter", "tr", function() {
-				console.log($(this));
+				//console.log($(this));
 				var pmid = $(this).context.children[0];
-				console.log(pmid);
+				//console.log(pmid);
 				// Imp TODO: pass in pmid as parameter
 				var contentD = '<span onclick="chosenLink.deletePaper(this)"><i class="icon-trash"></i> Delete</span>';
 				var contentE = '<span onclick="chosenLink.editPaperNotes(this)"><i class="icon-pencil"></i> Edit</span>';
