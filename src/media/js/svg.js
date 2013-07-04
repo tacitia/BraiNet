@@ -441,6 +441,8 @@
 	var curves;
 	var links;
 	var force;
+	var prevClicked_linkKey = -1;
+	sr.prevClicked_linkKey = prevClicked_linkKey; 
 	
 	/* Prepare the canvas before the data arrives */
 	sr.prepareCanvas = function() {
@@ -633,9 +635,26 @@
 		updateCircularTexts();
 	}
 
-	function linkClick(d) {
-		userAction.trackAction('Click link in circular view', 'Viz', 'Click circular link', d.source.name + '-' + d.target.name, 'Click circular link', d.source.name + '-' + d.target.name);
-		chosenLink.updateChosenLink(d);
+	function linkClick(link, svg) {
+		userAction.trackAction('Click link in circular view', 'Viz', 'Click circular link', link.source.name + '-' + link.target.name, 'Click circular link', link.source.name + '-' + link.target.name);
+		
+		chosenLink.updateChosenLink(link);
+		
+		if(prevClicked_linkKey !== link.key){
+			svg.selectAll('.circular.link')
+				.classed('clicked', function(d){
+					return d.key === link.key;
+				});
+		}
+		else 
+		{
+			linkMouseOut(link, svg);
+			svg.selectAll('.circular.link')
+				.classed('unclicked', function(d){
+					return d.key === link.key;
+				});
+		}
+		prevClicked_linkKey = link.key;
 	}
 
 	function linkMouseOver(link, svg) {
@@ -655,6 +674,7 @@
 	}
 
 	function linkMouseOut(link, svg) {
+		
 		if (state.currMode === customEnum.mode.search || state.currMode === customEnum.mode.fixation) { return; }
 		svg.selectAll('.circular.node').classed('nofocus', false);
 		svg.selectAll('.circular.link').classed('hidden', false);
@@ -774,7 +794,7 @@
 			.attr("id", function(d) { return "circ-link-" + d.key; })
 			.on("mouseover", function(d) { linkMouseOver(d, svg_circular); })
 			.on("mouseout", function(d) { linkMouseOut(d, svg_circular); })
-			.on("click", linkClick);
+			.on("click", function(d){linkClick(d, svg_circular); });
 	}
 
 	function exitCircularNodes() {
