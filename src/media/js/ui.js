@@ -20,21 +20,66 @@
 	};
 
 	ui.setupUIElements = function() {
-		$('sourceSelect-Manage').find('option').remove();
-		$('targetSelect-Manage').find('option').remove();
+
 		$('sourceSelect').find('option').remove();
 		$('targetSelect').find('option').remove();
-		$('parentSelect').find('option').remove();
 		$('.chzn-select').trigger('liszt:updated');
 		searchUI.appendNodesAsOptions(activeDataset.maps.node_map);
-		dataUI.appendNodesAsOptions(activeDataset.maps.node_map);
+		dataUI.setupUIElements();
 	};
 
 }(window.ui = window.ui || {}, jQuery));
 
 (function(dui, $, undefined) {
 
-	dui.appendNodesAsOptions = function(node_map) {
+	var rootDiv = $('#info');
+	var addNodeBtn = rootDiv.find('#addNode');
+	var addLinkBtn = rootDiv.find('#addLink');
+	
+	addNodeBtn.qtip({
+		content: 'Cannot edit public datasets. Please clone and select a personal copy using "Manage Data" panel for editing.',
+		events: {
+			show: function(e, api) {
+				if (!$(e.originalEvent.currentTarget).hasClass('disabled')) {
+					e.preventDefault();
+				}
+			}
+		}
+	});
+
+	addLinkBtn.qtip({
+		content: 'Cannot edit public datasets. Please clone a personal copy using "Manage Data" panel for editing.',
+		events: {
+			show: function(e, api) {
+				if (!$(e.originalEvent.currentTarget).hasClass('disabled')) {
+					e.preventDefault();
+				}
+			}
+		}
+	});
+
+	dui.setupUIElements = function() {
+		removeSelectOptions();
+		if (activeDataset.isClone || activeDataset.isCustom) {
+			enableInputs();
+			updateSelectOptions();
+		}
+		else {
+			disableInputs();
+		}
+	};
+	
+	var removeSelectOptions = function() {
+		$('sourceSelect-Manage').find('option').remove();
+		$('targetSelect-Manage').find('option').remove();
+		$('parentSelect').find('option').remove();
+		$('#sourceSelect-Manage').trigger('liszt:updated');
+		$('#targetSelect-Manage').trigger('liszt:updated');
+		$('#parentSelect').trigger('liszt:updated');
+	};
+
+	var updateSelectOptions = function() {
+		var node_map = activeDataset.maps.node_map;
 		for (var key in node_map) {
 			var d = node_map[key];
 			$('#sourceSelect-Manage').append(new Option(d.name, key, false, false));
@@ -47,12 +92,44 @@
 		$('#parentSelect').trigger('liszt:updated');
 	};
 	
+	var disableInputs = function() {
+		rootDiv.find('input').prop('disabled', true);
+		rootDiv.find('.btn').addClass('disabled');
+	};
+	
+	var enableInputs = function() {
+		rootDiv.find('input').prop('disabled', false);
+		rootDiv.find('.btn').removeClass('disabled');
+	};
+	
 	dui.addNodeButtonClick = function() {
-		alert("New brain region added.");
+		if (addNodeBtn.hasClass('disabled')) { return; }		
+		var nodeName = $('#nodeNameInput').val();
+		if (nodeName === "") {
+			alert("Cannot add node: empty node name is not allowed.");
+			return;	
+		}
+		var parentName = $('#parentSelect :selected').text();
+		var parent = (parentName === '') ? null : activeDataset.maps.name_node_map[parentName];
+		var parentKey = (parent === null) ? -1 : parent.key;
+		console.log("parent key: " + parentKey);
+		var depth = (parent === null) ? 1 : parent.depth　+ 1; 
+		var nodeData = {userID: user.id, datasetKey: activeDataset.key, nodeName: nodeName, parentKey: parentKey, depth: depth, notes: null, isClone: activeDataset.isClone};
+		database.addBrainNode(nodeData);
 	};
 	
 	dui.addLinkButtonClick = function() {
-		alert("New connection added.");
+		if (addLinkBtn.hasClass('disabled')) { return; }
+		var sourceName = $('#sourceSelect-Manage :selected').text();
+		var targetName = $('#targetSelect-Manage :selected').text();
+		var name_node_map = activeDataset.maps.name_node_map;
+		var sourceKey = name_node_map[sourceName].key;
+		var targetKey = name_node_map[targetName].key;
+		var linkData = {userID: user.id, datasetKey: activeDataset.key, source: sourceKey, target: targetKey, notes: pubmedLink, attrKey: null, attrValue: null};		
+	};
+	
+	dui.updateVisButtonClick = function() {
+		svgRenderer.renderData(activeDataset.key);
 	};
 
 }(window.dataUI = window.dataUI || {}, jQuery));
@@ -196,14 +273,12 @@
 	}
 
 	dm.populateDatasetUI = function() {
-		var dataset_list = user.dataset_list;
-		$('#dataSelect').append(new Option('BAMS (public)', 2130));
-		$('#dataSelect').append(new Option('Pubmed (public)', 1000002));
-		var num_datasets = dataset_list.length;
-		for (var i = 0; i < num_datasets; ++i) {
-			var curr_dataset = dataset_list[i];
-			$('#dataSelect').append(new Option(curr_dataset[1], curr_dataset[0]));
-			console.log(curr_dataset);
+		var datasetList = user.datasetList;
+//		$('#dataSelect').append(new Option('BAMS (public)', 2130));
+//		$('#dataSelect').append(new Option('Pubmed (public)', 1000002));
+		for (var key in datasetList) {
+			var curr_dataset = datasetList[key];
+			$('#dataSelect').append(new Option(curr_dataset.name, key));
 		}
 		$('.chzn-select').chosen({allow_single_deselect: true});
 		$('#dataSelect').trigger('liszt:updated');
@@ -226,10 +301,11 @@
 	};
 
 
+	// #Tested for v3.0#
 	dm.cloneDatasetButtonClick = function() {
 		var datasetName = $('#dataSelect :selected').text().replace('(public)', '(personal copy)');
 		var datasetID = $('#dataSelect').val();
-		database.cloneDataset(datasetName, uid, datasetID);	
+		database.cloneDataset(datasetName, user.id, datasetID);	
 	};
 
 	/*
@@ -239,14 +315,15 @@
 	 * 4. Update the visualization [TODO]
 	 */
 	dm.applyDatasetButtonClick = function() {
-		var datasetID = parseInt($('#dataSelect').val());
-		if (datasetID === "") {
+		var datasetKey = parseInt($('#dataSelect').val());
+		if (datasetKey === "") {
 			return;
 		}
-		if (user_datasets[datasetID] === undefined) {
-			database.getBrainData(datasetID, uid);
+		if (user.datasets[datasetKey] === undefined) {
+			database.getBrainData(datasetKey, user.id);
 		}
 		else {
+			activeDataset.switchActiveDataset(datasetKey);
 		}
 	};
 

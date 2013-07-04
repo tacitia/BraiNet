@@ -33,6 +33,18 @@
 			}
 		}
 	};
+	
+	dm.addNode = function(node, node_map, name_node_map, in_neighbor_map, out_neighbor_map) {
+		node.key = parseInt(node.key);
+		node.depth = parseInt(node.depth);
+		node.parent = (node.parentKey === null) ? null : parseInt(node.parentKey);
+		node.circ = {};
+		node.children = [];
+		node_map[node.key] = node;
+		name_node_map[node.name] = node;
+		in_neighbor_map[node.key] = [];
+		out_neighbor_map[node.key] = [];
+	};
 
 	
 	dm.constructDataModel = function(datasetKey, data) {
@@ -57,15 +69,7 @@
 		var num_nodes = nodes.length;
 		for (var i = 0; i < num_nodes; ++i) {
 			var node = nodes[i];
-			node.key = parseInt(node.key);
-			node.depth = parseInt(node.depth);
-			node.parent = (node.parentKey === null) ? null : parseInt(node.parentKey);
-			node.circ = {};
-			node.children = [];
-			node_map[node.key] = node;
-			name_node_map[node.name] = node;
-			in_neighbor_map[node.key] = [];
-			out_neighbor_map[node.key] = [];
+			dm.addNode(node, node_map, name_node_map, in_neighbor_map, out_neighbor_map);
 		}
 	
 		for (var key in node_map) {
@@ -243,7 +247,6 @@
 			paper_map[paper.pmid] = paper;
 		} 
 		user.datasets[datasetKey].paper_map = paper_map;
-		console.log(paper_map);
 	};
 	
 	var constructLinkPaperMap = function(datasetKey, records) {
@@ -256,7 +259,6 @@
 			link_paper_map[linkKey].push(record.pmid);
 		}
 		user.datasets[datasetKey].link_paper_map = link_paper_map;
-		console.log(link_paper_map);
 	};
 	
 	function constructBrodmannMap(data) {

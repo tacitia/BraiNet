@@ -51,7 +51,7 @@
 			$('#createDatasetSuccessAlert').show();
 		};
 		postToPhp("addDataset.php",
-				{datasetName: datasetName, userID: userID, isClone: true, origDatasetID: origDatasetID},
+				{datasetName: datasetName, userID: userID, isClone: 1, origDatasetID: origDatasetID},
 				successFun,
 				true);
 
@@ -80,8 +80,11 @@
 
 	db.populateDatasets = function(uid) {
 		var successFun = function(result) {
-			console.log(result);
-			user.dataset_list = $.parseJSON(result);
+			var datasetList = $.parseJSON(result);
+			for (var i = 0; i < datasetList.length; ++i) {
+				var dataset = datasetList[i];
+				user.datasetList[dataset.key] = dataset;
+			}
 			datasetManager.populateDatasetUI();
 		};
 		postToPhp('getDatasetByUserId.php',
@@ -95,11 +98,7 @@
 			var data = $.parseJSON(result);
 			console.log(data);
 			dataModel.constructDataModel(datasetKey, data);
-			activeDataset.nodes = data.nodes;
-			activeDataset.links = data.links;
-			activeDataset.maps = user.datasets[datasetKey];
-			ui.setupUIElements();
-			svgRenderer.renderData(datasetKey);
+			activeDataset.switchActiveDataset(datasetKey);
 		};
 		postToPhp('getBrainData.php',
 				{datasetKey: datasetKey, userID: userID}, 
@@ -119,9 +118,43 @@
 
 	db.updateLink = function(linkKey, notes) {
 		postToPhp("updateBrainLink.php",
-				{linkKey: linkKey, userID: datasetProperties.userID, notes: notes, isClone: datasetProperties.isClone, origin: datasetProperties.origin},
+				{linkKey: linkKey, userID: activeDataset.userID, notes: notes, isClone: activeDataset.isClone, origin: activeDataset.origin},
 				null,
 				true);
 	};
 	
+	db.addBrainNode = function(nodeData) {
+		var successFun = function(result) {
+			if (parseInt(result) === 1062) {
+				alert("Cannot add node: a node with the same name already exists in the dataset."); }
+			else {
+				try {
+					var node = $.parseJSON(result);
+				} catch(e) {
+					console.log(e);
+					alert("Cannot add node: unknown database error occurred during node insertion.");
+					return;
+				}
+				var maps = activeDataset.maps;
+				dataModel.addNode(node, maps.node_map, maps.name_node_map, maps.node_in_neighbor_map, maps.node_out_neighbor_map);
+				alert("New brain region added.");
+			}
+		};
+		postToPhp("addBrainNode.php",
+						nodeData,
+						successFun,
+						false);	
+	};
+
+	db.addBrainLink = function(linkData) {
+		var successFun = function(result) {
+			uiControl.addLinkToDisplay($.parseJSON(result));
+		};
+		postToPhp("addBrainLink.php",
+						linkData,
+						successFun,
+						false
+						);	
+	};
+
 }(window.database = window.database || {}, jQuery));
