@@ -69,8 +69,10 @@
     //echo $links;
 
 	// Insert the attributes
-	mysql_query("INSERT INTO link_attributes(linkKey, attributeKey, attrValue) VALUES 
-	('$linkKey', '$attrKey', '$attrValue')");
+	if ($attrKey) {
+		mysql_query("INSERT INTO link_attributes(linkKey, attributeKey, attrValue) VALUES 
+		('$linkKey', '$attrKey', '$attrValue')");
+	}
 	
 	// Retrieve all attributes
 	//$attrs = array();

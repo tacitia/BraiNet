@@ -85,8 +85,33 @@
 			$node['depth'] = $row['depth'];
 			$node['datasetKey'] = $row['datasetKey'];
 			$node['notes'] = $row['notes'];
-			$node['brodmannKey'] = $row['brodmannKey'];
 			$nodes[] = $node;
+		}
+		
+		if ($isClone) {
+			$additional_nodes_query = "
+				SELECT 	nodes.key, nodes.name, parents.parent as parentKey, 
+						parents.parentName as parentName, parents.depth, nodes.datasetKey, nodes.notes, nodes.brodmannKey
+				FROM public_nodes nodes 
+				LEFT JOIN 
+					(SELECT np.node, un.key as parent, np.depth, un.name as parentName 
+					FROM public_node_parents np 
+					LEFT JOIN public_nodes un 
+					ON un.key = np.parent) as parents
+				ON nodes.key = parents.node WHERE nodes.datasetKey = ".$datasetKey;
+				
+			$add_nodes_result = mysql_query($additional_nodes_query, $con) or die("SELECT nodes failed: " . mysql_error());
+			while ($row = mysql_fetch_array($add_nodes_result)) {
+				$node = array();
+				$node['key'] = $row['key'];
+				$node['name'] = $row['name'];
+				$node['parentName'] = $row['parentName'];
+				$node['parentKey'] = $row['parentKey'];
+				$node['depth'] = $row['depth'];
+				$node['datasetKey'] = $row['datasetKey'];
+				$node['notes'] = $row['notes'];
+				$nodes[] = $node;
+			}
 		}
 		
 		$links_result = mysql_query($links_query, $con);

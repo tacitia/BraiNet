@@ -1,4 +1,4 @@
-<? 
+<? #Tested for v3.0 under clone condition#
     $datasetName = $_POST['datasetName']; 	/*string*/
     $userID = $_POST['userID'];			/*int*/
     $isClone = $_POST['isClone'];		/*bool*/
