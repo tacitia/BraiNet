@@ -22,6 +22,7 @@ var STRUCTURES_URL = API_PATH + "data/Structure/query.json?criteria=[graph_id$eq
 
 // Default parameters for the demo.  Change these via the URL string.
 var curr_image_id = 100960224;
+var curr_image_key;
 var DOWNSAMPLE = 5;
 
 var urlVars = getUrlVars();
@@ -34,6 +35,7 @@ if ('downsample' in urlVars)
 // initialized later.
 var _structures = {};
 var struct_img_map = {};
+var _images = {};
 
 var tempSelPath = null;
 
@@ -142,6 +144,7 @@ function download_svg(url) {
 
 // Make an AJAX query to download the section image and append it to the DOM.
 function download_img(url) {
+
 	var image = new Image;
 
 	image.onload = function() {
@@ -151,6 +154,7 @@ function download_img(url) {
 
 	image.src = url;
 }
+
 
 // Splits the URL parameter string into a JavaScript hash.
 function getUrlVars()
@@ -198,6 +202,7 @@ function selectStructure(title, isCancel) {
 }
 
 function retrieveStructImageMap() {
+	        
 	$.ajax({
 		type: "GET",
 		url: "media/php/getStructImgMap.php",
@@ -206,19 +211,31 @@ function retrieveStructImageMap() {
             console.log(data);
         },
         success: function(data) {
-            console.log("Success");
+           
             var temp_map = $.parseJSON(data);
             for (var i = 0; i < temp_map.length; ++i) {
             	var pair = temp_map[i];
             	struct_img_map[pair.structKey] = pair.imageKey;
+            	_images[i+1] = pair.imageKey;
             }
+            curr_image_key = retrieveImageKey();
+             console.log("Success");
         }		
 	});
 }
 
+function retrieveImageKey(){
+	for(var key in _images){
+		if(_images[key] == curr_image_id){
+			return key;
+		}
+	}	
+	return null;
+}
 function updateImages(args) {
 		download_svg(format_url(SVG_DOWNLOAD_PATH, curr_image_id, args));
 		download_img(format_url(IMG_DOWNLOAD_PATH, curr_image_id, args));
+		
 }
 
 // When the page is read, download the structures.  When that's finished, download the SVG 
@@ -226,9 +243,27 @@ function updateImages(args) {
 $(function() {
 	$("#anatomy-map").css("background","no-repeat center url(\"media//img/loading.gif\")");
 	retrieveStructImageMap();
+	
 	download_structures(function() {
 		$("#anatomy-map").css("background","");
 		args = { downsample: DOWNSAMPLE };
 		updateImages(args);
 	});
+	
+	$('#leftArrow').on('click',  function(){
+		curr_image_key = curr_image_key - 1;
+		curr_image_id = _images[curr_image_key];
+		$("#anatomy-map").css("background","");
+		updateImages(args);
+	 });
+	 
+	 $('#rightArrow').on('click',  function(){
+		curr_image_key = curr_image_key + 1;
+		curr_image_id = _images[curr_image_key];
+		$("#anatomy-map").css("background","");
+		updateImages(args);
+	 });
+
+		
+	
 });
