@@ -4,35 +4,32 @@
 	function mergeDiffs(datasetKey, nodes, links, diff_nodes, diff_links) {
 		console.log(diff_nodes);
 		console.log(diff_links);
-		var node_map = user_datasets[datasetKey].node_map;
-		var link_map = user_datasets[datasetKey].link_map;
+		var node_map = user.datasets[datasetKey].node_map;
+		var link_map = user.datasets[datasetKey].link_map;
 		for (var i = 0; i < diff_nodes.length; ++i) {
 			diff_entry = diff_nodes[i];
 			switch (diff_entry.diff) {
-				case 'AddNode':
-					var newNode = {key: diff_entry.nodeKey, name: null, depth: 0, parent: null, notes: null};
-					nodes.push(newNode);
-					node_map[newNode.key] = newNode;
-					break;
 				case 'Rename':
 					node_map[diff_entry.nodeKey].name = diff_entry.content;
 					break;
-				case 'ChangeNote':
+				case 'AddNote':
 					node_map[diff_entry.nodeKey].notes = diff_entry.content;
 					break;
 			}
 		}
+		console.log(link_map);
 		for (var i = 0; i < diff_links.length; ++i) {
 			diff_entry = diff_links[i];
 			switch (diff_entry.diff) {
 				case 'AddLink':
 					break;
-				case 'ChangeNode':
+				case 'AddNote':
 					link_map[diff_entry.linkKey].notes = diff_entry.content;
 					break;
 			}
 		}
 	};
+	
 	
 	dm.addNode = function(node, node_map, name_node_map, in_neighbor_map, out_neighbor_map) {
 		node.key = parseInt(node.key);
@@ -46,6 +43,21 @@
 		out_neighbor_map[node.key] = [];
 	};
 
+	dm.addLink = function(raw_link, link_map, node_link_map, in_neighbor_map, out_neighbor_map, node_map, link_paper_map) {
+		var source_key = parseInt(raw_link.sourceKey);
+		var target_key = parseInt(raw_link.targetKey);
+		var link = {key: parseInt(raw_link.key), source: node_map[source_key], 
+			target: node_map[target_key], notes: raw_link.notes, paper: raw_link.paper,
+			children: [], isDerived: false, base_children: []};
+		link_map[link.key] = link;
+		var target_key = link.target.key;
+		var source_key = link.source.key
+		var key_pair = source_key + "-" + target_key;
+		node_link_map[key_pair] = link;
+		in_neighbor_map[target_key].push(source_key);
+		out_neighbor_map[source_key].push(target_key);
+		link_paper_map[link.key] = [];		
+	}
 	
 	dm.constructDataModel = function(datasetKey, data) {
 		user.datasets[datasetKey] = {};
@@ -92,25 +104,21 @@
 	var constructLinksMaps = function(datasetKey, links) {    
 		var link_map = {};
 		var node_link_map = {};
+		var link_paper_map = {};
 		var dataset = user.datasets[datasetKey];
+		var in_neighbor_map = dataset.node_in_neighbor_map;
+		var out_neighbor_map = dataset.node_out_neighbor_map;
 
 		var num_links = links.length;
 		for (var i = 0; i < num_links; ++i) {
 			var raw_link = links[i];
-			var source_key = parseInt(raw_link.sourceKey);
-			var target_key = parseInt(raw_link.targetKey);
-			var link = {key: parseInt(raw_link.key), source: dataset.node_map[source_key], 
-				target: dataset.node_map[target_key], notes: raw_link.notes, paper: raw_link.paper,
-				children: [], isDerived: false, base_children: []};
-			link_map[link.key] = link;
-			var key_pair = link.source.key + "-" + link.target.key;
-			node_link_map[key_pair] = link;
-			dataset.node_in_neighbor_map[target_key].push(source_key);
-			dataset.node_out_neighbor_map[source_key].push(target_key);
+			dm.addLink(raw_link, link_map, node_link_map, in_neighbor_map, out_neighbor_map, dataset.node_map, link_paper_map);
 		}
 	
 		dataset.link_map = link_map;
 		dataset.node_link_map = node_link_map;
+		dataset.link_paper_map = link_paper_map;
+
 	};
 
 	/*
@@ -250,15 +258,13 @@
 	};
 	
 	var constructLinkPaperMap = function(datasetKey, records) {
-		var link_paper_map = {};
+		var link_paper_map = user.datasets[datasetKey].link_paper_map;
 		var num_record = records.length;
 		for (var i = 0; i < num_record; ++i) {
 			var record = records[i];
 			var linkKey = parseInt(record.linkKey);
-			if (link_paper_map[linkKey] === undefined) link_paper_map[linkKey] = [];
 			link_paper_map[linkKey].push(record.pmid);
 		}
-		user.datasets[datasetKey].link_paper_map = link_paper_map;
 	};
 	
 	function constructBrodmannMap(data) {

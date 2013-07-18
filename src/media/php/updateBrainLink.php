@@ -16,7 +16,9 @@
     
     if ($isClone) {
     	if ($notes) {
-			mysql_query("INSERT INTO diff_links (linkKey, diff, userID, origin, content) VALUES ('$linkKey', 'ChangeNote', '$userID', '$origin', '$notes')") or die("an error occurred when updating link notes" . mysql_error());
+    		// Remove old AddNote entry
+    		mysql_query("DELETE FROM diff_links WHERE linkKey = " . $linkKey . " AND userID = " . $userID) or die("an error occurred when deleting old link notes" . mysql_error());
+			mysql_query("INSERT INTO diff_links (linkKey, diff, userID, origin, content) VALUES ('$linkKey', 'AddNote', '$userID', '$origin', '$notes')") or die("an error occurred when updating link notes" . mysql_error());
     	}
     }
     else {

@@ -22,12 +22,16 @@
   </head>
   <body>
     <div id="head-section">
-	  <div id="user">
-    	<div align="right">
-        <a href="signin.html" target="_blank">Sign In</a>
-        <span>&nbsp &nbsp &nbsp</span>
-        <a href="http://hivizexplorer.com/lazarus/" target="_blank">Message Board</a>
-        </div>
+	  <div id="userBar">
+	      <div id="userBar-content" class="fit-size-to-content lf-col-right">
+      	    <div id="userStatus" class="multi-col">
+              <a href="register.html" target="_blank">Register</a>
+            </div>
+            <div class="multi-col">
+              <a href="http://hivizexplorer.com/lazarus/" target="_blank">Message Board</a>
+            </div>
+            <div class="clear"></div>
+          </div>
       </div>
       <div id="webtitle">
         <h1>BraiNet - a brain connectivity explorer</h1>
@@ -91,7 +95,7 @@
                 </div>
                 <div>
                   <div class="lf-col-left"><p>Pubmed Link</p></div>
-                  <div class="lf-col-right"><input type="text" placeholder="Input the link to a publication about the connection"></div>
+                  <div class="lf-col-right"><input type="text" id="pubmedLink" placeholder="Input the link to a publication about the connection"></div>
                   <div class="clear"></div>
 				  <div class="10tb-padding"><button id="addLink" class="btn btn-primary">Add connection</button></div>
                 </div>
@@ -274,6 +278,7 @@
 			<p class="exp"><i>Click on a connection and the basic connection information will be displayed here.</i></p>
 			<p id="src-name"></p>
 			<p id="tgt-name"></p>
+			<p id="no-note-msg" class="removed"></p>
 			<div id="conn-notes" class="removed">
 			  <div class="multi-col" style="margin-right:10px"><p>Notes:</p></div>
 			  <div class="multi-col">

@@ -3,7 +3,7 @@
 	retrieve all nodes and links in that dataset */ 
 	
     $datasetKey = $_POST['datasetKey'];
-    $userID = $_POST['userID'];
+    $userID = "'" . $_POST['userID'] . "'";
     
     $con = mysql_connect("localhost", "tacitia_brainIDC", "Ophelia621");
     if (!$con) {
@@ -16,7 +16,7 @@
     mysql_select_db("brainconnect_brainData", $con);
 
 	/* Determine if the dataset is cloned or not */
-	$query = "SELECT `isClone`, `origin` FROM `user_datasets` WHERE `key` = " . $datasetKey;
+	$query = "SELECT `isClone`, `origin` FROM `user_datasets` WHERE `key` = " . $datasetKey;	
 	$result = mysql_query($query, $con) or die("SELECT isClone failed: ".mysql_error());
 	$isClone = 0;
 	$origin = 0;
@@ -88,32 +88,6 @@
 			$nodes[] = $node;
 		}
 		
-		if ($isClone) {
-			$additional_nodes_query = "
-				SELECT 	nodes.key, nodes.name, parents.parent as parentKey, 
-						parents.parentName as parentName, parents.depth, nodes.datasetKey, nodes.notes, nodes.brodmannKey
-				FROM public_nodes nodes 
-				LEFT JOIN 
-					(SELECT np.node, un.key as parent, np.depth, un.name as parentName 
-					FROM public_node_parents np 
-					LEFT JOIN public_nodes un 
-					ON un.key = np.parent) as parents
-				ON nodes.key = parents.node WHERE nodes.datasetKey = ".$datasetKey;
-				
-			$add_nodes_result = mysql_query($additional_nodes_query, $con) or die("SELECT nodes failed: " . mysql_error());
-			while ($row = mysql_fetch_array($add_nodes_result)) {
-				$node = array();
-				$node['key'] = $row['key'];
-				$node['name'] = $row['name'];
-				$node['parentName'] = $row['parentName'];
-				$node['parentKey'] = $row['parentKey'];
-				$node['depth'] = $row['depth'];
-				$node['datasetKey'] = $row['datasetKey'];
-				$node['notes'] = $row['notes'];
-				$nodes[] = $node;
-			}
-		}
-		
 		$links_result = mysql_query($links_query, $con);
 		if(!$links_result) die("SELECT links failed: ".mysql_error());
 		
@@ -131,12 +105,50 @@
 			$links[] = $link;
 		}
 
+		if ($isClone) {
+			$additional_nodes_query = "
+				SELECT 	nodes.key, nodes.name, parents.parent as parentKey, 
+						parents.parentName as parentName, parents.depth, nodes.datasetKey, nodes.notes, nodes.brodmannKey
+				FROM public_nodes nodes 
+				LEFT JOIN 
+					(SELECT np.node, un.key as parent, np.depth, un.name as parentName 
+					FROM public_node_parents np 
+					LEFT JOIN public_nodes un 
+					ON un.key = np.parent) as parents
+				ON nodes.key = parents.node WHERE nodes.datasetKey = ".$datasetKey;
+				
+			$add_nodes_result = mysql_query($additional_nodes_query, $con) or die("SELECT additional nodes failed: " . mysql_error());
+			while ($row = mysql_fetch_array($add_nodes_result)) {
+				$node = array();
+				$node['key'] = $row['key'];
+				$node['name'] = $row['name'];
+				$node['parentName'] = $row['parentName'];
+				$node['parentKey'] = $row['parentKey'];
+				$node['depth'] = $row['depth'];
+				$node['datasetKey'] = $row['datasetKey'];
+				$node['notes'] = $row['notes'];
+				$nodes[] = $node;
+			}
+			
+			$additional_links_query = "SELECT * FROM " .$linkTableName." WHERE datasetKey = " . $datasetKey;
+			$add_links_result = mysql_query($additional_links_query, $con) or die("SELECT addtional links failed: " . mysql_error());
+			while ($row = mysql_fetch_array($add_links_result)) {
+				$link = array();
+				$link['key'] = $row['key'];
+				$link['sourceKey'] = $row['sourceKey'];
+				$link['targetKey'] = $row['targetKey'];
+				$link['datasetKey'] = $row['datasetKey'];
+				$link['notes'] = $row['notes'];
+				$link['numPub'] = $row['numPub'];				
+				$links[] = $link;
+			}
+		}
 
 		$diff_nodes = array();
 		$diff_links = array();
 		if ($isClone) {
 			/* Get the difference data*/
-			$query = "SELECT `diff` FROM `diff_nodes` WHERE `userID` = " . $userID . " AND `origin` = " . $origin;
+			$query = "SELECT `diff`, `nodeKey`, `content` FROM `diff_nodes` WHERE `userID` = " . $userID . " AND `origin` = " . $origin;
 			$results = mysql_query($query, $con) or die("SELECT diff node failed: " . mysql_error());
 			while ($row = mysql_fetch_array($results)) {
 				$diff_node = array();
@@ -146,13 +158,13 @@
 				$diff_nodes[] = $diff_node;
 			}
 
-			$query = "SELECT `diff` FROM `diff_links` WHERE `userID`  = " . $userID . " AND `origin` = " . $origin;
+			$query = "SELECT `diff`, `linkKey`, `content` FROM `diff_links` WHERE `userID`  = " . $userID . " AND `origin` = " . $origin;
 			$results = mysql_query($query, $con) or die("SELECT diff link failed: " . mysql_error());
 			while ($row = mysql_fetch_array($results)) {
 				$diff_link = array();
 				$diff_link['linkKey'] = $row['linkKey'];
 				$diff_link['diff'] = $row['diff'];
-				$diff_node['content'] = $row['content'];
+				$diff_link['content'] = $row['content'];
 				$diff_links[] = $diff_link;
 			}
 		}
