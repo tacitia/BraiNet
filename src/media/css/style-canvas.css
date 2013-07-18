@@ -51,6 +51,16 @@
 	stroke-opacity: 0.5;
 }
 
+.link.clicked{
+	stroke: red
+}
+
+.link.unclicked{
+	 stroke: #ccc;
+    stroke-opacity: 1;
+    fill: none;
+}
+
 /*   Arc    */
 
 .arc {

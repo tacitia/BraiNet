@@ -319,7 +319,16 @@ html,body { height:100%; }
 	left: 0;
 	top: 0;
 }
-	  
+
+#anatomy .btn-toolbar{
+	width: 350px;
+	height: 20px;
+}
+#anatomy .btn-group{
+	position: absolute;
+	left:150px;
+	
+}	  
 #anatomy-map .hover {
 	stroke-width: 20;
 }
@@ -327,6 +336,7 @@ html,body { height:100%; }
 .10tb-padding {
 	padding: 10px 0;
 }
+
 
 /* @end */
 
