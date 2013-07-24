@@ -1,0 +1,17 @@
+body,
+input,
+button,
+select,
+textarea,
+.navbar-search .search-query {
+	font-family: 'Actor', sans-serif !important;
+}
+
+#login-div {
+	width:400px;
+	height:150px;
+	margin: 200px auto;
+	padding: 20px;	
+}
+
+

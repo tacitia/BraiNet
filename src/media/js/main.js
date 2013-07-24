@@ -4,8 +4,9 @@
  */
 $(document).ready(function() {
 	database.getBrainData(activeDataset.key, 1);
+	user.getUser();
 	user.addPublicDatasets();
 	ui.bind();
 	svgRenderer.prepareCanvas();
-	database.populateDatasets(1);
+	database.populateDatasets(user.id);
 });

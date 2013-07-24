@@ -64,11 +64,18 @@ html,body { height:100%; }
 	float:right;
 }
 
-#user {
+#userBar {
     padding: 10px;
     top: 0px;
-    right: 0px;
+    width: 1260px;
+    margin: auto;
+    position: relative;
 }
+
+#userStatus {
+	padding: 0 10px;
+}
+
 #canvas {
 	background-color:#fff;
 	position:relative;
@@ -85,6 +92,10 @@ html,body { height:100%; }
 	border: 1px solid #e5e5e5;
 	background-color: #fff;
 	margin: 10px 0 20px 0;
+}
+
+.fit-size-to-content {
+	display:inline-block;
 }
 
 .multi-col {

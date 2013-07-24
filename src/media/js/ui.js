@@ -20,12 +20,17 @@
 	};
 
 	ui.setupUIElements = function() {
-
 		$('sourceSelect').find('option').remove();
 		$('targetSelect').find('option').remove();
 		$('.chzn-select').trigger('liszt:updated');
 		searchUI.appendNodesAsOptions(activeDataset.maps.node_map);
 		dataUI.setupUIElements();
+	};
+	
+	ui.displayWelcomeMessage = function() {
+		var userStatusDiv = $('#userStatus');
+		userStatusDiv.empty();
+		userStatusDiv.append('<b>Welcome!</b> Your are using access code: <b>' + user.id + '</b>');
 	};
 
 }(window.ui = window.ui || {}, jQuery));
@@ -122,10 +127,12 @@
 		if (addLinkBtn.hasClass('disabled')) { return; }
 		var sourceName = $('#sourceSelect-Manage :selected').text();
 		var targetName = $('#targetSelect-Manage :selected').text();
+		var pubmedLink = $('#pubmedLink').val();
 		var name_node_map = activeDataset.maps.name_node_map;
 		var sourceKey = name_node_map[sourceName].key;
 		var targetKey = name_node_map[targetName].key;
-		var linkData = {userID: user.id, datasetKey: activeDataset.key, source: sourceKey, target: targetKey, notes: pubmedLink, attrKey: null, attrValue: null};		
+		var linkData = {userID: user.id, datasetKey: activeDataset.key, sourceKey: sourceKey, targetKey: targetKey, notes: pubmedLink, attrKey: null, attrValue: null, isClone: activeDataset.isClone};
+		database.addBrainLink(linkData);
 	};
 	
 	dui.updateVisButtonClick = function() {
@@ -340,8 +347,11 @@
 	/* notes variables*/
 	var notesDisplay = $('#conn-note-display');
 	var notesInput = $('#conn-note-input');
+	var editButton = $('#conn-note-edit');
 	var saveButton = $('#conn-note-save');
-	
+	var no_note_msg = $('#no-note-msg');
+	var notesDiv = $('#conn-notes');
+
 	function switchMode(mode) {
 		switch (mode) {
 			case "edit":
@@ -362,9 +372,9 @@
 	};
 	
 	cl.saveNotes = function() {
-		cl.link.notes = notesInput.value;
+		cl.link.notes = notesInput.val();
 		switchMode('display');
-		notesDisplay.text('Important connection');
+		notesDisplay.text(cl.link.notes);
 		database.updateLink(cl.link.key, cl.link.notes);
 	};
 	
@@ -383,10 +393,25 @@
 			.html('Source: ' + cl.link.source.name);
 		d3.select('#conn-info #tgt-name')
 			.html('Target: ' + cl.link.target.name);
+		notesDisplay.text('No notes found.');
 	}
 	
 	function displayNotes() {
-		$('#conn-notes').removeClass('removed');
+		if (!(activeDataset.isClone || activeDataset.isCustom)) {
+			no_note_msg.removeClass('removed');
+			notesDiv.addClass('removed');
+			no_note_msg.text('Cannot add notes for public datasets. Please clone and select a personal copy using "Manage Data" panel to add notes.');
+		}
+		else if (cl.link.isDerived) {
+			no_note_msg.removeClass('removed');
+			notesDiv.addClass('removed');
+			no_note_msg.text('Cannot edit derived connections. Please add notes directly to a sub-connection.');
+		}	
+		else {
+			no_note_msg.addClass('removed');
+			notesDiv.removeClass('removed');
+			notesDisplay.text(cl.link.notes === null ? "No notes found." : cl.link.notes);
+		}
 	}
 	
 	function reverseLink() {

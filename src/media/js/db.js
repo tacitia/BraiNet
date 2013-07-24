@@ -118,7 +118,7 @@
 
 	db.updateLink = function(linkKey, notes) {
 		postToPhp("updateBrainLink.php",
-				{linkKey: linkKey, userID: activeDataset.userID, notes: notes, isClone: activeDataset.isClone, origin: activeDataset.origin},
+				{linkKey: linkKey, userID: user.id, notes: notes, isClone: activeDataset.isClone, origin: activeDataset.origin},
 				null,
 				true);
 	};
@@ -148,7 +148,9 @@
 
 	db.addBrainLink = function(linkData) {
 		var successFun = function(result) {
-			uiControl.addLinkToDisplay($.parseJSON(result));
+			var link = $.parseJSON(result);
+			var maps = activeDataset.maps;
+			dataModel.addLink(link, maps.link_map, maps.node_link_map, maps.node_in_neighbor_map, maps.node_out_neighbor_map, maps.node_map, maps.link_paper_map);
 		};
 		postToPhp("addBrainLink.php",
 						linkData,

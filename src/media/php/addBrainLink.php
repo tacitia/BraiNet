@@ -2,11 +2,12 @@
     /* all int*/
     $datasetKey = $_POST['datasetKey']; 
 	$userId = $_POST['userID'];
-	$sourceKey = $_POST['source'];
-	$targetKey = $_POST['target'];
+	$sourceKey = $_POST['sourceKey'];
+	$targetKey = $_POST['targetKey'];
 	$notes = $_POST['notes'];
 	$attrKey = $_POST['attrKey'];
 	$attrValue = $_POST['attrValue'];
+    $isClone = $_POST['isClone'];
 
     $con = mysql_connect("localhost", "tacitia_brainIDC", "Ophelia621");
     if (!$con) {
@@ -20,9 +21,16 @@
 
     echo mysql_error($con) . "\n";
 
+	$linkTable = 'user_links';
+	$datasetType = 'user';
+	if ($isClone) {
+		$linkTable = 'public_links';
+		$datasetType = 'public';
+	}
+
 	// Check if the link already exists
-    $query = "SELECT * FROM user_links 
-    WHERE sourceKey = " . $sourceKey . " AND targetKey = " . $targetKey . 
+    $query = "SELECT * FROM " . $linkTable .
+    " WHERE sourceKey = " . $sourceKey . " AND targetKey = " . $targetKey . 
     " AND datasetKey = " . $datasetKey;
     
 //    echo $query;
@@ -36,12 +44,12 @@
 
 	// If the link does not exist, insert a new link
 	if (mysql_num_rows($result) == 0) {
-	    mysql_query("INSERT INTO user_links (sourceKey, targetKey, userID, datasetKey, notes) VALUES ('$sourceKey','$targetKey','$userId', '$datasetKey', '$notes')");   
+	    mysql_query("INSERT INTO " . $linkTable . " (sourceKey, targetKey, userID, datasetKey, notes) VALUES ('$sourceKey','$targetKey','$userId', '$datasetKey', '$notes')");   
 	}
 	
 	// Now retrieve the link
-    $query = "SELECT * FROM user_links 
-    WHERE sourceKey = " . $sourceKey . " AND targetKey = " . $targetKey . 
+    $query = "SELECT * FROM " . $linkTable .
+    " WHERE sourceKey = " . $sourceKey . " AND targetKey = " . $targetKey . 
     " AND datasetKey = " . $datasetKey;
 
     try{
@@ -62,22 +70,17 @@
     	$link['datasetKey'] = $row['datasetKey'];
    	    $link['notes'] = $row['notes'];
    	    $link['attributes'] = array();
-   	    
-//   	    $links[$linkKey] = $link;
     }
-    //echo $linkKey;
-    //echo $links;
 
 	// Insert the attributes
+	
 	if ($attrKey) {
-		mysql_query("INSERT INTO link_attributes(linkKey, attributeKey, attrValue) VALUES 
-		('$linkKey', '$attrKey', '$attrValue')");
+		mysql_query("INSERT INTO link_attributes(linkKey, attributeKey, attrValue, datasetType) VALUES 
+		('$linkKey', '$attrKey', '$attrValue', '$datasetType')");
 	}
 	
-	// Retrieve all attributes
-	//$attrs = array();
-	
-	$query = "SELECT * FROM link_attributes WHERE linkKey = " . $linkKey;
+	// Retrieve all attributes	
+	$query = "SELECT * FROM link_attributes WHERE linkKey = " . $linkKey . " AND datasetType = " . $datasetType;
 
     try{
         	$result = mysql_query($query, $con);
@@ -86,14 +89,12 @@
     	    echo ' caused exception: ',  $e->getMessage(), "\n";
     }
 	
-//	$link['attrs'] = $attrs;	
 	while ($row = mysql_fetch_array($result)) {
 		$linkKey = (string)$row['linkKey'];
 	
 		$key = (string)$row['attributeKey'];
 		$value = $row['attrValue'];
 		$link['attributes'][$key] = $value;
-//		$links[$linkKey]['attributes'][$key] = $value;
 	}
 
     echo json_encode($link);

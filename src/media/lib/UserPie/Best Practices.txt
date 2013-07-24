@@ -1,0 +1,56 @@
+====================
+DATABASE. LOWERCASE.
+====================
+When adding new tables and columns to your database, make sure the names are lowercase.
+
+====================
+ASSETS
+====================
+Try to keep all of your page assets (CSS, Javascript, etc.) organized in their own separate folders. (It's just easier to keep track of files this way.) We've already created these folders for you, but feel free to change or delete them.
+
+====================
+WWWW / SEO
+====================
+Google (and other search engines) treat "www.domain.com" and "domain.com" as two separate websites which happen to share the same content. This redundancy can adversely affect your how your pages rank for keywords.
+
+It doesn't really matter which one you choose to be your official domain, but you should make a choice.  However, once you've made a choice, you can should setup your server to force domain redirects so that www.domain.com/page.html is automatically forwarded to domain.com/page.html or vice versa.
+
+For those using APACHE servers, this can be accomplished with a MOD_REWRITE adjustment to your .htaccess file. 
+
+====================
+GOOGLE JQUERY
+====================
+
+Let Google host JQeuery for you.
+
+====================
+PAGE LOAD
+====================
+
+Don't be afraid to load assets like CSS and Javascript on pages they aren't used on. If you have a light page like a login screen, this is the best time to have the use load (and cache) files that they will need later.
+
+
+====================
+ACCOUNT FORWARDING
+====================
+
+Instead of redirecting users to a userpage like "userpage.php" first send them to index.php and then redirect them to the appropriate page. For whatever reason you might change the name of your userpage file or you might want to add unforeseen parameters to determine where a user is sent.
+
+Using the index.php file as a baseline means you wont have to constantly update your code as you make changes to your code. 
+
+Also, when logged users visit the base domain of your site they expect to be forwarded to their userpage.
+
+====================
+DISABLE SUBMIT BUTTON UPON CLICK
+====================
+If you have some kind of form that will take a while to insert lots of data, you'll probably want to "disable" the submit button so users will not that the submission is being sent (while also preventing duplicates).
+
+It can be done quote easily with JavaScript. Here's the code:
+
+onsubmit="document.getElementById('Submit').disabled = 1;"
+
+(NOTE: it must be added to your form tag)
+
+EXAMPLE:
+
+	<form id="addlink_form" name="addlink_form" method="post" action="" onsubmit="document.getElementById('Submit').disabled = 1;">

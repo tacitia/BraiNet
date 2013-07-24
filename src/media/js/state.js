@@ -17,6 +17,15 @@
 	user.id = 1;
 	user.datasets = {};	
 	
+	user.getUser = function() {
+		var userID = generic.getURLParams().accesscode;
+		if (userID) {
+			user.isAnonymous = false;
+			user.id = userID;
+			ui.displayWelcomeMessage();
+		}	
+	};
+	
 	user.addPublicDatasets = function() {
 		user.datasetList[2130] = {
 			key: 2130,
