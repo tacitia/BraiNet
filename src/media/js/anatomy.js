@@ -37,7 +37,9 @@ var _structures = {};
 var struct_img_map = {};
 var _images = {};
 
-var tempSelPath = null;
+var activeTitle = null;
+var allActiveStructs = [];
+var originColor = {};
 
 // A helper function that makes a url out of a path, database id, 
 // and argument array.
@@ -70,76 +72,88 @@ function download_svg(url) {
 				var id = $(this).attr('structure_id');
 				return _structures[id].name; 
 			});
-
+			
 		$('#anatomy-map path').qtip();
-
-		// When hovering over a path, add the 'hover' class, which just makes
-		// the outline thicker.
-		$("#anatomy-map path").hover(function() {
-			console.log($(this));
-			$(this).attr("class","hover")
-		}, function() {
-			$(this).attr("class","");
+		
+		$("#anatomy-map path").hover(
+		function() {
+			//addClass not working for this for some reason
+			hoverStructure($(this), false);
+		}, 
+		function() {
+			hoverStructure($(this), true);
 		});
+	
 		
 		$("#anatomy-map path").click(function() {
-			console.log("click");
-			console.log($(this).attr('oldTitle'));
-			// Imp TODO: Change this to work with input data
-			var input_node = activeDataset.maps.name_node_map['Thalamus'];
-			svgData.displayInvisibleNode(input_node);
 
-			var node = input_node;
+			var title = $(this).attr('oldtitle');
+			var node = activeDataset.maps.name_node_map[title];
 			var svg = svgRenderer.svg_circular;
 			var maps = activeDataset.maps;
-			svg.selectAll('.circular.link')
-				.classed('hidden', function(d) {
-					return d.source.key !== node.key && d.target.key !== node.key; 
-				});
-			svg.selectAll('.circular.link')
-				.classed('outLink', function(d) {
-					var reverted_link = maps.node_link_map[d.target.key + '-' + d.source.key];
-					return d.source.key === node.key && reverted_link === undefined;
-				});
-			svg.selectAll('.circular.link')
-				.classed('inLink', function(d) {
-					var reverted_link = maps.node_link_map[d.target.key + '-' + d.source.key];
-					return d.target.key === node.key && reverted_link === undefined;
-				});
-			svg.selectAll('.circular.link')
-				.classed('biLink', function(d) {
-					var reverted_link = maps.node_link_map[d.target.key + '-' + d.source.key];
-					return reverted_link !== undefined;
-				});
-			svg.selectAll('.circular.node')
-				.classed('nofocus', function(d) {
-					var dKey = d.key;
-					var nodeKey = node.key;
-					var inNeighbors = maps.node_in_neighbor_map[nodeKey];
-					var outNeighbors = maps.node_out_neighbor_map[nodeKey];
-					return dKey !== nodeKey && ($.inArray(dKey, inNeighbors) < 0) &&
-						($.inArray(dKey, outNeighbors) < 0);
-				});    	
-			svg.selectAll('.circular.text')
-				.classed('visible', function(d) {
-					var dKey = d.key;
-					var nodeKey = node.key;
-					var inNeighbors = maps.node_in_neighbor_map[nodeKey];
-					var outNeighbors = maps.node_out_neighbor_map[nodeKey];
-					return dKey === nodeKey || ($.inArray(dKey, inNeighbors) >= 0) ||
-						($.inArray(dKey, outNeighbors) >= 0);
-				});
-
-			state.currMode = customEnum.mode.fixation;
+						
+			if ($(this).attr('isFixed') === "true") {
+				svgRenderer.highlightNode(node, svg, maps, true);	
+				emphStructure($(this), true);
+				$(this).attr('isFixed', false);
+				activeTitle = null;
+				allActiveStructs.remove(title);
+			}			
+			else {
+				svgData.displayInvisibleNode(node);
+				svgRenderer.highlightNode(node, svg, maps, false);
+				activeTitle = title;
+				allActiveStructs.push();
+				state.currMode = customEnum.mode.fixation;
+				$(this).attr('isFixed', true);
+			}
 			
 		});
-		
-		if (tempSelPath !== null) {
-			$(tempSelPath).attr('class', 'hover');
-			$(tempSelPath).qtip('toggle', true);
-			tempSelPath = null;			
+				
+		if (activeTitle !== null) {
+			highlightStructure(activeTitle);
 		}
 	});
+}
+
+function highlightStructure(structName) {
+	var structSelector = $("path[oldtitle='" + structName + "']");
+	if (structSelector.length > 0) {
+		allActiveStructs.push(structName);
+		structSelector.attr('isFixed', true);
+		emphStructure(structSelector, false);
+		structSelector.qtip('toggle', true);		
+	}
+	
+	var maps = activeDataset.maps;
+	var structNode = maps.name_node_map[structName];
+	var descs = svgData.findAllDesc(structNode);
+	for (var i in descs) {
+		var desc = descs[i];
+		var descSelector = $("path[oldtitle='" + desc.name + "']");
+		if (descSelector.length > 0) {
+			allActiveStructs.push(desc.name);
+			descSelector.attr('isFixed', true);
+			emphStructure(descSelector, false);
+		}
+	}
+		
+	if (allActiveStructs.length === 0) {
+		// No selectable area for this structure; try to find its ancestor
+		var parent = structNode.parent;
+		while (parent !== null) {
+			var parentNode = maps.node_map[parent];
+			var parentSelector = $("path[oldtitle='" + parentNode.name + "']");
+			if (parentSelector.length > 0) {
+				console.log(parentSelector);
+				emphStructure(parentSelector, false);
+				allActiveStructs.push(parentNode.name);
+				parentSelector.attr('isFixed', true);
+				parentSelector.qtip('toggle', true);
+				break;
+			}
+		}
+	}
 }
 
 // Make an AJAX query to download the section image and append it to the DOM.
@@ -170,14 +184,46 @@ function getUrlVars()
 	return vars;
 }
 
-function selectStructure(title, isCancel) {
-	console.log("selectStructure");
+function hoverStructure(target, isCancel) {
+	var title = target.attr('oldtitle');
+	if (target.attr('isFixed') === "true") { return; }
+	if (isCancel && $.inArray(title, allActiveStructs) > 0) { return; }
+	emphStructure(target, isCancel);
+}
+
+function emphStructure(target, isCancel) {
+	var title = target.attr('oldtitle');
 	console.log(title);
-	var selPath = "path[oldtitle='" + title + "']";
+	console.log("called " + isCancel);
+
 	if (isCancel) {
-		$(selPath).attr('class', '');
-		$(selPath).qtip('toggle', false);
-		selPath = null;		
+		target.css('fill', originColor[title]);
+		target.css('fill-opacity', '1');
+		target.css('stroke-width', '0');
+		target.attr('isEmph', false);
+	}
+	else {
+		originColor[title] = target.css('fill');
+		target.css('fill', '#9900ff');
+		target.css('fill-opacity', '0.5');
+		target.css('stroke-width', '24');
+		target.attr('isEmph', true);
+	}
+}
+
+function selectStructure(title, isCancel) {
+	activeTitle = title;
+	if (isCancel) {
+		emphStructure($(selPath), true);
+		var selPath = "path[oldtitle='" + title + "']";
+		$("#anatomy-map path").qtip('toggle', false);
+		console.log(allActiveStructs);
+		for (i in allActiveStructs) {
+			var selector = $("path[oldtitle='" + allActiveStructs[i] + "']");
+			emphStructure(selector, true);
+		}
+		activeTitle = null;
+		allActiveStructs = [];
 		return;
 	}
 	
@@ -192,12 +238,13 @@ function selectStructure(title, isCancel) {
 	
 	if (struct_img_map[id] !== curr_image_id) {
 		curr_image_id = struct_img_map[id];
-		tempSelPath = selPath;
-		updateImages(args);
+		if (curr_image_id !== undefined) { // Will be undefined for structures that are not included in Allen
+			args = { downsample: DOWNSAMPLE };
+			updateImages(args);
+		}
 	}
 	else {
-		$(selPath).attr('class', 'hover');
-		$(selPath).qtip('toggle', true);
+		highlightStructure(title);
 	}
 }
 

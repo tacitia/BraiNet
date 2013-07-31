@@ -214,6 +214,7 @@
 				return d === sui.selected_source || d === sui.selected_target;
 			});
 	//    highlightNode(input_node, "focus", true, true, svg_circular);
+		selectStructure(input_node.name, false);
 		userAction.trackAction('Set search source', 'UI', 'Set source', sui.selected_source.name, 'Set source', sui.selected_source.name);
 		
 	};
@@ -244,7 +245,7 @@
 			.classed('visible', function(d) {
 				return d === sui.selected_source || d === sui.selected_target;
 			});
-			
+		selectStructure(input_node.name, false);			
 		userAction.trackAction(null, 'UI', 'Set target', sui.selected_target.name, 'Set target', sui.selected_target.name);
 	};
 

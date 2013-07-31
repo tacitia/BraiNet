@@ -85,6 +85,22 @@
 		}
 		return result;
 	};
+	
+	var findAllDesc = function(node) {
+		var result = [];
+		var children = $.merge([], node.children);
+		var node_map = activeDataset.maps.node_map;
+		while (children.length > 0) {
+			var child_num = children.length;
+			for (var i = 0; i < child_num; ++i) {
+				var child = node_map[children[i]];
+				result.push(child);
+				$.merge(children, child.children);
+			}
+			children.splice(0, child_num);
+		}
+		return result;
+	}
 
 	function initActiveNodes(maps) {
 		for (var key in maps.node_map) {
@@ -422,6 +438,7 @@
 	sd.findActiveDescends = findActiveDescends;
 	sd.findActiveParent = findActiveParent;
 	sd.findDescAtDepth = findDescAtDepth;
+	sd.findAllDesc = findAllDesc;
 	
 }(window.svgData = window.svgData || {}, jQuery));
 
@@ -580,58 +597,20 @@
 			svgData.expandRegion(d, children, svg_circular);
 		}
 	}
-
+	
 	// When mousing over, highlight itself and the neighbors
 	function nodeMouseOver(node, svg) {
 		if (state.currMode === customEnum.mode.search || state.currMode === customEnum.mode.fixation) { return; }
   		var maps = activeDataset.maps;
-  
-		svg.selectAll('.circular.link')
-			.classed('hidden', function(d) {
-				return d.source.key !== node.key && d.target.key !== node.key; 
-			});
-		svg.selectAll('.circular.link')
-			.classed('outLink', function(d) {
-				var reverted_link = maps.node_link_map[d.target.key + '-' + d.source.key];
-				return d.source.key === node.key && reverted_link === undefined;
-			});
-		svg.selectAll('.circular.link')
-			.classed('inLink', function(d) {
-				var reverted_link = maps.node_link_map[d.target.key + '-' + d.source.key];
-				return d.target.key === node.key && reverted_link === undefined;
-			});
-		svg.selectAll('.circular.link')
-			.classed('biLink', function(d) {
-				var reverted_link = maps.node_link_map[d.target.key + '-' + d.source.key];
-				return reverted_link !== undefined;
-			});
-		svg.selectAll('.circular.node')
-			.classed('nofocus', function(d) {
-				var dKey = d.key;
-				var nodeKey = node.key;
-				var inNeighbors = maps.node_in_neighbor_map[nodeKey];
-				var outNeighbors = maps.node_out_neighbor_map[nodeKey];
-				return dKey !== nodeKey && ($.inArray(dKey, inNeighbors) < 0) &&
-					($.inArray(dKey, outNeighbors) < 0);
-			});    	
-		svg.selectAll('.circular.text')
-			.classed('visible', function(d) {
-				var dKey = d.key;
-				var nodeKey = node.key;
-				var inNeighbors = maps.node_in_neighbor_map[nodeKey];
-				var outNeighbors = maps.node_out_neighbor_map[nodeKey];
-				return dKey === nodeKey || ($.inArray(dKey, inNeighbors) >= 0) ||
-					($.inArray(dKey, outNeighbors) >= 0);
-			});
+  		
+  		sr.highlightNode(node, svg, maps, false);	
 	}
+	
+	
 
 	function nodeMouseOut(node, svg) {
 		if (state.currMode === customEnum.mode.search || state.currMode === customEnum.mode.fixation) { return; }
-		svg.selectAll('.circular.node').classed('nofocus', false);
-		svg.selectAll('.circular.link').classed('hidden', false);
-		svg.selectAll('.circular.link').classed('inLink', false);
-		svg.selectAll('.circular.link').classed('outLink', false);
-		svg.selectAll('.circular.link').classed('biLink', false);
+		sr.highlightNode(node, svg, null, true);
 		updateCircularTexts();
 	}
 
@@ -973,19 +952,52 @@
 	
 	sr.updateForceLayout = updateForceLayout;
 
-	function highlightNode(node, class_name, value, show_name, svg) {
-		if (node === undefined) {
+	sr.highlightNode = function(node, svg, maps, isCancel) {
+		if (isCancel) {
+			svg.selectAll('.circular.node').classed('nofocus', false);
+			svg.selectAll('.circular.link').classed('hidden', false);
+			svg.selectAll('.circular.link').classed('inLink', false);
+			svg.selectAll('.circular.link').classed('outLink', false);
+			svg.selectAll('.circular.link').classed('biLink', false);
 			return;
 		}
-
+		svg.selectAll('.circular.link')
+			.classed('hidden', function(d) {
+				return d.source.key !== node.key && d.target.key !== node.key; 
+			});
+		svg.selectAll('.circular.link')
+			.classed('outLink', function(d) {
+				var reverted_link = maps.node_link_map[d.target.key + '-' + d.source.key];
+				return d.source.key === node.key && reverted_link === undefined;
+			});
+		svg.selectAll('.circular.link')
+			.classed('inLink', function(d) {
+				var reverted_link = maps.node_link_map[d.target.key + '-' + d.source.key];
+				return d.target.key === node.key && reverted_link === undefined;
+			});
+		svg.selectAll('.circular.link')
+			.classed('biLink', function(d) {
+				var reverted_link = maps.node_link_map[d.target.key + '-' + d.source.key];
+				return reverted_link !== undefined;
+			});
 		svg.selectAll('.circular.node')
-			.classed(class_name, function(d) {
-				return d.key === node.key;
-			})
-
-		if (show_name) {
-			svg.select("#text-" + node.key).classed("visible", value);
-		}
+			.classed('nofocus', function(d) {
+				var dKey = d.key;
+				var nodeKey = node.key;
+				var inNeighbors = maps.node_in_neighbor_map[nodeKey];
+				var outNeighbors = maps.node_out_neighbor_map[nodeKey];
+				return dKey !== nodeKey && ($.inArray(dKey, inNeighbors) < 0) &&
+					($.inArray(dKey, outNeighbors) < 0);
+			});    	
+		svg.selectAll('.circular.text')
+			.classed('visible', function(d) {
+				var dKey = d.key;
+				var nodeKey = node.key;
+				var inNeighbors = maps.node_in_neighbor_map[nodeKey];
+				var outNeighbors = maps.node_out_neighbor_map[nodeKey];
+				return dKey === nodeKey || ($.inArray(dKey, inNeighbors) >= 0) ||
+					($.inArray(dKey, outNeighbors) >= 0);
+			});		
 	}
 
 	function expandNode() {
