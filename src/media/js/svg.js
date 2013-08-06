@@ -530,12 +530,18 @@
 		var maps = activeDataset.maps;
 	
 		if (d3.event.shiftKey) {
+			
 			userAction.trackAction('Combine node in circular view', 'Viz', 'Combine circular node', d.name, 'Combine circular node', d.name);
 			
 			if (d.parent === undefined || d.parent === null) { return; } // Ignore top level nodes
 			var parent = maps.node_map[d.parent]; 
 			var nodes_to_remove = svgData.findActiveDescends(parent);
 			svgData.combineRegions(parent, nodes_to_remove);
+			if(ui.firstTime === true && ui.step === 2){
+				ui.currStep = "step2";
+				ui.showMessage();
+				
+			}
 		}
 		else if (d3.event.altKey) {
 			// Fix on the clicked node
@@ -546,6 +552,10 @@
 			else if (state.currMode === customEnum.mode.fixation) {
 				state.currMode = customEnum.mode.exploration;
 				selectStructure(d.name, true);
+			}
+			if(ui.firstTime === true && ui.step === 3){
+				ui.currStep = "step3";
+				ui.showMessage();
 			}
 		}
 		else if (d3.event.metaKey) {
@@ -568,6 +578,10 @@
 		
 			// Todo: have a list that displays the removed nodes, so that the user can 
 			// add them back when needed
+			if(ui.firstTime === true && ui.step === 4){
+				ui.currStep = "step4";
+				ui.showMessage();
+			}
 		}
 		else {
 			userAction.trackAction('Expand node in circular view', 'Viz', 'Expand circular node', d.name, 'Expand circular node', d.name);       
@@ -578,7 +592,14 @@
 				children.push(maps.node_map[ids[i]]);
 			}
 			svgData.expandRegion(d, children, svg_circular);
+			if(ui.firstTime === true && ui.step === 1){
+				
+				ui.currStep = "step1";
+				ui.showMessage();
+				
+			}
 		}
+		
 	}
 
 	// When mousing over, highlight itself and the neighbors

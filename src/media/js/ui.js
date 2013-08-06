@@ -25,6 +25,199 @@
 		$('.chzn-select').trigger('liszt:updated');
 		searchUI.appendNodesAsOptions(activeDataset.maps.node_map);
 		dataUI.setupUIElements();
+		
+		//Website Tour Start from here 
+		ui.firstTime = false;
+
+		websiteTour();
+	};
+	
+	websiteTour = function(){
+		
+		var config = [{
+			"name" : "step1",
+			"bgcolor" : "black",
+			"color"	:	"white",
+			"position"	:	"BL",
+			"text"	:	"Step1 : Click here to expand the node!",
+			"time"	: 5000
+			},
+			
+			{
+				"name" : "step2",
+				"text" : "Step2 : Shift-key + mouseclick to combine circular node!",
+				"time" : 5000	
+			},
+			
+			{
+				"name" : "step3",
+				"text" : "Step3 : Alt-key + mouse click to fix on the clicked node!",
+				"time" : 5000	
+			},
+			{
+				"name" : "step4",
+				"text" : "Step4 : Meta-key + mouse click to remove the selected node and link!",
+				"time" : 5000	
+			}
+			];
+		//Cufon.replace('h1',{ textShadow: '1px 1px #fff'});
+		//define if steps should change automatically
+				autoplay	= false,
+				//timeout for the step
+				showtime = 0,
+				//current step of the tour
+				ui.step		= 0,
+				//total number of steps
+				total_steps	= config.length;
+				//current and previous step name
+				ui.currStep = "";
+				ui.prevStep = "";	
+				//svgRenderer.svg_circular.selectAll(".circular.node").on("click", function(){console.log("clicked!!")});
+                
+			
+				//show the tour controls
+				showControls();
+				//
+				/*
+				we can restart or stop the tour,
+				and also navigate through the steps
+				 */
+				$('#activatetour').live('click',startTour);
+				$('#canceltour').live('click',endTour);
+				$('#endtour').live('click',endTour);
+				$('#restarttour').live('click',restartTour);
+				
+							
+				function startTour(){
+					ui.firstTime = true;
+					
+					$('#activatetour').remove();
+					$('#endtour,#restarttour').show();
+					
+					showOverlay();
+					++ui.step;
+					
+					ui.showTooltip();
+				}
+				
+				
+				
+				function endTour(){
+					ui.step = 0;
+					if(autoplay) clearTimeout(showtime);
+					removeTooltip();
+					hideControls();
+					hideOverlay();
+					ui.firstTime = false;
+				}
+				
+				function restartTour(){
+					ui.step = 0;
+					ui.firstTime = true;
+					if(autoplay) clearTimeout(showtime);
+					++ui.step;
+					ui.currStep = "";
+				    ui.prevStep = "";	
+					ui.showTooltip();
+				}
+				
+				ui.showTooltip = function showTooltip(){
+					//remove current tooltip
+					
+					removeTooltip();
+					var step_config		= config[ui.step -1];
+					
+					
+					
+					var bgcolor 		= step_config.bgcolor;
+					var color	 		= step_config.color;
+					
+						
+					var tooltip = '<div id="tour_tooltip" class="toolTip" >';
+					tooltip += '<p>' + step_config.text+'</p><span class="tooltip_arrow"></span>';
+					
+					$('BODY').prepend(tooltip);
+					$("#tour_tooltip").flip({
+						"direction" : 'tb',
+						 "color" : 'black'
+					});
+					//position the tooltip correctly:
+		
+				}
+				
+				function removeTooltip(){
+					$('#tour_tooltip').remove();
+				}
+				
+				function showControls(){
+					/*
+					we can restart or stop the tour,
+					and also navigate through the steps
+					 */
+					 
+					var $tourcontrols  = '<div id="tourcontrols" class="tourcontrols">';
+					$tourcontrols += '<p>First time here?</p>';
+					$tourcontrols += '<span class="button" id="activatetour">Start the tour</span>';
+			
+						$tourcontrols += '<a id="restarttour" style="display:none;">Restart the tour</span>';
+						$tourcontrols += '<a id="endtour" style="display:none;">End the tour</a>';
+						$tourcontrols += '<span class="close" id="canceltour"></span>';
+					$tourcontrols += '</div>';
+					
+					$('BODY').prepend($tourcontrols);
+					$('#tourcontrols').animate({'right':'30px'},500);
+				}
+				
+				function hideControls(){
+					$('#tourcontrols').remove();
+				}
+				
+				
+				
+				function showOverlay(){
+					
+					var $overlayTop	= '<div id="tour_overlay1" class="overlayTop"></div>';
+					var $overlayBottom	= '<div id="tour_overlay2" class="overlayBottom"></div>';
+					var $overlayLeft	= '<div id="tour_overlay3" class="overlayLeft"></div>';
+					var $overlayRight	= '<div id="tour_overlay4" class="overlayRight"></div>';
+
+					$('BODY').prepend($overlayTop);
+					$('BODY').prepend($overlayBottom);
+					$('BODY').prepend($overlayLeft);
+					$('BODY').prepend($overlayRight);
+				}
+				
+				function hideOverlay(){
+					$('#tour_overlay1').remove();
+					$('#tour_overlay2').remove();
+					$('#tour_overlay3').remove();
+					$('#tour_overlay4').remove();
+				}
+				
+				ui.showMessage = function showMessage(){
+										
+					jSuccess(
+					   'Yes! You made it!',
+					   {
+						 	ShowOverlay : false,
+						 	TimeShown : 2000
+					 	});
+					
+						setTimeout(function(){
+							
+							if(ui.currStep !== ui.prevStep){
+								
+								ui.step++;
+								if(ui.step > 4)
+									endTour();
+								else
+									ui.showTooltip();
+								ui.prevStep = ui.currStep;
+							}
+						}, 3000);
+				}
+				
+ 			//end		
 	};
 	
 	ui.displayWelcomeMessage = function() {

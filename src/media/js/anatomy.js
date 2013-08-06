@@ -83,8 +83,8 @@ function download_svg(url) {
 		});
 		
 		$("#anatomy-map path").click(function() {
-			console.log("click");
-			console.log($(this).attr('oldTitle'));
+			
+			
 			// Imp TODO: Change this to work with input data
 			var input_node = activeDataset.maps.name_node_map['Thalamus'];
 			svgData.displayInvisibleNode(input_node);
