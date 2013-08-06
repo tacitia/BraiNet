@@ -43,6 +43,10 @@
 		};
 	};
 	
+	user.addDataset = function(dataset) {
+		user.datasetList[dataset.key] = dataset;
+	}
+	
 }(window.user = window.user || {}, jQuery));
 
 (function(ad, $, undefined) {

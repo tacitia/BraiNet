@@ -1,6 +1,6 @@
 <? #Tested for v3.0 under clone condition#
-    $datasetName = $_POST['datasetName']; 	/*string*/
-    $userID = $_POST['userID'];			/*int*/
+    $datasetName = "'" . $_POST['datasetName'] . "'"; 	/*string*/
+    $userID = "'" . $_POST['userID'] . "'";			/*string*/
     $isClone = $_POST['isClone'];		/*bool*/
     $origDatasetID = $_POST['origDatasetID'];	/*int*/
     
@@ -15,11 +15,11 @@
     mysql_select_db("brainconnect_brainData", $con);
     
     mysql_query("INSERT INTO user_datasets (name, userID, isClone, origin)
-VALUES ('$datasetName', '$userID', '$isClone', '$origDatasetID')");
+VALUES ($datasetName, $userID, $isClone, $origDatasetID)") or die ("insert dataset failed: ".mysql_errno());
 
     $query = "SELECT * FROM user_datasets 
-    WHERE name = '" . $datasetName. "' AND userID = " . $userID;
-
+    WHERE name = " . $datasetName. " AND userID = " . $userID;
+    
     try{
         	$result = mysql_query($query, $con);
     }catch(Exception $e){

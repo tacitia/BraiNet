@@ -49,6 +49,14 @@
 			$('#dataSelect').append(new Option(datasetName, datasetID));
 			$('#dataSelect').trigger('liszt:updated');
 			$('#createDatasetSuccessAlert').show();
+			var dataset = {
+				key: datasetID,
+				name: datasetName,
+				isClone: 1,
+				isCustom: 0,
+				origin: origDatasetID				
+			};
+			user.addDataset(dataset);
 		};
 		postToPhp("addDataset.php",
 				{datasetName: datasetName, userID: userID, isClone: 1, origDatasetID: origDatasetID},
