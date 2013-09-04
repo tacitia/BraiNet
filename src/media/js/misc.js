@@ -57,6 +57,12 @@
 		}
 		return params;
 	};
+	
+	g.removeDuplicates = function(array) {
+		return $.grep(array,function(el,index){
+			return index == $.inArray(el,array);
+		});
+	};
 
 	function unescapeURL(s) {
 		return decodeURIComponent(s.replace(/\+/g, "%20"))

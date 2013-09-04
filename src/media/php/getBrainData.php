@@ -16,7 +16,7 @@
     mysql_select_db("brainconnect_brainData", $con);
 
 	/* Determine if the dataset is cloned or not */
-	$query = "SELECT `isClone`, `origin` FROM `user_datasets` WHERE `key` = " . $datasetKey;	
+	$query = "SELECT `isClone`, `origin` FROM `datasets` WHERE `key` = " . $datasetKey;	
 	$result = mysql_query($query, $con) or die("SELECT isClone failed: ".mysql_error());
 	$isClone = 0;
 	$origin = 0;
@@ -180,6 +180,30 @@
 			$paper['source'] = $row['source'];
 			$papers[]= $paper;	
 		}
+		
+		$attrs = array();
+		$query = "SELECT `linkKey`, `attributeKey`, `attrValue` FROM link_attributes WHERE datasetKey = " . $datasetKey;
+		$results = mysql_query($query, $con) or die("SELECT link attributes failed: " . mysql_error());
+		while ($row = mysql_fetch_array($results)) {
+			$attr = array();
+			$attr['linkKey'] = $row['linkKey'];
+			$attr['attrKey'] = $row['attributeKey'];
+			$attr['attrValue'] = $row['attrValue'];
+			$attrs[]= $attr;	
+		}
+
+	
+		$attrCats = array(); 
+		$query = "SELECT * FROM dataset_attributes WHERE datasetKey = " . $datasetKey;
+		$result = mysql_query($query, $con);
+		if(!$result) die("SELECT dataset attributes failed: ".mysql_error());
+		while ($row = mysql_fetch_array($result)) {
+			$attr = array();
+			$attr['key'] = $row['key'];
+			$attr['name'] = $row['attrName'];
+			$attr['type'] = $row['attrType'];
+			$attrCats[] = $attr;
+		}
 
 		$link_paper_map = array();
 		$query = "SELECT * FROM " . $linkPaperMapTableName;
@@ -199,6 +223,8 @@
 		$result['diff_links'] = $diff_links;
 		$result['papers'] = $papers;
 		$result['link_paper_map'] = $link_paper_map;
+		$result['attrs'] = $attrs;
+		$result['attrCats'] = $attrCats;
 	    echo json_encode($result);
     
     }catch(Exception $e){

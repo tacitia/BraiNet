@@ -2,8 +2,6 @@
 (function(dm, $, undefined) {
 
 	function mergeDiffs(datasetKey, nodes, links, diff_nodes, diff_links) {
-		console.log(diff_nodes);
-		console.log(diff_links);
 		var node_map = user.datasets[datasetKey].node_map;
 		var link_map = user.datasets[datasetKey].link_map;
 		for (var i = 0; i < diff_nodes.length; ++i) {
@@ -43,12 +41,7 @@
 		out_neighbor_map[node.key] = [];
 	};
 
-	dm.addLink = function(raw_link, link_map, node_link_map, in_neighbor_map, out_neighbor_map, node_map, link_paper_map) {
-		var source_key = parseInt(raw_link.sourceKey);
-		var target_key = parseInt(raw_link.targetKey);
-		var link = {key: parseInt(raw_link.key), source: node_map[source_key], 
-			target: node_map[target_key], notes: raw_link.notes, paper: raw_link.paper,
-			children: [], isDerived: false, base_children: []};
+	dm.addLink = function(link, link_map, node_link_map, in_neighbor_map, out_neighbor_map, link_paper_map) {
 		link_map[link.key] = link;
 		var target_key = link.target.key;
 		var source_key = link.source.key
@@ -58,11 +51,73 @@
 		out_neighbor_map[source_key].push(target_key);
 		link_paper_map[link.key] = [];		
 	}
+
+
+	var processRawLink = function(rawLink, attrs, attrCats, node_map) {
+		var source_key = parseInt(rawLink.sourceKey);
+		var target_key = parseInt(rawLink.targetKey);
+		var linkKey = parseInt(rawLink.key);
+		var numPub = parseInt(rawLink.numPub);
+		var link = {
+			key: linkKey, 
+			source: node_map[source_key], 
+			target: node_map[target_key], 
+			numPub: numPub,
+			notes: rawLink.notes, 
+			paper: rawLink.paper,
+			attrs: {},
+			children: [], 
+			isDerived: false, 
+			base_children: []
+		};
+		for (var i = 0; i < attrs.length; ++i) {
+			var attr = attrs[i];
+			if (attr.linkKey === rawLink.key) {
+				link.attrs[attr.attrKey] = attr.attrValue;
+			}
+		}
+		return link;
+	};	
 	
+	
+	var processMetaLink = function(link, link_map, attr_map) {
+		var numPub = 0;
+		var attrs = {}
+		
+		for (var key in attr_map) {
+			var attrCat = attr_map[key];
+			valueCounts = {};
+			var attrValues = attrCat.values;
+			for (var i = 0; i < attrValues.length; ++i) {
+				var attrValue = attrValues[i];
+				valueCounts[attrValue] = 0;
+			}
+			attrs[key] = valueCounts;
+		}
+				
+		var base_children = link.base_children;
+		for (var j = 0; j < base_children.length; ++j) {
+			var baseChild = link_map[base_children[j]];
+			numPub += baseChild.numPub;
+			var baseAttrs = baseChild.attrs;
+			for (var key in baseAttrs) {
+				var attrValue = baseAttrs[key];
+				attrs[key][attrValue] += 1;	
+			}
+		}
+		
+		link.notes = 'Meta link';
+		link.numPub = numPub;
+		link.attrs = attrs;
+		link.isDerived = true;
+	};
+
+
 	dm.constructDataModel = function(datasetKey, data) {
 		user.datasets[datasetKey] = {};
+		storeDatasetAttrs(datasetKey, data.attrCats, data.attrs);
 		constructNodesMaps(datasetKey, data.nodes);
-		constructLinksMaps(datasetKey, data.links);
+		constructLinksMaps(datasetKey, data.links, data.attrs, data.attrCats);
 		constructLinkHierarchy(datasetKey, data.links);
 		constructPaperMap(datasetKey, data.papers);
 		constructLinkPaperMap(datasetKey, data.link_paper_map)
@@ -71,6 +126,35 @@
 		}
 		svgData.assignColors(user.datasets[datasetKey].node_map);
 	};
+	
+	
+	var storeDatasetAttrs = function(datasetKey, attrCats, attrs) {
+		var attr_map = {};
+		for (var i = 0; i < attrCats.length; ++i) {
+			var attrCat = attrCats[i];
+			if (attrCat.type === 'ordinal' || attrCat.type === 'nominal') {
+				extractAttrValues(attrCat, attrs);
+			}
+			attrCat.key = parseInt(attrCat.key);
+			attr_map[attrCat.key] = attrCat;
+		}
+		user.datasets[datasetKey].attr_map = attr_map;
+	}; 
+		
+		
+	var extractAttrValues = function(attrCat, attrs) {
+		var values = [];
+		for (var i = 0; i < attrs.length; ++i) {
+			var attr = attrs[i];
+			if (attr.attrKey == attrCat.key) {// use == here in case one of the key is already parsed into int
+				var value = attr.attrValue;
+				if ($.inArray(value, values) < 0) {
+					values.push(value);
+				}
+			}
+		}
+		attrCat.values = values;
+	};		
 		
 	var constructNodesMaps = function(datasetKey, nodes) {
 		var node_map = {};
@@ -101,18 +185,26 @@
 	};
 
 
-	var constructLinksMaps = function(datasetKey, links) {    
+	var constructLinksMaps = function(datasetKey, links, attrs, attrCats) {    
 		var link_map = {};
 		var node_link_map = {};
 		var link_paper_map = {};
 		var dataset = user.datasets[datasetKey];
 		var in_neighbor_map = dataset.node_in_neighbor_map;
 		var out_neighbor_map = dataset.node_out_neighbor_map;
+		var processedLinks = [];
 
+		// Further process links
 		var num_links = links.length;
 		for (var i = 0; i < num_links; ++i) {
-			var raw_link = links[i];
-			dm.addLink(raw_link, link_map, node_link_map, in_neighbor_map, out_neighbor_map, dataset.node_map, link_paper_map);
+			var rawLink = links[i];
+			var link = processRawLink(rawLink, attrs, attrCats, dataset.node_map);
+			processedLinks.push(link);
+		}
+		
+		for (var i = 0; i < num_links; ++i) {
+			var link = processedLinks[i];
+			dm.addLink(link, link_map, node_link_map, in_neighbor_map, out_neighbor_map, link_paper_map);
 		}
 	
 		dataset.link_map = link_map;
@@ -160,10 +252,14 @@
 				var srcParentLink = dataset.node_link_map[key_pair];
 				if (srcParentLink === undefined) {
 					max_link_key += 1;
-					var srcParentLink = {key: max_link_key, 
-					source: dataset.node_map[parseInt(source.parent)],
-					target: target, notes: 'Meta link', children: [link_key], isDerived: true, 
-					base_children: base_children, paper: []};
+					var srcParentLink = {
+						key: max_link_key, 
+						source: dataset.node_map[parseInt(source.parent)],
+						target: target, 
+						children: [link_key], 
+						base_children: base_children, 
+					};
+					processMetaLink(srcParentLink, dataset.link_map, dataset.attr_map);
 					dataset.link_map[max_link_key] = srcParentLink;
 					dataset.node_link_map[key_pair] = srcParentLink;
 					dataset.node_in_neighbor_map[target.key].push(source.parent);
@@ -189,11 +285,14 @@
 				var tgtParentLink = dataset.node_link_map[key_pair];
 				if (tgtParentLink === undefined) {
 					max_link_key += 1;
-					var tgtParentLink = {key: max_link_key, 
-					source: source,
-					target: dataset.node_map[parseInt(target.parent)], 
-					notes: 'Meta link', children: [link_key], isDerived: true, 
-					base_children: base_children, paper: []};
+					var tgtParentLink = {
+						key: max_link_key, 
+						source: source,
+						target: dataset.node_map[parseInt(target.parent)], 
+						children: [link_key], 
+						base_children: base_children, 
+					};
+					processMetaLink(tgtParentLink, dataset.link_map, dataset.attr_map);
 					dataset.link_map[max_link_key] = tgtParentLink;
 					dataset.node_link_map[key_pair] = tgtParentLink;
 					dataset.node_in_neighbor_map[target.parent].push(source.key);
@@ -220,11 +319,14 @@
 				var parentLink = dataset.node_link_map[key_pair];
 				if (parentLink === undefined) {
 					max_link_key += 1;
-					var parentLink = {key: max_link_key, 
-					source: dataset.node_map[parseInt(source.parent)],
-					target: dataset.node_map[parseInt(target.parent)], 
-					notes: 'Meta link', children: [link_key], isDerived: true, 
-					base_children: base_children, paper: []};
+					var parentLink = {
+						key: max_link_key, 
+						source: dataset.node_map[parseInt(source.parent)],
+						target: dataset.node_map[parseInt(target.parent)], 
+						children: [link_key], 
+						base_children: base_children,
+					};
+					processMetaLink(parentLink, dataset.link_map, dataset.attr_map);
 					dataset.link_map[max_link_key] = parentLink;
 					dataset.node_link_map[key_pair] = parentLink;
 					dataset.node_in_neighbor_map[target.parent].push(source.parent);

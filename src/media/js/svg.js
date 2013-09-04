@@ -120,15 +120,6 @@
 		for (var key in link_map) {
 			var curr_link = link_map[key];
 			if (curr_link.source.depth === 1 && curr_link.target.depth === 1) {
-				if (curr_link.base_children.length > 20) {
-					curr_link.strength = "strong";
-				}
-				else if (curr_link.base_children.length > 1) {
-					curr_link.strength = "moderate";
-				}
-				else {
-					curr_link.strength = "weak";
-				}
 				sd.circLinks.push(curr_link);
 			}
 		}
@@ -489,6 +480,7 @@
 				.attr("width", vis_width)
 				.attr("height", vis_height)
 				.append('g');
+
 	};
 
 	sr.renderData = function(datasetKey) {
@@ -670,7 +662,7 @@
 		svg.selectAll('.circular.text')
 			.classed('visible', function(d) {
 				return d.key === link.source.key || d.key === link.target.key;
-			});    
+			});
 	}
 
 	function linkMouseOut(link, svg) {
@@ -792,9 +784,90 @@
 				} 
 			}) */
 			.attr("id", function(d) { return "circ-link-" + d.key; })
+			.attr('title', function(d) {
+				$(this).data('attrStats', d.attrs);
+				return '<p>Encapsulated connections: ' + d.base_children.length + '</p><p>Strength: ' + 
+							'</p><svg id="attrStats-' + $(this).attr('id') + '"></svg>';
+			})
 			.on("mouseover", function(d) { linkMouseOver(d, svg_circular); })
 			.on("mouseout", function(d) { linkMouseOut(d, svg_circular); })
 			.on("click", function(d){linkClick(d, svg_circular); });
+
+		$('.circular.link').qtip({
+			style: {
+				classes: 'qtip-bootstrap'
+			},
+			position: {
+				my: 'top left',
+				at: 'bottom right',
+				target: $('.circular.link'),
+//				adjust: { x: 5, y: 5 },
+//				viewport: $(window)
+			},
+			events: {
+				show: function(event, api) {
+					var id = api.elements.target.attr('id');
+					var attrData = api.elements.target.data('attrStats');
+					var svg = d3.select('#attrStats-' + id);
+					if (svg.attr('isSet')) { return; }
+					svg.attr('isSet', true)
+						.attr('width', 200)
+						.attr('height', 100);
+					for (var key in attrData) {
+						var attrDatum = attrData[key];
+						var attrArray = [];
+						var countArray = [];
+						var valueArray = [];
+						for (var attrValue in attrDatum) {
+							var attrCount = attrDatum[attrValue];
+							attrArray.push({
+								attrValue: attrValue,
+								attrCount: attrCount
+							});
+							valueArray.push(attrValue);
+							countArray.push(attrCount);
+						} 
+						var minValue = Math.min.apply(Math, countArray);
+						var maxValue = Math.max.apply(Math, countArray);
+						var scale = d3.scale.linear()
+										.domain([minValue, maxValue])
+										.range([0, 80]);
+										
+						var barGroups = svg.selectAll('g.bar')
+							.data(attrArray)
+							.enter()
+							.append('svg:g')
+							.attr('height', 15)
+							.attr('width', 100)
+							.attr('transform', function(d, i) {
+								return 'translate(0, ' + i * 15 + ')';
+							});		
+							
+						var colorPalette = d3.scale.category20().domain(valueArray);
+
+						barGroups.append('rect')
+							.attr('height', 12)
+							.attr('width', function(d) {
+								return scale(d.attrCount);
+							})
+							.attr('x', 0)
+							.attr('fill-opacity', 0.8)
+							.attr('fill', function(d) { return colorPalette(d.attrValue); });
+														
+						barGroups.append('text')
+							.text(function(d) {
+								return d.attrValue + ': ' + d.attrCount;
+							})
+							.attr("transform", function(d, i) {
+								return 'translate(' + (scale(d.attrCount) + 5) + ',12)';
+							});
+					}
+				},
+				hide: function(event, api) {
+					$('#attrStats').remove();					
+				}
+			}			
+		});
 	}
 
 	function exitCircularNodes() {

@@ -32,14 +32,22 @@
 			name: 'BAMS (public)',
 			isClone: 0,
 			isCustom: 0,
-			origin: 2130
+			origin: 2130,
+			attributes: [
+				{
+					name: 'Connection strength',
+					type: 'categorical',
+					domain: ['Strong', 'Moderate', 'Weak'],
+				},
+			],
 		};
 		user.datasetList[1000002] = {
 			key: 1000002,
 			name: 'Pubmed (public)',
 			isClone: 0,
 			isCustom: 0,
-			origin: 1000002
+			origin: 1000002,
+			attributes: [],
 		};
 	};
 	
@@ -52,11 +60,6 @@
 (function(ad, $, undefined) {
 
 	ad.maps = null;
-	ad.name = "BAMS(Public)"; 
-	ad.key = 2130;
-	ad.isClone = 0;
-	ad.isCustom = 0;
-	ad.origin = 2130;
 	
 	ad.switchActiveDataset = function(datasetKey) {
 		ad.maps = user.datasets[datasetKey];
@@ -66,6 +69,7 @@
 		ad.isClone = dp.isClone;
 		ad.isCustom = dp.isCustom;
 		ad.origin = dp.origin; 
+		ad.attributes = dp.attributes;
 		ui.setupUIElements();
 		svgRenderer.renderData(datasetKey);
 	};

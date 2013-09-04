@@ -25,6 +25,7 @@
 		$('.chzn-select').trigger('liszt:updated');
 		searchUI.appendNodesAsOptions(activeDataset.maps.node_map);
 		dataUI.setupUIElements();
+		edgeUI.setupUIElements();
 		
 		//Website Tour Start from here 
 		ui.firstTime = false;
@@ -62,77 +63,112 @@
 			];
 		//Cufon.replace('h1',{ textShadow: '1px 1px #fff'});
 		//define if steps should change automatically
+
 				autoplay	= false,
+
 				//timeout for the step
+
 				showtime = 0,
+
 				//current step of the tour
+
 				ui.step		= 0,
+
 				//total number of steps
+
 				total_steps	= config.length;
+
 				//current and previous step name
 				ui.currStep = "";
-				ui.prevStep = "";	
-				//svgRenderer.svg_circular.selectAll(".circular.node").on("click", function(){console.log("clicked!!")});
-                
-			
+				ui.prevStep = "";				
+
 				//show the tour controls
+
 				showControls();
 				//
 				/*
+
 				we can restart or stop the tour,
+
 				and also navigate through the steps
+
 				 */
+
 				$('#activatetour').live('click',startTour);
 				$('#canceltour').live('click',endTour);
 				$('#endtour').live('click',endTour);
 				$('#restarttour').live('click',restartTour);
-				
-							
+
 				function startTour(){
 					ui.firstTime = true;
 					
+
 					$('#activatetour').remove();
+
 					$('#endtour,#restarttour').show();
+
 					
+
 					showOverlay();
+
 					++ui.step;
 					
+
 					ui.showTooltip();
+
 				}
+
 				
+
 				
+
 				
+
 				function endTour(){
+
 					ui.step = 0;
+
 					if(autoplay) clearTimeout(showtime);
+
 					removeTooltip();
+
 					hideControls();
+
 					hideOverlay();
 					ui.firstTime = false;
+
 				}
+
 				
+
 				function restartTour(){
+
 					ui.step = 0;
 					ui.firstTime = true;
+
 					if(autoplay) clearTimeout(showtime);
+
 					++ui.step;
 					ui.currStep = "";
 				    ui.prevStep = "";	
+
 					ui.showTooltip();
+
 				}
+
 				
+
 				ui.showTooltip = function showTooltip(){
+
 					//remove current tooltip
 					
+
 					removeTooltip();
+
 					var step_config		= config[ui.step -1];
-					
-					
-					
 					var bgcolor 		= step_config.bgcolor;
 					var color	 		= step_config.color;
-					
-						
+	
 					var tooltip = '<div id="tour_tooltip" class="toolTip" >';
 					tooltip += '<p>' + step_config.text+'</p><span class="tooltip_arrow"></span>';
 					
@@ -142,56 +178,87 @@
 						 "color" : 'black'
 					});
 					//position the tooltip correctly:
-		
 				}
+
 				
+
 				function removeTooltip(){
 					$('#tour_tooltip').remove();
 				}
+
 				
+
 				function showControls(){
+
 					/*
+
 					we can restart or stop the tour,
+
 					and also navigate through the steps
+
 					 */
 					 
+
 					var $tourcontrols  = '<div id="tourcontrols" class="tourcontrols">';
+
 					$tourcontrols += '<p>First time here?</p>';
+
 					$tourcontrols += '<span class="button" id="activatetour">Start the tour</span>';
+
 			
+
 						$tourcontrols += '<a id="restarttour" style="display:none;">Restart the tour</span>';
+
 						$tourcontrols += '<a id="endtour" style="display:none;">End the tour</a>';
+
 						$tourcontrols += '<span class="close" id="canceltour"></span>';
+
 					$tourcontrols += '</div>';
+
 					
+
 					$('BODY').prepend($tourcontrols);
+
 					$('#tourcontrols').animate({'right':'30px'},500);
+
 				}
+
 				
+
 				function hideControls(){
+
 					$('#tourcontrols').remove();
+
 				}
+
 				
 				
 				
 				function showOverlay(){
 					
+
 					var $overlayTop	= '<div id="tour_overlay1" class="overlayTop"></div>';
 					var $overlayBottom	= '<div id="tour_overlay2" class="overlayBottom"></div>';
 					var $overlayLeft	= '<div id="tour_overlay3" class="overlayLeft"></div>';
 					var $overlayRight	= '<div id="tour_overlay4" class="overlayRight"></div>';
 
+
 					$('BODY').prepend($overlayTop);
 					$('BODY').prepend($overlayBottom);
 					$('BODY').prepend($overlayLeft);
 					$('BODY').prepend($overlayRight);
+
 				}
+
 				
+
 				function hideOverlay(){
+
 					$('#tour_overlay1').remove();
 					$('#tour_overlay2').remove();
 					$('#tour_overlay3').remove();
 					$('#tour_overlay4').remove();
+
 				}
 				
 				ui.showMessage = function showMessage(){
@@ -456,6 +523,76 @@
 
 }(window.searchUI = window.searchUI || {}, jQuery));
 
+(function(eui, $, undefined) {
+	var attrSelect = $('attrSelect');
+	var aggrSelect = $('#aggrSelect');
+	var attrMap = null;
+	var activeAttr = null;
+	
+	eui.setupUIElements = function() {
+		initAttrMap();
+		appendAttrOptions();
+		appendAggrSchemes();
+		appendEdgeLegends();
+	};
+	
+	var initAttrMap = function() {
+		attrMap = activeDataset.maps.attr_map;
+	};
+	
+	var appendAttrOptions = function() {
+		for (var key in attrMap) {
+			var attrInfo = attrMap[key];
+			$('#attrSelect').append(new Option(attrInfo.name, key, false, false));
+			if (activeAttr === null) { activeAttr = attrInfo; }
+		}
+		$('.chzn-select').chosen({allow_single_deselect: true});
+		$('#attrSelect').trigger('liszt:updated');	
+				
+	};
+	
+	/* At last this function should be called every time a new attribute is selected */
+	var appendAggrSchemes = function() {
+		if (activeAttr.type === 'ordinal' || activeAttr.type === 'nominal') {
+			$('#aggrSelect').append(new Option('Mode', 0, false, false));	
+		}
+		else {
+			$('#aggrSelect').append(new Option('Sum', 0, false, false));	
+			$('#aggrSelect').append(new Option('Min', 0, false, false));	
+			$('#aggrSelect').append(new Option('Max', 0, false, false));	
+			$('#aggrSelect').append(new Option('Avg', 0, false, false));	
+			$('#aggrSelect').append(new Option('Mode', 0, false, false));	
+		}
+		$('.chzn-select').chosen({allow_single_deselect: true});
+		$('#aggrSelect').trigger('liszt:updated');	
+	};
+	
+	var appendEdgeLegends = function() {
+		var attrValues = activeAttr.values;
+		var colorPalette = d3.scale.category20().domain(attrValues);
+		for (var i = 0; i < attrValues.length; ++i) {
+			var container = d3.select('#legend-feature')
+				.selectAll('div.lv1')
+				.data(attrValues)
+				.enter()
+				.append('div')
+				.attr('class', 'lv1');
+			container.append('div')
+				.attr('class', 'legend-block multi-col')
+				.style('background-color', function(d, i) {
+					return (colorPalette(d));
+				});
+			container.append('div')
+				.attr('class', 'legend-label multi-col')
+				.append('p')
+				.text(function(d) { return d; });
+			container.append('div')
+				.attr('class', 'clear');
+		}
+	};
+	
+}(window.edgeUI = window.edgeUI || {}, jQuery));
+
 (function(dm, $, undefined) {
 
 	/*
@@ -475,8 +612,6 @@
 
 	dm.populateDatasetUI = function() {
 		var datasetList = user.datasetList;
-//		$('#dataSelect').append(new Option('BAMS (public)', 2130));
-//		$('#dataSelect').append(new Option('Pubmed (public)', 1000002));
 		for (var key in datasetList) {
 			var curr_dataset = datasetList[key];
 			$('#dataSelect').append(new Option(curr_dataset.name, key));
@@ -645,78 +780,86 @@
 		// Add the list of papers 
 		var link_paper_map = activeDataset.maps.link_paper_map;
 		var paper_map = activeDataset.maps.paper_map;
-		var paperKeys = link_paper_map[cl.link.key];
+		var link_map = activeDataset.maps.link_map;
+		var paperKeys = [];
+		if (cl.link.isDerived) {
+			var base_children = cl.link.base_children;
+			for (var i = 0; i < base_children.length; ++i) {
+				var base_link = base_children[i];
+				paperKeys = paperKeys.concat(link_paper_map[base_link]);
+			}
+			paperKeys = generic.removeDuplicates(paperKeys);
+		}
+		else {
+			paperKeys = link_paper_map[cl.link.key];
+		}
+		console.log(paperKeys);
 		var self_paper_tab = d3.select('#paper-list');
 		self_paper_tab.selectAll('div').remove();
 		self_paper_tab.selectAll('p').remove();
 		var content = self_paper_tab.append('div');
 		var content_html = '';
-		if (cl.link.isDerived) {
-			content_html += '<p>This is a meta link. See the derived connections for more information.</p>';
-		}
-		else {
-			content_html += '<table id="pubTable" class="table table-bordered table-striped table-condensed">';
+		content_html += '<table id="pubTable" class="table table-bordered table-striped table-condensed">';
 
-			content_html += '<thead><tr class="tableTitle"><th>Publication</th><th>Authors</th><th>Source</th><th>Notes</th><th></th></tr></thead><tbody></tbody></table>';
-			content.html(content_html);
-		/*	$('#exportButton').css(
-			'position','absolute';
-			'left','50%';
-			'border-radius','10px 10px 10px 10px'
-			 );
-		*/
-			$('#exportButton').click(function(){
-				console.log("export button was clicked");
-			
-				});
-			$('#pubTable').dataTable({
-				'bAutoWidth': false,
-				'sDom':'T<"clear">lfrtip',
-				'oTableTools':{
-					'sSwfPath':'media/lib/TableTools/media/swf/copy_csv_xls_pdf.swf'
-					
-					},
-				'aoColumns': [
-					{sWidth: '300px'},
-					{sWidth: '120px'},
-					{sWidth: '50px'},
-					{sWidth: '120px'},
-					{sWidth: '60px'} 
-				]
+		content_html += '<thead><tr class="tableTitle"><th>Publication</th><th>Authors</th><th>Source</th><th>Notes</th><th></th></tr></thead><tbody></tbody></table>';
+		content.html(content_html);
+	/*	$('#exportButton').css(
+		'position','absolute';
+		'left','50%';
+		'border-radius','10px 10px 10px 10px'
+		 );
+	*/
+		$('#exportButton').click(function(){
+			console.log("export button was clicked");
+		
 			});
-			pubTable = $('#pubTable').dataTable();
-			var num_paper = paperKeys.length;
-			for (var i = 0; i < num_paper; ++i) {
-				var paper = paper_map[paperKeys[i]];
-				var url = 'http://www.ncbi.nlm.nih.gov/pubmed?term=' + paper.pmid;
-				var title = '<a href="' + url + '" target="_blank" class="paperLink">' + paper.title + '</a>';
-				var notes = '';
-				pubTable.fnAddData([title,
-									paper.authors,
-									paper.source,
-									notes,
-									""]);				
-			}
-			
-				//on tr hover append delete button on last th
-			var deleteIcon = null;
-			var editIcon = null;
-			$('#pubTable').on("mouseenter", "tr", function() {
-				//console.log($(this));
-				var pmid = $(this).context.children[0];
-				//console.log(pmid);
-				// Imp TODO: pass in pmid as parameter
-				var contentD = '<span onclick="chosenLink.deletePaper(this)"><i class="icon-trash"></i> Delete</span>';
-				var contentE = '<span onclick="chosenLink.editPaperNotes(this)"><i class="icon-pencil"></i> Edit</span>';
-				deleteIcon = $(this).find('td:last').append(contentD);
-				editIcon = $(this).find('td:last').append(contentE);
-			});
-
-			$('table').on("mouseleave", "tr", function() {
-				$(deleteIcon).find('span').remove();
-				$(editIcon).find('span').remove();
-			});
+		$('#pubTable').dataTable({
+			'bAutoWidth': false,
+			'sDom':'T<"clear">lfrtip',
+			'oTableTools':{
+				'sSwfPath':'media/lib/TableTools/media/swf/copy_csv_xls_pdf.swf'
+				
+				},
+			'aoColumns': [
+				{sWidth: '300px'},
+				{sWidth: '120px'},
+				{sWidth: '50px'},
+				{sWidth: '120px'},
+				{sWidth: '60px'} 
+			]
+		});
+		pubTable = $('#pubTable').dataTable();
+		var num_paper = paperKeys.length;
+		for (var i = 0; i < num_paper; ++i) {
+			var paper = paper_map[paperKeys[i]];
+			var url = 'http://www.ncbi.nlm.nih.gov/pubmed?term=' + paper.pmid;
+			var title = '<a href="' + url + '" target="_blank" class="paperLink">' + paper.title + '</a>';
+			var notes = '';
+			pubTable.fnAddData([title,
+								paper.authors,
+								paper.source,
+								notes,
+								""]);				
 		}
+		
+			//on tr hover append delete button on last th
+		var deleteIcon = null;
+		var editIcon = null;
+		$('#pubTable').on("mouseenter", "tr", function() {
+			//console.log($(this));
+			var pmid = $(this).context.children[0];
+			//console.log(pmid);
+			// Imp TODO: pass in pmid as parameter
+			var contentD = '<span onclick="chosenLink.deletePaper(this)"><i class="icon-trash"></i> Delete</span>';
+			var contentE = '<span onclick="chosenLink.editPaperNotes(this)"><i class="icon-pencil"></i> Edit</span>';
+			deleteIcon = $(this).find('td:last').append(contentD);
+			editIcon = $(this).find('td:last').append(contentE);
+		});
+
+		$('table').on("mouseleave", "tr", function() {
+			$(deleteIcon).find('span').remove();
+			$(editIcon).find('span').remove();
+		});
 
 		d3.selectAll('.paperLink').on('click', paperClick);
 
