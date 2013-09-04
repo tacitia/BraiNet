@@ -13,7 +13,7 @@
 
     mysql_select_db("brainconnect_brainData", $con);
     
-    $query = "SELECT `key`, `name`, `isClone`, `origin` FROM user_datasets WHERE userID = '" . $userID . "'";
+    $query = "SELECT `key`, `name`, `isClone`, `origin` FROM datasets WHERE userID = '" . $userID . "'";
     
     try{
         	$result = mysql_query($query, $con);

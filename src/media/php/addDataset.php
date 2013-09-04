@@ -14,10 +14,10 @@
 
     mysql_select_db("brainconnect_brainData", $con);
     
-    mysql_query("INSERT INTO user_datasets (name, userID, isClone, origin)
-VALUES ($datasetName, $userID, $isClone, $origDatasetID)") or die ("insert dataset failed: ".mysql_errno());
+    mysql_query("INSERT INTO datasets (name, userID, isClone, origin, type)
+VALUES ($datasetName, $userID, $isClone, $origDatasetID, 'private')") or die ("insert dataset failed: ".mysql_errno());
 
-    $query = "SELECT * FROM user_datasets 
+    $query = "SELECT * FROM datasets 
     WHERE name = " . $datasetName. " AND userID = " . $userID;
     
     try{
