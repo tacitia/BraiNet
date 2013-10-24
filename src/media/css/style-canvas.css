@@ -10,8 +10,13 @@
     opacity: 0.5;
 }
 
+.node.highlight {
+	stroke-width: 2px;
+	stroke: #DAA520;
+}
+
 .node {
-    opacity: 1;    
+    opacity: 1;
 }
 
 
@@ -161,4 +166,13 @@
 
 .text.selected-source {
     visibility: visible;
+}
+
+path line {
+  shape-rendering: crispEdges;
+}
+
+.grid {
+	stroke-width: 1px;
+	stroke: rgba(0,0,0,0.01);
 }

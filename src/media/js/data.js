@@ -127,7 +127,6 @@
 		svgData.assignColors(user.datasets[datasetKey].node_map);
 	};
 	
-	
 	var storeDatasetAttrs = function(datasetKey, attrCats, attrs) {
 		var attr_map = {};
 		for (var i = 0; i < attrCats.length; ++i) {

@@ -30,7 +30,7 @@
 		//Website Tour Start from here 
 		ui.firstTime = false;
 
-		websiteTour();
+//		websiteTour();
 	};
 	
 	websiteTour = function(){
