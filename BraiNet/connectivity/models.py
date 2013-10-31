@@ -1,21 +1,29 @@
 from django.db import models
+from jsonfield import JSONField
+from account.models import Account
 
-# Use the default primary key 'id'
-class Structure:
-	name = models.CharField(max_length=64)
-	user_id = models.ForeignKey('account.Account')
+class Structure(models.Model):
+	id = models.CharField(max_length=16, unique=True, primary_key=True) # The id is formed by concatenating dataset_key and struct_id
+	name = models.CharField(max_length=128)
 	struct_id = models.IntegerField()
-	dataset_key = models.ForeignKey('Dataset')
-
-# Use the default primary key 'id'
-class Connection:
-	source_struct_id = models.ForeignKey('Structure', to_field='struct_id')
-	target_struct_id = models.ForeignKey('Structure', to_field='struct_id')
+	parent_id = models.ForeignKey('self', null=True)
+	depth = models.IntegerField()
+	num_children = models.IntegerField()
+	struct_id_path = JSONField()
+	attributes = JSONField()
 	user_id = models.ForeignKey('account.Account')
 	dataset_key = models.ForeignKey('Dataset')
 
 # Use the default primary key 'id'
-class AttributeType:
+class Connection(models.Model):
+	source_id = models.ForeignKey('Structure', to_field='id', related_name='conn_source')
+	target_id = models.ForeignKey('Structure', to_field='id', related_name='conn_target')
+	user_id = models.ForeignKey('account.Account')
+	dataset_key = models.ForeignKey('Dataset')
+	attributes = JSONField()
+
+# Use the default primary key 'id'
+class AttributeType(models.Model):
 	NUMERIC = 'num'
 	ORDINAL = 'ord'
 	NOMINAL = 'nom'
@@ -28,7 +36,7 @@ class AttributeType:
 	type = models.CharField(max_length='16', choices=TYPE_CHOICES)
 
 # Use the default primary key 'id'
-class Attribute:
+class Attribute(models.Model):
 	STRUCTURE = 'st'
 	CONNECTION = 'co'
 	OWNER_TYPE_CHOICES = (
@@ -38,10 +46,10 @@ class Attribute:
 
 	owner_type = models.CharField(max_length=16, choices=OWNER_TYPE_CHOICES)
 	owner_id = models.IntegerField()
-	name = models.CharField()
+	name = models.CharField(max_length=32)
 	value = models.CharField(max_length=32)
 
 # Use the default primary key 'id'	
-class Dataset:
-	name = models.CharField(max_length=16)
+class Dataset(models.Model):
+	name = models.CharField(max_length=64, unique=True)
 	user_id = models.ForeignKey('account.Account')
