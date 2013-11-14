@@ -1124,7 +1124,7 @@
 		//this should be incorporated in the node data
 		var num_groups = 0,
 			group_count = {};
-		sr.forceNodes.forEach(function(d) {
+		svgData.forceNodes.forEach(function(d) {
 			if (!group_count[d.group]) {
 				++num_groups;
 				group_count[d.group] = [num_groups, 1];
@@ -1144,8 +1144,8 @@
 		searchUI.selected_target.y = 400; 
 
 		force = d3.layout.force()
-				  .nodes(sr.forceNodes)
-				  .links(sr.forceLinks)
+				  .nodes(svgData.forceNodes)
+				  .links(svgData.forceLinks)
 				  //.links([])
 				  .size([vis_width, vis_height])
 				  //still needs work - link distance determined by group size and if
@@ -1177,7 +1177,7 @@
 
 
 		var node = svg_force.selectAll(".nodelink.node")
-		   .data(sr.forceNodes, function(d) { return d.key; })
+		   .data(svgData.forceNodes, function(d) { return d.key; })
 		   .enter().append("svg:circle")
 		   .attr("class", "nodelink node")
 		   .attr("cx", function(d) { return d.x; })

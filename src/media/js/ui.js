@@ -433,7 +433,7 @@
 		state.currMode = customEnum.mode.search;
 		var paths = svgData.calculatePaths(sui.max_hop);
 		svgData.populateForceElements(paths);
-//		svgRenderer.updateForceLayout();
+		svgRenderer.updateForceLayout();
 		svgRenderer.dimNonSearchResults();
 	};
 
