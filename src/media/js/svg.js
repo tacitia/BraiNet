@@ -1167,7 +1167,7 @@
 		svg_force.selectAll(".text").remove();
 	
 		var link = svg_force.selectAll(".nodelink.link")    
-		   .data(sr.forceLinks, function(d) { return d.key; })
+		   .data(svgData.forceLinks, function(d) { return d.key; })
 		   .enter().append("svg:line")
 		   .attr("class", "nodelink link")
 		   .style("stroke-width", 3)
