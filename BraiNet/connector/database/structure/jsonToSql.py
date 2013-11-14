@@ -30,7 +30,7 @@ for d in datasets:
 						struct_id_path=s['structure_id_path'], 
 						attributes={},
 						user_id=super_user, 
-						dataset_key=dataset_model
+						dataset_id=dataset_model
 					)
 			s_model.save()
 		except IntegrityError:

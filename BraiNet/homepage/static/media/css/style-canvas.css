@@ -1,0 +1,178 @@
+/*===== Primary Elements =====/*
+
+/*  Node  */
+
+.hidden {
+    display: none;
+}
+
+.node.nofocus {
+    opacity: 0.5;
+}
+
+.node.highlight {
+	stroke-width: 2px;
+	stroke: #DAA520;
+}
+
+.node {
+    opacity: 1;
+}
+
+
+/*  links (connections) */
+.link.nofocus {
+    stroke-opacity: 0.3;
+}
+
+.link {
+    stroke: #ccc;
+//	stroke: #90f;
+    stroke-opacity: 1;
+    fill: none;
+/*    stroke-width: 3px; */
+}
+
+.link.dimmed {
+    opacity: 0.1;
+}
+
+.link.hidden {
+    stroke-opacity: 0;
+}
+
+.link.inLink {
+	stroke: #f30;
+	stroke-opacity: 0.5;
+}
+
+.link.outLink {
+	stroke: #6c3;
+	stroke-opacity: 0.5;
+}
+
+.link.biLink {
+	stroke: #33f;
+	stroke-opacity: 0.5;
+}
+
+.link.clicked{
+	stroke: red
+}
+
+.link.unclicked{
+	 stroke: #ccc;
+    stroke-opacity: 1;
+    fill: none;
+}
+
+/*   Arc    */
+
+.arc {
+    opacity: 0.15;
+    fill: #0D0D0D;
+    stroke: #FFF;
+}
+
+/*blue - no connections*/
+.arc:hover {
+    fill: #ccc;
+}
+
+/*red*/
+.arc.target {
+    fill: #d62728;
+}
+
+/*green*/
+.arc.source {
+    fill: #2ca02c !important;
+}
+
+.arc.selected-source {
+    fill: #25fb3a;
+}
+.arc.selected-target {
+    fill: #fa0615;
+}
+
+.arc.selected {
+    fill: #b45c1f;
+}
+
+.arc.selected-secondary {
+    fill: #b45c1f;
+    opacity: 0.5;
+}
+
+/*blue*/
+.arc.bi {
+    fill: #062db8;
+}
+
+.arc.target, .arc.source, .arc.selected {
+    opacity: 0.8;
+}
+
+.arc.hidden {
+    visibility: hidden;
+}
+
+.arc.highlighted {
+    stroke: red;
+    stroke-width: 3px;
+}
+
+.arc.search-selected {
+	 fill: #062db8;
+    stroke: #062db8;;
+}
+
+/*   Text    */
+
+
+.text {
+    pointer-events: none;
+    visibility: hidden;
+    fill: #FFF;
+}
+
+.text.visible {
+    fill: #000;
+    visibility: visible;
+}
+
+.text.target {
+    visibility: visible;
+}
+
+.text.source {
+    visibility: visible;
+}
+
+.text.bi {
+    visibility: visible;
+}
+
+.text.selected {
+    visibility: visible;
+}
+
+/* These are for clicked nodes */
+
+.text.selected-target {
+    visibility: visible;
+}
+
+.text.selected-source {
+    visibility: visible;
+}
+
+path line {
+  shape-rendering: crispEdges;
+}
+
+.grid {
+	stroke-width: 1px;
+	stroke: rgba(0,0,0,0.01);
+}

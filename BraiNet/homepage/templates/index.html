@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{{"BraiNet"|force_escape}}</title>
+    <link rel="stylesheet" href="/static/library/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/library/chosen/chosen.min.css">
+    <link rel="stylesheet" href="/static/stylesheet/style-ui.css">
+  </head>
+  <body>
+    <div class="head-section">
+      <div class="website-title">
+        <h1>BraiNet - a Brain Connectivity Explorer</h1>
+      </div>
+    </div>
+    <div class="content-section">
+      <div id="svg-container">
+        <div id="circular-pane" class="svg-pane card">
+          <svg class="canvas"></svg>
+          <div class="svg-controller"></div>
+        </div>
+      </div>
+      <div id="control-container">
+        <div id="dataset-selector" class="control-pane card">
+          <select id="dataset-list" data-placeholder="Select Dataset" class="chzn-select"></select>
+        </div>
+      </div>
+    </div>
+    <div class="foot-section"></div>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="/static/library/d3/d3.v3.min.js"></script>
+    <script src="/static/library/amplify.min.js"></script>
+    <script src="/static/library/chosen/chosen.jquery.min.js"></script>
+    <script src="/static/library/chosen/fuse.js"></script>
+    <script src="/static/javascript/setting/amplifyJS.js"></script>
+    <script src="/static/javascript/setting/setting.js"></script>
+    <script src="/static/javascript/util/index.js"></script>
+    <script src="/static/javascript/user/index.js"></script>
+    <script src="/static/javascript/user/model.js"></script>
+    <script src="/static/javascript/ui/index.js"></script>
+    <script src="/static/javascript/ui/datasetSelector.js"></script>
+    <script src="/static/javascript/svg/index.js"></script>
+    <script src="/static/javascript/svg/model.js"></script>
+    <script src="/static/javascript/svg/circular.js"></script>
+    <script src="/static/javascript/main.js"></script>
+  </body>
+</html>

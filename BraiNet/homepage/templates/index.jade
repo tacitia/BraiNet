@@ -1,0 +1,36 @@
+!!! 5
+html(lang="en")
+  head
+    title="BraiNet"
+    link(rel="stylesheet", href="/static/library/bootstrap/css/bootstrap.min.css")
+    link(rel="stylesheet", href="/static/library/chosen/chosen.min.css")
+    link(rel="stylesheet", href="/static/stylesheet/style-ui.css")
+  body
+    div.head-section
+      div.website-title
+        h1 BraiNet - a Brain Connectivity Explorer
+    div.content-section
+      div#svg-container
+        div.svg-pane.card#circular-pane
+          svg.canvas
+          div.svg-controller
+      div#control-container
+        div.control-pane.card#dataset-selector
+          select.chzn-select#dataset-list(data-placeholder="Select Dataset")
+    div.foot-section
+    script(src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js")
+    script(src="/static/library/d3/d3.v3.min.js")
+    script(src="/static/library/amplify.min.js")
+    script(src="/static/library/chosen/chosen.jquery.min.js")
+    script(src="/static/library/chosen/fuse.js")
+    script(src="/static/javascript/setting/amplifyJS.js")
+    script(src="/static/javascript/setting/setting.js")
+    script(src="/static/javascript/util/index.js")
+    script(src="/static/javascript/user/index.js")
+    script(src="/static/javascript/user/model.js")
+    script(src="/static/javascript/ui/index.js")
+    script(src="/static/javascript/ui/datasetSelector.js")
+    script(src="/static/javascript/svg/index.js")
+    script(src="/static/javascript/svg/model.js")
+    script(src="/static/javascript/svg/circular.js")
+    script(src="/static/javascript/main.js")

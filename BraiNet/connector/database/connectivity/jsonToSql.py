@@ -27,7 +27,7 @@ for d in datasets:
 						source_id=c_src_model,
 						target_id=c_tgt_model,
 						user_id=super_user,
-						dataset_key=dataset_model,
+						dataset_id=dataset_model,
 						attributes=c['attributes']
 					)
 			c_model.save()

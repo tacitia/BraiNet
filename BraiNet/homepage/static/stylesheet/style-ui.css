@@ -1,0 +1,287 @@
+/* @group base elements */
+
+body,
+input,
+button,
+select,
+textarea,
+.navbar-search .search-query {
+	font-family: 'Actor', sans-serif !important;
+}
+
+a {
+	color: #76a7c8;
+	font-size: 15px;
+}
+
+h3 {
+	margin: 0 0 15px 0;
+}
+
+h4 {
+	margin: 5px 0 5px 0;
+}
+
+body {
+    /*make everything not selectable*/
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    font: 13px sans-serif;
+    background-color: rgba(0,0,0,.02);
+}
+html,body { height:100%; }
+
+/* @group generic */
+
+.removed {
+	display: none;
+}
+
+.card {
+	box-shadow: 2px 2px 1px #d8d8d8;
+	border-radius: 3px;
+	border: 1px solid #e5e5e5;
+	background-color: #fff;
+	margin: 10px 0 20px 0;
+}
+
+.fit-size-to-content {
+	display:inline-block;
+}
+
+.multi-col {
+	position:relative;
+	float:left;	
+}
+
+.lf-col-left {
+	position:relative;
+	float:left;
+}
+
+.lf-col-right {
+	position:relative;
+	float:right;
+}
+
+.clear {
+	clear:both;
+}
+
+/* @group sections */
+
+.head-section {
+	width: 1400;
+	height: auto;
+	box-shadow: 2px 2px 1px rgba(0,0,0,0.5);
+	padding: 10px;
+	margin: auto;
+}
+
+#website-title {
+	margin: 0 auto;
+	width: 1260px;
+}
+
+.content-section {
+	width:1400px;
+	margin:30px auto;
+	position: relative;
+	height: 100%;
+}
+/* @group containers */
+
+/* @group panes */
+
+.svg-pane {
+	width: 650px;
+	height: 650px;
+}
+
+.control-pane {
+	width: 250px;
+}
+
+/* @group head-section elements */
+
+/* @group control-container elements */
+
+.legend-label {
+	margin-left: 10px; 
+}
+
+.legend-block {
+	width: 20px;
+	height: 20px;
+}
+
+/* @group unclassified */
+
+.tab-content {
+	height: 100%;
+}
+.tab-column-1 {
+    height: 30px;
+    width: 100px;
+}
+.tab-column-2 {
+    height: 30px;
+}
+
+#search-settings {
+    padding-bottom:20px;
+}
+
+#search-results {
+	width: 800px;
+}
+
+.search-results-contents {
+    margin:5px;
+    height:280px;
+    overflow-y: scroll;
+}
+
+.table-custom {
+    /*position: absolute;*/
+    /*left: 20px;*/
+    /*width: 330px;*/
+    border: 1px solid #dddddd;
+    max-height: 300px;
+    overflow-y: scroll;
+}
+
+.selected-cell {
+    background:#99FFFF;
+}
+
+.nav-tabs-add {
+    max-height: 300px;
+    overflow-y: scroll;
+}
+
+.legend {
+    position: absolute;
+    top: 320px;
+    left: 20px;
+    font: 13px sans-serif;
+}
+
+.util-section {
+	width: 100%;
+	padding: 20px;
+}
+
+#input {
+    font: 11px sans-serif;
+    width: 900px;
+}
+
+#detail {
+    border-top: 2px solid #ccc;
+    font: 13px sans-serif;
+    width: 100%;
+    padding-top: 20px;
+    position: absolute;
+    top: 650px;
+}
+
+.explanation.hidden {
+    display:none;
+}
+
+#login-main {
+    width: 400px;
+    height: 400px;
+    margin: auto;
+}
+
+#conn-info {
+    height: 50%;
+}
+
+#region-info {
+    height: 50%;
+}
+
+.accordion-content {
+    height: 250px;
+}
+
+#record-content {
+    height: 180px;
+}
+
+.datasetDisplay {
+    height: 300px;
+    width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    overflow-y: scroll;
+}
+
+#bt-createDatasets {
+	margin-bottom: 10px;
+}
+
+#select {
+	margin-bottom: 20px;
+}
+
+#datasetControl {
+    width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#bt-manageDatasets {
+	float: left;
+	margin-bottom: 10px;
+}
+
+#bt-cloneDatasets {
+	float: left;
+	margin-bottom: 10px;
+	margin-left: 10px;
+	display:none;
+}
+
+#bt-applyDataset {
+	float: left;
+	margin-bottom: 10px;
+	margin-left: 10px;
+}
+
+#anatomy-map #svg {
+	position: absolute;
+	left: 20;
+	top: 100;
+}
+
+#anatomy-map #img {
+	left: 0;
+	top: 0;
+}
+
+#anatomy .btn-toolbar{
+	width: 350px;
+	height: 20px;
+}
+#anatomy .btn-group{
+	position: absolute;
+	left:150px;
+	
+}  
+
+.10tb-padding {
+	padding: 10px 0;
+}
+
+
+/* @end */
+
+

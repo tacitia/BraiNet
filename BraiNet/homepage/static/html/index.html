@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>BraiNet</title>
+
+    <!--Stylesheets-->
+    <link rel="stylesheet" href="media/lib/bootstrap/css/bootstrap.min.css" media="all" />
+    <link rel="stylesheet" href="media/lib/chosen/chosen.css" media="all" />
+	<link rel="stylesheet" href="media/lib/qTip2/jquery.qtip.min.css" media="all"/>
+	<link rel = "stylesheet" href = "media/lib/TableTools/media/css/TableTools.css" media="all"/>
+    <link rel="stylesheet" href="media/css/style-ui.css" media="all" type="text/css" charset="utf-8">
+    <link rel="stylesheet" href="media/css/style-canvas.css" media="all" type="text/css" charset="utf-8">
+    <link rel="stylesheet" href="media/css/colors.css" media="all" type="text/css" charset="utf-8">
+	<link rel = "stylesheet" href="media/lib/jNotify/jquery/jNotify.jquery.css" media="all"/>
+	<link href='/media/lib/arrows/bootstrap-arrows.css' data-angle='stylesheet' media="all"/>
+	<link href='http://fonts.googleapis.com/css?family=Actor' rel='stylesheet' media="all">
+    <link rel = "stylesheet" href = "media/lib/WebsiteTour/css/jquerytour.css" media="all">
+   
+    <!-- HTML5 shim, IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div id="head-section">
+	  <div id="userBar">
+	      <div id="userBar-content" class="fit-size-to-content lf-col-right">
+      	    <div id="userStatus" class="multi-col">
+              <a href="register.html" target="_blank">Register</a>
+            </div>
+            <div class="multi-col">
+              <a href="http://hivizexplorer.com/lazarus/" target="_blank">Message Board</a>
+            </div>
+            <div class="clear"></div>
+          </div>
+      </div>
+      <div id="webtitle" class="box left"> <!--website tour  wen-->
+        <h1>BraiNet - a brain connectivity explorer</h1>
+      </div>
+    </div>
+    <div id="content">
+    <div id="titlebar">
+    	<div style="width:800px; float:left">
+    		<h2>Canvas</h2>
+    	</div>
+		<div style="width:350px; float:right">
+    		<h2>Control Panel</h2>
+		</div>
+    </div>
+    <!--UTIL TAB RIGHT-->
+    <div id="util">
+
+      <div id="util-content">
+		
+		<div id="anatomy" class="util-section card">
+	 	  <h3>Anatomical Reference</h3>
+          <div id="anatomy-map">
+		  	<div id="svg"></div>
+		  		
+		  	<div id="img"></div>
+		  	
+		  </div>
+		  <!--left and right arrow--->
+		  	<div class = "btn-toolbar">
+		  		<div class = "btn-group">
+		  			<button class = "btn"  id = "leftArrow"><i class = "icon-arrow-left"></i></button>
+		  			<button class = "btn"  id = "rightArrow"><i class = "icon-arrow-right"></i></button>
+		  		</div>
+		  	</div>		  
+		</div>
+
+        <div id="info" class="util-section card">
+	 	  <h3>Add Brain regions and connections</h3>
+            <div id="add-node-div">
+                <h4>Add a brain region</h4>
+                <div>
+                  <div class="lf-col-left"><p>Name</p></div>
+                  <div class="lf-col-right"><input id="nodeNameInput" type="text" placeholder="Input the name of the region"></div>
+                  <div class="clear"></div>
+                </div>
+                <div>
+                  <div class="lf-col-left"><p>Located within</p></div>
+                  <div class="lf-col-right"><select data-placeholder="Choose a brain area" class="chzn-select" style="width:250px;" id="parentSelect">
+                    <option></option>
+                  </select></div>
+                  <div class="clear"></div>
+                </div>
+				<div class="10tb-padding"><button id="addNode" class="btn btn-primary">Add brain region</button></div>
+            </div>
+            <div id="add-link-div">
+                <h4>Add a connection</h4>
+                <div>
+                  <div class="lf-col-left"><p>Source</p></div>
+                  <div class="lf-col-right"><select data-placeholder="Choose a brain area" class="chzn-select" style="width:250px;" id="sourceSelect-Manage">
+                    <option></option>
+                  </select></div>
+                  <div class="clear"></div>
+                </div>
+                <div>
+                  <div class="lf-col-left"><p>Target</p></div>
+                  <div class="lf-col-right"><select data-placeholder="Choose a brain area" class="chzn-select" style="width:250px;" id="targetSelect-Manage">
+                    <option></option>
+                  </select></div>
+                  <div class="clear"></div>
+                </div>
+                <div>
+                  <div class="lf-col-left"><p>Pubmed Link</p></div>
+                  <div class="lf-col-right"><input type="text" id="pubmedLink" placeholder="Input the link to a publication about the connection"></div>
+                  <div class="clear"></div>
+				  <div class="10tb-padding"><button id="addLink" class="btn btn-primary">Add connection</button></div>
+                </div>
+            </div>
+        </div><!--END INFO-->
+
+        <!--LEGEND-->
+        <div id="legend" class="util-section card">
+          <h3 class="control-section-title">Edge Color Legend</h3>
+          <div id="legend-primary">
+            <h4>Default (by directionality)</h4></br>
+            <div>
+              <div class="legend-block multi-col" style="background-color:#2ca02c;"></div>
+              <div class="legend-label multi-col"><p>Source region / Outgoing connecion</p></div>
+              <div class="clear"></div>
+            </div>
+            <div>
+              <div class="legend-block multi-col" style="background-color:#d62728;"></div>
+              <div class="legend-label multi-col"><p>Target region / Incoming connecion</p></div>
+              <div class="clear"></div>
+            </div>
+            <div>
+              <div class="legend-block multi-col" style="background-color:#062db8;"></div>
+              <div class="legend-label multi-col"><p>Bidirectional connection</p></div>
+              <div class="clear"></div>
+            </div>
+          </div>
+          <table>
+            <h4>Optional (by custom features)</h4>
+            <tr>
+              <td class="tab-column-1">Feature</td>
+              <td class="tab-column-2">
+                <select data-placeholder="Choose an attribute" class="chzn-select" style="width:250px;" id="attrSelect">
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td class="tab-column-1">Aggregation scheme</td>
+              <td class="tab-column-2">
+                <select data-placeholder="Choose an aggregation scheme" class="chzn-select" style="width:250px;" id="aggrSelect">           
+                </select>
+              </td>
+            </tr>
+          </table>
+          <br/>
+          <div id="legend-feature">
+          </div>          
+        </div><!--END LEGEND-->
+        <!--OPTIONS-->
+
+        <!--SEARCH-->
+        <div id="search" class="util-section card">
+          <h3>Indirect Connection Search</h3>
+          <div id="search-settings">
+          <table>
+            <tr>
+              <td class="tab-column-1">Source</td>
+              <td class="tab-column-2">
+                <select data-placeholder="Choose a brain area" class="chzn-select" style="width:250px;" id="sourceSelect">
+                  <option></option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td class="tab-column-1">Target</td>
+              <td class="tab-column-2">
+                <select data-placeholder="Choose a brain area" class="chzn-select" style="width:250px;" id="targetSelect">
+                  <option></option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td class="tab-column-1">Number of intermediate connections</td>
+              <td class="tab-column-2">
+                <input id="maxHop" type="range" min=0 max=3 value=1 step=1>
+                <span id="maxHopValue">1</span>
+              </td>
+            </tr>
+          </table>
+          </br>
+          <div>
+            <div class="lf-col-left"><button id="bt-search" class="btn">Show connectivity for selected regions</button></div>
+            <div class="lf-col-right"><button id="bt-clear" class="btn btn-warning">Clear</button></div>
+            <div class="clear"></div>
+          </div>
+          </div>
+        </div><!--END SEARCH-->
+
+        <!--MANAGE DATA-->
+        <div id="manage-data" class="util-section card">
+            <h3>Manage Data</h3>
+            <div id="createDatasetSuccessAlert" class="alert alert-success" style="display:none">
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+              Dataset created successfully. Select and edit the new dataset to add nodes and links.
+            </div>
+            <div id="create">
+			<p>Create Dataset:</p>
+				<input type="text" placeholder="Name" name="datasetName">
+				<button class="btn" id="bt-createDatasets">Create Dataset</button>
+			</div>
+            <div id="select">
+                <p>Stored Datasets:</p>
+                <select data-placeholder="Select Dataset" class="chzn-select" style="width:250px;" id="dataSelect">
+                  <option></option>
+                </select>
+            </div>
+            <div id="edit" class="multi-col">
+              <button class="btn" id="bt-manageDatasets">Edit</button>
+            </div>
+            <div id="clone" class="multi-col">
+              <button class="btn" id="bt-cloneDatasets">Clone</button>
+            </div>
+	        <div id="apply" class="multi-col">
+              <button class="btn btn-primary" id="bt-applyDataset">Display</button>
+            </div>
+            <div class="clear">
+            </div>
+        </div><!--END MANAGE DATA-->
+
+        <!--HELP-->
+<!--        <div id="help" class="tab-pane fade in">
+          <p>
+            <a href="http://www.youtube.com/watch?v=PyPHzxaCEfU&feature=youtu.be">Demo video</a>
+        </div>--><!--END HELP-->
+
+      </div><!--END UTIL CONTENT-->
+    <!--References and Link Details-->
+<!--    <div id="detail" class="tabbable tabs-left detail-panel">
+      <h4>Connection Details</h4>
+      <span id="ref-src">Source: no selection </span><br/>
+      <span id="ref-tgt">Target: no selection </span><br/>
+      <ul id="detail-tab" class="nav nav-tabs nav-tabs-add">
+      </ul>
+      <div id="detail-content-pane" class="tab-content">
+      </div>
+    </div> -->
+    <div class="clear"></div>
+  </div>
+  <!--END UTIL RIGHT-->
+
+    <div id="canvas" class="card">
+      <div id="canvas-body">
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="#canvas-circular" data-toggle="tab">Circular view</a></li>
+        <li><a href="#canvas-force" data-toggle="tab">Force-directed view</a></li>
+        <li><a href="#canvas-matrix" data-toggle="tab">Matrix view</a></li>
+      </ul>
+      <div id="canvas-content" class="tab-content">
+        <div id="canvas-circular" class="tab-pane fade in active">
+        </div>
+        <div id="canvas-force" class="tab-pane fade in">
+        </div>
+        <div id="canvas-matrix" class="tab-pane fade in">
+        </div>
+      </div>
+      </div>
+    </div>
+    <!-- List Link Connections (Search Results) -->
+    <div style="clear:both;"></div>
+
+    <div id="search-results" class="card">
+		<div id="conn-info">
+			<h3>Connection information</h3>
+			<p class="exp"><i>Click on a connection and the basic connection information will be displayed here.</i></p>
+			<p id="src-name"></p>
+			<p id="tgt-name"></p>
+			<p id="no-note-msg" class="removed"></p>
+			<div id="conn-notes" class="removed">
+			  <div class="multi-col" style="margin-right:10px"><p>Notes:</p></div>
+			  <div class="multi-col">
+				<textarea id="conn-note-input" rows="3" class="removed">Add a note...</textarea>
+				<p id="conn-note-display" style="width:220px;">No notes found.</p>
+				<button id="conn-note-save" class="btn btn-success" class="removed">Save</button>
+			  </div>
+			  <div class="multi-col">
+				<i id="conn-note-edit" class="icon-edit"></i>  
+			  </div>
+			  <div class="clear"></div>
+			</div>
+		</div>
+		 <ul class="nav nav-tabs">
+			<li class="active"><a href="#paper-list" data-toggle="tab">Publications</a></li>
+			<li><a href="#bams-list" data-toggle="tab">BAMS records</a></li>
+	        <li><a href="#sub-con-list" data-toggle="tab">Sub-connections</a></li>
+		  </ul>
+		  <div class="tab-content" style="padding:20px">
+			<div id="paper-list" class="tab-pane fade in active">
+			  <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and the relevant literature will be displayed here.(Only available for pre-loaded datasets.)</i></p>
+			</div>
+			<div id="bams-list" class="tab-pane fade in">
+			  <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and the relevant BAMS records will be displayed here.(Only available for pre-loaded datasets.)</i></p>
+			</div>
+	        <div id="sub-con-list" class="tab-pane fade in">
+			  <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and the underlying sub-connections will be displayed here.</i></p>
+			</div>
+		  </div> 
+    </div>
+
+    <!-- MODAL WINDOW - User Study
+    <div class="modal hide fade" id="messageBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:600px;">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">New Incoming Message</h3>
+      </div>
+      <div class="modal-body">
+        <p id="message"></p>
+        <textarea rows="6" class="input-xxlarge"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        <button class="btn btn-primary">Send</button>
+      </div>
+    </div>
+    <a href="#messageBox" role="button" class="btn" data-toggle="modal" style="position:absolute; bottom:200px; left:100px;">Launch demo modal</a>
+    -->
+
+    <!--JAVASCRIPT-->
+
+    <!--LIBRARIES-->
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+	 <script type="text/javascript" src="media/lib/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="media/lib/d3.v2.min.js"></script>
+    <script type="text/javascript" src="media/lib/chosen/chosen.jquery.js"></script>
+    <script type = "text/javascript" src = "media/lib/chosen/fuse.js"></script>
+    <script type="text/javascript" src="media/lib/jquery.maphilight.min.js"></script>
+	<script type="text/javascript" src="media/lib/qTip2/jquery.qtip.min.js"></script>
+	<script type="text/javascript" src="media/lib/arrows/bootstrap-arrows.js"></script>
+    <script type="text/javascript" src="media/lib/datatables/media/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="media/lib/TableTools/media/js/TableTools.js"></script>
+    <script type="text/javascript" src="media/lib/TableTools/media/ZeroClipboard/ZeroClipboard.js"></script>
+    <script type="text/javascript" src="media/lib/TableTools/media/support/jquery.jeditable.js"></script>
+   	<script type="text/javascript" src="media/lib/autocomplete/js/jquery-ui-1.10.3.custom.min.js"></script>
+	<script type = "text/javascript" src = "media/lib/flip/jquery.flip.min.js"></script>
+	<script type = "text/javascript" src = "media/lib/WebsiteTour/js/ChunkFive_400.font.js"></script>	
+	<script type = "text/javascript" src = "media/lib/jNotify/jquery/jNotify.jquery.min.js"></script>	
+
+    <script type="text/javascript" src="media/js/misc.js"></script>
+    <script type="text/javascript" src="media/js/state.js"></script>
+    <script type="text/javascript" src="media/js/action.js"></script>
+    <script type="text/javascript" src="media/js/db.js"></script>
+    <script type="text/javascript" src="media/js/data.js"></script>
+    <script type="text/javascript" src="media/js/svg.js"></script>
+    <script type="text/javascript" src="media/js/ui.js"></script>
+    <script type="text/javascript" src="media/js/anatomy.js"></script>
+    <script type="text/javascript" src="media/js/main.js"></script>
+    
+    <!-- Piwik -->
+    <!--
+    <script type="text/javascript">
+    var pkBaseURL = (("https:" == document.location.protocol) ? "https://hivizexplorer.com/piwik/" : "http://hivizexplorer.com/piwik/");
+    document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+    </script><script type="text/javascript">
+    try {
+        var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 3);
+        piwikTracker.trackPageView();
+        piwikTracker.enableLinkTracking();
+    } catch( err ) {}
+    </script><noscript><p><img src="http://hivizexplorer.com/piwik/piwik.php?idsite=3" style="border:0" alt="" /></p></noscript>-->
+    <!-- End Piwik Tracking Code -->
+    </div>
+</body>
+</html>

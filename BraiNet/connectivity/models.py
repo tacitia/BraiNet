@@ -12,14 +12,14 @@ class Structure(models.Model):
 	struct_id_path = JSONField()
 	attributes = JSONField()
 	user_id = models.ForeignKey('account.Account')
-	dataset_key = models.ForeignKey('Dataset')
+	dataset_id = models.ForeignKey('Dataset')
 
 # Use the default primary key 'id'
 class Connection(models.Model):
 	source_id = models.ForeignKey('Structure', to_field='id', related_name='conn_source')
 	target_id = models.ForeignKey('Structure', to_field='id', related_name='conn_target')
 	user_id = models.ForeignKey('account.Account')
-	dataset_key = models.ForeignKey('Dataset')
+	dataset_id = models.ForeignKey('Dataset')
 	attributes = JSONField()
 
 # Use the default primary key 'id'
@@ -44,12 +44,23 @@ class Attribute(models.Model):
 		(CONNECTION, 'connection'),
 	)
 
-	owner_type = models.CharField(max_length=16, choices=OWNER_TYPE_CHOICES)
+	owner_type = models.CharField(max_length=8, choices=OWNER_TYPE_CHOICES)
 	owner_id = models.IntegerField()
 	name = models.CharField(max_length=32)
 	value = models.CharField(max_length=32)
 
+#TODO: add 'visibility' (public v.s. private) field
 # Use the default primary key 'id'	
 class Dataset(models.Model):
+	PUBLIC = 'pub'
+	PRIVATE = 'pri'
+	SHARED = 'sha'
+	VISIBILITY_TYPE_CHOICES = (
+		(PUBLIC, 'public'),
+		(PRIVATE, 'private'),
+		(SHARED, 'shared'),
+	)
+
 	name = models.CharField(max_length=64, unique=True)
 	user_id = models.ForeignKey('account.Account')
+	visibility = models.CharField(max_length=8, choices=VISIBILITY_TYPE_CHOICES)
