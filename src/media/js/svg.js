@@ -704,7 +704,7 @@
 	}
 
 	function forceNodeMouseOver(node) {
-		if (current_mode === mode.search) { return; }
+		if (state.currMode === customEnum.mode.search) { return; }
 		svg_force.selectAll('.nodelink.node')
 			.classed('nofocus', function(d) {
 				var dKey = d.key;
@@ -730,7 +730,7 @@
 	}
 
 	function forceNodeMouseOut(d) {
-		if (current_mode === mode.search) { return; }
+		if (state.currMode === customEnum.mode.search) { return; }
 		svg_force.selectAll('.circular.node').classed('nofocus', false);
 		svg_force.selectAll('.circular.link').classed('nofocus', false);
 		svg_force.selectAll('.nodelink.text').classed('visible', true);
