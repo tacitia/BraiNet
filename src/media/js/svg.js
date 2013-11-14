@@ -1182,7 +1182,7 @@
 		   .attr("class", "nodelink node")
 		   .attr("cx", function(d) { return d.x; })
 		   .attr("cy", function(d) { return d.y; })
-		   .attr("r", function(d) { return (d === selected_source || d === selected_target) ? 20 : 10; })
+		   .attr("r", function(d) { return (d === searchUI.selected_source || d === searchUI.selected_target) ? 20 : 10; })
 		   .style("fill", function(d) {return d.color;})
 		   .on('click', forceNodeClick)
 		   .on('mouseover', forceNodeMouseOver)
