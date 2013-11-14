@@ -737,7 +737,7 @@
 	}
 
 	function forceLinkClick(link) {		
-		userAction.trackAction('Click link in nodelink view', 'Viz', 'Click force link', d.source.name + '-' + d.target.name, 'Click force link',      d.source.name + '-' + d.target.name );   
+//		userAction.trackAction('Click link in nodelink view', 'Viz', 'Click force link', d.source.name + '-' + d.target.name, 'Click force link',      d.source.name + '-' + d.target.name );   
 		
 		chosenLink.updateChosenLink(link);	
 	}
