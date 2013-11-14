@@ -738,7 +738,8 @@
 
 	function forceLinkClick(d) {		
 		userAction.trackAction('Click link in nodelink view', 'Viz', 'Click force link', d.source.name + '-' + d.target.name, 'Click force link',      d.source.name + '-' + d.target.name );   
-		displayConnectionInfo(d);
+		
+		chosenLink.updateChosenLink(link);	
 	}
 
 	function forceLinkMouseOver(link) {
