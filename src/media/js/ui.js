@@ -459,7 +459,8 @@
 		if (sui.selected_source != undefined) {
 			sui.selected_source.fixed = false;
 			svg_circular.selectAll('.circular.node').classed('nofocus', false);
-			clearSearchResult();
+			svg_circular.selectAll('.circular.text').classed('visible', false);
+			svg_circular.selectAll('.circular.link').classed('hidden', false);
 		}
 		var input_key = this.value;
 		var input_node = activeDataset.maps.node_map[input_key];
@@ -486,7 +487,8 @@
 		if (sui.selected_target != undefined) {
 			sui.selected_target.fixed = false;
 			svg_circular.selectAll('.circular.node').classed('nofocus', false);
-			clearSearchResult();
+			svg_circular.selectAll('.circular.text').classed('visible', false);
+			svg_circular.selectAll('.circular.link').classed('hidden', false);
 		}
 		var input_key = this.value;
 		var input_node = activeDataset.maps.node_map[input_key];
