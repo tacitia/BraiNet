@@ -458,7 +458,7 @@
 		// If there exists an old selected_source, reset its status
 		if (sui.selected_source != undefined) {
 			sui.selected_source.fixed = false;
-			highlightNode(sui.selected_source, "focus", false, true, svgRenderer.svg_circular);
+			svg_circular.selectAll('.circular.node').classed('nofocus', false);
 			clearSearchResult();
 		}
 		var input_key = this.value;
@@ -473,7 +473,6 @@
 			.classed('visible', function(d) {
 				return d === sui.selected_source || d === sui.selected_target;
 			});
-	//    highlightNode(input_node, "focus", true, true, svg_circular);
 		selectStructure(input_node.name, false);
 		userAction.trackAction('Set search source', 'UI', 'Set source', sui.selected_source.name, 'Set source', sui.selected_source.name);
 		
@@ -486,7 +485,7 @@
 		userAction.trackAction('Set search target');
 		if (sui.selected_target != undefined) {
 			sui.selected_target.fixed = false;
-			highlightNode(sui.selected_target, "focus", false, true, svg_circular);
+			svg_circular.selectAll('.circular.node').classed('nofocus', false);
 			clearSearchResult();
 		}
 		var input_key = this.value;
