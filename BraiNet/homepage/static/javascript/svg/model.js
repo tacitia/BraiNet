@@ -18,7 +18,7 @@ svg.model = (function($, undefined) {
 		keyToInNeighbors: null,
 		keyToOutNeighbors: null	
 	};
-
+	
 	var getDataset = function(userId, datasetId) {
 		if (datasetId == states.activeDatasetId) { 
 			amplify.publish('datasetReady', data);
@@ -291,7 +291,8 @@ svg.model = (function($, undefined) {
 	};
 
 	return {
-		getDataset: getDataset
+		getDataset: getDataset,
+		maps: function() { return maps; }
 	};
 
 }(jQuery));
