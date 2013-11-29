@@ -47,6 +47,7 @@
 		searchUI.selected_source = null;
 		searchUI.selected_target = null;
 		activeTitle = null;
+		allActiveStructs = [];
 	};
 	
 	websiteTour = function(){
