@@ -489,7 +489,7 @@
 			svg_circular.selectAll('.circular.node').classed('nofocus', false);
 			svg_circular.selectAll('.circular.text').classed('visible', true);
 			svg_circular.selectAll('.circular.link').classed('hidden', false);
-			$('#circ-node-' + sui.selected_source.key).qtip('hide');
+			$('#circ-node-' + sui.selected_target.key).qtip('hide');
 		}
 		var input_key = this.value;
 		if (input_key === '') { 

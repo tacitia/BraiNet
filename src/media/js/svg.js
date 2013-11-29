@@ -786,7 +786,7 @@
 					my: 'top left',
 					at: 'bottom right',
 					target: $('#circ-node-' + node.key),
-					adjust: { x: 10, y: 10 },
+					adjust: { x: -100, y: -50 },
 	//				viewport: $(window)
 				},
 			});
