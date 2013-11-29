@@ -35,16 +35,14 @@
 	};
 	
 	var reset = function() {
-		console.log('0')
-		svgData.init(activeDataset.key);
 		console.log('1')
 		svgRenderer.renderData(activeDataset.key);
 		console.log('2')
 		$("#anatomy-map path").qtip('toggle', false);
 		while (emphStructs.length > 0) {
-			emphStructure(emphStructs[0], false);
+			emphStructure(emphStructs[0], true);
 		}
-		
+		console.log(3);
 		state.currMode = customEnum.mode.exploration;
 		searchUI.selected_source = null;
 		searchUI.selected_target = null;
