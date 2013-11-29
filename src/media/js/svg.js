@@ -787,8 +787,8 @@
 			.data(svgData.circNodes, function(d) {return d.key;})
 			.enter().append('circle')
 			.attr('id', function(d) { return 'circ-mark-' + d.key; })
-			.attr('cx', function(d) { return d.circ.x; )
-			.attr('cy', function(d) { return d.circ.y; )
+			.attr('cx', function(d) { return d.circ.x; })
+			.attr('cy', function(d) { return d.circ.y; })
 			.attr('fill', 'none')
 			.attr('stroke', 'none');
 		
