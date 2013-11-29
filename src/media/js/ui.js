@@ -463,6 +463,7 @@
 			svg_circular.selectAll('.circular.link').classed('hidden', false);
 		}
 		var input_key = this.value;
+		console.log(input_key);
 		var input_node = activeDataset.maps.node_map[input_key];
 		sui.selected_source = input_node;
 		svgData.displayInvisibleNode(input_node);
