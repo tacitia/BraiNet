@@ -1138,6 +1138,9 @@
 	}
 
 	function updateCircularNodes() {
+	
+		console.log('updateCircularNodes');
+	
 		var nodes = svgData.circNodes;
 		svg_circular.selectAll(".circular.node")
 			.data(nodes, function(d) {return d.key;})
