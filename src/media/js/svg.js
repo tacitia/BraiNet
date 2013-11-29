@@ -819,7 +819,11 @@
 			.data(svgData.circNodes, function(d) {return d.key;})
 			.enter().append('circle')
 			.attr('id', function(d) { return 'circ-mark-' + d.key; })
-			.attr('transform', function(d) { return 'translate(' + d.circ.x + ',' + d.circ.y + ')'; })
+			.attr('transform', function(d) { 
+				console.log('enter');
+				console.log('translate(' + d.circ.x + ',' + d.circ.y + ')');
+				return 'translate(' + d.circ.x + ',' + d.circ.y + ')'; 
+			})
 			.attr('cx', 5)
 			.attr('cy', 5)
 //			.attr('cx', function(d) { return d.circ.x; })
@@ -1146,7 +1150,11 @@
 			.data(nodes, function(d) {return d.key;})
 			.transition()
 			.duration(1000)
-			.attr('transform', function(d) { return 'translate(' + d.circ.x + ',' + d.circ.y + ')'; });
+			.attr('transform', function(d) { 
+				console.log('update');
+				console.log('translate(' + d.circ.x + ',' + d.circ.y + ')');
+				return 'translate(' + d.circ.x + ',' + d.circ.y + ')'; }
+			);
 
 /*		svg_circular.selectAll(".circular.text")
 			.data(nodes, function(d) {return d.key;})
