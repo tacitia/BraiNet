@@ -783,10 +783,10 @@
 					classes: 'qtip-bootstrap'
 				},
 				position: {
-					my: 'top left',
-					at: 'bottom right',
+					my: 'bottom right',
+					at: 'top left',
 					target: $('#circ-node-' + node.key),
-					adjust: { x: -100, y: -50 },
+//					adjust: { x: -100, y: -50 },
 	//				viewport: $(window)
 				},
 			});
