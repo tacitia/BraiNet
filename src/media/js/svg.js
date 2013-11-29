@@ -780,8 +780,9 @@
 		for (var i = 0; i < svgData.circNodes.length; ++i) {
 			var node = svgData.circNodes[i];
 			$('#circ-node-' + node.key).qtip({
-			style: {
-				classes: 'qtip-bootstrap'
+				style: {
+					classes: 'qtip-bootstrap'
+				}
 			});
 		}
 
