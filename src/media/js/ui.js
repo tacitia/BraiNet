@@ -509,6 +509,7 @@
 		selectStructure(input_node.name, false);			
 		userAction.trackAction(null, 'UI', 'Set target', sui.selected_target.name, 'Set target', sui.selected_target.name);
 	};
+	
 
 	sui.clearSearchResult = function() {
 
