@@ -724,10 +724,8 @@
 			.classed('hidden', function(d) {
 				return d.key !== link.key;
 			}); 	
-		svg.selectAll('.circular.text')
-			.classed('visible', function(d) {
-				return d.key === link.source.key || d.key === link.target.key;
-			});
+		$('#circ-node-' + link.source.key).qtip('show');
+		$('#circ-node-' + link.target.key).qtip('show');
 	}
 
 	function linkMouseOut(link, svg) {
@@ -735,7 +733,8 @@
 		if (state.currMode === customEnum.mode.search || state.currMode === customEnum.mode.fixation) { return; }
 		svg.selectAll('.circular.node').classed('nofocus', false);
 		svg.selectAll('.circular.link').classed('hidden', false);
-		updateCircularTexts();
+		$('#circ-node-' + link.source.key).qtip('hide');
+		$('#circ-node-' + link.target.key).qtip('hide');
 	}
 
 	function forceNodeClick(d) {
@@ -821,28 +820,11 @@
 			.enter().append('circle')
 			.attr('id', function(d) { return 'circ-mark-' + d.key; })
 			.attr('class', 'circular mark')
-/*			.attr('transform', function(d) { 
-				console.log('enter');
-				console.log('translate(' + d.circ.x + ',' + d.circ.y + ')');
-				return 'translate(' + d.circ.x + ',' + d.circ.y + ')'; 
-			}) */
-//			.attr('cx', 5)
-//			.attr('cy', 5)
-			.attr('cx', function(d) { console.log(d.name); console.log(d.circ.x); return d.circ.x; })
+			.attr('cx', function(d) { return d.circ.x; })
 			.attr('cy', function(d) { return d.circ.y; })
 			.attr('r', 1)
 			.attr('fill', 'none')
 			.attr('stroke', 'none');
-
-/*		svg_circular.selectAll(".circular.text")
-		   .data(svgData.circNodes, function(d) {return d.key;})
-		   .enter()       
-		   .append("svg:text")
-		   .attr('x', function(d) {return d.circ.x;})
-		   .attr('y', function(d) {return d.circ.y;})
-		   .attr('class', 'circular text')
-		   .attr('id', function(d) { return 'text-' + d.key; })
-		   .text(function(d) {return d.name}); */
 	}
 	
 	function appendCell(row) {
@@ -1152,20 +1134,12 @@
 			.attr("d", arcs);
 	//        .attrTween("d", arcTween);
 	
-		console.log('???');
-		console.log(nodes);
-	
 		svg_circular.selectAll('.circular.mark')
 			.data(nodes, function(d) {return d.key;})
 			.transition()
 			.duration(1000)
-			.attr('cx', function(d) { console.log(d.name); console.log(d.circ.x); return d.circ.x; })
+			.attr('cx', function(d) { return d.circ.x; })
 			.attr('cy', function(d) { return d.circ.y; });
-/*			.attr('transform', function(d) { 
-				console.log('update');
-				console.log('translate(' + d.circ.x + ',' + d.circ.y + ')');
-				return 'translate(' + d.circ.x + ',' + d.circ.y + ')'; }
-			); */
 
 /*		svg_circular.selectAll(".circular.text")
 			.data(nodes, function(d) {return d.key;})
