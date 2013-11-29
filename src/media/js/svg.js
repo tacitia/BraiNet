@@ -28,9 +28,12 @@
 		sd.circLinks = [];
 		sd.forceNodes = [];
 		sd.forceLinks = [];
+		console.log('1.1')
 		initActiveNodes(datasetMaps);
+		console.log('1.2')
 		initActiveLinks(datasetMaps.link_map);
 		initActiveMatrix();
+		console.log('1.3')
 		computeCircularNodesParameters();
 	};
 

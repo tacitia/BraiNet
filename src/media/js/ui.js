@@ -35,8 +35,11 @@
 	};
 	
 	var reset = function() {
+		console.log('0')
 		svgData.init(activeDataset.key);
+		console.log('1')
 		svgRenderer.renderData(activeDataset.key);
+		console.log('2')
 		$("#anatomy-map path").qtip('toggle', false);
 		while (emphStructs.length > 0) {
 			emphStructure(emphStructs[0], false);
@@ -482,7 +485,7 @@
 			svg_circular.selectAll('.circular.text').classed('visible', true);
 			svg_circular.selectAll('.circular.link').classed('hidden', false);
 			$('#circ-node-' + sui.selected_source.key).qtip('hide');
-			emphStructure(sui.selected_source.name, false);
+			emphStructure($('#circ-node-' + sui.selected_source.name), false);
 		}
 		var input_key = this.value;
 		if (input_key === '') { 
@@ -512,7 +515,7 @@
 			svg_circular.selectAll('.circular.text').classed('visible', true);
 			svg_circular.selectAll('.circular.link').classed('hidden', false);
 			$('#circ-node-' + sui.selected_target.key).qtip('hide');
-			emphStructure(sui.selected_target.name, false);
+			emphStructure($('#circ-node-' + sui.selected_target.name), false);
 		}
 		var input_key = this.value;
 		if (input_key === '') { 
