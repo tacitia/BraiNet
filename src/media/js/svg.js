@@ -317,6 +317,10 @@
 			}
 		}
 
+		console.log(d);
+		console.log(nodes);
+		console.log(pos);
+
 		var pos = $.inArray(d, nodes);
 		nodes[pos].isActive = false;
 	
@@ -553,10 +557,13 @@
 			.classed('hidden', function(d) {
 				return ($.inArray(d, svgData.forceLinks) < 0);
 			});
-		svg_circular.selectAll('.circular.text')
+		for (var i = 0; i < svgData.forceNodes.length; ++i) {
+			$('#circ-node-' + svgData.forceNodes[i].key).qtip('show');
+		}
+/*		svg_circular.selectAll('.circular.text')
 			.classed('visible', function(d) {
 				return ($.inArray(d, svgData.forceNodes) >= 0);
-			});    
+			});   */ 
 	};
 	sr.dimNonSearchResults = dimNonSearchResults;
 

@@ -450,18 +450,24 @@
 		svgData.populateForceElements(paths);
 		svgRenderer.updateForceLayout();
 		svgRenderer.dimNonSearchResults();
+		
 	};
 
 	sui.clearButtonClick = function() {
+		var svg_circular = svgRenderer.svg_circular;
 		//if (enable_piwik) {
 		//	piwikTracker.trackPageView('Click clear button');
 		//}
-		userAction.trackAction('Click clear button');
+//		userAction.trackAction('Click clear button');
 		state.currMode = customEnum.mode.exploration;
 		svg_circular.selectAll('.circular.node').classed('nofocus', false);
 		svg_circular.selectAll('.circular.link').classed('hidden', false);
-		updateCircularTexts();
+//		updateCircularTexts();
+		for (var i = 0; i < svgData.forceNodes.length; ++i) {
+			$('#circ-node-' + svgData.forceNodes[i].key).qtip('hide');
+		}
 	};
+	
 
 	/* TODO: Also need to handle the case that the input is the parent of some of the 
 	 * active nodes
@@ -476,6 +482,7 @@
 			svg_circular.selectAll('.circular.text').classed('visible', true);
 			svg_circular.selectAll('.circular.link').classed('hidden', false);
 			$('#circ-node-' + sui.selected_source.key).qtip('hide');
+			emphStructure(sui.selected_source.name, false);
 		}
 		var input_key = this.value;
 		if (input_key === '') { 
@@ -505,6 +512,7 @@
 			svg_circular.selectAll('.circular.text').classed('visible', true);
 			svg_circular.selectAll('.circular.link').classed('hidden', false);
 			$('#circ-node-' + sui.selected_target.key).qtip('hide');
+			emphStructure(sui.selected_target.name, false);
 		}
 		var input_key = this.value;
 		if (input_key === '') { 
