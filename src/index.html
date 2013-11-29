@@ -70,6 +70,44 @@
 		  	</div>		  
 		</div>
 
+        <!--SEARCH-->
+        <div id="search" class="util-section card">
+          <h3>Indirect Connection Search</h3>
+          <div id="search-settings">
+          <table>
+            <tr>
+              <td class="tab-column-1">Source</td>
+              <td class="tab-column-2">
+                <select data-placeholder="Choose a brain area" class="chzn-select" style="width:250px;" id="sourceSelect">
+                  <option></option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td class="tab-column-1">Target</td>
+              <td class="tab-column-2">
+                <select data-placeholder="Choose a brain area" class="chzn-select" style="width:250px;" id="targetSelect">
+                  <option></option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td class="tab-column-1">Number of intermediate connections</td>
+              <td class="tab-column-2">
+                <input id="maxHop" type="range" min=0 max=3 value=1 step=1>
+                <span id="maxHopValue">1</span>
+              </td>
+            </tr>
+          </table>
+          </br>
+          <div>
+            <div class="lf-col-left"><button id="bt-search" class="btn">Show connectivity for selected regions</button></div>
+            <div class="lf-col-right"><button id="bt-clear" class="btn btn-warning">Clear</button></div>
+            <div class="clear"></div>
+          </div>
+          </div>
+        </div><!--END SEARCH-->
+
         <div id="info" class="util-section card">
 	 	  <h3>Add Brain regions and connections</h3>
             <div id="add-node-div">
@@ -156,44 +194,6 @@
           </div>          
         </div><!--END LEGEND-->
         <!--OPTIONS-->
-
-        <!--SEARCH-->
-        <div id="search" class="util-section card">
-          <h3>Indirect Connection Search</h3>
-          <div id="search-settings">
-          <table>
-            <tr>
-              <td class="tab-column-1">Source</td>
-              <td class="tab-column-2">
-                <select data-placeholder="Choose a brain area" class="chzn-select" style="width:250px;" id="sourceSelect">
-                  <option></option>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td class="tab-column-1">Target</td>
-              <td class="tab-column-2">
-                <select data-placeholder="Choose a brain area" class="chzn-select" style="width:250px;" id="targetSelect">
-                  <option></option>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td class="tab-column-1">Number of intermediate connections</td>
-              <td class="tab-column-2">
-                <input id="maxHop" type="range" min=0 max=3 value=1 step=1>
-                <span id="maxHopValue">1</span>
-              </td>
-            </tr>
-          </table>
-          </br>
-          <div>
-            <div class="lf-col-left"><button id="bt-search" class="btn">Show connectivity for selected regions</button></div>
-            <div class="lf-col-right"><button id="bt-clear" class="btn btn-warning">Clear</button></div>
-            <div class="clear"></div>
-          </div>
-          </div>
-        </div><!--END SEARCH-->
 
         <!--MANAGE DATA-->
         <div id="manage-data" class="util-section card">

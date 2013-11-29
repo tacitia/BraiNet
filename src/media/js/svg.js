@@ -514,7 +514,7 @@
 		enterCircularLinks();
 		enterCircularNodes();
 		updateCircularTexts();
-		enterMatrixElements();
+		enterMatrixElements();s
 	}
 
 	function clearCanvases() {
@@ -769,6 +769,7 @@
 			.enter().append("svg:path")
 			.style("fill", function(d) {return d.color;})
 //			.style("stroke", 'gray')
+			.attr('title', function(d) { return d.name; })
 			.attr("d", arcs)
 			.attr("class", "circular node")
 			.attr("id", function(d) { return "circ-node-" + d.key; })
@@ -776,7 +777,13 @@
 			.on('mouseover', function(d) { nodeMouseOver(d, svg_circular); })
 			.on('mouseout', function(d) { nodeMouseOut(d, svg_circular); });
 
-		svg_circular.selectAll(".circular.text")
+		$('.circular.node').qtip({
+			style: {
+				classes: 'qtip-bootstrap'
+			}
+		});
+
+/*		svg_circular.selectAll(".circular.text")
 		   .data(svgData.circNodes, function(d) {return d.key;})
 		   .enter()       
 		   .append("svg:text")
@@ -784,7 +791,7 @@
 		   .attr('y', function(d) {return d.circ.y;})
 		   .attr('class', 'circular text')
 		   .attr('id', function(d) { return 'text-' + d.key; })
-		   .text(function(d) {return d.name});
+		   .text(function(d) {return d.name}); */
 	}
 	
 	function appendCell(row) {

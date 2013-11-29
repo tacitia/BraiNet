@@ -452,14 +452,14 @@
 	 * active nodes
 	 */
 	sui.sourceSearchInput = function() {
-	
+		$('.circular.node').qtip('show');
 		var svg_circular = svgRenderer.svg_circular;
 	
 		// If there exists an old selected_source, reset its status
 		if (sui.selected_source != undefined) {
 			sui.selected_source.fixed = false;
 			svg_circular.selectAll('.circular.node').classed('nofocus', false);
-			svg_circular.selectAll('.circular.text').classed('visible', false);
+			svg_circular.selectAll('.circular.text').classed('visible', true);
 			svg_circular.selectAll('.circular.link').classed('hidden', false);
 		}
 		var input_key = this.value;
@@ -481,14 +481,13 @@
 	};
 
 	sui.targetSearchInput = function() {
-
 		var svg_circular = svgRenderer.svg_circular;
 
 		userAction.trackAction('Set search target');
 		if (sui.selected_target != undefined) {
 			sui.selected_target.fixed = false;
 			svg_circular.selectAll('.circular.node').classed('nofocus', false);
-			svg_circular.selectAll('.circular.text').classed('visible', false);
+			svg_circular.selectAll('.circular.text').classed('visible', true);
 			svg_circular.selectAll('.circular.link').classed('hidden', false);
 		}
 		var input_key = this.value;
