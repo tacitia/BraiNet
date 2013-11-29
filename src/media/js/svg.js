@@ -1146,6 +1146,9 @@
 			.attr("d", arcs);
 	//        .attrTween("d", arcTween);
 	
+		console.log('???');
+		console.log(nodes);
+	
 		svg_circular.selectAll('circular.mark')
 			.data(nodes, function(d) {return d.key;})
 			.transition()
