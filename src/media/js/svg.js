@@ -819,15 +819,16 @@
 			.data(svgData.circNodes, function(d) {return d.key;})
 			.enter().append('circle')
 			.attr('id', function(d) { return 'circ-mark-' + d.key; })
-			.attr('transform', function(d) { 
+/*			.attr('transform', function(d) { 
 				console.log('enter');
 				console.log('translate(' + d.circ.x + ',' + d.circ.y + ')');
 				return 'translate(' + d.circ.x + ',' + d.circ.y + ')'; 
-			})
-			.attr('cx', 5)
-			.attr('cy', 5)
-//			.attr('cx', function(d) { return d.circ.x; })
-//			.attr('cy', function(d) { return d.circ.y; })
+			}) */
+//			.attr('cx', 5)
+//			.attr('cy', 5)
+			.attr('cx', function(d) { return d.circ.x; })
+			.attr('cy', function(d) { return d.circ.y; })
+			.attr('r', 1)
 			.attr('fill', 'none')
 			.attr('stroke', 'none');
 
@@ -1152,7 +1153,7 @@
 		console.log('???');
 		console.log(nodes);
 	
-		svg_circular.selectAll('circular.mark')
+/*		svg_circular.selectAll('circular.mark')
 			.data(nodes, function(d) {return d.key;})
 			.transition()
 			.duration(1000)
@@ -1160,7 +1161,7 @@
 				console.log('update');
 				console.log('translate(' + d.circ.x + ',' + d.circ.y + ')');
 				return 'translate(' + d.circ.x + ',' + d.circ.y + ')'; }
-			);
+			); */
 
 /*		svg_circular.selectAll(".circular.text")
 			.data(nodes, function(d) {return d.key;})
