@@ -35,7 +35,7 @@
 	};
 	
 	var reset = function() {
-		svgData.init();
+		svgData.init(activeDataset.key);
 		svgRenderer.renderData(activeDataset.key);
 		$("#anatomy-map path").qtip('toggle', false);
 		while (emphStructs.length > 0) {
