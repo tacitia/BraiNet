@@ -776,12 +776,14 @@
 			.on("click", nodeClick)
 			.on('mouseover', function(d) { nodeMouseOver(d, svg_circular); })
 			.on('mouseout', function(d) { nodeMouseOut(d, svg_circular); });
-
-		$('.circular.node').qtip({
+		
+		for (var i = 0; i < svgData.circNodes.length; ++i) {
+			var node = svgData.circNodes[i];
+			$('#circ-node-' + node.key).qtip({
 			style: {
 				classes: 'qtip-bootstrap'
-			}
-		});
+			});
+		}
 
 /*		svg_circular.selectAll(".circular.text")
 		   .data(svgData.circNodes, function(d) {return d.key;})

@@ -452,7 +452,6 @@
 	 * active nodes
 	 */
 	sui.sourceSearchInput = function() {
-		$('.circular.node').qtip('show');
 		var svg_circular = svgRenderer.svg_circular;
 	
 		// If there exists an old selected_source, reset its status
@@ -461,6 +460,7 @@
 			svg_circular.selectAll('.circular.node').classed('nofocus', false);
 			svg_circular.selectAll('.circular.text').classed('visible', true);
 			svg_circular.selectAll('.circular.link').classed('hidden', false);
+			$('#circ-node-' + selected_source.key).qtip('hide');
 		}
 		var input_key = this.value;
 		if (input_key === '') { return; }
@@ -471,10 +471,11 @@
 			.classed('nofocus', function(d) {
 				return d !== sui.selected_source && d !== sui.selected_target;
 			});
-		svg_circular.selectAll('.circular.text')
+/*		svg_circular.selectAll('.circular.text')
 			.classed('visible', function(d) {
 				return d === sui.selected_source || d === sui.selected_target;
-			});
+			}); */
+		$('#circ-node-' + input_key).qtip('show');
 		selectStructure(input_node.name, false);
 		userAction.trackAction('Set search source', 'UI', 'Set source', sui.selected_source.name, 'Set source', sui.selected_source.name);
 		
@@ -509,11 +510,6 @@
 			});
 		selectStructure(input_node.name, false);			
 		userAction.trackAction(null, 'UI', 'Set target', sui.selected_target.name, 'Set target', sui.selected_target.name);
-	};
-	
-
-	sui.clearSearchResult = function() {
-
 	};
 
 	sui.setMaxHop = function() {
