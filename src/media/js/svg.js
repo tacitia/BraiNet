@@ -819,6 +819,7 @@
 			.data(svgData.circNodes, function(d) {return d.key;})
 			.enter().append('circle')
 			.attr('id', function(d) { return 'circ-mark-' + d.key; })
+			.attr('class', 'circular mark')
 /*			.attr('transform', function(d) { 
 				console.log('enter');
 				console.log('translate(' + d.circ.x + ',' + d.circ.y + ')');
