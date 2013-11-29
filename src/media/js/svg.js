@@ -519,6 +519,22 @@
 		enterCircularNodes();
 		updateCircularTexts();
 		enterMatrixElements();
+
+		for (var i = 0; i < svgData.circNodes.length; ++i) {
+			var node = svgData.circNodes[i];
+			$('#circ-node-' + node.key).qtip({
+				style: {
+					classes: 'qtip-bootstrap'
+				},
+				position: {
+					my: 'bottom right',
+					at: 'top left',
+					target: $('#circ-mark-' + node.key),
+//					adjust: { x: -100, y: -50 },
+	//				viewport: $(window)
+				},
+			});
+		}
 	}
 
 	function clearCanvases() {
@@ -544,6 +560,22 @@
 		updateCircularLinks();
 		updateCircularNodes();
 		updateCircularTexts();
+
+		for (var i = 0; i < svgData.circNodes.length; ++i) {
+			var node = svgData.circNodes[i];
+			$('#circ-node-' + node.key).qtip({
+				style: {
+					classes: 'qtip-bootstrap'
+				},
+				position: {
+					my: 'bottom right',
+					at: 'top left',
+					target: $('#circ-mark-' + node.key),
+//					adjust: { x: -100, y: -50 },
+	//				viewport: $(window)
+				},
+			});
+		}
 	};
 	
 	sr.updateCircularLayout = updateCircularLayout;
@@ -794,22 +826,6 @@
 //			.attr('cy', function(d) { return d.circ.y; })
 			.attr('fill', 'none')
 			.attr('stroke', 'none');
-		
-		for (var i = 0; i < svgData.circNodes.length; ++i) {
-			var node = svgData.circNodes[i];
-			$('#circ-node-' + node.key).qtip({
-				style: {
-					classes: 'qtip-bootstrap'
-				},
-				position: {
-					my: 'bottom right',
-					at: 'top left',
-					target: $('#circ-mark-' + node.key),
-//					adjust: { x: -100, y: -50 },
-	//				viewport: $(window)
-				},
-			});
-		}
 
 /*		svg_circular.selectAll(".circular.text")
 		   .data(svgData.circNodes, function(d) {return d.key;})
@@ -1129,7 +1145,7 @@
 		svg_circular.selectAll('circular.mark')
 			.data(nodes, function(d) {return d.key;})
 			.transition()
-			.duration(1000)
+			.duration(0)
 			.attr('transform', function(d) { return 'translate(' + d.circ.x + ',' + d.circ.y + ')'; });
 
 /*		svg_circular.selectAll(".circular.text")
