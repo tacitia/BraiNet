@@ -640,8 +640,7 @@
 	// When mousing over, highlight itself and the neighbors
 	function nodeMouseOver(node, svg) {
 		if (state.currMode === customEnum.mode.search || state.currMode === customEnum.mode.fixation) { return; }
-  		var maps = activeDataset.maps;
-  		
+  		var maps = activeDataset.maps;	
   		sr.highlightNode(node, svg, maps, false);	
 	}
 	
@@ -1254,6 +1253,7 @@
 			svg.selectAll('.circular.link').classed('inLink', false);
 			svg.selectAll('.circular.link').classed('outLink', false);
 			svg.selectAll('.circular.link').classed('biLink', false);
+			$('.circular.node').qtip('hide');
 			return;
 		}
 		svg.selectAll('.circular.link')
@@ -1288,7 +1288,7 @@
 			.classed('highlight', function(d) {
 				return d.key === node.key;
 			});  
-		svg.selectAll('.circular.text')
+/*		svg.selectAll('.circular.text')
 			.classed('visible', function(d) {
 				var dKey = d.key;
 				var nodeKey = node.key;
@@ -1296,7 +1296,17 @@
 				var outNeighbors = maps.node_out_neighbor_map[nodeKey];
 				return dKey === nodeKey || ($.inArray(dKey, inNeighbors) >= 0) ||
 					($.inArray(dKey, outNeighbors) >= 0);
-			});		
+			});		*/
+		for (var i = 0; i < svgData.circNodes.length; ++i) {
+			var n = svgData.circNodes[i];
+			var nodeKey = node.key;
+			var inNeighbors = maps.node_in_neighbor_map[nodeKey];
+			var outNeighbors = maps.node_out_neighbor_map[nodeKey];
+			if (n.key === nodeKey || ($.inArray(n.key, inNeighbors) >= 0) ||
+					($.inArray(n.key, outNeighbors) >= 0)) {
+				isCancel ? $('#circ-node-' + n.key).qtip('hide') : $('#circ-node-' + n.key).qtip('show');
+			}
+		}
 	}
 
 	function expandNode() {

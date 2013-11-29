@@ -117,7 +117,7 @@ function download_svg(url) {
 }
 
 function highlightStructure(structName) {
-	var structSelector = $("path[oldtitle='" + structName + "']");
+	var structSelector = $("#anatomy-map path[oldtitle='" + structName + "']");
 	if (structSelector.length > 0) {
 		allActiveStructs.push(structName);
 		structSelector.attr('isFixed', true);
@@ -130,7 +130,7 @@ function highlightStructure(structName) {
 	var descs = svgData.findAllDesc(structNode);
 	for (var i in descs) {
 		var desc = descs[i];
-		var descSelector = $("path[oldtitle='" + desc.name + "']");
+		var descSelector = $("#anatomy-map path[oldtitle='" + desc.name + "']");
 		if (descSelector.length > 0) {
 			allActiveStructs.push(desc.name);
 			descSelector.attr('isFixed', true);
@@ -143,7 +143,7 @@ function highlightStructure(structName) {
 		var parent = structNode.parent;
 		while (parent !== null) {
 			var parentNode = maps.node_map[parent];
-			var parentSelector = $("path[oldtitle='" + parentNode.name + "']");
+			var parentSelector = $("#anatomy-map path[oldtitle='" + parentNode.name + "']");
 			if (parentSelector.length > 0) {
 				console.log(parentSelector);
 				emphStructure(parentSelector, false);
@@ -215,11 +215,11 @@ function selectStructure(title, isCancel) {
 	activeTitle = title;
 	if (isCancel) {
 		emphStructure($(selPath), true);
-		var selPath = "path[oldtitle='" + title + "']";
+		var selPath = "#anatomy-map path[oldtitle='" + title + "']";
 		$("#anatomy-map path").qtip('toggle', false);
 		console.log(allActiveStructs);
 		for (i in allActiveStructs) {
-			var selector = $("path[oldtitle='" + allActiveStructs[i] + "']");
+			var selector = $("#anatomy-map path[oldtitle='" + allActiveStructs[i] + "']");
 			emphStructure(selector, true);
 		}
 		activeTitle = null;

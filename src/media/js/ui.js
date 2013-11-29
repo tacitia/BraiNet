@@ -442,7 +442,7 @@
 		//	piwikTracker.trackPageView('Click clear button');
 		//}
 		userAction.trackAction('Click clear button');
-		current_mode = mode.exploration;
+		state.currMode = customEnum.mode.exploration;
 		svg_circular.selectAll('.circular.node').classed('nofocus', false);
 		svg_circular.selectAll('.circular.link').classed('hidden', false);
 		updateCircularTexts();
@@ -463,7 +463,10 @@
 			$('#circ-node-' + sui.selected_source.key).qtip('hide');
 		}
 		var input_key = this.value;
-		if (input_key === '') { return; }
+		if (input_key === '') { 
+			state.currMode = customEnum.mode.exploration;
+			return; 
+		}
 		var input_node = activeDataset.maps.node_map[input_key];
 		sui.selected_source = input_node;
 		svgData.displayInvisibleNode(input_node);
@@ -471,10 +474,6 @@
 			.classed('nofocus', function(d) {
 				return d !== sui.selected_source && d !== sui.selected_target;
 			});
-/*		svg_circular.selectAll('.circular.text')
-			.classed('visible', function(d) {
-				return d === sui.selected_source || d === sui.selected_target;
-			}); */
 		$('#circ-node-' + input_key).qtip('show');
 		selectStructure(input_node.name, false);
 		userAction.trackAction('Set search source', 'UI', 'Set source', sui.selected_source.name, 'Set source', sui.selected_source.name);
@@ -490,9 +489,13 @@
 			svg_circular.selectAll('.circular.node').classed('nofocus', false);
 			svg_circular.selectAll('.circular.text').classed('visible', true);
 			svg_circular.selectAll('.circular.link').classed('hidden', false);
+			$('#circ-node-' + sui.selected_source.key).qtip('hide');
 		}
 		var input_key = this.value;
-		if (input_key === '') { return; }
+		if (input_key === '') { 
+			state.currMode = customEnum.mode.exploration;
+			return; 
+		}
 		var input_node = activeDataset.maps.node_map[input_key];
 		sui.selected_target = input_node;
 		svgData.displayInvisibleNode(input_node);
@@ -504,10 +507,7 @@
 			.classed('nofocus', function(d) {
 				return d !== sui.selected_source && d !== sui.selected_target;
 			});
-		svg_circular.selectAll('.circular.text')
-			.classed('visible', function(d) {
-				return d === sui.selected_source || d === sui.selected_target;
-			});
+		$('#circ-node-' + input_key).qtip('show');
 		selectStructure(input_node.name, false);			
 		userAction.trackAction(null, 'UI', 'Set target', sui.selected_target.name, 'Set target', sui.selected_target.name);
 	};
