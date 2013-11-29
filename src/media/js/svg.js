@@ -782,6 +782,15 @@
 			.on("click", nodeClick)
 			.on('mouseover', function(d) { nodeMouseOver(d, svg_circular); })
 			.on('mouseout', function(d) { nodeMouseOut(d, svg_circular); });
+
+		svg_circular.selectAll('.circular.mark')
+			.data(svgData.circNodes, function(d) {return d.key;})
+			.enter().append('circle')
+			.attr('id', function(d) { return 'circ-mark-' + d.key; })
+			.attr('cx', function(d) { return d.circ.x; )
+			.attr('cy', function(d) { return d.circ.y; )
+			.attr('fill', 'none')
+			.attr('stroke', 'none');
 		
 		for (var i = 0; i < svgData.circNodes.length; ++i) {
 			var node = svgData.circNodes[i];
@@ -792,7 +801,7 @@
 				position: {
 					my: 'bottom right',
 					at: 'top left',
-					target: $('#circ-node-' + node.key),
+					target: $('#circ-mark-' + node.key),
 //					adjust: { x: -100, y: -50 },
 	//				viewport: $(window)
 				},
@@ -1090,9 +1099,13 @@
 		   .data(nodes, function(d) {return d.key;})
 		   .exit().remove();
 
-		svg_circular.selectAll('.circular.text')
+		svg_circular.selectAll('.circular.mark')
 		   .data(nodes, function(d) {return d.key;})
 		   .exit().remove();
+
+/*		svg_circular.selectAll('.circular.text')
+		   .data(nodes, function(d) {return d.key;})
+		   .exit().remove(); */
 	}
 
 	function exitCircularLinks() {
