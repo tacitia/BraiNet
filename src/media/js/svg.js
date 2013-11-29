@@ -781,7 +781,7 @@
 			$('#circ-node-' + node.key).qtip({
 				style: {
 					classes: 'qtip-bootstrap'
-				}
+				},
 				position: {
 					my: 'top left',
 					at: 'bottom right',
