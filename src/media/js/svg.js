@@ -1129,7 +1129,8 @@
 		svg_circular.selectAll('circular.mark')
 			.data(nodes, function(d) {return d.key;})
 			.transition()
-			.duration(1000);
+			.duration(1000)
+			.attr('transform', function(d) { return 'translate(' + d.circ.x + ',' + d.circ.y + ')'; });
 
 /*		svg_circular.selectAll(".circular.text")
 			.data(nodes, function(d) {return d.key;})
