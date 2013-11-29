@@ -202,7 +202,7 @@ function emphStructure(target, isCancel) {
 		target.css('fill-opacity', '1');
 		target.css('stroke-width', '0');
 		target.attr('isEmph', false);
-		emphStructs.splice( $.inArray(target, emphStructures), 1 );
+		emphStructs.splice( $.inArray(target, emphStructs), 1 );
 	}
 	else {
 		originColor[title] = target.css('fill');
