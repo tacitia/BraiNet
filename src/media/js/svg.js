@@ -1125,13 +1125,18 @@
 			.duration(1000)
 			.attr("d", arcs);
 	//        .attrTween("d", arcTween);
+	
+		svg_circular.selectAll('circular.mark')
+			.data(nodes, function(d) {return d.key;})
+			.transition()
+			.duration(1000);
 
-		svg_circular.selectAll(".circular.text")
+/*		svg_circular.selectAll(".circular.text")
 			.data(nodes, function(d) {return d.key;})
 			.transition()
 			.duration(1000)
 			.attr('x', function(d) {return d.circ.x;})
-			.attr('y', function(d) {return d.circ.y;});
+			.attr('y', function(d) {return d.circ.y;}); */
 	}
 
 	function updateCircularLinks() {
