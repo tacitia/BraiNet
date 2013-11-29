@@ -102,6 +102,7 @@ function download_svg(url) {
 				state.currMode = customEnum.mode.exploration;
 			}			
 			else {
+				console.log(title);
 				svgData.displayInvisibleNode(node);
 				svgRenderer.highlightNode(node, svg, maps, false);
 				activeTitle = title;
