@@ -1154,7 +1154,7 @@
 		console.log('???');
 		console.log(nodes);
 	
-		svg_circular.selectAll('circular.mark')
+		svg_circular.selectAll('.circular.mark')
 			.data(nodes, function(d) {return d.key;})
 			.transition()
 			.duration(1000)
