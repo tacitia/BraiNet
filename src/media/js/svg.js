@@ -1153,11 +1153,13 @@
 		console.log('???');
 		console.log(nodes);
 	
-/*		svg_circular.selectAll('circular.mark')
+		svg_circular.selectAll('circular.mark')
 			.data(nodes, function(d) {return d.key;})
 			.transition()
 			.duration(1000)
-			.attr('transform', function(d) { 
+			.attr('cx', function(d) { return d.circ.x; })
+			.attr('cy', function(d) { return d.circ.y; });
+/*			.attr('transform', function(d) { 
 				console.log('update');
 				console.log('translate(' + d.circ.x + ',' + d.circ.y + ')');
 				return 'translate(' + d.circ.x + ',' + d.circ.y + ')'; }
