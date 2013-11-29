@@ -99,6 +99,7 @@ function download_svg(url) {
 				$(this).attr('isFixed', false);
 				activeTitle = null;
 				allActiveStructs.remove(title);
+				state.currMode = customEnum.mode.exploration;
 			}			
 			else {
 				svgData.displayInvisibleNode(node);
@@ -192,10 +193,9 @@ function hoverStructure(target, isCancel) {
 	emphStructure(target, isCancel);
 }
 
+// Highlight a single structure
 function emphStructure(target, isCancel) {
 	var title = target.attr('oldtitle');
-	console.log(title);
-	console.log("called " + isCancel);
 
 	if (isCancel) {
 		target.css('fill', originColor[title]);
