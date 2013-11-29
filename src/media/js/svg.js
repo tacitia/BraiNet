@@ -514,7 +514,7 @@
 		enterCircularLinks();
 		enterCircularNodes();
 		updateCircularTexts();
-		enterMatrixElements();s
+		enterMatrixElements();
 	}
 
 	function clearCanvases() {
@@ -782,6 +782,13 @@
 				style: {
 					classes: 'qtip-bootstrap'
 				}
+				position: {
+					my: 'top left',
+					at: 'bottom right',
+					target: $('#circ-node-' + node.key),
+	//				adjust: { x: 5, y: 5 },
+	//				viewport: $(window)
+				},
 			});
 		}
 
