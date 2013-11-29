@@ -39,6 +39,7 @@ var _images = {};
 
 var activeTitle = null;
 var allActiveStructs = [];
+var emphStructs = [];
 var originColor = {};
 
 // A helper function that makes a url out of a path, database id, 
@@ -103,7 +104,7 @@ function download_svg(url) {
 				svgData.displayInvisibleNode(node);
 				svgRenderer.highlightNode(node, svg, maps, false);
 				activeTitle = title;
-				allActiveStructs.push();
+				allActiveStructs.push(title);
 				state.currMode = customEnum.mode.fixation;
 				$(this).attr('isFixed', true);
 			}
@@ -201,6 +202,7 @@ function emphStructure(target, isCancel) {
 		target.css('fill-opacity', '1');
 		target.css('stroke-width', '0');
 		target.attr('isEmph', false);
+		emphStructures.splice( $.inArray(target, emphStructures), 1 );
 	}
 	else {
 		originColor[title] = target.css('fill');
@@ -208,6 +210,7 @@ function emphStructure(target, isCancel) {
 		target.css('fill-opacity', '0.5');
 		target.css('stroke-width', '24');
 		target.attr('isEmph', true);
+		emphStructs.push(target);
 	}
 }
 

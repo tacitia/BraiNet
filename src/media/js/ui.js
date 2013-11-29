@@ -31,6 +31,21 @@
 		ui.firstTime = false;
 
 //		websiteTour();
+		$('#reset').click(reset);
+	};
+	
+	var reset = function() {
+		svgData.init();
+		svgRenderer.renderData(activeDataset.key);
+		$("#anatomy-map path").qtip('toggle', false);
+		while (emphStructs.length > 0) {
+			emphStructure(emphStructs[0], false);
+		}
+		
+		state.currMode = customEnum.mode.exploration;
+		searchUI.selected_source = null;
+		searchUI.selected_target = null;
+		activeTitle = null;
 	};
 	
 	websiteTour = function(){
