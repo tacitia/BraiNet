@@ -827,7 +827,7 @@
 			}) */
 //			.attr('cx', 5)
 //			.attr('cy', 5)
-			.attr('cx', function(d) { return d.circ.x; })
+			.attr('cx', function(d) { console.log(d.name); console.log(d.circ.x); return d.circ.x; })
 			.attr('cy', function(d) { return d.circ.y; })
 			.attr('r', 1)
 			.attr('fill', 'none')
@@ -1158,7 +1158,7 @@
 			.data(nodes, function(d) {return d.key;})
 			.transition()
 			.duration(1000)
-			.attr('cx', function(d) { return d.circ.x; })
+			.attr('cx', function(d) { console.log(d.name); console.log(d.circ.x); return d.circ.x; })
 			.attr('cy', function(d) { return d.circ.y; });
 /*			.attr('transform', function(d) { 
 				console.log('update');
