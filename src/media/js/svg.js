@@ -678,6 +678,7 @@
 	
 	// When mousing over, highlight itself and the neighbors
 	function nodeMouseOver(node, svg) {
+		console.log(state.currMode);
 		if (state.currMode === customEnum.mode.search || state.currMode === customEnum.mode.fixation) { return; }
   		var maps = activeDataset.maps;	
   		sr.highlightNode(node, svg, maps, false);	
