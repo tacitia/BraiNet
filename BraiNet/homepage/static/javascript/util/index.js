@@ -2,3 +2,4 @@
 
 var util = util || {};
 
+util.generic = util.generic || {};

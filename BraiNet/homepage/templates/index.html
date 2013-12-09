@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="/static/library/chosen/chosen.min.css">
     <link rel="stylesheet" href="/static/library/qtip2/jquery.qtip.min.css">
     <link rel="stylesheet" href="/static/stylesheet/style-ui.css">
+    <link rel="stylesheet" href="/static/stylesheet/style-canvas.css">
   </head>
   <body>
     <div class="head-section">
@@ -16,13 +17,33 @@
     <div class="content-section">
       <div id="svg-container">
         <div id="circular-pane" class="svg-pane card">
+          <div class="svg-controller"><a id="upButton" href="#" class="btn right-align"><i class="icon-arrow-up"></i></a><a id="downButton" href="#" class="btn right-align"><i class="icon-arrow-down"></i></a><a id="removeButton" href="#" class="btn right-align"><i class="icon-remove"></i></a>
+          </div>
           <svg class="canvas"></svg>
-          <div class="svg-controller"></div>
+        </div>
+        <div id="anatomy-pane" class="svg-pane card">
+          <div id="canvas">
+            <div id="svg"></div>
+            <div id="img"></div>
+          </div>
+          <div class="svg-controller">
+            <div class="btn-toolbar">
+              <div class="btn-group">
+                <button id="left-arrow" class="btn"><i class="icon-arrow-left"></i>
+                </button>
+                <button id="right-arrow" class="btn"><i class="icon-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div id="control-container">
         <div id="dataset-selector" class="control-pane card">
           <select id="dataset-list" data-placeholder="Select Dataset" class="chzn-select"></select>
+        </div>
+        <div id="region-selector" class="control-pane card">
+          <select id="region-list" data-placeholder="Select Brain Region" class="chzn-select"></select>
         </div>
       </div>
     </div>
@@ -36,13 +57,16 @@
     <script src="/static/javascript/setting/amplifyJS.js"></script>
     <script src="/static/javascript/setting/setting.js"></script>
     <script src="/static/javascript/util/index.js"></script>
+    <script src="/static/javascript/util/generic.js"></script>
     <script src="/static/javascript/user/index.js"></script>
     <script src="/static/javascript/user/model.js"></script>
     <script src="/static/javascript/ui/index.js"></script>
     <script src="/static/javascript/ui/datasetSelector.js"></script>
+    <script src="/static/javascript/ui/regionSelector.js"></script>
     <script src="/static/javascript/svg/index.js"></script>
     <script src="/static/javascript/svg/model.js"></script>
     <script src="/static/javascript/svg/circular.js"></script>
+    <script src="/static/javascript/svg/anatomy.js"></script>
     <script src="/static/javascript/main.js"></script>
   </body>
 </html>

@@ -12,10 +12,12 @@ def getDatasets(request, user_id):
 	return HttpResponse(json.dumps(response_data), content_type='application/json')
 	
 
-def getDataset(request, user_id, dataset_id):
+def getDataset(request, user_id, dataset_id, max_depth):
 	# TODO: Check whether the request is legal (i.e. user id matches dataset id)
-	connections = Connection.objects.filter(dataset_id=dataset_id)
-	structures = Structure.objects.filter(dataset_id=dataset_id)
+#	print Connection.objects.filter(Q(dataset_id=dataset_id) & Q(source_id__depth__lte=max_depth) & Q(target_id__depth__lte=max_depth)).count()
+#	print Structure.objects.filter(Q(dataset_id=dataset_id) & Q(depth__lte=max_depth)).count()
+	connections = Connection.objects.filter(Q(dataset_id=dataset_id) & Q(source_id__depth__lte=max_depth) & Q(target_id__depth__lte=max_depth))[:10000]
+	structures = Structure.objects.filter(Q(dataset_id=dataset_id))
 	dataset = {}
 	dataset['conns'] = serializers.serialize('json', connections)
 	dataset['structs'] = serializers.serialize('json', structures)

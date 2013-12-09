@@ -8,7 +8,12 @@ amplify.request.define('getDatasetList', 'ajax', {
 })
 
 amplify.request.define('getDataset', 'ajax', {
-	url: '/connectivity/dataset/{userId}/{datasetId}',
+	url: '/connectivity/dataset/{userId}/{datasetId}/{maxDepth}',
+	type: 'GET'
+})
+
+amplify.request.define('getStructImgMap', 'ajax', {
+	url: '/anatomy/structImgMap',
 	type: 'GET'
 })
 
@@ -16,5 +21,6 @@ amplify.request.define('getDataset', 'ajax', {
 /* Subscriptions */
 
 amplify.subscribe('datasetReady', function(data) {
+	ui.regionSelector.render(data.nodes);
 	svg.renderViews(data);
 })

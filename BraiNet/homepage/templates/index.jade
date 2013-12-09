@@ -6,6 +6,7 @@ html(lang="en")
     link(rel="stylesheet", href="/static/library/chosen/chosen.min.css")
     link(rel="stylesheet", href="/static/library/qtip2/jquery.qtip.min.css")
     link(rel="stylesheet", href="/static/stylesheet/style-ui.css")
+    link(rel="stylesheet", href="/static/stylesheet/style-canvas.css")
   body
     div.head-section
       div.website-title
@@ -13,11 +14,30 @@ html(lang="en")
     div.content-section
       div#svg-container
         div.svg-pane.card#circular-pane
-          svg.canvas
           div.svg-controller
+            a.btn.right-align#upButton(href="#")
+              i.icon-arrow-up
+            a.btn.right-align#downButton(href="#")
+              i.icon-arrow-down
+            a.btn.right-align#removeButton(href="#")
+              i.icon-remove
+          svg.canvas
+        div.svg-pane.card#anatomy-pane
+          div.canvas
+            div#svg
+            div#img
+          div.svg-controller
+            div.btn-toolbar
+              div.btn-group
+                button.btn#left-arrow
+                  i.icon-arrow-left
+                button.btn#right-arrow
+                  i.icon-arrow-right
       div#control-container
         div.control-pane.card#dataset-selector
           select.chzn-select#dataset-list(data-placeholder="Select Dataset")
+        div.control-pane.card#region-selector
+          select.chzn-select#region-list(data-placeholder="Select Brain Region")
     div.foot-section
     script(src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js")
     script(src="/static/library/d3/d3.v3.min.js")
@@ -28,11 +48,14 @@ html(lang="en")
     script(src="/static/javascript/setting/amplifyJS.js")
     script(src="/static/javascript/setting/setting.js")
     script(src="/static/javascript/util/index.js")
+    script(src="/static/javascript/util/generic.js")
     script(src="/static/javascript/user/index.js")
     script(src="/static/javascript/user/model.js")
     script(src="/static/javascript/ui/index.js")
     script(src="/static/javascript/ui/datasetSelector.js")
+    script(src="/static/javascript/ui/regionSelector.js")
     script(src="/static/javascript/svg/index.js")
     script(src="/static/javascript/svg/model.js")
     script(src="/static/javascript/svg/circular.js")
+    script(src="/static/javascript/svg/anatomy.js")
     script(src="/static/javascript/main.js")

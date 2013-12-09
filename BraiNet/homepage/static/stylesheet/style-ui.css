@@ -37,6 +37,10 @@ html,body { height:100%; }
 
 /* @group generic */
 
+.right-align {
+	float:right;
+}
+
 .removed {
 	display: none;
 }
@@ -100,6 +104,7 @@ html,body { height:100%; }
 .svg-pane {
 	width: 650px;
 	height: 650px;
+	display: inline-block;
 }
 
 .control-pane {
@@ -118,6 +123,32 @@ html,body { height:100%; }
 	width: 20px;
 	height: 20px;
 }
+
+/* @group anatomy-pane */
+#anatomy-pane {
+	width: 350px;
+	height: 300px;
+}
+
+#anatomy-pane #svg {
+	position: absolute;
+	left: 20;
+	top: 100;
+}
+
+#anatomy-pane #img {
+	left: 0;
+	top: 0;
+}
+
+#anatomy-pane .btn-toolbar{
+	width: 350px;
+	height: 20px;
+}
+#anatomy-pane .btn-group{
+	position: absolute;
+	left:150px;
+}  
 
 /* @group unclassified */
 
@@ -255,27 +286,6 @@ html,body { height:100%; }
 	margin-bottom: 10px;
 	margin-left: 10px;
 }
-
-#anatomy-map #svg {
-	position: absolute;
-	left: 20;
-	top: 100;
-}
-
-#anatomy-map #img {
-	left: 0;
-	top: 0;
-}
-
-#anatomy .btn-toolbar{
-	width: 350px;
-	height: 20px;
-}
-#anatomy .btn-group{
-	position: absolute;
-	left:150px;
-	
-}  
 
 .10tb-padding {
 	padding: 10px 0;
