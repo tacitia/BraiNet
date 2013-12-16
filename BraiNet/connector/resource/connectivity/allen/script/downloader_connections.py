@@ -8,7 +8,7 @@ injections = json.load(source_file)
 
 output_dir = '../source/per_injection_connections'
 counter = 0
-start_id = 1273
+start_id = 0
 for injection in injections:
 	counter += 1
 	if counter < start_id:
