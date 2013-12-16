@@ -22,6 +22,11 @@ h4 {
 	margin: 5px 0 5px 0;
 }
 
+h5 {
+	font-family: 'Actor', sans-serif !important;
+	font-size: 15px;
+}
+
 body {
     /*make everything not selectable*/
     -webkit-touch-callout: none;
@@ -31,7 +36,6 @@ body {
     -ms-user-select: none;
     user-select: none;
     font: 13px sans-serif;
-    background-color: rgba(0,0,0,.02);
 }
 html,body { height:100%; }
 
@@ -46,11 +50,9 @@ html,body { height:100%; }
 }
 
 .card {
-	box-shadow: 2px 2px 1px #d8d8d8;
 	border-radius: 3px;
 	border: 1px solid #e5e5e5;
 	background-color: #fff;
-	margin: 10px 0 20px 0;
 }
 
 .fit-size-to-content {
@@ -76,6 +78,11 @@ html,body { height:100%; }
 	clear:both;
 }
 
+.inline {
+	display:inline-block;
+}
+
+
 /* @group sections */
 
 .head-section {
@@ -92,7 +99,7 @@ html,body { height:100%; }
 }
 
 .content-section {
-	width:1400px;
+	width:1300px;
 	margin:30px auto;
 	position: relative;
 	height: 100%;
@@ -102,13 +109,27 @@ html,body { height:100%; }
 /* @group panes */
 
 .svg-pane {
-	width: 650px;
+	width: 600px;
 	height: 650px;
-	display: inline-block;
 }
 
 .control-pane {
-	width: 250px;
+	width: auto;
+}
+
+#circular-pane {
+	width:600px;
+	height:600px;
+}
+
+#force-pane {
+	width:600px;
+	height:600px;
+}
+
+#link-pane {
+	width:400px;
+	height:500px;
 }
 
 /* @group head-section elements */
@@ -144,10 +165,12 @@ html,body { height:100%; }
 #anatomy-pane .btn-toolbar{
 	width: 350px;
 	height: 20px;
+	position: relative;
 }
 #anatomy-pane .btn-group{
 	position: absolute;
-	left:150px;
+	left: 130px;
+	top: 10px;
 }  
 
 /* @group unclassified */

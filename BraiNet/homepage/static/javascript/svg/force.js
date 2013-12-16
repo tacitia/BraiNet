@@ -1,14 +1,12 @@
 // This module 
 // TODO: change this module to require setting.js and amplifyJS.js using requireJS
 
-svg.circular = (function($, undefined) {
+svg.force = (function($, undefined) {
 
 	var doms = {
-		canvas: '#circular-pane .canvas',
+		canvas: '#force-pane .canvas',
 		controller: '#circular-pane .svg-controller',
-		upButton: '#circular-pane .svg-controller #upButton',
-		downButton: '#circular-pane .svg-controller #downButton',
-		removeButton: '#circular-pane .svg-controller #removeButton',
+		regionName: '#force-pane .svg-controller #region-name'
 	};
 	
 	var settings = {};
@@ -16,9 +14,6 @@ svg.circular = (function($, undefined) {
 		width: 600,
 		height: 600
 	};
-	settings.arc = {};
-	settings.arc.innerRadius = Math.min(settings.vis.width, settings.vis.height) * 0.35,
-	settings.arc.outerRadius = settings.arc.innerRadius * 1.2;
 	// TODO: The settings below should be exposed to the users later
 	settings.hideIsolated = true;
 	settings.regionSelectLinkedOnly = true; // Only display nodes that are connected to the node being searched for
@@ -38,8 +33,6 @@ svg.circular = (function($, undefined) {
 	};
 	
 	var svgGens = {
-		arcs: null,
-		curves: null,
 		palette: null
 	};
 	
@@ -50,39 +43,12 @@ svg.circular = (function($, undefined) {
 	};
 
 	var init = function() {
-		svgGens.arcs = d3.svg.arc()
-				 .innerRadius(settings.arc.innerRadius)
-				 .outerRadius(settings.arc.outerRadius)
-				 .startAngle(function(d) {return d.circular.startAngle;})
-				 .endAngle(function(d) {return d.circular.endAngle;});
-
-		svgGens.curves = d3.svg.line()
-				   .x(function(d) {return d.x;})
-				   .y(function(d) {return d.y;})
-				   .interpolate('basis');
-
 		svgGens.palette = d3.scale.category20b();
 
 		svgObjs.canvas = d3.select(doms.canvas)
 				.attr('width', settings.vis.width)
 				.attr('height', settings.vis.height)
-				.append('g')
-				.attr('transform', 'translate(' + (settings.vis.width / 2) + ',' + (settings.vis.height / 2) + ')')
 				.append('g');
-	
-		$(upButton).click(upButtonClick);	
-		$(downButton).click(downButtonClick);	
-		$(removeButton).click(removeButtonClick);
-		
-		$(upButton).qtip({
-			content: 'Up one level in the anatomical hierarchy (or press ALT while clicking)'		
-		});	
-		$(downButton).qtip({
-			content: 'Down one level in the anatomical hierarchy (or press META while clicking)'		
-		});	
-		$(removeButton).qtip({
-			content: 'Remove a brain region from display (or press SHIFT while clicking)'		
-		});	
 	};
 	
 	var render = function(d, datasetId) {
@@ -90,14 +56,8 @@ svg.circular = (function($, undefined) {
 		data.links = d.links;
 		state.datasetId = datasetId;
 		// Initialize data.activeNodes to contain the top level nodes
-		initActiveNodes();
-		initActiveLinks();
-		computeNodesParameters();
-//		assignColor();
-		clearCanvas();
-		enterLinks();
-		enterNodes();
-		createNodeTooltips();
+		initActiveElements();
+		updateLayout();
 	};
 
 	var clearCanvas = function() {
@@ -132,37 +92,15 @@ svg.circular = (function($, undefined) {
 	
 	// When mousing over, highlight itself and the neighbors
 	var nodeMouseOver = function(node) {
+		$(doms.regionName).text(node.fields.name);
 		if (state.mode !== 'exploration') { return; }
   		highlightNode(node, false);
 	};
 
 	var nodeMouseOut = function(node) {
+		$(doms.regionName).text('');
 		if (state.mode !== 'exploration') { return; }
 		highlightNode(node, true);
-	};
-	
-	var linkMouseOver = function(link) {
-		if (state.mode !== 'exploration') { return; }
-		svgObjs.canvas.selectAll('.node')
-			.classed('nofocus', function(d) {
-				return d.pk !== link.derived.source.pk && d.pk !== link.derived.target.pk;
-			});
-		svgObjs.canvas.selectAll('.link')
-			.classed('hidden', function(d) {
-				return d.pk !== link.pk;
-			}); 	
-//		$('#circ-link-' + link.pk).qtip('show');
-		svg.linkAttr.render(link);
-		$('#circ-node-' + link.derived.source.pk).qtip('show');
-		$('#circ-node-' + link.derived.target.pk).qtip('show');
-	};
-	
-	var linkMouseOut = function(link) {
-		if (state.mode !== 'exploration') { return; }
-		svgObjs.canvas.selectAll('.node').classed('nofocus', false);
-		svgObjs.canvas.selectAll('.link').classed('hidden', false);
-		$('#circ-node-' + link.derived.source.pk).qtip('hide');
-		$('#circ-node-' + link.derived.target.pk).qtip('hide');
 	};
 	
 	var upButtonClick = function() {
@@ -252,25 +190,135 @@ svg.circular = (function($, undefined) {
 		});
 	};
 
-	var updateLayout = function(newNum, newDelta) {
-		// Remove the nodes and links from canvas
-		exitNodes();
-		exitLinks();
+	var updateLayout = function(source, target) {
+		//this should be incorporated in the node data
+		var numGroup = 0;
+		var groupCount = {};
+		console.log(data.activeNodes);
+		data.activeNodes.forEach(function(d) {
+			if (!groupCount[d.derived.group]) {
+				++numGroup;
+				groupCount[d.derived.group] = [numGroup, 1];
+			} else {
+				//increase group size
+				groupCount[d.derived.group][1] += 1;
+			}
+		});
 
-		// Add the new links and new nodes resulted from the split
-		enterLinks();    
-		enterNodes();
-
-		for (var i = 0; i < newNum; ++i) {
-			var datum = data.activeNodes[i];
-			calculateArcPositions(datum, 0, newDelta, i);
+		// Set the selected source and selected target to have fixed positions, and 
+		// set their locations
+		if (source !== undefined) {
+			source.fixed = true;
+			source.x = 200;
+			source.y = 400;
+		}
+		if (target !== undefined) {
+			target.fixed = true;
+			target.x = 600;
+			target.y = 400;
+		}
+		
+		// Copy source and target into top level of the links
+		console.log('check active link format');
+		for (var i in data.activeLinks) {
+			var l = data.activeLinks[i];
+			l.source = $.inArray(l.derived.source, data.activeNodes);
+			l.target = $.inArray(l.derived.target, data.activeNodes);
+		}
+		
+		console.log(data.activeNodes.length);
+		console.log(data.activeLinks);
+		
+		var gravity = 1;
+		var charge = -12000;
+		
+		if (source !== undefined && target !== undefined) {
+			gravity = 0;
+			charge = -6000;
 		}
 
-		updateLinks();
-		updateNodes();
 
-		createNodeTooltips();
+		svgObjs.force = d3.layout.force()
+				  .nodes(data.activeNodes)
+				  .links(data.activeLinks)
+				  .size([settings.vis.width, settings.vis.height])
+				  //still needs work - link distance determined by group size and if
+				  //connection are internal
+				  .linkDistance(function(l) {
+					  var s = groupCount[l.source.derived.group];
+					  var t = groupCount[l.target.derived.group];
+					  return 10;
+//					  return 10 * Math.max(l.source.derived.group != l.target.derived.group ? s[1] : 2/s[1],
+//										   l.source.derived.group != l.target.derived.group ? t[1] : 2/t[1]) + 20;
+				  })
+				  .linkStrength(1)
+	              .gravity(gravity)
+				  .charge(charge)
+				  .friction(0.5);
 
+		// Clear up visual elements from previous search
+		svgObjs.canvas.selectAll('.link').remove();
+		svgObjs.canvas.selectAll(".node").remove();
+	
+		var link = svgObjs.canvas.selectAll(".force.link")    
+			   .data(data.activeLinks, function(d) { return d.pk; })
+		   .enter().append("svg:line")
+		   .attr("class", "force link")
+		   .style("stroke-width", 3)
+//		   .on('click', linkClick)
+//		   .on('mouseover', linkMouseOver)
+//		   .on('mouseout', linkMouseOut);
+
+
+		var node = svgObjs.canvas.selectAll(".force.node")
+		   .data(data.activeNodes, function(d) { return d.pk; })
+		   .enter().append("svg:circle")
+		   .attr("class", "force node")
+		   .attr('id', function(d) { return 'force-node-' + d.pk; })
+		   .attr("cx", function(d) { return d.x; })
+		   .attr("cy", function(d) { return d.y; })
+		   .attr("r", function(d) { return (d === source || d === target) ? 20 : 10; })
+		   .style("fill", function(d) {return d.derived.color;})
+		   .on('click', nodeClick)
+		   .on('mouseover', nodeMouseOver)
+		   .on('mouseout', nodeMouseOut);
+
+		node.call(svgObjs.force.drag().origin(function() {
+        			var t = d3.transform(d3.select(this).attr("transform")).translate;
+        			return {x: t[0], y: t[1]};
+    			}).on("drag.force", function() {
+        			force.stop();
+        			d3.select(this).attr("transform", "translate(" + d3.event.x + "," + d3.event.y + ")");
+    			}));
+
+		svgObjs.force.on("tick", function(e) {
+			  // To bundle nodes without links (useful)
+			  /*
+			  var k = 8 * e.alpha;
+
+			  active_data_nodes_force.forEach(function(o) {
+				  o.x += groupCount[o.group][0] * k;
+				  o.y += groupCount[o.group][0] * -k;
+			  });
+			  */
+
+			 link.attr("x1", function(d) { return d.source.x; })
+				 .attr("y1", function(d) { return d.source.y; })
+				 .attr("x2", function(d) { return d.target.x; })
+				 .attr("y2", function(d) { return d.target.y; });
+
+			 node.attr("cx", function(d) { return d.x; })
+				 .attr("cy", function(d) { return d.y; }); 
+
+		});
+		
+		svgObjs.force.start();
+    	for (var i = 0; i < 1000; ++i) {
+    		svgObjs.force.tick();
+    	}
+    	svgObjs.force.stop();
+
+		createNodeTooltips(); 
 	};
 
 	var highlightNode = function(node, isCancel) {
@@ -313,23 +361,13 @@ svg.circular = (function($, undefined) {
 			.classed('highlight', function(d) {
 				return d.pk === node.pk;
 			});  
-		for (var i = 0; i < data.activeNodes.length; ++i) {
-			var n = data.activeNodes[i];
-			var nodeKey = node.pk;
-			var inNeighbors = maps.keyToInNeighbors[nodeKey];
-			var outNeighbors = maps.keyToOutNeighbors[nodeKey];
-			if (n.pk === nodeKey || ($.inArray(n.pk, inNeighbors) >= 0) ||
-					($.inArray(n.pk, outNeighbors) >= 0)) {
-				isCancel ? $('#circ-node-' + n.pk).qtip('hide') : $('#circ-node-' + n.pk).qtip('show');
-			}
-		}
 	};
 
 	var enterNodes = function() {
 		svgObjs.canvas.selectAll('.node')
 			.data(data.activeNodes, function(d) {return d.pk;})
 			.enter().append('svg:path')
-			.style('fill', function(d) { return d.derived.color;} )
+			.style('fill', function(d) { return svgGens.palette(d.pk);} )
 			.attr('d', svgGens.arcs)
 			.attr('class', 'node')
 			.attr('id', function(d) { return 'circ-node-' + d.pk; })
@@ -353,7 +391,6 @@ svg.circular = (function($, undefined) {
 	};
 	
 	var enterLinks = function() {
-		console.log(data.activeLinks);
 		svgObjs.canvas.selectAll(".link")
 			.data(data.activeLinks, function(d) {return d.pk;})
 			.enter().append("svg:path")
@@ -367,35 +404,29 @@ svg.circular = (function($, undefined) {
 			.style('stroke-width', '2px')
 //			.attr('stroke-width', function(d) { return Math.min(10, Math.max(1,  Math.ceil(d.base_children.length / 100))) + 'px'; })
 			.attr("id", function(d) { return "circ-link-" + d.pk; })
-//			.attr('title', function(d) {
-//				$(this).data('attrStats', d.attrs);
-//				var dLength = d.derived.isDerived ? d.derived.leaves.length : 1;
-//				return '<p>Encapsulated connections: ' + dLength + '</p><p>Strength: ' + 
-//							'</p><svg id="attrStats-' + $(this).attr('id') + '"></svg>';
-//			})
-			.on("mouseover", linkMouseOver)
-			.on("mouseout", linkMouseOut)
+/*			.attr('title', function(d) {
+				$(this).data('attrStats', d.attrs);
+				return '<p>Encapsulated connections: ' + d.base_children.length + '</p><p>Strength: ' + 
+							'</p><svg id="attrStats-' + $(this).attr('id') + '"></svg>';
+			}) */
+//			.on("mouseover", function(d) { linkMouseOver(d, svg_circular); })
+//			.on("mouseout", function(d) { linkMouseOut(d, svg_circular); })
 //			.on("click", function(d){linkClick(d, svg_circular); });
 
-		$('.link').qtip({
+/*		$('.link').qtip({
 			style: {
 				classes: 'qtip-bootstrap'
 			},
 			position: {
 				my: 'top left',
 				at: 'bottom right',
-				target: $('#circular-pane .link'),
+				target: $('.link'),
 //				adjust: { x: 5, y: 5 },
 //				viewport: $(window)
 			},
-			hide: {
-				delay: 10000,
-				fixed: true
-			},
 			events: {
-				show: showLinkAttrs, 
-
-/*					var id = api.elements.target.attr('id');
+				show: function(event, api) {
+					var id = api.elements.target.attr('id');
 					var attrData = api.elements.target.data('attrStats');
 					var svg = d3.select('#attrStats-' + id);
 					if (svg.attr('isSet')) { return; }
@@ -450,13 +481,13 @@ svg.circular = (function($, undefined) {
 							.attr("transform", function(d, i) {
 								return 'translate(' + (scale(d.attrCount) + 5) + ',12)';
 							});
-					} */
-//				},
+					}
+				},
 				hide: function(event, api) {
 					$('#attrStats').remove();					
 				}
 			}			
-		});
+		}); */
 
 	};
 
@@ -475,14 +506,15 @@ svg.circular = (function($, undefined) {
 	var createNodeTooltips = function() {
 		for (var i = 0; i < data.activeNodes.length; ++i) {
 			var node = data.activeNodes[i];
-			$('#circ-node-' + node.pk).qtip({
+			console.log('creating tooltips');
+			$('#force-node-' + node.pk).qtip({
 				style: {
 					classes: 'qtip-bootstrap'
 				},
 				position: {
 					my: 'bottom right',
 					at: 'top left',
-					target: $('#circ-mark-' + node.pk),
+					target: $('#circ-node-' + node.pk),
 				},
 			});
 		}
@@ -492,12 +524,10 @@ svg.circular = (function($, undefined) {
 	var showRegion = function(regionPk) {	
 		var maps = svg.model.maps();
 		var region = maps.keyToNode[regionPk];
-		var inNeighbors = maps.keyToInNeighbors[regionPk];
-		var outNeighbors = maps.keyToOutNeighbors[regionPk];
-		if (inNeighbors.length === 0 && outNeighbors.length === 0) {
-			// TODO: show dialog whether users still want to see a region with no connections
-		}
 		displayNode(region);
+		if (settings.regionSelectLinkedOnly) {
+			removeDisconnectedNode(region);
+		}
 		svgObjs.canvas.selectAll('.node')
 			.classed('nofocus', function(d) {
 				return d !== region;
@@ -512,6 +542,9 @@ svg.circular = (function($, undefined) {
 			region = maps.keyToNode[regionPks[i]];
 			regions.push(region);
 			displayNode(region);
+		}	
+		if (settings.regionSelectLinkedOnly) {
+			removeDisconnectedNodeMulti(regionPks);
 		}
 		svgObjs.canvas.selectAll('.node')
 			.classed('nofocus', function(d) {
@@ -540,29 +573,40 @@ svg.circular = (function($, undefined) {
 		svgObjs.canvas.selectAll('.link').classed('biLink', false);
 		$('.node').qtip('hide');
 	};
-
-	var dimNonSearchResults = function() {
-		var searchNodes = svg.model.searchNodes();
-		var searchLinks = svg.model.searchLinks();
-		svgObjs.canvas.selectAll('.node')
-			.classed('nofocus', function(d) {
-				return $.inArray(d, searchNodes) < 0;
-			});
-		svgObjs.canvas.selectAll('.link')
-			.classed('hidden', function(d) {
-				return $.inArray(d, searchLinks) < 0;
-			});
-		for (var i = 0; i < searchNodes.length; ++i) {
-			$('#circ-node-' + searchNodes[i].pk).qtip('show');
-		} 
-	};
-	
-	var showLinkAttrs = function(event, api) {
-	};
 	
 	/* End of Canvas Update*/
 	
 	/* SVG Data Update */
+	
+	var initActiveElements = function() {
+		for (var i in data.nodes) {
+			var n = data.nodes[i];
+			if (!settings.hideIsolated || !n.derived.isIsolated) {
+				data.activeNodes.push(n);
+			}
+		}
+		for (var i in data.links) {
+			var l = data.links[i];
+			if (!l.derived.isDerived) {
+				data.activeLinks.push(l);
+			}
+		}
+	};
+
+	var populateActiveElements = function() {
+		var searchNodes = svg.model.searchNodes();
+		var searchLinks = svg.model.searchLinks();
+		for (var i in searchNodes) {
+			var n = searchNodes[i];
+			data.activeNodes.push(n);
+			n.force.isActive = true;
+		}
+		for (var i in searchLinks) {
+			var l = searchLinks[i];
+			data.activeLinks.push(l);
+			l.force.isActive = true;
+		}
+	};
 
 	var initActiveNodes = function() {
 		var maps = svg.model.maps();
@@ -595,10 +639,6 @@ svg.circular = (function($, undefined) {
 			pks.push(data.activeNodes[i].pk);
 		}
 		svgGens.palette.domain(pks);
-		for (i in data.activeNodes) {
-			var n = data.activeNodes[i];
-			n.derived.color = svgGens.palette(n.pk);
-		}
 	};
 
 	var combineRegions = function(newNode, nodesToRemove) {
@@ -703,7 +743,7 @@ svg.circular = (function($, undefined) {
 		for (var i = pos; i < pos + subNum; ++i) {
 			var datum = sub[i-pos];
 			calculateArcPositions(datum, startAngle, delta, i-pos);
-//			datum.derived.color = d.derived.color;
+			datum.color = d.color;
 			datum.circular.isActive = true;
 			ans[i] = datum;
 			for (var j = 0; j < inNeighborNum; ++j) {
@@ -756,8 +796,6 @@ svg.circular = (function($, undefined) {
 			}
 			else {
 				var siblings = findDescAtDepth(parent, node.fields.depth);
-				console.log('before');
-				console.log(siblings.length);
 				if (settings.regionSelectLinkedOnly) {
 					var inNeighbors = maps.keyToInNeighbors[node.pk];
 					var outNeighbors = maps.keyToOutNeighbors[node.pk];
@@ -769,8 +807,6 @@ svg.circular = (function($, undefined) {
 						}
 					}
 				}
-				console.log('after remove');
-				console.log(siblings.length);
 				expandRegion(parent, siblings);
 			}
 		}
@@ -849,16 +885,6 @@ svg.circular = (function($, undefined) {
 		}
 	};
 
-	var calculateArcPositions = function(datum, startAngle, delta, i) {
-		datum.circular.startAngle = startAngle + delta * i;
-		datum.circular.endAngle = startAngle + delta * (i+1);
-		var angle = delta * (i + 0.5) + startAngle;
-		var radius = settings.arc.innerRadius + (settings.arc.outerRadius - settings.arc.innerRadius) / 2;
-		datum.circular.x = radius * Math.cos(Math.PI / 2 - angle);
-		datum.circular.y = -radius * Math.sin(Math.PI / 2 - angle);
-		console.log(datum.circular);
-	};
-
 	var findActiveParent = function(node) {
 		var maps = svg.model.maps();
 		var result = node;
@@ -926,6 +952,13 @@ svg.circular = (function($, undefined) {
 	var setMode = function(m) {
 		state.mode = m;
 	};
+	
+	var isActiveForceNode = function(n) {
+		return $.inArray(n, data.activeNodes) < 0;
+	};
+	var isActiveForceLink = function(l) {
+		return $.inArray(l, data.activeLinks) < 0;
+	};
 
 	/* End of Computation */
 
@@ -933,11 +966,13 @@ svg.circular = (function($, undefined) {
 		init: init,
 		render: render,
 		showRegion: showRegion,
-		showRegionMulti: showRegionMulti,
 		setMode: setMode,
-		highlightNode: highlightNode,
+		highightNode: highlightNode,
 		findAllDesc: findAllDesc,
-		dimNonSearchResults: dimNonSearchResults
+		populateActiveElements: populateActiveElements,
+		isActiveForceNode: isActiveForceNode,
+		isActiveForceLink: isActiveForceLink,
+		updateLayout: updateLayout
 	};
 
 }(jQuery));

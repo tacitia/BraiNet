@@ -16,10 +16,10 @@ svg.anatomy = (function($, undefined) {
 	settings.args = { downsample: settings.DOWNSAMPLE };
 	
 	var doms = {
-		canvas: '#anatomy-pane #canvas',
-		svg: '#anatomy-pane #canvas #svg',
-		img: '#anatomy-pane #canvas #img',
-		path: '#anatomy-pane #canvas #svg path',
+		canvas: '#anatomy-pane .canvas',
+		svg: '#anatomy-pane .canvas #svg',
+		img: '#anatomy-pane .canvas #img',
+		path: '#anatomy-pane .canvas #svg path',
 		lArrow: '#anatomy-pane #left-arrow',
 		rArrow: '#anatomy-pane #right-arrow'
 	};
@@ -58,8 +58,8 @@ svg.anatomy = (function($, undefined) {
 		$(doms.canvas).css("background","no-repeat center url(\"static/image/loading.gif\")");
 		retrieveStructImageMap();
 	
-		$(doms.lArrow).on('click', leftArrowClick);
-		$(doms.rArrow).on('click', rightArrowClick);
+		$(doms.lArrow).click(leftArrowClick);
+		$(doms.rArrow).click(rightArrowClick);
 
 	};
 	
@@ -277,6 +277,7 @@ svg.anatomy = (function($, undefined) {
 	// Make an AJAX query to download the SVG for a section image.
 	function downloadSvg(url) {
 		$(doms.svg).load(url, function() {
+			console.log('SVG loaded.');
 			// Retrieve all paths in the SVG and add a 'title' attribute.  The
 			// 'title' attribute is displayed in the qtip2 tooltip.
 			$(doms.path)
@@ -309,8 +310,11 @@ svg.anatomy = (function($, undefined) {
 	function downloadImg(url) {
 		var image = new Image;
 		image.onload = function() {
+			console.log('Image loaded.');
+			console.log(image);
 			$(doms.img).empty();
 			$(doms.img).append(image);
+			console.log($(doms.img));
 		};
 		image.src = url;
 	}
@@ -339,7 +343,9 @@ svg.anatomy = (function($, undefined) {
 
 	return {
 		init: init,
-		render: render
+		render: render,
+		selectStructure: selectStructure,
+		emphStructure: emphStructure
 	};
 
 }(jQuery));

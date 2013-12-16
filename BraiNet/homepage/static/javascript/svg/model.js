@@ -9,7 +9,9 @@ svg.model = (function($, undefined) {
 	
 	var data = {
 		nodes: null,
-		links: null
+		links: null,
+		searchNodes: null,
+		searchLinks: null
 	};
 	
 	var maps = {
@@ -27,6 +29,7 @@ svg.model = (function($, undefined) {
 			amplify.publish('datasetReady', data);
 		}
 		else {
+			states.activeDatasetId = datasetId;
 			amplify.request('getDataset',
 				{
 					userId: userId,
@@ -53,11 +56,12 @@ svg.model = (function($, undefined) {
 		data.links = d.conns;
 		buildNodesMaps();
 		buildNodeHierarchy();
+		assignGroups();
 		buildLinksMaps();
 		console.log('# of links before creating derived links: ' + data.links.length);
 		buildLinkHierarchy();
 		console.log('# of links after creating derived links: ' + data.links.length);
-		amplify.publish('datasetReady', data);
+		amplify.publish('datasetReady', data, states.activeDatasetId);
 		console.log(maps);
 	};
 
@@ -65,6 +69,7 @@ svg.model = (function($, undefined) {
 	// Add the node to maps
 	var registerNode = function(node) {
 		node.circular = {};
+		node.force = {};
 		node.derived = {};
 		node.derived.children = [];
 		
@@ -76,18 +81,19 @@ svg.model = (function($, undefined) {
 		maps.keyToOutNeighbors[node.pk] = [];
 	};
 
-	var registerLink = function(link) {
+	var registerLink = function(link, isDerived) {
 		var targetKey = link.fields.target_id;
 		var sourceKey = link.fields.source_id;
 		var keyPair = sourceKey + "_" + targetKey;
 		
 		link.circular = {};
+		link.force = {};
 		link.derived = {};
 		link.derived.source = maps.keyToNode[sourceKey];
 		link.derived.target = maps.keyToNode[targetKey];
 		link.derived.children = [];
 		link.derived.leaves = [];
-		link.derived.isDerived = false;
+		link.derived.isDerived = isDerived;
 		
 		link.derived.source.derived.isIsolated = false;
 		link.derived.target.derived.isIsolated = false;
@@ -110,6 +116,33 @@ svg.model = (function($, undefined) {
 			registerNode(node);
 		}
 	};
+	
+	var assignGroups = function() {
+		var palette = d3.scale.category20b();
+		var queue = [];
+		var pks = [];
+		for (var key in maps.keyToNode) {
+			var node = maps.keyToNode[key];
+			if (node.fields.depth === window.settings.dataset[states.activeDatasetId].minDepth) {
+				node.derived.group = node.pk;
+				queue.push(node);
+				pks.push(node.pk);
+			}
+		}
+		palette.domain(pks);
+		while (queue.length > 0) {
+			var n = queue[0];
+			n.derived.color = palette(n.derived.group);
+			var children = n.derived.children;
+			var childNum = children.length;
+			for (var i = 0; i < childNum; ++i) {
+				var child = maps.keyToNode[children[i]];
+				child.derived.group = n.derived.group;
+				queue.push(child);
+			}
+			queue.splice(0, 1);
+		}
+	};
 
 
 	var buildLinksMaps = function() {    
@@ -124,7 +157,7 @@ svg.model = (function($, undefined) {
 		var numLinks = data.links.length;
 		for (var i = 0; i < numLinks; ++i) {
 			var link = data.links[i];
-			registerLink(link);
+			registerLink(link, false);
 		}
 	};
 	
@@ -215,7 +248,7 @@ svg.model = (function($, undefined) {
 			parentLink.fields.target_id = tgtId;
 //			processMetaLink(srcParentLink, dataset.link_map, dataset.attr_map);
 			data.links.push(parentLink);
-			registerLink(parentLink);
+			registerLink(parentLink, true);
 		}
 		if ($.inArray(link.pk, parentLink.derived.children) < 0) {
 			parentLink.derived.children.push(link.pk);
@@ -224,9 +257,78 @@ svg.model = (function($, undefined) {
 		return result;
 	};
 
+	var calculatePaths = function(source, target, numHop) {
+		var counter = 0;
+		var paths = [];
+		var results = [];
+		paths[0] = [source];
+		// Set the min / max depth
+		var depth1 = source.fields.depth;
+		var depth2 = target.fields.depth;
+		var minDepth = Math.min(depth1, depth2);
+		var maxDepth = Math.max(depth1, depth2);
+
+		while (paths.length > 0 && paths[0].length <= numHop + 2) {
+			var currPath = paths[0];
+			paths.splice(0, 1);
+			var anchorNode = currPath[currPath.length - 1];
+			if (anchorNode.pk === target.pk) {
+				results.push(currPath);
+				continue;
+			}
+			// If already reaches the maximum length, don't continue counting neighbors
+			if (currPath.length >= numHop + 2) { continue; }
+			var neighbors = maps.keyToInNeighbors[anchorNode.pk];
+			var neighborNum = neighbors.length;
+			for (var i = 0; i < neighborNum; ++i) {
+				var neighborId = neighbors[i];
+				var neighborNode = maps.keyToNode[neighborId];
+				if (neighborNode.fields.depth >= minDepth && neighborNode.fields.depth <= maxDepth) {
+					paths.push(currPath.concat(neighborNode));
+				}
+			}
+			counter++;
+			if (counter > 5000) { 
+//				userAction.trackAction(null, 'Warning', 'Path size limit reached', selected_source.name + '-' + selected_target + '-' + max_hop);
+				console.log("Reached path limit."); break;
+			}
+		}
+		saveSearchElements(results);
+		return results;
+	};
+	
+	var saveSearchElements = function(paths) {
+		data.searchNodes = [];
+		data.searchLinks = [];
+		var numPath = paths.length;
+		for (var i = 0; i < numPath; ++i) {
+			var path = paths[i];
+			var numLink = path.length - 1;
+			for (var j = 0; j < numLink; ++j) {
+				var currSrc = path[j];
+				var currTgt = path[j+1];
+				var keyPair = currSrc.pk + "_" + currTgt.pk;
+				var link = maps.nodeToLink[keyPair];
+				if ($.inArray(link, data.searchLinks) < 0) {
+					data.searchLinks.push(link);
+				}
+				if ($.inArray(currSrc, data.searchNodes) < 0) {
+					data.searchNodes.push(currSrc);
+				}
+				if ($.inArray(currTgt, data.searchNodes) < 0) {
+					data.searchNodes.push(currTgt);
+				}
+			}
+		}
+		console.log(data.searchNodes.length);
+	};
+
 	return {
 		getDataset: getDataset,
-		maps: function() { return maps; }
+		maps: function() { return maps; },
+		calculatePaths: calculatePaths,
+		searchNodes: function() { return data.searchNodes; },
+		searchLinks: function() { return data.searchLinks; }
 	};
 
 }(jQuery));

@@ -15,41 +15,167 @@
       </div>
     </div>
     <div class="content-section">
-      <div id="svg-container">
-        <div id="circular-pane" class="svg-pane card">
-          <div class="svg-controller"><a id="upButton" href="#" class="btn right-align"><i class="icon-arrow-up"></i></a><a id="downButton" href="#" class="btn right-align"><i class="icon-arrow-down"></i></a><a id="removeButton" href="#" class="btn right-align"><i class="icon-remove"></i></a>
+      <div id="control-container" class="row-fluid">
+        <div class="span3">
+          <div id="dataset-selector" class="control-pane">
+            <h5>Select dataset</h5>
+            <div>
+              <select id="dataset-list" data-placeholder="Select Dataset" class="chzn-select"></select>
+            </div>
           </div>
-          <svg class="canvas"></svg>
+          <div id="region-selector" class="control-pane">
+            <h5>Select a brain region </h5>
+            <div>
+              <select id="region-list" data-placeholder="Select Brain Region" class="chzn-select"></select>
+            </div>
+          </div>
+          <div id="path-search" class="control-pane">
+            <h5>Search for indirect path</h5>
+            <div>
+              <div><span>Source</span>
+                <select id="source-list" data-placeholder="Select a source region" class="chzn-select inline"></select>
+              </div>
+              <div><span>Target</span>
+                <select id="target-list" data-placeholder="Select a target region" class="chzn-select inline"></select>
+              </div>
+              <button id="search-button" class="btn"><i class="icon-search"></i>
+              </button>
+            </div>
+          </div>
         </div>
-        <div id="anatomy-pane" class="svg-pane card">
-          <div id="canvas">
-            <div id="svg"></div>
-            <div id="img"></div>
+        <div class="span3">
+          <div id="legend" class="control-pane">
+            <h5>Edge Color Legend</h5>
+            <div id="legend-primary">
+              <h6>Default (by directionality)</h6>
+              <div>
+                <div style="background-color:#2ca02c;" class="legend-block multi-col"></div>
+                <div class="legend-label multi-col">
+                  <p>Source region / Outgoing connecion</p>
+                </div>
+                <div class="clear"></div>
+                <div style="background-color:#d62728;" class="legend-block multi-col"></div>
+                <div class="legend-label multi-col">
+                  <p>Target region / Incoming connecion</p>
+                </div>
+                <div class="clear"></div>
+                <div style="background-color:#062db8;" class="legend-block multi-col"></div>
+                <div class="legend-label multi-col">
+                  <p>Bidirectional connection</p>
+                </div>
+                <div class="clear"></div>
+              </div>
+            </div>
+            <div id="legend-feature">
+              <h6>Optional (by edge attributes)</h6>
+            </div>
           </div>
-          <div class="svg-controller">
-            <div class="btn-toolbar">
-              <div class="btn-group">
-                <button id="left-arrow" class="btn"><i class="icon-arrow-left"></i>
-                </button>
-                <button id="right-arrow" class="btn"><i class="icon-arrow-right"></i>
-                </button>
+        </div>
+        <div class="span6">
+          <h5>Anatomy View</h5>
+          <div id="anatomy-pane" class="card">
+            <div class="canvas">
+              <div id="svg"></div>
+              <div id="img"></div>
+            </div>
+            <div class="svg-controller">
+              <div class="btn-toolbar">
+                <div class="btn-group">
+                  <button id="left-arrow" class="btn"><i class="icon-arrow-left"></i>
+                  </button>
+                  <button id="right-arrow" class="btn"><i class="icon-arrow-right"></i>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div id="control-container">
-        <div id="dataset-selector" class="control-pane card">
-          <select id="dataset-list" data-placeholder="Select Dataset" class="chzn-select"></select>
+      <div id="svg-container">
+        <div class="row-fluid">
+          <div class="svg-pane span6">
+            <h5>Circular View</h5>
+            <div id="circular-pane" class="card">
+              <div class="svg-controller"><a id="upButton" href="#" class="btn right-align"><i class="icon-arrow-up"></i></a><a id="downButton" href="#" class="btn right-align"><i class="icon-arrow-down"></i></a><a id="removeButton" href="#" class="btn right-align"><i class="icon-remove"></i></a>
+              </div>
+              <svg class="canvas"></svg>
+            </div>
+          </div>
+          <div class="svg-pane span6">
+            <h5>Force-directed View</h5>
+            <div id="force-pane" class="card">
+              <div class="svg-controller"><span id="region-name"></span>
+              </div>
+              <svg class="canvas"></svg>
+            </div>
+          </div>
         </div>
-        <div id="region-selector" class="control-pane card">
-          <select id="region-list" data-placeholder="Select Brain Region" class="chzn-select"></select>
+      </div>
+      <div class="row-fluid">
+        <div id="conn-info" class="span12">
+          <h5>Connection Information</h5>
+          <p id="src-name"></p>
+          <p id="tgt-name"></p>
+          <p id="no-note-msg" class="removed"></p>
+          <div id="conn-notes" class="removed">
+            <div style="margin-right:10px;" class="multi-col">
+              <p>Notes</p>
+            </div>
+            <div class="multi-col"><textarea id="conn-note-input" rows="3" class="removed">
+                <Add>a note...</Add></textarea>
+              <p id="conn-note-display" style="width:220px">
+                <No>notes found.</No>
+              </p>
+              <button class="btn btn-success removed">
+                <Save></Save>
+              </button>
+            </div>
+            <div class="multi-col"><i id="conn-note-edit" class="icon-edit"></i>
+            </div>
+            <div class="clear"></div>
+          </div>
+        </div>
+      </div>
+      <div class="row-fluid">
+        <div class="span4">
+          <div class="svg-pane">
+            <h5>Projection Statistics</h5>
+            <div id="link-pane" class="card"></div>
+            <svg class="canvas"></svg>
+          </div>
+        </div>
+        <div class="span8">
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#paper-list" data-toggle="tab">Publications</a>
+            </li>
+            <li><a href="#origin-list" data-toggle="tab">Original records</a>
+            </li>
+            <li><a href="#sub-con-list" data-toggle="tab">Sub-connections</a>
+            </li>
+          </ul>
+          <div style="padding:20px" class="tab-content">
+            <div id="paper-list" class="tab-pane fade in active">
+              <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and links to relevant literature will be displayed here.</i>
+              </p>
+            </div>
+            <div id="origin-list" class="tab-pane fade">
+              <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and the records from the original connectivity data source will be displayed here.(Only available for pre-loaded datasets.)</i>
+              </p>
+            </div>
+            <div id="sub-con-list" class="tab-pane fade">
+              <p class="search-results-exp explanation"><i>Click on a connection or search for the connections between two brain regions and the underlying sub-connections will be displayed here.</i>
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
     <div class="foot-section"></div>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="/static/library/jquery.js"></script>
+    <script src="/static/library/bootstrap/js/bootstrap.min.js"></script>
     <script src="/static/library/d3/d3.v3.min.js"></script>
+    <script src="/static/library/d3/box.js"></script>
     <script src="/static/library/amplify.min.js"></script>
     <script src="/static/library/chosen/chosen.jquery.min.js"></script>
     <script src="/static/library/chosen/fuse.js"></script>
@@ -63,10 +189,13 @@
     <script src="/static/javascript/ui/index.js"></script>
     <script src="/static/javascript/ui/datasetSelector.js"></script>
     <script src="/static/javascript/ui/regionSelector.js"></script>
+    <script src="/static/javascript/ui/pathSearch.js"></script>
     <script src="/static/javascript/svg/index.js"></script>
     <script src="/static/javascript/svg/model.js"></script>
     <script src="/static/javascript/svg/circular.js"></script>
+    <script src="/static/javascript/svg/force.js"></script>
     <script src="/static/javascript/svg/anatomy.js"></script>
+    <script src="/static/javascript/svg/linkAttr.js"></script>
     <script src="/static/javascript/main.js"></script>
   </body>
 </html>

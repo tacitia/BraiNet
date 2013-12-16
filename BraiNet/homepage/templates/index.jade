@@ -12,35 +12,128 @@ html(lang="en")
       div.website-title
         h1 BraiNet - a Brain Connectivity Explorer
     div.content-section
+      div#control-container.row-fluid
+        div.span3
+          div.control-pane#dataset-selector
+            h5 Select dataset
+            div
+              select.chzn-select#dataset-list(data-placeholder="Select Dataset")
+          div.control-pane#region-selector
+            h5 Select a brain region 
+            div
+              select.chzn-select#region-list(data-placeholder="Select Brain Region")
+          div.control-pane#path-search
+            h5 Search for indirect path
+            div
+              div
+                span Source
+                select.chzn-select.inline#source-list(data-placeholder="Select a source region")
+              div
+                span Target
+                select.chzn-select.inline#target-list(data-placeholder="Select a target region")  
+              button.btn#search-button
+                i.icon-search
+        div.span3
+          div.control-pane#legend
+            h5 Edge Color Legend
+            div#legend-primary
+              h6 Default (by directionality)
+              div
+                div.legend-block.multi-col(style="background-color:#2ca02c;")
+                div.legend-label.multi-col
+                  p Source region / Outgoing connecion
+                div.clear
+                div.legend-block.multi-col(style="background-color:#d62728;")
+                div.legend-label.multi-col
+                  p Target region / Incoming connecion
+                div.clear
+                div.legend-block.multi-col(style="background-color:#062db8;")
+                div.legend-label.multi-col
+                  p Bidirectional connection
+                div.clear
+            div#legend-feature
+              h6 Optional (by edge attributes)
+        div.span6
+          h5 Anatomy View
+          div.card#anatomy-pane
+            div.canvas
+              div#svg
+              div#img
+            div.svg-controller
+              div.btn-toolbar
+                div.btn-group
+                  button.btn#left-arrow
+                    i.icon-arrow-left
+                  button.btn#right-arrow
+                    i.icon-arrow-right
       div#svg-container
-        div.svg-pane.card#circular-pane
-          div.svg-controller
-            a.btn.right-align#upButton(href="#")
-              i.icon-arrow-up
-            a.btn.right-align#downButton(href="#")
-              i.icon-arrow-down
-            a.btn.right-align#removeButton(href="#")
-              i.icon-remove
-          svg.canvas
-        div.svg-pane.card#anatomy-pane
-          div.canvas
-            div#svg
-            div#img
-          div.svg-controller
-            div.btn-toolbar
-              div.btn-group
-                button.btn#left-arrow
-                  i.icon-arrow-left
-                button.btn#right-arrow
-                  i.icon-arrow-right
-      div#control-container
-        div.control-pane.card#dataset-selector
-          select.chzn-select#dataset-list(data-placeholder="Select Dataset")
-        div.control-pane.card#region-selector
-          select.chzn-select#region-list(data-placeholder="Select Brain Region")
+        div.row-fluid
+          div.svg-pane.span6
+            h5 Circular View
+            div.card#circular-pane
+              div.svg-controller
+                a.btn.right-align#upButton(href="#")
+                  i.icon-arrow-up
+                a.btn.right-align#downButton(href="#")
+                  i.icon-arrow-down
+                a.btn.right-align#removeButton(href="#")
+                  i.icon-remove
+              svg.canvas
+          div.svg-pane.span6
+            h5 Force-directed View
+            div.card#force-pane
+              div.svg-controller
+                span#region-name
+              svg.canvas
+      div.row-fluid
+        div.span12#conn-info
+          h5 Connection Information
+          p#src-name
+          p#tgt-name
+          p#no-note-msg.removed
+          div#conn-notes.removed
+            div.multi-col(style="margin-right:10px;")
+              p Notes
+            div.multi-col
+              textarea#conn-note-input.removed(rows="3")
+                Add a note...
+              p#conn-note-display(style="width:220px")
+                No notes found.
+              button.btn.btn-success.removed
+                Save
+            div.multi-col
+              i#conn-note-edit.icon-edit
+            div.clear
+      div.row-fluid
+        div.span4
+          div.svg-pane
+            h5 Projection Statistics
+            div.card#link-pane
+            svg.canvas
+        div.span8
+          ul.nav.nav-tabs
+            li.active
+              a(href="#paper-list")(data-toggle="tab") Publications
+            li
+              a(href="#origin-list")(data-toggle="tab") Original records
+            li 
+              a(href="#sub-con-list")(data-toggle="tab") Sub-connections
+          div.tab-content(style="padding:20px")
+            div(class="tab-pane fade in active")#paper-list
+              p.search-results-exp.explanation
+                i Click on a connection or search for the connections between two brain regions and links to relevant literature will be displayed here.
+            div(class="tab-pane fade")#origin-list
+              p.search-results-exp.explanation
+                i Click on a connection or search for the connections between two brain regions and the records from the original connectivity data source will be displayed here.(Only available for pre-loaded datasets.)
+            div(class="tab-pane fade")#sub-con-list
+              p.search-results-exp.explanation
+                i Click on a connection or search for the connections between two brain regions and the underlying sub-connections will be displayed here.
     div.foot-section
     script(src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js")
+    script(src="/static/library/jquery.js")
+    script(src="/static/library/bootstrap/js/bootstrap.min.js")
     script(src="/static/library/d3/d3.v3.min.js")
+    script(src="/static/library/d3/box.js")
     script(src="/static/library/amplify.min.js")
     script(src="/static/library/chosen/chosen.jquery.min.js")
     script(src="/static/library/chosen/fuse.js")
@@ -54,8 +147,11 @@ html(lang="en")
     script(src="/static/javascript/ui/index.js")
     script(src="/static/javascript/ui/datasetSelector.js")
     script(src="/static/javascript/ui/regionSelector.js")
+    script(src="/static/javascript/ui/pathSearch.js")
     script(src="/static/javascript/svg/index.js")
     script(src="/static/javascript/svg/model.js")
     script(src="/static/javascript/svg/circular.js")
+    script(src="/static/javascript/svg/force.js")
     script(src="/static/javascript/svg/anatomy.js")
+    script(src="/static/javascript/svg/linkAttr.js")
     script(src="/static/javascript/main.js")
