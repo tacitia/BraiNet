@@ -268,23 +268,36 @@ svg.model = (function($, undefined) {
 		var minDepth = Math.min(depth1, depth2);
 		var maxDepth = Math.max(depth1, depth2);
 
-		while (paths.length > 0 && paths[0].length <= numHop + 2) {
+		while (paths.length > 0 && paths[0].length <= numHop + 1) {
 			var currPath = paths[0];
 			paths.splice(0, 1);
 			var anchorNode = currPath[currPath.length - 1];
-			if (anchorNode.pk === target.pk) {
+/*			if (anchorNode.pk === target.pk) {
 				results.push(currPath);
 				continue;
-			}
+			} */
 			// If already reaches the maximum length, don't continue counting neighbors
-			if (currPath.length >= numHop + 2) { continue; }
-			var neighbors = maps.keyToInNeighbors[anchorNode.pk];
+//			if (currPath.length >= numHop + 2) { continue; }
+			var neighbors = maps.keyToOutNeighbors[anchorNode.pk];
 			var neighborNum = neighbors.length;
 			for (var i = 0; i < neighborNum; ++i) {
 				var neighborId = neighbors[i];
 				var neighborNode = maps.keyToNode[neighborId];
+/*				if (neighborNode.fields.name === 'Ventral tegmental area') {
+					console.log('found');
+					console.log(neighborNode);
+					break; 
+				} */
 				if (neighborNode.fields.depth >= minDepth && neighborNode.fields.depth <= maxDepth) {
-					paths.push(currPath.concat(neighborNode));
+					var newPath = currPath.concat(neighborNode);
+					if (neighborNode.pk === target.pk) {
+						results.push(newPath);
+						continue;
+					}
+					if (currPath.length === numHop + 1) {
+						continue;
+					}
+					paths.push(newPath);
 				}
 			}
 			counter++;

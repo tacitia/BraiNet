@@ -92,6 +92,8 @@ svg.anatomy = (function($, undefined) {
 			console.log(title);
 			console.log(node);
 			circular.showRegion(node.pk);
+			var oldSel = $("#anatomy-map path[oldtitle='" + state.activeTitle + "']");
+			emphStructure(oldSel, true);
 			state.activeTitle = title;
 			state.allActiveStructs.push(title);
 			svg.circular.setMode('fixation');
@@ -236,9 +238,10 @@ svg.anatomy = (function($, undefined) {
 	}
 	
 	var reset = function() {
+		console.log('Reset anatomy');
 		$("#anatomy-map path").qtip('toggle', false);
-		while (emphStructs.length > 0) {
-			emphStructure(emphStructs[0], true);
+		while (state.emphStructs.length > 0) {
+			emphStructure(state.emphStructs[0], true);
 		}
 		state.activeTitle = null;
 		state.allActiveStructs = [];

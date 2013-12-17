@@ -34,8 +34,8 @@ svg.circular = (function($, undefined) {
 	var data = {
 		nodes: null,
 		links: null,
-		activeNodes: [],
-		activeLinks: []
+		activeNodes: null,
+		activeLinks: null
 	};
 	
 	var svgGens = {
@@ -416,15 +416,18 @@ svg.circular = (function($, undefined) {
 		if (inNeighbors.length === 0 && outNeighbors.length === 0) {
 			// TODO: show dialog whether users still want to see a region with no connections
 		}
+		clearAllHighlight();
 		displayNode(region);
 		svgObjs.canvas.selectAll('.node')
 			.classed('nofocus', function(d) {
 				return d !== region;
 			});
+		
 		$('#circ-node-' + region.pk).qtip('show');
 	};
 	
 	var showRegionMulti = function(regionPks) {
+		clearAllHighlight();
 		var maps = svg.model.maps();
 		var regions = [];
 		for (i in regionPks) {
@@ -489,6 +492,7 @@ svg.circular = (function($, undefined) {
 	
 	
 	var reset = function() {
+		console.log('Reset circular');
 		initActiveNodes();
 		initActiveLinks();
 		computeNodesParameters();
@@ -505,6 +509,7 @@ svg.circular = (function($, undefined) {
 	/* SVG Data Update */
 
 	var initActiveNodes = function() {
+		data.activeNodes = [];
 		var maps = svg.model.maps();
 		// TODO: change the name of the "settings" variables so there is no conflict between the global one and 
 		// the local ones
@@ -519,6 +524,7 @@ svg.circular = (function($, undefined) {
 	};
 	
 	var initActiveLinks = function() {
+		data.activeLinks = [];
 		var maps = svg.model.maps();
 		var minDepth = window.settings.dataset[state.datasetId].minDepth;
 		for (var key in maps.keyToLink) {

@@ -86,6 +86,7 @@ svg.force = (function($, undefined) {
 	
 	// When mousing over, highlight itself and the neighbors
 	var nodeMouseOver = function(node) {
+		console.log(node);
 		$(doms.regionName).text(node.fields.name);
 		if (state.mode !== 'exploration') { return; }
   		highlightNode(node, false);
@@ -159,7 +160,9 @@ svg.force = (function($, undefined) {
 		//this should be incorporated in the node data
 		var numGroup = 0;
 		var groupCount = {};
-		console.log(data.activeNodes);
+
+		// Set the selected source and selected target to have fixed positions, and 
+		// set their locations
 		data.activeNodes.forEach(function(d) {
 			if (!groupCount[d.derived.group]) {
 				++numGroup;
@@ -168,20 +171,21 @@ svg.force = (function($, undefined) {
 				//increase group size
 				groupCount[d.derived.group][1] += 1;
 			}
+			if (source !== undefined && d.pk === source.pk) {
+				d.fixed = true;
+				d.x = 150;
+				d.y = 350;
+			}
+			else if (target !== undefined && d.pk === target.pk) {
+				d.fixed = true;
+				d.x = 650;
+				d.y = 350;
+			}
+			else {
+				d.fixed = false;
+			}
 		});
 
-		// Set the selected source and selected target to have fixed positions, and 
-		// set their locations
-		if (source !== undefined) {
-			source.fixed = true;
-			source.x = 200;
-			source.y = 400;
-		}
-		if (target !== undefined) {
-			target.fixed = true;
-			target.x = 600;
-			target.y = 400;
-		}
 		
 		// Copy source and target into top level of the links
 		console.log('check active link format');
@@ -196,10 +200,12 @@ svg.force = (function($, undefined) {
 		
 		var gravity = 1;
 		var charge = -12000;
+		var showAll = true;
 		
 		if (source !== undefined && target !== undefined) {
 			gravity = 0;
 			charge = -6000;
+			showAll = false;
 		}
 
 
@@ -212,9 +218,10 @@ svg.force = (function($, undefined) {
 				  .linkDistance(function(l) {
 					  var s = groupCount[l.source.derived.group];
 					  var t = groupCount[l.target.derived.group];
-					  return 10;
-//					  return 10 * Math.max(l.source.derived.group != l.target.derived.group ? s[1] : 2/s[1],
-//										   l.source.derived.group != l.target.derived.group ? t[1] : 2/t[1]) + 20;
+					  return showAll 
+					  ? 10 
+					  : 10 * Math.max(l.source.derived.group != l.target.derived.group ? s[1] : 2/s[1],
+										l.source.derived.group != l.target.derived.group ? t[1] : 2/t[1]) + 20;
 				  })
 				  .linkStrength(1)
 	              .gravity(gravity)
@@ -252,7 +259,7 @@ svg.force = (function($, undefined) {
         			var t = d3.transform(d3.select(this).attr("transform")).translate;
         			return {x: t[0], y: t[1]};
     			}).on("drag.force", function() {
-        			force.stop();
+        			svgObjs.force.stop();
         			d3.select(this).attr("transform", "translate(" + d3.event.x + "," + d3.event.y + ")");
     			}));
 
@@ -278,12 +285,15 @@ svg.force = (function($, undefined) {
 		});
 		
 		svgObjs.force.start();
-    	for (var i = 0; i < 1000; ++i) {
-    		svgObjs.force.tick();
-    	}
-    	svgObjs.force.stop();
+		
+		if (showAll) {
+			for (var i = 0; i < 500; ++i) {
+				svgObjs.force.tick();
+			}
+			svgObjs.force.stop();
+		}
 
-		createNodeTooltips(); 
+//		createNodeTooltips(); 
 	};
 
 	var highlightNode = function(node, isCancel) {
@@ -488,36 +498,28 @@ svg.force = (function($, undefined) {
 	// Display a node and set it as in focus
 	var showRegion = function(regionPk) {	
 		var maps = svg.model.maps();
-		var region = maps.keyToNode[regionPk];
-		displayNode(region);
-		if (settings.regionSelectLinkedOnly) {
-			removeDisconnectedNode(region);
-		}
 		svgObjs.canvas.selectAll('.node')
 			.classed('nofocus', function(d) {
-				return d !== region;
+				return d.pk !== regionPk;
 			});
-		$('#circ-node-' + region.pk).qtip('show');
+		svgObjs.canvas.selectAll('.node')
+			.classed('highlight', function(d) {
+				return d.pk === regionPk;
+			});
+		svgObjs.canvas.selectAll('.link').classed('hidden', true);
 	};
 	
 	var showRegionMulti = function(regionPks) {
 		var maps = svg.model.maps();
-		var regions = [];
-		for (i in regionPks) {
-			region = maps.keyToNode[regionPks[i]];
-			regions.push(region);
-			displayNode(region);
-		}	
-		if (settings.regionSelectLinkedOnly) {
-			removeDisconnectedNodeMulti(regionPks);
-		}
 		svgObjs.canvas.selectAll('.node')
 			.classed('nofocus', function(d) {
-				return $.inArray(d, regions) < 0;
+				return $.inArray(d.pk, regionPks) < 0;
 			});
-		for (i in regionPks) {
-			$('#circ-node-' + regionPks[i]).qtip('show');
-		}
+		svgObjs.canvas.selectAll('.node')
+			.classed('highlight', function(d) {
+				return $.inArray(d.pk, regionPks) >= 0;
+			});
+		svgObjs.canvas.selectAll('.link').classed('hidden', true);
 	};
 	
 	var resetRegion = function(regionPk) {
@@ -540,6 +542,7 @@ svg.force = (function($, undefined) {
 	};
 	
 	var reset = function() {
+		console.log('Reset force');
 		clearCanvas();
 		initActiveElements();
 		updateLayout();

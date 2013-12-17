@@ -24,6 +24,7 @@ svg.renderViews = function(data, datasetId) {
 // A shortcut for showing the selected region in all available svg modules
 svg.showRegion = function(regionPk) {
 	svg.circular.showRegion(regionPk);
+	svg.force.showRegion(regionPk);
 };
 
 svg.showRegionMulti = function(regionPk) {

@@ -7,6 +7,7 @@ $(document).ready(function() {
 	ui.datasetSelector.init(user.model.id());
 	ui.regionSelector.init();
 	ui.pathSearch.init();
+	ui.canvasReset.init();
 	svg.circular.init();
 	svg.force.init();
 	svg.anatomy.init();
