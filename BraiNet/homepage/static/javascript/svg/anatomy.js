@@ -91,7 +91,6 @@ svg.anatomy = (function($, undefined) {
 			console.log(title);
 			console.log(node);
 			circular.showRegion(node.pk);
-//			circular.highlightNode(node, svg, maps, false);
 			state.activeTitle = title;
 			state.allActiveStructs.push(title);
 			svg.circular.setMode('fixation');
@@ -160,6 +159,7 @@ svg.anatomy = (function($, undefined) {
 	
 	/* Canvas Update */
 	
+	// Possibly highlighting related children regions
 	function highlightStructure(structName) {
 		var structSelector = $("#anatomy-map path[oldtitle='" + structName + "']");
 		if (structSelector.length > 0) {
