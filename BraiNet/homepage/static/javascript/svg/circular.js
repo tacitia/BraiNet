@@ -71,21 +71,21 @@ svg.circular = (function($, undefined) {
 				.attr('transform', 'translate(' + (settings.vis.width / 2) + ',' + (settings.vis.height / 2) + ')')
 				.append('g');
 	
-		$(upButton).click(upButtonClick);	
-		$(downButton).click(downButtonClick);	
-		$(removeButton).click(removeButtonClick);
-		$(removeButton).click(anatomyButtonClick);
+		$(doms.upButton).click(upButtonClick);	
+		$(doms.downButton).click(downButtonClick);	
+		$(doms.removeButton).click(removeButtonClick);
+		$(doms.anatomyButton).click(anatomyButtonClick);
 		
-		$(upButton).qtip({
+		$(doms.upButton).qtip({
 			content: 'Up one level in the anatomical hierarchy (or press ALT while clicking)'		
 		});	
-		$(downButton).qtip({
+		$(doms.downButton).qtip({
 			content: 'Down one level in the anatomical hierarchy (or press META while clicking)'		
 		});	
-		$(removeButton).qtip({
+		$(doms.removeButton).qtip({
 			content: 'Remove a brain region from display (or press SHIFT while clicking)'		
 		});	
-		$(anatomyButton).qtip({
+		$(doms.anatomyButton).qtip({
 			content: 'Highlight the selected brain region in the anatomical view'		
 		});	
 	};
