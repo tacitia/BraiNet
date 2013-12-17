@@ -199,9 +199,8 @@ svg.anatomy = (function($, undefined) {
 		
 		if (state.allActiveStructs.length === 0) {
 			// No selectable area for this structure; try to find its ancestor
-			var parent = structNode.parent;
-			while (parent !== null) {
-				var parentNode = maps.keyToNode[parent];
+			var parentNode = structNode.derived.parent;
+			while (parentNode !== null) {
 				var parentSelector = $("#anatomy-map path[oldtitle='" + parentNode.fields.name + "']");
 				if (parentSelector.length > 0) {
 					console.log(parentSelector);
@@ -297,7 +296,8 @@ svg.anatomy = (function($, undefined) {
 			// Retrieve all paths in the SVG and add a 'title' attribute.  The
 			// 'title' attribute is displayed in the qtip2 tooltip.
 			$(doms.path)
-				.attr('title', function() { 
+				.attr('title', function() {
+					console.log($this); 
 					var id = $(this).attr('structure_id');
 					return data.structs[id].name; 
 				});
