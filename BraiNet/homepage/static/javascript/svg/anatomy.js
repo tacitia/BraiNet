@@ -130,7 +130,7 @@ svg.anatomy = (function($, undefined) {
 		var queue = [node.pk];
 		while (newImgId === undefined) {
 			var queueLen = queue.length;
-			for (var i in queue)
+			for (var i in queue) {
 				var n = maps.keyToNode[queue[i]];
 				newImgId = data.structToImg[n.fields.struct_id];
 				queue = $.merge(queue, n.derived.children);
