@@ -30,7 +30,8 @@ svg.anatomy = (function($, undefined) {
 		emphStructs: [],
 		currImgKey: null,
 		currImgId: 100960224,
-		originColor: {}
+		originColor: {},
+		selPath: null
 	};
 	
 	var data = {
@@ -108,8 +109,8 @@ svg.anatomy = (function($, undefined) {
 	function selectStructure(title, isCancel) {
 		state.activeTitle = title;
 		if (isCancel) {
-			emphStructure($(selPath), true);
-			var selPath = "#anatomy-map path[oldtitle='" + title + "']";
+//			emphStructure($(state.selPath), true);
+//			state.selPath = "#anatomy-map path[oldtitle='" + title + "']";
 			$(doms.path).qtip('toggle', false);
 			for (i in state.allActiveStructs) {
 				var selector = $("#anatomy-map path[oldtitle='" + state.allActiveStructs[i] + "']");
@@ -119,20 +120,31 @@ svg.anatomy = (function($, undefined) {
 			state.allActiveStructs = [];
 			return;
 		}
-	
-		// Get the structure id for the given title
-		var id = null;
-		for (var key in _structures) {
-			if (data.structs[key].name === title) {
-				id = key;
-				break;
+		
+		console.log(title);
+		var maps = svg.model.maps()
+		var node = maps.nameToNode[title];
+		var id = node.fields.struct_id;			
+		
+		var newImgId = data.structToImg[id];
+		var queue = [id];
+		while (newImgId === undefined) {
+			for (var i in queue) {
+				var n = maps.keyToNode['2-' + queue[i]];
+				newImgId = data.structToImg[n.fields.struct_id];
+				queue = $.merge(queue, n.derived.children);
 			}
 		}
+		
+		console.log(id);
+		console.log(data.structToImg);
+		console.log(data.structToImg[id]);
+		console.log(state.currImgId);
 	
 		if (data.structToImg[id] !== state.currImgId) {
-			currImgId = data.structToImg[id];
-			if (currImgId !== undefined) { // Will be undefined for structures that are not included in Allen
-				args = { downsample: DOWNSAMPLE };
+			state.currImgId = data.structToImg[id];
+			if (state.currImgId !== undefined) { // Will be undefined for structures that are not included in Allen
+				args = { downsample: settings.DOWNSAMPLE };
 				updateImages(args);
 			}
 		}

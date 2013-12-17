@@ -18,7 +18,6 @@ for row in reader:
 	attributes['reference'] = row[14]
 	attributes['pubmed_link'] = row[19]
 	connection['attributes'] = attributes
-	print connection
 	connections.append(connection)
 	
 outputfilename = '../output/connections_name.json'

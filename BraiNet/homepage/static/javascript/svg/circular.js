@@ -112,12 +112,12 @@ svg.circular = (function($, undefined) {
 		if (state.mode === 'exploration') {
 			state.selectedNode = d;
 			state.mode = 'fixation';
-			svg.anatomy.selectStructure(d.name, false);
+			svg.anatomy.selectStructure(d.fields.name, false);
 		}
 		else if (state.mode === 'fixation') {
 			state.selectedNode = null;
 			state.mode = 'exploration';
-			svg.anatomy.selectStructure(d.name, true);
+			svg.anatomy.selectStructure(d.fields.name, true);
 		}
 		if (window.event.shiftKey === true) {
 			removeButtonClick();
