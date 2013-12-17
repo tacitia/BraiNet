@@ -23,7 +23,7 @@ for d in datasets:
 		try:
 			s_model = Structure(
 						id=str(dataset_model.id) + '-' + str(s['id']),
-						name=str(s['name']), 
+						name=u' '.join(s['name']).encode('utf-8'), 
 						struct_id=s['id'],
 						depth=s['depth'],
 						num_children=s['num_children'],

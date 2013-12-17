@@ -127,13 +127,16 @@ svg.anatomy = (function($, undefined) {
 		var id = node.fields.struct_id;			
 		
 		var newImgId = data.structToImg[id];
-		var queue = [id];
+		var queue = [node.pk];
 		while (newImgId === undefined) {
-			for (var i in queue) {
-				var n = maps.keyToNode['2-' + queue[i]];
+			var queueLen = queue.length;
+			for (var i in queue)
+				var n = maps.keyToNode[queue[i]];
 				newImgId = data.structToImg[n.fields.struct_id];
 				queue = $.merge(queue, n.derived.children);
 			}
+			queue.splice(0, queueLen);
+			if (queue.length < 1) { break; }
 		}
 		
 		console.log(id);
