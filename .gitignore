@@ -1,6 +1,5 @@
 .DS_STORE
 output
-source
 *.log
 *.pot
 *.pyc

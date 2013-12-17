@@ -752,14 +752,19 @@ svg.circular = (function($, undefined) {
 			// In this case the input is either on a level higher than the visibile nodes or its parent not present because of no connection
 			if (parent === undefined) {
 				var activeDescs = findActiveDescends(node);
-				console.log(activeDesc);
 				if (activeDescs.length > 0) {
 					combineRegions(node, activeDescs);
 				}
 				else {
+					var sib = null;
 					for (var i in data.activeNodes) {
-						expandRegion(node);
+						var n = data.activeNodes[i];
+						if (n.derived.group === node.derived.group) {
+							sib = n;
+							break;
+						}
 					}
+					expandRegion(sib, [sib, node]);
 				}
 			}
 			// In this case, the input is on a level lower than the visible nodes
