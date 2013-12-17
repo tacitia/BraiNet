@@ -297,7 +297,7 @@ svg.anatomy = (function($, undefined) {
 			// 'title' attribute is displayed in the qtip2 tooltip.
 			$(doms.path)
 				.attr('title', function() {
-					console.log($this); 
+					console.log($(this)); 
 					var id = $(this).attr('structure_id');
 					return data.structs[id].name; 
 				});

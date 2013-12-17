@@ -17,6 +17,6 @@ try:
 except IntegrityError, e:
 	print e
 
-execfile('connector/database/structure/jsonToSql.py')
+#execfile('connector/database/structure/jsonToSql.py')
 execfile('connector/database/connectivity/jsonToSql.py')
 execfile('connector/database/structure/uploadStructImgMap.py')
