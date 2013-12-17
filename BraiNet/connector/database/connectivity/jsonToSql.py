@@ -14,18 +14,24 @@ index_file_name = 'connector/database/connectivity/index.json'
 
 datasets = json.load(open(index_file_name))
 
+startId = 140000
+
 for d in datasets:
 	conn_file_name = os.path.join(conn_dir, d['dir'], conn_file_loc)
 	print 'Converting connectivity json file: ' + conn_file_name + '...'
 	conn_file = open(conn_file_name)
 	connections = json.load(conn_file)
 	dataset_model = Dataset.objects.get(name=d['name'])
+	counter = 0
 	for c in connections:
+		counter += 1
+		if counter < startid:
+			continue
 		try:
 			c_src_model = Structure.objects.get(id=str(dataset_model.id) + '-' + str(c['source']))
 			c_tgt_model = Structure.objects.get(id=str(dataset_model.id) + '-' + str(c['target']))
 			if (Connection.objects.filter(Q(source_id=c_src_model) & Q(target_id=c_tgt_model)).count() > 0):
-				print 'Connection already exists.'
+				print 'Connection between ' + c['source'] + ' and ' + c['target'] + ' already exists.'
 				continue
 			c_model = Connection(
 						source_id=c_src_model,

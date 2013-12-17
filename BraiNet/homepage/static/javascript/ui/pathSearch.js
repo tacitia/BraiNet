@@ -52,7 +52,6 @@ ui.pathSearch = (function($, undefined) {
 	var cancelSelection = function(id) {
 		state[id].fixed = false;
 		svg.circular.highlightNode(state[id], true);
-//		svg.anatomy.emphStructure(state[id], false);
 	};
 	
 	var setSelection = function(id, node) {
@@ -63,7 +62,6 @@ ui.pathSearch = (function($, undefined) {
 		else {
 			svg.showRegion(node.pk);
 		}
-//		svg.anatomy.selectStructure(node.name, false);
 	};
 	
 	var searchButtonClick = function() {
@@ -86,10 +84,16 @@ ui.pathSearch = (function($, undefined) {
 		doms.sourceList.trigger('liszt:updated');	
 		doms.targetList.trigger('liszt:updated');	
 	};
+	
+	var reset = function() {
+		state.source = null;
+		state.target = null;
+	};
 
 	return {
 		init: init,
-		render: render
+		render: render,
+		reset: reset
 	};
 
 }(jQuery));

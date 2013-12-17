@@ -365,99 +365,11 @@ svg.circular = (function($, undefined) {
 				})
 			.attr("class", "link")
 			.style('stroke-width', '2px')
-//			.attr('stroke-width', function(d) { return Math.min(10, Math.max(1,  Math.ceil(d.base_children.length / 100))) + 'px'; })
+			.attr('stroke-width', function(d) { return Math.min(10, Math.max(1,  Math.ceil(d.derived.leaves.length / 100))) + 'px'; })
 			.attr("id", function(d) { return "circ-link-" + d.pk; })
-//			.attr('title', function(d) {
-//				$(this).data('attrStats', d.attrs);
-//				var dLength = d.derived.isDerived ? d.derived.leaves.length : 1;
-//				return '<p>Encapsulated connections: ' + dLength + '</p><p>Strength: ' + 
-//							'</p><svg id="attrStats-' + $(this).attr('id') + '"></svg>';
-//			})
 			.on("mouseover", linkMouseOver)
 			.on("mouseout", linkMouseOut)
 //			.on("click", function(d){linkClick(d, svg_circular); });
-
-		$('.link').qtip({
-			style: {
-				classes: 'qtip-bootstrap'
-			},
-			position: {
-				my: 'top left',
-				at: 'bottom right',
-				target: $('#circular-pane .link'),
-//				adjust: { x: 5, y: 5 },
-//				viewport: $(window)
-			},
-			hide: {
-				delay: 10000,
-				fixed: true
-			},
-			events: {
-				show: showLinkAttrs, 
-
-/*					var id = api.elements.target.attr('id');
-					var attrData = api.elements.target.data('attrStats');
-					var svg = d3.select('#attrStats-' + id);
-					if (svg.attr('isSet')) { return; }
-					svg.attr('isSet', true)
-						.attr('width', 200)
-						.attr('height', 100);
-					for (var key in attrData) {
-						var attrDatum = attrData[key];
-						var attrArray = [];
-						var countArray = [];
-						var valueArray = [];
-						for (var attrValue in attrDatum) {
-							var attrCount = attrDatum[attrValue];
-							attrArray.push({
-								attrValue: attrValue,
-								attrCount: attrCount
-							});
-							valueArray.push(attrValue);
-							countArray.push(attrCount);
-						} 
-						var minValue = Math.min.apply(Math, countArray);
-						var maxValue = Math.max.apply(Math, countArray);
-						var scale = d3.scale.linear()
-										.domain([minValue, maxValue])
-										.range([0, 80]);
-										
-						var barGroups = svg.selectAll('g.bar')
-							.data(attrArray)
-							.enter()
-							.append('svg:g')
-							.attr('height', 15)
-							.attr('width', 100)
-							.attr('transform', function(d, i) {
-								return 'translate(0, ' + i * 15 + ')';
-							});		
-							
-						var colorPalette = d3.scale.category20().domain(valueArray);
-
-						barGroups.append('rect')
-							.attr('height', 12)
-							.attr('width', function(d) {
-								return scale(d.attrCount);
-							})
-							.attr('x', 0)
-							.attr('fill-opacity', 0.8)
-							.attr('fill', function(d) { return colorPalette(d.attrValue); });
-														
-						barGroups.append('text')
-							.text(function(d) {
-								return d.attrValue + ': ' + d.attrCount;
-							})
-							.attr("transform", function(d, i) {
-								return 'translate(' + (scale(d.attrCount) + 5) + ',12)';
-							});
-					} */
-//				},
-				hide: function(event, api) {
-					$('#attrStats').remove();					
-				}
-			}			
-		});
-
 	};
 
 	var exitNodes = function() {
@@ -557,7 +469,17 @@ svg.circular = (function($, undefined) {
 		} 
 	};
 	
-	var showLinkAttrs = function(event, api) {
+	
+	var reset = function() {
+		initActiveNodes();
+		initActiveLinks();
+		computeNodesParameters();
+//		assignColor();
+		clearCanvas();
+		enterLinks();
+		enterNodes();
+		createNodeTooltips();
+		state.mode = 'exploration';
 	};
 	
 	/* End of Canvas Update*/
@@ -947,7 +869,8 @@ svg.circular = (function($, undefined) {
 		setMode: setMode,
 		highlightNode: highlightNode,
 		findAllDesc: findAllDesc,
-		dimNonSearchResults: dimNonSearchResults
+		dimNonSearchResults: dimNonSearchResults,
+		reset: reset
 	};
 
 }(jQuery));

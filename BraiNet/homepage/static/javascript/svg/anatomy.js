@@ -235,6 +235,15 @@ svg.anatomy = (function($, undefined) {
 		}
 	}
 	
+	var reset = function() {
+		$("#anatomy-map path").qtip('toggle', false);
+		while (emphStructs.length > 0) {
+			emphStructure(emphStructs[0], true);
+		}
+		state.activeTitle = null;
+		state.allActiveStructs = [];
+	};
+	
 	/* End of Canvas Update*/
 	
 	/* SVG Data Update */
@@ -361,7 +370,8 @@ svg.anatomy = (function($, undefined) {
 		init: init,
 		render: render,
 		selectStructure: selectStructure,
-		emphStructure: emphStructure
+		emphStructure: emphStructure,
+		reset: reset
 	};
 
 }(jQuery));

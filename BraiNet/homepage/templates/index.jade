@@ -53,7 +53,7 @@ html(lang="en")
                 div.clear
             div#legend-feature
               h6 Optional (by edge attributes)
-        div.span6
+        div.span5
           h5 Anatomy View
           div.card#anatomy-pane
             div.canvas
@@ -66,6 +66,8 @@ html(lang="en")
                     i.icon-arrow-left
                   button.btn#right-arrow
                     i.icon-arrow-right
+        div.span1#resetDiv
+          button.btn.btn-danger#reset Reset
       div#svg-container
         div.row-fluid
           div.svg-pane.span6
@@ -78,6 +80,8 @@ html(lang="en")
                   i.icon-arrow-down
                 a.btn.right-align#removeButton(href="#")
                   i.icon-remove
+                a.btn.right-align#anatomyButton(href="#")
+                  i.icon-map-marker
               svg.canvas
           div.svg-pane.span6
             h5 Force-directed View

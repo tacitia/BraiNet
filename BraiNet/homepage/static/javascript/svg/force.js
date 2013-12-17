@@ -82,12 +82,6 @@ svg.force = (function($, undefined) {
 		if (window.event.shiftKey === true) {
 			removeButtonClick();
 		}
-		else if (window.event.metaKey === true) {
-			downButtonClick();
-		}
-		else if (window.event.altKey === true) {
-			upButtonClick();
-		}
 	};
 	
 	// When mousing over, highlight itself and the neighbors
@@ -101,17 +95,6 @@ svg.force = (function($, undefined) {
 		$(doms.regionName).text('');
 		if (state.mode !== 'exploration') { return; }
 		highlightNode(node, true);
-	};
-	
-	var upButtonClick = function() {
-		var n = state.selectedNode;
-		if (n === null) { return; }
-		if (n.fields.depth === 0) { return; } // Ignore top level nodes
-		var parent = n.derived.parent; 
-		var nodesToRemove = findActiveDescends(parent);
-		clearAllHighlight();
-		combineRegions(parent, nodesToRemove);	
-		state.mode = 'exploration';
 	};
 	
 	var removeButtonClick = function() {
@@ -137,24 +120,6 @@ svg.force = (function($, undefined) {
 		state.mode = 'exploration';	
 		// Todo: have a list that displays the removed nodes, so that the user can 
 		// add them back when needed
-	};
-	
-	var downButtonClick = function() {
-		var n = state.selectedNode;
-		if (n === null) { return; }
-		var maps = svg.model.maps();
-		var children = [];
-		var ids = n.derived.children;
-		var length = ids.length;
-		for (var i = 0; i < length; ++i) {
-			var c = maps.keyToNode[ids[i]];
-			if (!settings.hideIsolated || !c.derived.isIsolated) {
-				children.push(c);
-			}
-		}
-		clearAllHighlight();
-		expandRegion(n, children);	
-		state.mode = 'exploration';			
 	};
 	
 	 /* End of SVG Objects Interaction */
@@ -972,7 +937,8 @@ svg.force = (function($, undefined) {
 		populateActiveElements: populateActiveElements,
 		isActiveForceNode: isActiveForceNode,
 		isActiveForceLink: isActiveForceLink,
-		updateLayout: updateLayout
+		updateLayout: updateLayout,
+		reset: reset
 	};
 
 }(jQuery));
