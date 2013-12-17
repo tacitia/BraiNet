@@ -6,7 +6,7 @@ from django.http import HttpResponse
 
 # Get and post connectivity data based on user id and dataset id
 
-def getDatasets(request, user_id):
+def getDatasets(request, user_id, dummy_user_id):
 	datasets = Dataset.objects.filter(Q(visibility='public') | Q(user_id=user_id))
 	response_data = serializers.serialize('json', datasets)
 	return HttpResponse(json.dumps(response_data), content_type='application/json')
