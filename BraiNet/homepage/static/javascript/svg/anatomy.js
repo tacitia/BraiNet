@@ -186,12 +186,12 @@ svg.anatomy = (function($, undefined) {
 	
 		var maps = svg.model.maps();
 		var structNode = maps.nameToNode[structName];
-		var descs = circular.findAllDesc(structNode);
+		var descs = svg.circular.findAllDesc(structNode);
 		for (var i in descs) {
 			var desc = descs[i];
-			var descSelector = $("#anatomy-map path[oldtitle='" + desc.name + "']");
+			var descSelector = $("#anatomy-map path[oldtitle='" + desc.fields.name + "']");
 			if (descSelector.length > 0) {
-				state.allActiveStructs.push(desc.name);
+				state.allActiveStructs.push(desc.fields.name);
 				descSelector.attr('isFixed', true);
 				emphStructure(descSelector, false);
 			}
@@ -202,11 +202,11 @@ svg.anatomy = (function($, undefined) {
 			var parent = structNode.parent;
 			while (parent !== null) {
 				var parentNode = maps.keyToNode[parent];
-				var parentSelector = $("#anatomy-map path[oldtitle='" + parentNode.name + "']");
+				var parentSelector = $("#anatomy-map path[oldtitle='" + parentNode.fields.name + "']");
 				if (parentSelector.length > 0) {
 					console.log(parentSelector);
 					emphStructure(parentSelector, false);
-					state.allActiveStructs.push(parentNode.name);
+					state.allActiveStructs.push(parentNode.fields.name);
 					parentSelector.attr('isFixed', true);
 					parentSelector.qtip('toggle', true);
 					break;

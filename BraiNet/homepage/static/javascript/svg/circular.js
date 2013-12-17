@@ -928,7 +928,7 @@ svg.circular = (function($, undefined) {
 				result.push(child);
 				$.merge(children, child.derived.children);
 			}
-			children.splice(0, child_num);
+			children.splice(0, childNum);
 		}
 		return result;
 	}
