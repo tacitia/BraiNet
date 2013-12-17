@@ -25,7 +25,7 @@ for d in datasets:
 	counter = 0
 	for c in connections:
 		counter += 1
-		if counter < startid:
+		if counter < startId:
 			continue
 		try:
 			c_src_model = Structure.objects.get(id=str(dataset_model.id) + '-' + str(c['source']))
