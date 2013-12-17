@@ -65,11 +65,10 @@ ui.pathSearch = (function($, undefined) {
 	};
 	
 	var searchButtonClick = function() {
-		svg.circular.setMode('search');
 		var paths = svg.model.calculatePaths(state.source, state.target, setting.maxHop);
+		svg.circular.displaySearchResult();
 		svg.force.populateActiveElements();
 		svg.force.updateLayout(state.source, state.target);
-		svg.circular.dimNonSearchResults();
 	};
 	
 	var render = function(regionList) {

@@ -28,8 +28,8 @@ svg.force = (function($, undefined) {
 	var data = {
 		nodes: null,
 		links: null,
-		activeNodes: [],
-		activeLinks: []
+		activeNodes: null,
+		activeLinks: null
 	};
 	
 	var svgGens = {
@@ -539,11 +539,19 @@ svg.force = (function($, undefined) {
 		$('.node').qtip('hide');
 	};
 	
+	var reset = function() {
+		clearCanvas();
+		initActiveElements();
+		updateLayout();
+	};
+	
 	/* End of Canvas Update*/
 	
 	/* SVG Data Update */
 	
 	var initActiveElements = function() {
+		data.activeNodes = [];
+		data.activeLinks = [];
 		for (var i in data.nodes) {
 			var n = data.nodes[i];
 			if (!settings.hideIsolated || !n.derived.isIsolated) {
@@ -559,6 +567,8 @@ svg.force = (function($, undefined) {
 	};
 
 	var populateActiveElements = function() {
+		data.activeNodes = [];
+		data.activeLinks = [];
 		var searchNodes = svg.model.searchNodes();
 		var searchLinks = svg.model.searchLinks();
 		for (var i in searchNodes) {

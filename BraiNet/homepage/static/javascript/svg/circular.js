@@ -98,7 +98,6 @@ svg.circular = (function($, undefined) {
 		initActiveNodes();
 		initActiveLinks();
 		computeNodesParameters();
-//		assignColor();
 		clearCanvas();
 		enterLinks();
 		enterNodes();
@@ -117,7 +116,6 @@ svg.circular = (function($, undefined) {
 		if (state.mode === 'exploration') {
 			state.selectedNode = d;
 			state.mode = 'fixation';
-			svg.anatomy.selectStructure(d.fields.name, false);
 		}
 		else if (state.mode === 'fixation') {
 			state.selectedNode = null;
@@ -171,7 +169,7 @@ svg.circular = (function($, undefined) {
 	};
 	
 	var anatomyButtonClick = function() {
-		
+		svg.anatomy.selectStructure(d.fields.name, false);		
 	};
 	
 	var upButtonClick = function() {
@@ -461,6 +459,17 @@ svg.circular = (function($, undefined) {
 		svgObjs.canvas.selectAll('.link').classed('biLink', false);
 		$('.node').qtip('hide');
 	};
+	
+	var displaySearchResult = function() {
+		state.mode = 'search';
+		var searchNodes = svg.model.searchNodes();
+		var nodeIds = [];
+		for (var i in searchNodes) {
+			nodeIds.push(searchNodes[i].pk);
+		}
+		showRegionMulti(nodeIds);
+		dimNonSearchResults();
+	};
 
 	var dimNonSearchResults = function() {
 		var searchNodes = svg.model.searchNodes();
@@ -520,7 +529,7 @@ svg.circular = (function($, undefined) {
 		}
 	};
 	
-	var assignColor = function() {
+/*	var assignColor = function() {
 		var pks = [];
 		for (var i = 0; i < data.activeNodes.length; ++i) {
 			pks.push(data.activeNodes[i].pk);
@@ -530,7 +539,7 @@ svg.circular = (function($, undefined) {
 			var n = data.activeNodes[i];
 			n.derived.color = svgGens.palette(n.pk);
 		}
-	};
+	}; */
 
 	var combineRegions = function(newNode, nodesToRemove) {
 		var maps = svg.model.maps();
@@ -878,7 +887,7 @@ svg.circular = (function($, undefined) {
 		setMode: setMode,
 		highlightNode: highlightNode,
 		findAllDesc: findAllDesc,
-		dimNonSearchResults: dimNonSearchResults,
+		displaySearchResult: displaySearchResult,
 		reset: reset
 	};
 
