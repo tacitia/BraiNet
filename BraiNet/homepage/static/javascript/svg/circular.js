@@ -9,6 +9,7 @@ svg.circular = (function($, undefined) {
 		upButton: '#circular-pane .svg-controller #upButton',
 		downButton: '#circular-pane .svg-controller #downButton',
 		removeButton: '#circular-pane .svg-controller #removeButton',
+		anatomyButton: '#circular-pane .svg-controller #anatomyButton',
 	};
 	
 	var settings = {};
@@ -73,6 +74,7 @@ svg.circular = (function($, undefined) {
 		$(upButton).click(upButtonClick);	
 		$(downButton).click(downButtonClick);	
 		$(removeButton).click(removeButtonClick);
+		$(removeButton).click(anatomyButtonClick);
 		
 		$(upButton).qtip({
 			content: 'Up one level in the anatomical hierarchy (or press ALT while clicking)'		
@@ -82,6 +84,9 @@ svg.circular = (function($, undefined) {
 		});	
 		$(removeButton).qtip({
 			content: 'Remove a brain region from display (or press SHIFT while clicking)'		
+		});	
+		$(anatomyButton).qtip({
+			content: 'Highlight the selected brain region in the anatomical view'		
 		});	
 	};
 	
@@ -163,6 +168,10 @@ svg.circular = (function($, undefined) {
 		svgObjs.canvas.selectAll('.link').classed('hidden', false);
 		$('#circ-node-' + link.derived.source.pk).qtip('hide');
 		$('#circ-node-' + link.derived.target.pk).qtip('hide');
+	};
+	
+	var anatomyButtonClick = function() {
+		
 	};
 	
 	var upButtonClick = function() {

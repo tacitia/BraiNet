@@ -31,7 +31,7 @@ for d in datasets:
 			c_src_model = Structure.objects.get(id=str(dataset_model.id) + '-' + str(c['source']))
 			c_tgt_model = Structure.objects.get(id=str(dataset_model.id) + '-' + str(c['target']))
 			if (Connection.objects.filter(Q(source_id=c_src_model) & Q(target_id=c_tgt_model)).count() > 0):
-				print 'Connection between ' + c['source'] + ' and ' + c['target'] + ' already exists.'
+				print 'Connection between ' + str(c['source']) + ' and ' + str(c['target']) + ' already exists.'
 				continue
 			c_model = Connection(
 						source_id=c_src_model,
