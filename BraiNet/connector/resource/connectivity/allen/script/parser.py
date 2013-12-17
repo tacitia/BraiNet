@@ -9,13 +9,7 @@ for i in range(1, 1390):
 	print 'Parsing connection file #' + str(i) + '...'
 	source_file_name = os.path.join(source_dir, str(i) + '.json')
 	source_file = open(source_file_name, 'r')
-	# The downloaded file has 
-	content = ''
-	for line in source_file:
-		content += line
-	content = content[:len(content)-2]
-#	connections = json.loads(source_file)
-	connections = json.loads(content)
+	connections = json.load(source_file)
 	for c in connections:
 		src = c['source']
 		tgt = c['target']

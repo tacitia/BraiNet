@@ -489,7 +489,7 @@ svg.circular = (function($, undefined) {
 	};
 	
 	// Display a node and set it as in focus
-	var showRegion = function(regionPk) {	
+	var showRegion = function(regionPk) {
 		var maps = svg.model.maps();
 		var region = maps.keyToNode[regionPk];
 		var inNeighbors = maps.keyToInNeighbors[regionPk];
@@ -749,15 +749,22 @@ svg.circular = (function($, undefined) {
 		var maps = svg.model.maps();
 		if (!node.circular.isActive) {
 			var parent = findActiveParent(node);
-			// In this case, the input is on a level higher than the visible nodes
+			// In this case the input is either on a level higher than the visibile nodes or its parent not present because of no connection
 			if (parent === undefined) {
 				var activeDescs = findActiveDescends(node);
-				combineRegions(node, activeDescs);
+				console.log(activeDesc);
+				if (activeDescs.length > 0) {
+					combineRegions(node, activeDescs);
+				}
+				else {
+					for (var i in data.activeNodes) {
+						expandRegion(node);
+					}
+				}
 			}
+			// In this case, the input is on a level lower than the visible nodes
 			else {
 				var siblings = findDescAtDepth(parent, node.fields.depth);
-				console.log('before');
-				console.log(siblings.length);
 				if (settings.regionSelectLinkedOnly) {
 					var inNeighbors = maps.keyToInNeighbors[node.pk];
 					var outNeighbors = maps.keyToOutNeighbors[node.pk];
@@ -769,8 +776,6 @@ svg.circular = (function($, undefined) {
 						}
 					}
 				}
-				console.log('after remove');
-				console.log(siblings.length);
 				expandRegion(parent, siblings);
 			}
 		}

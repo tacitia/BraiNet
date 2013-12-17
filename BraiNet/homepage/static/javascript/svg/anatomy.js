@@ -83,14 +83,15 @@ svg.anatomy = (function($, undefined) {
 			emphStructure($(this), true);
 			$(this).attr('isFixed', false);
 			state.activeTitle = null;
-			state.allActiveStructs.remove(title);
+			console.log(state.allActiveStructs);
+			state.allActiveStructs.splice(state.allActiveStructs.indexOf(title), 1);
 			svg.circular.setMode('exploration');
 		}			
 		else {
 			console.log(title);
 			console.log(node);
 			circular.showRegion(node.pk);
-			circular.highlightNode(node, svg, maps, false);
+//			circular.highlightNode(node, svg, maps, false);
 			state.activeTitle = title;
 			state.allActiveStructs.push(title);
 			svg.circular.setMode('fixation');
