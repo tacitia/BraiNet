@@ -62,6 +62,7 @@ svg.anatomy = (function($, undefined) {
 		$(doms.lArrow).click(leftArrowClick);
 		$(doms.rArrow).click(rightArrowClick);
 
+		console.log('Anatomy view initialized.');
 	};
 	
 	var render = function(d) {
@@ -365,6 +366,7 @@ svg.anatomy = (function($, undefined) {
 	function updateImages(args) {
 		downloadSvg(formatUrl(cons.SVG_DOWNLOAD_PATH, state.currImgId, settings.args));
 		downloadImg(formatUrl(cons.IMG_DOWNLOAD_PATH, state.currImgId, settings.args));
+		console.log("Anatomical images updated.");		
 	};
 	
 	/* End of Network*/

@@ -25,6 +25,7 @@ svg.model = (function($, undefined) {
 	};
 	
 	var getDataset = function(userId, datasetId, maxDepth) {
+		console.log("Requesting dataset " + datasetId + "...");
 		if (datasetId == states.activeDatasetId) { 
 			amplify.publish('datasetReady', data);
 		}

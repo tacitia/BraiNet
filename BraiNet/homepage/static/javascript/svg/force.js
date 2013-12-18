@@ -49,6 +49,8 @@ svg.force = (function($, undefined) {
 				.attr('width', settings.vis.width)
 				.attr('height', settings.vis.height)
 				.append('g');
+
+		console.log('Force view initialized.');
 	};
 	
 	var render = function(d, datasetId) {
@@ -58,6 +60,7 @@ svg.force = (function($, undefined) {
 		// Initialize data.activeNodes to contain the top level nodes
 		initActiveElements();
 		updateLayout();
+		console.log("Force view rendered.");
 	};
 
 	var clearCanvas = function() {

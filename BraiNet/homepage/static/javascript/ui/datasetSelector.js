@@ -11,9 +11,11 @@ ui.datasetSelector = (function($, undefined) {
 	var init = function(userId) {
 		getDatasetList(userId);
 		dom.datasetList.change(selectDataset);
+		console.log('Dataset selector initialized.');
 	};
 	
 	var getDatasetList = function(userId) {
+		console.log('Requesting dataset list...');
 		amplify.request('getDatasetList',
 			{
 				userId: userId,

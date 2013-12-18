@@ -102,6 +102,7 @@ svg.circular = (function($, undefined) {
 		enterLinks();
 		enterNodes();
 		createNodeTooltips();
+		console.log("Circular view rendered.");
 	};
 
 	var clearCanvas = function() {

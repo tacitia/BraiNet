@@ -24,8 +24,7 @@ amplify.request.define('getStructImgMap', 'ajax', {
 /* Subscriptions */
 
 amplify.subscribe('datasetReady', function(data, datasetId) {
-	console.log('amplify');
-	console.log(datasetId);
+	console.log("Dataset " + datasetId + " received.");
 	ui.regionSelector.render(data.nodes);
 	ui.pathSearch.render(data.nodes);
 	svg.renderViews(data, datasetId);
