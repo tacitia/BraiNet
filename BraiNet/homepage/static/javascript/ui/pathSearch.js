@@ -66,9 +66,7 @@ ui.pathSearch = (function($, undefined) {
 	
 	var searchButtonClick = function() {
 		var paths = svg.model.calculatePaths(state.source, state.target, setting.maxHop);
-		svg.circular.displaySearchResult();
-		svg.force.populateActiveElements();
-		svg.force.updateLayout(state.source, state.target);
+		svg.displaySearchResult();
 	};
 	
 	var render = function(regionList) {

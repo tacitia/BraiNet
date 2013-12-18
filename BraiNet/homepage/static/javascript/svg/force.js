@@ -75,11 +75,14 @@ svg.force = (function($, undefined) {
 		if (state.mode === 'exploration') {
 			state.selectedNode = d;
 			state.mode = 'fixation';
+			svg.circular.showRegion(d.pk);
+			svg.circular.selectRegion(d);
 //			selectStructure(d.name, false);
 		}
 		else if (state.mode === 'fixation') {
 			state.selectedNode = null;
 			state.mode = 'exploration';
+			svg.circular.deselectRegion(d);
 //			selectStructure(d.name, true);
 		}
 		if (window.event.shiftKey === true) {
@@ -390,83 +393,6 @@ svg.force = (function($, undefined) {
 //			.on("mouseover", function(d) { linkMouseOver(d, svg_circular); })
 //			.on("mouseout", function(d) { linkMouseOut(d, svg_circular); })
 //			.on("click", function(d){linkClick(d, svg_circular); });
-
-/*		$('.link').qtip({
-			style: {
-				classes: 'qtip-bootstrap'
-			},
-			position: {
-				my: 'top left',
-				at: 'bottom right',
-				target: $('.link'),
-//				adjust: { x: 5, y: 5 },
-//				viewport: $(window)
-			},
-			events: {
-				show: function(event, api) {
-					var id = api.elements.target.attr('id');
-					var attrData = api.elements.target.data('attrStats');
-					var svg = d3.select('#attrStats-' + id);
-					if (svg.attr('isSet')) { return; }
-					svg.attr('isSet', true)
-						.attr('width', 200)
-						.attr('height', 100);
-					for (var key in attrData) {
-						var attrDatum = attrData[key];
-						var attrArray = [];
-						var countArray = [];
-						var valueArray = [];
-						for (var attrValue in attrDatum) {
-							var attrCount = attrDatum[attrValue];
-							attrArray.push({
-								attrValue: attrValue,
-								attrCount: attrCount
-							});
-							valueArray.push(attrValue);
-							countArray.push(attrCount);
-						} 
-						var minValue = Math.min.apply(Math, countArray);
-						var maxValue = Math.max.apply(Math, countArray);
-						var scale = d3.scale.linear()
-										.domain([minValue, maxValue])
-										.range([0, 80]);
-										
-						var barGroups = svg.selectAll('g.bar')
-							.data(attrArray)
-							.enter()
-							.append('svg:g')
-							.attr('height', 15)
-							.attr('width', 100)
-							.attr('transform', function(d, i) {
-								return 'translate(0, ' + i * 15 + ')';
-							});		
-							
-						var colorPalette = d3.scale.category20().domain(valueArray);
-
-						barGroups.append('rect')
-							.attr('height', 12)
-							.attr('width', function(d) {
-								return scale(d.attrCount);
-							})
-							.attr('x', 0)
-							.attr('fill-opacity', 0.8)
-							.attr('fill', function(d) { return colorPalette(d.attrValue); });
-														
-						barGroups.append('text')
-							.text(function(d) {
-								return d.attrValue + ': ' + d.attrCount;
-							})
-							.attr("transform", function(d, i) {
-								return 'translate(' + (scale(d.attrCount) + 5) + ',12)';
-							});
-					}
-				},
-				hide: function(event, api) {
-					$('#attrStats').remove();					
-				}
-			}			
-		}); */
-
 	};
 
 	var exitNodes = function() {
@@ -544,11 +470,30 @@ svg.force = (function($, undefined) {
 		$('.node').qtip('hide');
 	};
 	
+	var displaySearchResult = function() {
+		state.mode = 'search';
+		populateActiveElements();
+		updateLayout(state.source, state.target);		
+	};
+	
 	var reset = function() {
 		console.log('Reset force');
 		clearCanvas();
 		initActiveElements();
 		updateLayout();
+	};
+	
+	var selectRegion = function(node) {
+		state.mode = 'fixation';
+		state.selectedNode = node;
+		clearAllHighlight();
+		highlightNode(node, false);
+	};
+	
+	var deselectRegion = function(node) {
+		state.mode = 'exploration';
+		state.selectedNode = null;
+		clearAllHighlight();
 	};
 	
 	/* End of Canvas Update*/
@@ -558,15 +503,16 @@ svg.force = (function($, undefined) {
 	var initActiveElements = function() {
 		data.activeNodes = [];
 		data.activeLinks = [];
+		var minDepth = window.settings.dataset[state.datasetId].minDepth;
 		for (var i in data.nodes) {
 			var n = data.nodes[i];
-			if (!settings.hideIsolated || !n.derived.isIsolated) {
+			if (n.fields.depth >= minDepth && (!settings.hideIsolated || !n.derived.isIsolated)) {
 				data.activeNodes.push(n);
 			}
 		}
 		for (var i in data.links) {
 			var l = data.links[i];
-			if (!l.derived.isDerived) {
+			if (!l.derived.isDerived && l.derived.source.fields.depth >= minDepth && l.derived.target.fields.depth >= minDepth) {
 				data.activeLinks.push(l);
 			}
 		}
@@ -954,7 +900,11 @@ svg.force = (function($, undefined) {
 		isActiveForceNode: isActiveForceNode,
 		isActiveForceLink: isActiveForceLink,
 		updateLayout: updateLayout,
-		reset: reset
+		reset: reset,
+		clearAllHighlight: clearAllHighlight,
+		selectRegion: selectRegion,
+		deselectRegion: deselectRegion,
+		displaySearchResult: displaySearchResult
 	};
 
 }(jQuery));

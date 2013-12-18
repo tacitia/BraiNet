@@ -117,11 +117,13 @@ svg.circular = (function($, undefined) {
 		if (state.mode === 'exploration') {
 			state.selectedNode = d;
 			state.mode = 'fixation';
+			svg.force.selectRegion(d);
 		}
 		else if (state.mode === 'fixation') {
 			state.selectedNode = null;
 			state.mode = 'exploration';
 			svg.anatomy.selectStructure(d.fields.name, true);
+			svg.force.deselectRegion(d);
 		}
 		if (window.event.shiftKey === true) {
 			removeButtonClick();
@@ -170,7 +172,7 @@ svg.circular = (function($, undefined) {
 	};
 	
 	var anatomyButtonClick = function() {
-		svg.anatomy.selectStructure(d.fields.name, false);		
+		svg.anatomy.selectStructure(state.selectedNode.fields.name, false);		
 	};
 	
 	var upButtonClick = function() {
@@ -373,7 +375,11 @@ svg.circular = (function($, undefined) {
 				})
 			.attr("class", "link")
 			.style('stroke-width', '2px')
-			.attr('stroke-width', function(d) { return Math.min(10, Math.max(1,  Math.ceil(d.derived.leaves.length / 100))) + 'px'; })
+			.attr('stroke-width', function(d) { 
+				console.log(d.derived.leaves);
+				console.log(Math.min(10, Math.max(1,  Math.ceil(d.derived.leaves.length / 100))));
+				return Math.min(10, Math.max(1,  Math.ceil(d.derived.leaves.length / 100))) + 'px'; 
+			})
 			.attr("id", function(d) { return "circ-link-" + d.pk; })
 			.on("mouseover", linkMouseOver)
 			.on("mouseout", linkMouseOut)
@@ -503,6 +509,19 @@ svg.circular = (function($, undefined) {
 		enterNodes();
 		createNodeTooltips();
 		state.mode = 'exploration';
+	};
+
+	var selectRegion = function(node) {
+		state.mode = 'fixation';
+		state.selectedNode = node;
+		clearAllHighlight();
+		highlightNode(node, false);
+	};
+	
+	var deselectRegion = function(region) {
+		state.mode = 'exploration';
+		state.selectedNode = null;
+		clearAllHighlight();
 	};
 	
 	/* End of Canvas Update*/
@@ -813,7 +832,7 @@ svg.circular = (function($, undefined) {
 		var radius = settings.arc.innerRadius + (settings.arc.outerRadius - settings.arc.innerRadius) / 2;
 		datum.circular.x = radius * Math.cos(Math.PI / 2 - angle);
 		datum.circular.y = -radius * Math.sin(Math.PI / 2 - angle);
-		console.log(datum.circular);
+//		console.log(datum.circular);
 	};
 
 	var findActiveParent = function(node) {
@@ -895,7 +914,10 @@ svg.circular = (function($, undefined) {
 		highlightNode: highlightNode,
 		findAllDesc: findAllDesc,
 		displaySearchResult: displaySearchResult,
-		reset: reset
+		reset: reset,
+		clearAllHighlight: clearAllHighlight,
+		selectRegion: selectRegion,
+		deselectRegion: deselectRegion
 	};
 
 }(jQuery));

@@ -30,3 +30,13 @@ svg.showRegion = function(regionPk) {
 svg.showRegionMulti = function(regionPk) {
 	svg.circular.showRegionMulti(regionPk);
 };
+
+svg.clearAllHighlight = function() {
+	svg.circular.clearAllHighlight();
+	svg.force.clearAllHighlight();
+};
+
+svg.displaySearchResult = function() {
+	svg.circular.displaySearchResult();
+	svg.force.displaySearchResult();
+};

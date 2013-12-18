@@ -81,19 +81,17 @@ svg.anatomy = (function($, undefined) {
 		var circular = svg.circular;
 				
 		if ($(this).attr('isFixed') === "true") {
-			circular.highlightNode(node, svg, maps, true);	
+//			circular.highlightNode(node, svg, maps, true);	
+			svg.clearAllHighlight();
 			emphStructure($(this), true);
 			$(this).attr('isFixed', false);
 			state.activeTitle = null;
-			console.log(state.allActiveStructs);
 			state.allActiveStructs.splice(state.allActiveStructs.indexOf(title), 1);
 			svg.circular.setMode('exploration');
 		}			
 		else {
-			console.log(title);
-			console.log(node);
-			circular.showRegion(node.pk);
-			var oldSel = $("#anatomy-map path[oldtitle='" + state.activeTitle + "']");
+			svg.showRegion(node.pk);
+			var oldSel = $("#anatomy-pane path[oldtitle='" + state.activeTitle + "']");
 			emphStructure(oldSel, true);
 			state.activeTitle = title;
 			state.allActiveStructs.push(title);
@@ -116,7 +114,7 @@ svg.anatomy = (function($, undefined) {
 //			state.selPath = "#anatomy-map path[oldtitle='" + title + "']";
 			$(doms.path).qtip('toggle', false);
 			for (i in state.allActiveStructs) {
-				var selector = $("#anatomy-map path[oldtitle='" + state.allActiveStructs[i] + "']");
+				var selector = $("#anatomy-pane path[oldtitle='" + state.allActiveStructs[i] + "']");
 				emphStructure(selector, true);
 			}
 			state.activeTitle = null;
@@ -179,7 +177,7 @@ svg.anatomy = (function($, undefined) {
 	
 	// Possibly highlighting related children regions
 	function highlightStructure(structName) {
-		var structSelector = $("#anatomy-map path[oldtitle='" + structName + "']");
+		var structSelector = $("#anatomy-pane path[oldtitle='" + structName + "']");
 		if (structSelector.length > 0) {
 			state.allActiveStructs.push(structName);
 			structSelector.attr('isFixed', true);
@@ -192,19 +190,20 @@ svg.anatomy = (function($, undefined) {
 		var descs = svg.circular.findAllDesc(structNode);
 		for (var i in descs) {
 			var desc = descs[i];
-			var descSelector = $("#anatomy-map path[oldtitle='" + desc.fields.name + "']");
+			var descSelector = $("#anatomy-pane path[oldtitle='" + desc.fields.name + "']");
 			if (descSelector.length > 0) {
 				state.allActiveStructs.push(desc.fields.name);
 				descSelector.attr('isFixed', true);
 				emphStructure(descSelector, false);
+				descSelector.qtip('toggle', true);
 			}
 		}
 		
 		if (state.allActiveStructs.length === 0) {
 			// No selectable area for this structure; try to find its ancestor
 			var parentNode = structNode.derived.parent;
-			while (parentNode !== null) {
-				var parentSelector = $("#anatomy-map path[oldtitle='" + parentNode.fields.name + "']");
+			while (parentNode !== null && parentNode !== undefined) {
+				var parentSelector = $("#anatomy-pane path[oldtitle='" + parentNode.fields.name + "']");
 				if (parentSelector.length > 0) {
 					console.log(parentSelector);
 					emphStructure(parentSelector, false);
@@ -213,6 +212,7 @@ svg.anatomy = (function($, undefined) {
 					parentSelector.qtip('toggle', true);
 					break;
 				}
+				parentNode = parentNode.derived.parent;
 			}
 		}
 	}
@@ -240,7 +240,7 @@ svg.anatomy = (function($, undefined) {
 	
 	var reset = function() {
 		console.log('Reset anatomy');
-		$("#anatomy-map path").qtip('toggle', false);
+		$("#anatomy-pane path").qtip('toggle', false);
 		while (state.emphStructs.length > 0) {
 			emphStructure(state.emphStructs[0], true);
 		}
@@ -310,7 +310,7 @@ svg.anatomy = (function($, undefined) {
 			// 'title' attribute is displayed in the qtip2 tooltip.
 			$(doms.path)
 				.attr('title', function() {
-					console.log($(this)); 
+//					console.log($(this)); 
 					var id = $(this).attr('structure_id');
 					return data.structs[id].name; 
 				});
