@@ -148,7 +148,7 @@ svg.circular = (function($, undefined) {
 	};
 	
 	var linkMouseOver = function(link) {
-		if (state.mode !== 'exploration') { return; }
+		if (state.mode === 'fixation') { return; }
 		svgObjs.canvas.selectAll('.node')
 			.classed('nofocus', function(d) {
 				return d.pk !== link.derived.source.pk && d.pk !== link.derived.target.pk;
@@ -164,7 +164,11 @@ svg.circular = (function($, undefined) {
 	};
 	
 	var linkMouseOut = function(link) {
-		if (state.mode !== 'exploration') { return; }
+		if (state.mode === 'fixation') { return; }
+		if (state.mode === 'search') { 
+			dimNonSearchResults();		
+			return; 
+		}
 		svgObjs.canvas.selectAll('.node').classed('nofocus', false);
 		svgObjs.canvas.selectAll('.link').classed('hidden', false);
 		$('#circ-node-' + link.derived.source.pk).qtip('hide');

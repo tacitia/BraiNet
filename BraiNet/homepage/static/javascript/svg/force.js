@@ -94,13 +94,13 @@ svg.force = (function($, undefined) {
 	var nodeMouseOver = function(node) {
 		console.log(node);
 		$(doms.regionName).text(node.fields.name);
-		if (state.mode !== 'exploration') { return; }
+		if (state.mode === 'fixation') { return; }
   		highlightNode(node, false);
 	};
 
 	var nodeMouseOut = function(node) {
 		$(doms.regionName).text('');
-		if (state.mode !== 'exploration') { return; }
+		if (state.mode === 'fixation') { return; }
 		highlightNode(node, true);
 	};
 	
@@ -478,6 +478,7 @@ svg.force = (function($, undefined) {
 	
 	var reset = function() {
 		console.log('Reset force');
+		state.mode = 'exploration';
 		clearCanvas();
 		initActiveElements();
 		updateLayout();
