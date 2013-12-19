@@ -40,6 +40,8 @@
               </div>
               <button id="search-button" class="btn"><i class="icon-search"></i>
               </button>
+              <button id="clear-button" class="btn btn-danger"><i class="icon-remove"></i>
+              </button>
             </div>
           </div>
         </div>
@@ -117,9 +119,9 @@
       <div class="row-fluid">
         <div id="conn-info" class="span12">
           <h5>Connection Information</h5>
-          <p id="src-name"></p>
-          <p id="tgt-name"></p>
-          <p id="no-note-msg" class="removed"></p>
+          <p id="src-name">Source: no connection selected.</p>
+          <p id="tgt-name">Target: no connection selected.</p>
+          <p id="no-note-msg">Notes: </p>
           <div id="conn-notes" class="removed">
             <div style="margin-right:10px;" class="multi-col">
               <p>Notes</p>
@@ -147,7 +149,7 @@
             <svg class="canvas"></svg>
           </div>
         </div>
-        <div class="span8">
+        <div id="conn-details" class="span8">
           <ul class="nav nav-tabs">
             <li class="active"><a href="#paper-list" data-toggle="tab">Publications</a>
             </li>
@@ -193,6 +195,7 @@
     <script src="/static/javascript/ui/regionSelector.js"></script>
     <script src="/static/javascript/ui/pathSearch.js"></script>
     <script src="/static/javascript/ui/canvasReset.js"></script>
+    <script src="/static/javascript/ui/linkInfo.js"></script>
     <script src="/static/javascript/svg/index.js"></script>
     <script src="/static/javascript/svg/model.js"></script>
     <script src="/static/javascript/svg/circular.js"></script>

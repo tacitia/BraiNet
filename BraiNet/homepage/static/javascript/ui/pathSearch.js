@@ -6,7 +6,8 @@ ui.pathSearch = (function($, undefined) {
 	var doms = {
 		sourceList: $('#path-search #source-list'),
 		targetList: $('#path-search #target-list'),
-		searchButton: $('#path-search #search-button')
+		searchButton: $('#path-search #search-button'),
+		clearButton: $('#path-search #clear-button')
 	};
 	
 	var setting = {
@@ -23,6 +24,7 @@ ui.pathSearch = (function($, undefined) {
 		doms.sourceList.change(selectSource);
 		doms.targetList.change(selectTarget);
 		doms.searchButton.click(searchButtonClick);
+		doms.clearButton.click(clearButtonClick);
 	};
 	
 	var selectSource = function() {
@@ -66,7 +68,13 @@ ui.pathSearch = (function($, undefined) {
 	
 	var searchButtonClick = function() {
 		var paths = svg.model.calculatePaths(state.source, state.target, setting.maxHop);
-		svg.displaySearchResult();
+		svg.displaySearchResult(state.source, state.target);
+	};
+	
+	var clearButtonClick = function() {
+		state.source = null;
+		state.target = null;
+		svg.clearSearchResult();
 	};
 	
 	var render = function(regionList) {

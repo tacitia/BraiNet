@@ -201,9 +201,6 @@ svg.force = (function($, undefined) {
 			l.target = $.inArray(l.derived.target, data.activeNodes);
 		}
 		
-		console.log(data.activeNodes.length);
-		console.log(data.activeLinks);
-		
 		var gravity = 1;
 		var charge = -12000;
 		var showAll = true;
@@ -470,10 +467,14 @@ svg.force = (function($, undefined) {
 		$('.node').qtip('hide');
 	};
 	
-	var displaySearchResult = function() {
+	var displaySearchResult = function(source, target) {
 		state.mode = 'search';
 		populateActiveElements();
-		updateLayout(state.source, state.target);		
+		updateLayout(source, target);		
+	};
+
+	var clearSearchResult = function() {
+		reset();
 	};
 	
 	var reset = function() {
@@ -905,7 +906,8 @@ svg.force = (function($, undefined) {
 		clearAllHighlight: clearAllHighlight,
 		selectRegion: selectRegion,
 		deselectRegion: deselectRegion,
-		displaySearchResult: displaySearchResult
+		displaySearchResult: displaySearchResult,
+		clearSearchResult: clearSearchResult
 	};
 
 }(jQuery));

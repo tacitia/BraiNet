@@ -158,7 +158,6 @@ svg.circular = (function($, undefined) {
 				return d.pk !== link.pk;
 			}); 	
 //		$('#circ-link-' + link.pk).qtip('show');
-		svg.linkAttr.render(link);
 		$('#circ-node-' + link.derived.source.pk).qtip('show');
 		$('#circ-node-' + link.derived.target.pk).qtip('show');
 	};
@@ -174,6 +173,12 @@ svg.circular = (function($, undefined) {
 		$('#circ-node-' + link.derived.source.pk).qtip('hide');
 		$('#circ-node-' + link.derived.target.pk).qtip('hide');
 	};
+
+	function linkClick(link) {
+		svg.linkAttr.render(link);
+		ui.linkInfo.displayLinkInfo(link);	
+	}
+
 	
 	var anatomyButtonClick = function() {
 		svg.anatomy.selectStructure(state.selectedNode.fields.name, false);		
@@ -378,16 +383,13 @@ svg.circular = (function($, undefined) {
 					return svgGens.curves(coors);
 				})
 			.attr("class", "link")
-			.style('stroke-width', '2px')
 			.attr('stroke-width', function(d) { 
-				console.log(d.derived.leaves);
-				console.log(Math.min(10, Math.max(1,  Math.ceil(d.derived.leaves.length / 100))));
-				return Math.min(10, Math.max(1,  Math.ceil(d.derived.leaves.length / 100))) + 'px'; 
+				return Math.min(10, 1 + Math.ceil(d.derived.leaves.length / 50)) + 'px'; 
 			})
 			.attr("id", function(d) { return "circ-link-" + d.pk; })
 			.on("mouseover", linkMouseOver)
 			.on("mouseout", linkMouseOut)
-//			.on("click", function(d){linkClick(d, svg_circular); });
+			.on("click", linkClick);
 	};
 
 	var exitNodes = function() {
@@ -474,7 +476,7 @@ svg.circular = (function($, undefined) {
 		$('.node').qtip('hide');
 	};
 	
-	var displaySearchResult = function() {
+	var displaySearchResult = function(source, target) {
 		state.mode = 'search';
 		var searchNodes = svg.model.searchNodes();
 		var nodeIds = [];
@@ -483,6 +485,11 @@ svg.circular = (function($, undefined) {
 		}
 		showRegionMulti(nodeIds);
 		dimNonSearchResults();
+	};
+	
+	var clearSearchResult = function() {
+		clearAllHighlight();
+		state.mode = 'exploration';
 	};
 
 	var dimNonSearchResults = function() {
@@ -918,6 +925,7 @@ svg.circular = (function($, undefined) {
 		highlightNode: highlightNode,
 		findAllDesc: findAllDesc,
 		displaySearchResult: displaySearchResult,
+		clearSearchResult: clearSearchResult,
 		reset: reset,
 		clearAllHighlight: clearAllHighlight,
 		selectRegion: selectRegion,

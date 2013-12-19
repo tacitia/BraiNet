@@ -8,6 +8,7 @@ $(document).ready(function() {
 	ui.regionSelector.init();
 	ui.pathSearch.init();
 	ui.canvasReset.init();
+	ui.linkInfo.init();
 	svg.circular.init();
 	svg.force.init();
 	svg.anatomy.init();

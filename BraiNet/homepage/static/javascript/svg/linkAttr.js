@@ -48,7 +48,6 @@ svg.linkAttr = (function($, undefined) {
 
 	  	link.derived.leaves.forEach(function(l) {
 	  		var attrs = maps.keyToLink[l].fields.attributes;
-	  		console.log(attrs);
 	  		for (var i in attrs) {
 				if (!data[i]) data[i] = [];
 				for (var j in attrs[i]) {
