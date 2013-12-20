@@ -1,4 +1,5 @@
 from django.db import models
+import connectivity.models
 
 # Use the default primary key 'id'
 class Account(models.Model):	
@@ -6,4 +7,5 @@ class Account(models.Model):
 	
 class Note(models.Model):
 	user_id = models.ForeignKey('Account')
+	link = models.ForeignKey('connectivity.Connection')
 	content = models.TextField()

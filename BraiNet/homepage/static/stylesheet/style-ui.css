@@ -314,6 +314,13 @@ html,body { height:100%; }
 	padding: 10px 0;
 }
 
+.modal, .modal.fade.in {
+    top: 30%; /* was 10% */
+}
+
+.modal-body {
+	text-align: center;
+}
 
 /* @end */
 

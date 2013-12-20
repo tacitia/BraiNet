@@ -27,5 +27,18 @@ amplify.subscribe('datasetReady', function(data, datasetId) {
 	console.log("Dataset " + datasetId + " received.");
 	ui.regionSelector.render(data.nodes);
 	ui.pathSearch.render(data.nodes);
+//	ui.loadingModal.hide();
 	svg.renderViews(data, datasetId);
+})
+
+amplify.subscribe('renderComplete', function() {
+	svg.renderComplete();
+})
+
+amplify.subscribe('resetComplete', function() {
+	ui.canvasReset.resetComplete();
+	ui.pathSearch.resetComplete();
+})
+
+amplify.subscribe('modalShow', function() {
 })

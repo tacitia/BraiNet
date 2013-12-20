@@ -61,6 +61,7 @@ svg.force = (function($, undefined) {
 		initActiveElements();
 		updateLayout();
 		console.log("Force view rendered.");
+		amplify.publish('renderComplete');
 	};
 
 	var clearCanvas = function() {
@@ -77,16 +78,23 @@ svg.force = (function($, undefined) {
 			state.mode = 'fixation';
 			svg.circular.showRegion(d.pk);
 			svg.circular.selectRegion(d);
-//			selectStructure(d.name, false);
 		}
 		else if (state.mode === 'fixation') {
 			state.selectedNode = null;
 			state.mode = 'exploration';
 			svg.circular.deselectRegion(d);
-//			selectStructure(d.name, true);
+		}
+		else if (state.mode === 'search') {
+			state.selectedNode === null ? state.selectedNode = d : state.selectedNode = null;		
 		}
 		if (window.event.shiftKey === true) {
 			removeButtonClick();
+		}
+		if (window.event.metaKey === true) {
+			downButtonClick();
+		}
+		if (window.event.altKey === true) {
+			upButtonClick();
 		}
 	};
 	
@@ -95,13 +103,41 @@ svg.force = (function($, undefined) {
 		console.log(node);
 		$(doms.regionName).text(node.fields.name);
 		if (state.mode === 'fixation') { return; }
+		if (state.mode === 'search' && state.selectedNode !== null) { return; }
   		highlightNode(node, false);
 	};
 
 	var nodeMouseOut = function(node) {
 		$(doms.regionName).text('');
 		if (state.mode === 'fixation') { return; }
+		if (state.mode === 'search' && state.selectedNode !== null) { return; }
 		highlightNode(node, true);
+	};
+
+	var linkClick = function(link) {
+		svg.linkAttr.render(link);
+		ui.linkInfo.displayLinkInfo(link);	
+	};
+
+	var linkMouseOver = function(link) {
+		if (state.mode === 'fixation') { return; }
+		svgObjs.canvas.selectAll('.node')
+			.classed('nofocus', function(d) {
+				return d.pk !== link.derived.source.pk && d.pk !== link.derived.target.pk;
+			});
+		svgObjs.canvas.selectAll('.link')
+			.classed('hidden', function(d) {
+				return d.pk !== link.pk;
+			});
+	};
+	
+	var linkMouseOut = function(link) {
+		if (state.mode === 'fixation') { return; }
+		if (state.mode === 'search') { 
+			return; 
+		}
+		svgObjs.canvas.selectAll('.node').classed('nofocus', false);
+		svgObjs.canvas.selectAll('.link').classed('hidden', false);
 	};
 	
 	var removeButtonClick = function() {
@@ -240,9 +276,9 @@ svg.force = (function($, undefined) {
 		   .enter().append("svg:line")
 		   .attr("class", "force link")
 		   .style("stroke-width", 3)
-//		   .on('click', linkClick)
-//		   .on('mouseover', linkMouseOver)
-//		   .on('mouseout', linkMouseOut);
+		   .on('click', linkClick)
+		   .on('mouseover', linkMouseOver)
+		   .on('mouseout', linkMouseOut);
 
 
 		var node = svgObjs.canvas.selectAll(".force.node")
@@ -367,30 +403,6 @@ svg.force = (function($, undefined) {
 			.attr('stroke', 'none');
 
 	};
-	
-	var enterLinks = function() {
-		svgObjs.canvas.selectAll(".link")
-			.data(data.activeLinks, function(d) {return d.pk;})
-			.enter().append("svg:path")
-			.attr("d", function(d) {
-					var coors = [{x: d.derived.source.circular.x, y:d.derived.source.circular.y}, 
-								 {x: 0, y: 0},
-								 {x: d.derived.target.circular.x, y:d.derived.target.circular.y}];
-					return svgGens.curves(coors);
-				})
-			.attr("class", "link")
-			.style('stroke-width', '2px')
-//			.attr('stroke-width', function(d) { return Math.min(10, Math.max(1,  Math.ceil(d.base_children.length / 100))) + 'px'; })
-			.attr("id", function(d) { return "circ-link-" + d.pk; })
-/*			.attr('title', function(d) {
-				$(this).data('attrStats', d.attrs);
-				return '<p>Encapsulated connections: ' + d.base_children.length + '</p><p>Strength: ' + 
-							'</p><svg id="attrStats-' + $(this).attr('id') + '"></svg>';
-			}) */
-//			.on("mouseover", function(d) { linkMouseOver(d, svg_circular); })
-//			.on("mouseout", function(d) { linkMouseOut(d, svg_circular); })
-//			.on("click", function(d){linkClick(d, svg_circular); });
-	};
 
 	var exitNodes = function() {
 		svgObjs.canvas.selectAll('.node')
@@ -469,6 +481,7 @@ svg.force = (function($, undefined) {
 	
 	var displaySearchResult = function(source, target) {
 		state.mode = 'search';
+		state.selectedNode = null;
 		populateActiveElements();
 		updateLayout(source, target);		
 	};
@@ -483,6 +496,7 @@ svg.force = (function($, undefined) {
 		clearCanvas();
 		initActiveElements();
 		updateLayout();
+		amplify.publish('resetComplete');
 	};
 	
 	var selectRegion = function(node) {

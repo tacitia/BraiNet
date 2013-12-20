@@ -10,12 +10,20 @@ svg.model = svg.model || {};
 
 //TODO: run selected svg modules using requireJS
 
+svg.state = {
+	rendering: false,
+	renderCompleted: 0	
+};
+
 svg.render = function(userId, datasetId, maxDepth) {
 	svg.model.getDataset(userId, datasetId, maxDepth);
 };
 
 // A shortcut for rendering using all the available svg modules
 svg.renderViews = function(data, datasetId) {
+	svg.state.rendering = true;
+	ui.loadingModal.message('Rendering visualizations...');
+	ui.loadingModal.show();	
 	svg.circular.render(data, datasetId);
 	svg.force.render(data, datasetId);
 	svg.anatomy.render();
@@ -44,4 +52,15 @@ svg.displaySearchResult = function(source, target) {
 svg.clearSearchResult = function() {
 	svg.circular.clearSearchResult();
 	svg.force.clearSearchResult();
+};
+
+svg.renderComplete = function() {
+	if (!svg.state.rendering) { return; }
+	svg.state.renderCompleted += 1;
+	console.log(svg.state.renderCompleted);
+	if (svg.state.renderCompleted === 3) {
+		console.log('I called hide');
+		ui.loadingModal.hide();
+		svg.state.renderCompleted = 0;
+	}
 };

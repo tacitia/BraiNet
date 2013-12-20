@@ -103,6 +103,7 @@ svg.circular = (function($, undefined) {
 		enterNodes();
 		createNodeTooltips();
 		console.log("Circular view rendered.");
+		amplify.publish('renderComplete');		
 	};
 
 	var clearCanvas = function() {
@@ -125,6 +126,9 @@ svg.circular = (function($, undefined) {
 			svg.anatomy.selectStructure(d.fields.name, true);
 			svg.force.deselectRegion(d);
 		}
+		else if (state.mode === 'search') {
+			state.selectedNode === null ? state.selectedNode = d : state.selectedNode = null;		
+		}
 		if (window.event.shiftKey === true) {
 			removeButtonClick();
 		}
@@ -138,13 +142,18 @@ svg.circular = (function($, undefined) {
 	
 	// When mousing over, highlight itself and the neighbors
 	var nodeMouseOver = function(node) {
-		if (state.mode !== 'exploration') { return; }
+		if (state.mode === 'fixation') { return; }
+		if (state.mode === 'search' && state.selectedNode !== null && state.selectedNode !== node) { return; }
   		highlightNode(node, false);
 	};
 
 	var nodeMouseOut = function(node) {
-		if (state.mode !== 'exploration') { return; }
+		if (state.mode === 'fixation') { return; }
+		if (state.mode === 'search' && state.selectedNode !== null) { return; }
 		highlightNode(node, true);
+		if (state.mode === 'search') { 
+			dimNonSearchResults();
+		}
 	};
 	
 	var linkMouseOver = function(link) {
@@ -478,6 +487,7 @@ svg.circular = (function($, undefined) {
 	
 	var displaySearchResult = function(source, target) {
 		state.mode = 'search';
+		state.selectedNode = null;
 		var searchNodes = svg.model.searchNodes();
 		var nodeIds = [];
 		for (var i in searchNodes) {
@@ -520,6 +530,7 @@ svg.circular = (function($, undefined) {
 		enterNodes();
 		createNodeTooltips();
 		state.mode = 'exploration';
+		amplify.publish('resetComplete');
 	};
 
 	var selectRegion = function(node) {

@@ -17,7 +17,9 @@ ui.pathSearch = (function($, undefined) {
 	
 	var state = {
 		source: null,
-		target: null
+		target: null,
+		clearing: null,
+		cleared: null
 	};
 	
 	var init = function() {
@@ -25,6 +27,8 @@ ui.pathSearch = (function($, undefined) {
 		doms.targetList.change(selectTarget);
 		doms.searchButton.click(searchButtonClick);
 		doms.clearButton.click(clearButtonClick);
+		state.cleared = false;
+		state.clearing = false;
 	};
 	
 	var selectSource = function() {
@@ -74,7 +78,18 @@ ui.pathSearch = (function($, undefined) {
 	var clearButtonClick = function() {
 		state.source = null;
 		state.target = null;
-		svg.clearSearchResult();
+		ui.loadingModal.message('Clearing search result...');
+		ui.loadingModal.show();	
+		state.clearing = true;
+		setTimeout(function() {
+			svg.clearSearchResult();
+		}, 500);
+	};
+	
+	var resetComplete = function() {
+		if (!state.clearing) { return; }
+		ui.loadingModal.hide();
+		state.clearing = false;
 	};
 	
 	var render = function(regionList) {
@@ -98,7 +113,8 @@ ui.pathSearch = (function($, undefined) {
 	return {
 		init: init,
 		render: render,
-		reset: reset
+		reset: reset,
+		resetComplete: resetComplete
 	};
 
 }(jQuery));

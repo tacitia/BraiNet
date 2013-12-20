@@ -31,7 +31,9 @@ svg.anatomy = (function($, undefined) {
 		currImgKey: null,
 		currImgId: 100960224,
 		originColor: {},
-		selPath: null
+		selPath: null,
+		globalRendering: null, // Is true if the images are being updated given a render request sent by the main svg controller
+		rendered: null
 	};
 	
 	var data = {
@@ -61,11 +63,15 @@ svg.anatomy = (function($, undefined) {
 	
 		$(doms.lArrow).click(leftArrowClick);
 		$(doms.rArrow).click(rightArrowClick);
+		
+		state.globalRendering = false;
+		state.rendered = 0;
 
 		console.log('Anatomy view initialized.');
 	};
 	
 	var render = function(d) {
+		state.globalRendering = true;
 		downloadStructures(function() {
 			$(doms.canvas).css("background","");
 			updateImages(settings.args);
@@ -158,14 +164,14 @@ svg.anatomy = (function($, undefined) {
 	}
 
 	var leftArrowClick = function() {
-		state.currImgKey = state.currImgKey - 1;
+		state.currImgKey = parseInt(state.currImgKey) - 1;
 		state.currImgId = data.images[state.currImgKey];
 		$(doms.canvas).css("background","");
 		updateImages(settings.args);
 	};
 	
 	var rightArrowClick = function() {
-		state.currImgKey = state.currImgKey + 1;
+		state.currImgKey = parseInt(state.currImgKey) + 1;
 		state.currImgId = data.images[state.currImgKey];
 		$(doms.canvas).css("background","");
 		updateImages(settings.args);
@@ -277,12 +283,20 @@ svg.anatomy = (function($, undefined) {
 	}
 	
 	var storeStructImgMap = function(result) {
+		console.log('storeStructImgMap');
 		var temp = $.parseJSON(result);
+		var imageIds = [];
 		for (var i = 0; i < temp.length; ++i) {
 			var pair = temp[i];
 			data.structToImg[pair.fields.struct_id] = pair.fields.image_id;
-			data.images[i+1] = pair.fields.image_id;
+			if ($.inArray(pair.fields.image_id, imageIds) < 0) {
+				imageIds.push(pair.fields.image_id);
+			}
 		}
+		imageIds.sort(function(a, b) { return a - b; });
+		for (var i in imageIds) {
+			data.images[parseInt(i)+1] = imageIds[i];
+		}		
 		state.currImgKey = retrieveImageKey();
 	};
 
@@ -332,6 +346,8 @@ svg.anatomy = (function($, undefined) {
 			if (state.activeTitle !== null) {
 				highlightStructure(state.activeTitle);
 			}
+			state.rendered += 1;
+			checkRenderStatus();
 		});
 	}
 
@@ -339,14 +355,26 @@ svg.anatomy = (function($, undefined) {
 	function downloadImg(url) {
 		var image = new Image;
 		image.onload = function() {
-			console.log('Image loaded.');
-			console.log(image);
 			$(doms.img).empty();
 			$(doms.img).append(image);
-			console.log($(doms.img));
+			state.rendered += 1;
+			checkRenderStatus();
 		};
 		image.src = url;
 	}
+	
+	var checkRenderStatus = function() {
+		if (state.rendered === 2) {
+			if (state.globalRendering) {
+				amplify.publish('renderComplete');
+				state.globalRendering = false;
+			}
+			else {
+				ui.loadingModal.hide();
+			}
+			state.rendered = 0;
+		}
+	};
 
 	function retrieveStructImageMap() {
 		amplify.request('getStructImgMap',
@@ -364,6 +392,12 @@ svg.anatomy = (function($, undefined) {
 		return null;
 	};
 	function updateImages(args) {
+		console.log(state.currImgId);
+		if (state.currImgId === undefined) return;
+		if (!state.globalRendering) {
+			ui.loadingModal.message('Loading anatomical images...');
+			ui.loadingModal.show();
+		}
 		downloadSvg(formatUrl(cons.SVG_DOWNLOAD_PATH, state.currImgId, settings.args));
 		downloadImg(formatUrl(cons.IMG_DOWNLOAD_PATH, state.currImgId, settings.args));
 		console.log("Anatomical images updated.");		
