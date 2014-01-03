@@ -1,4 +1,6 @@
 from connectivity.models import *
+from account.models import *
+from account.models import ConnNote
 import json
 from django.core import serializers
 from django.db.models import Q
@@ -16,9 +18,12 @@ def getDataset(request, user_id, dataset_id, max_depth):
 	# TODO: Check whether the request is legal (i.e. user id matches dataset id)
 #	print Connection.objects.filter(Q(dataset_id=dataset_id) & Q(source_id__depth__lte=max_depth) & Q(target_id__depth__lte=max_depth)).count()
 #	print Structure.objects.filter(Q(dataset_id=dataset_id) & Q(depth__lte=max_depth)).count()
+	user = Account.objects.get(access_code=user_id)
 	connections = Connection.objects.filter(Q(dataset_id=dataset_id) & Q(source_id__depth__lte=max_depth) & Q(target_id__depth__lte=max_depth))[:10000]
 	structures = Structure.objects.filter(Q(dataset_id=dataset_id))
+	connNotes = ConnNote.objects.filter(Q(dataset_id=dataset_id) & Q(user_id=user.id))
 	dataset = {}
 	dataset['conns'] = serializers.serialize('json', connections)
 	dataset['structs'] = serializers.serialize('json', structures)
+	dataset['connNotes'] = serializers.serialize('json', connNotes)
 	return HttpResponse(json.dumps(dataset), content_type='application/json')

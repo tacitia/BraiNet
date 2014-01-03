@@ -20,6 +20,16 @@ amplify.request.define('getStructImgMap', 'ajax', {
 	type: 'GET'
 })
 
+amplify.request.define('getConnectionNotes', 'ajax', {
+	url: '/account/notes/connection/{userId}/{datasetId}',
+	type: 'GET'
+})
+
+amplify.request.define('addConnectionNote', 'ajax', {
+	url: '/account/notes/connection/add',
+	type: 'POST'
+})
+
 
 /* Subscriptions */
 

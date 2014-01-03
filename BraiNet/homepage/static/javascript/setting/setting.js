@@ -2,7 +2,7 @@
 
 var settings = settings || {};
 
-settings.userId = 0;
+settings.userId = 'abcdefgh';
 settings.dataset = {
 	1: {
 		minDepth: 0

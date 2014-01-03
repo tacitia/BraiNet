@@ -30,7 +30,11 @@ html(lang="en")
                 select.chzn-select.inline#source-list(data-placeholder="Select a source region")
               div
                 span Target
-                select.chzn-select.inline#target-list(data-placeholder="Select a target region")  
+                select.chzn-select.inline#target-list(data-placeholder="Select a target region") 
+              div
+                span Max number of intermediate connections
+                input#max-hop(type="range", min=0, max=3, value=1, step=1)
+                span#max-hop-value
               button.btn#search-button
                 i.icon-search
               button.btn.btn-danger#clear-button
@@ -101,12 +105,9 @@ html(lang="en")
             div.multi-col(style="margin-right:10px;")
               p Notes
             div.multi-col
-              textarea#conn-note-input.removed(rows="3")
-                Add a note...
-              p#conn-note-display(style="width:220px")
-                No notes found.
-              button.btn.btn-success.removed
-                Save
+              textarea#conn-note-input.removed(rows="3") Add a note...
+              p#conn-note-display(style="width:220px") No notes found.
+              button#conn-note-save.btn.btn-success.removed Save
             div.multi-col
               i#conn-note-edit.icon-edit
             div.clear

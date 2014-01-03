@@ -6,6 +6,8 @@ ui.pathSearch = (function($, undefined) {
 	var doms = {
 		sourceList: $('#path-search #source-list'),
 		targetList: $('#path-search #target-list'),
+		maxHop: $('#path-search #max-hop'),
+		maxHopValue: $('#path-search #max-hop-value'),
 		searchButton: $('#path-search #search-button'),
 		clearButton: $('#path-search #clear-button')
 	};
@@ -25,6 +27,7 @@ ui.pathSearch = (function($, undefined) {
 	var init = function() {
 		doms.sourceList.change(selectSource);
 		doms.targetList.change(selectTarget);
+		doms.maxHop.change(setMaxHop);
 		doms.searchButton.click(searchButtonClick);
 		doms.clearButton.click(clearButtonClick);
 		state.cleared = false;
@@ -41,10 +44,15 @@ ui.pathSearch = (function($, undefined) {
 		processSelection(inputKey, 'target');
 	};
 	
+	var setMaxHop = function() {
+		setting.maxHop = this.value;
+		dom.maxHopValue.val(this.value);
+	};
+	
 	var processSelection = function(inputKey, id) {
 		// If there exists an old selected_source, reset its status
 		if (state[id] !== null) {
-			cancelSelection(id);
+			cancelSelection(id, state[id]);
 		}	
 		if (inputKey === '') { 
 			state[id] === null;
@@ -55,9 +63,10 @@ ui.pathSearch = (function($, undefined) {
 		setSelection(id, inputNode);
 	};
 	
-	var cancelSelection = function(id) {
+	var cancelSelection = function(id, node) {
 		state[id].fixed = false;
 		svg.circular.highlightNode(state[id], true);
+		svg.highlightSearchInput(id, node, true);
 	};
 	
 	var setSelection = function(id, node) {
@@ -68,6 +77,7 @@ ui.pathSearch = (function($, undefined) {
 		else {
 			svg.showRegion(node.pk);
 		}
+		svg.highlightSearchInput(id, node, false);
 	};
 	
 	var searchButtonClick = function() {

@@ -377,60 +377,9 @@ svg.force = (function($, undefined) {
 			});  
 	};
 
-	var enterNodes = function() {
-		svgObjs.canvas.selectAll('.node')
-			.data(data.activeNodes, function(d) {return d.pk;})
-			.enter().append('svg:path')
-			.style('fill', function(d) { return svgGens.palette(d.pk);} )
-			.attr('d', svgGens.arcs)
-			.attr('class', 'node')
-			.attr('id', function(d) { return 'circ-node-' + d.pk; })
-			.attr('title', function(d) { return d.fields.name; })
-			.on('click', nodeClick)
-			.on('mouseover', function(d) { nodeMouseOver(d); })
-			.on('mouseout', function(d) { nodeMouseOut(d); });
-
-
-		svgObjs.canvas.selectAll('.mark')
-			.data(data.activeNodes, function(d) {return d.pk;})
-			.enter().append('circle')
-			.attr('id', function(d) { return 'circ-mark-' + d.pk; })
-			.attr('class', 'mark')
-			.attr('cx', function(d) { return d.circular.x; })
-			.attr('cy', function(d) { return d.circular.y; })
-			.attr('r', 1)
-			.attr('fill', 'none')
-			.attr('stroke', 'none');
-
-	};
-
-	var exitNodes = function() {
-		svgObjs.canvas.selectAll('.node')
-		   .data(data.activeNodes, function(d) {return d.pk;})
-		   .exit().remove();
-	}
-
-	var exitLinks = function() {
-		svgObjs.canvas.selectAll('.link')
-		   .data(data.activeLinks, function(d) {return d.pk;})
-		   .exit().remove();
-	}
-	
-	var createNodeTooltips = function() {
-		for (var i = 0; i < data.activeNodes.length; ++i) {
-			var node = data.activeNodes[i];
-			console.log('creating tooltips');
-			$('#force-node-' + node.pk).qtip({
-				style: {
-					classes: 'qtip-bootstrap'
-				},
-				position: {
-					my: 'bottom right',
-					at: 'top left',
-					target: $('#circ-node-' + node.pk),
-				},
-			});
-		}
+	var highlightSearchInput = function(id, node, isCancel) {
+		svgObjs.canvas.select('#force-node-' + node.pk)
+			.classed('selected-' + id, !isCancel);
 	};
 	
 	// Display a node and set it as in focus
@@ -911,6 +860,7 @@ svg.force = (function($, undefined) {
 		showRegion: showRegion,
 		setMode: setMode,
 		highightNode: highlightNode,
+		highlightSearchInput: highlightSearchInput,
 		findAllDesc: findAllDesc,
 		populateActiveElements: populateActiveElements,
 		isActiveForceNode: isActiveForceNode,

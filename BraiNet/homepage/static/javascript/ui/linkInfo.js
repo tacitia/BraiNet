@@ -14,7 +14,7 @@ ui.linkInfo = (function($, undefined) {
 		notesInput: '#conn-notes #conn-note-input',
 		editButton: '#conn-notes #conn-note-edit',
 		saveButton: '#conn-notes #conn-note-save',
-		noNoteMsg: '#conn-notes #no-note-msg'
+		noNoteMsg: '#conn-info #no-note-msg'
 	};
 	
 	var state = {
@@ -24,13 +24,15 @@ ui.linkInfo = (function($, undefined) {
 
 	var init = function(userId) {
 		state.mode = 'display';
+		$(dom.editButton).click(editNotes);
+		$(dom.saveButton).click(saveNotes);
 	};
 
 	function switchMode(mode) {
 		switch (mode) {
 			case "edit":
 				$(dom.notesDisplay).addClass('removed');
-				$(dom.dom.notesInput).removeClass('removed');
+				$(dom.notesInput).removeClass('removed');
 				$(dom.saveButton).removeClass('removed');
 				break;				
 			case "display":
@@ -40,11 +42,23 @@ ui.linkInfo = (function($, undefined) {
 				break;
 		}	
 	}
+
+	var editNotes = function() {
+		switchMode('edit');
+	};
+	
+	var saveNotes = function() {
+		var notes = $(dom.notesInput).val();
+		state.selectedLink.derived.notes = notes;
+		switchMode('display');
+		$(dom.notesDisplay).text(notes);
+		svg.model.addConnNote(state.selectedLink.pk, notes);
+	};
 	
 	var displayLinkInfo = function(link) {
 		state.selectedLink = link;
 		displayMetadata(link);
-//		displayNotes();
+		displayNotes();
 		switchMode('display');
 //		displayPublications();
 		displayOriginRecords();
@@ -58,20 +72,17 @@ ui.linkInfo = (function($, undefined) {
 	};
 	
 	var displayNotes = function() {
-		if (!(activeDataset.isClone || activeDataset.isCustom)) {
+		console.log('displayNotes');
+		if (state.selectedLink.derived.isDerived) {
 			$(dom.noNoteMsg).removeClass('removed');
 			$(dom.notesDiv).addClass('removed');
-			$(dom.noNoteMsg).text('Cannot add notes for public datasets. Please clone and select a personal copy using "Manage Data" panel to add notes.');
-		}
-		else if (cl.link.isDerived) {
-			$(dom.noNoteMsg).removeClass('removed');
-			$(dom.notesDiv).addClass('removed');
-			$(dom.noNoteMsg).text('Cannot edit derived connections. Please add notes directly to a sub-connection.');
+			$(dom.noNoteMsg).text('Notes: Cannot edit derived connections. Please add notes directly to a sub-connection.');
 		}	
 		else {
 			$(dom.noNoteMsg).addClass('removed');
 			$(dom.notesDiv).removeClass('removed');
-			$(dom.notesDisplay).text(cl.link.notes === null ? "No notes found." : cl.link.notes);
+			console.log(state.selectedLink.derived.note);
+			$(dom.notesDisplay).text(state.selectedLink.derived.note === undefined ? "No notes found." : state.selectedLink.derived.note);
 		}
 	};
 	

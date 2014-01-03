@@ -42,9 +42,22 @@ svg.model = (function($, undefined) {
 		}
 	};
 	
+	var addConnNote = function(linkId, notes) {
+		console.log('Adding conn note into database...');
+		amplify.request('addConnectionNote',
+			{
+				userId: user.model.id(),
+				datasetId: states.activeDatasetId,
+				linkId: linkId,
+				content: notes,
+				csrfmiddlewaretoken: '{{ csrf_token }}'
+			});
+	};
+	
 	var datasetReceived = function(d) {
 		d.conns = $.parseJSON(d.conns);
 		d.structs = $.parseJSON(d.structs);
+		d.connNotes = $.parseJSON(d.connNotes);
 		for (var i = 0; i < d.conns.length; ++i) {
 			delete d.conns[i].model;
 			d.conns[i].fields.attributes = $.parseJSON(d.conns[i].fields.attributes);
@@ -59,6 +72,7 @@ svg.model = (function($, undefined) {
 		buildNodeHierarchy();
 		assignGroups();
 		buildLinksMaps();
+		addNotes(d.connNotes);
 		console.log('# of links before creating derived links: ' + data.links.length);
 		buildLinkHierarchy();
 		console.log('# of links after creating derived links: ' + data.links.length);
@@ -75,6 +89,11 @@ svg.model = (function($, undefined) {
 		node.derived.children = [];
 		
 		node.derived.isIsolated = true; // Initialization; node with connection will be marked as false in registerLink
+		
+		node.derived.ancestors = $.parseJSON(node.fields.struct_id_path);
+		for (var i in node.derived.ancestors) {
+			node.derived.ancestors[i] = states.activeDatasetId + '-' + node.derived.ancestors[i];
+		}
 		
 		maps.keyToNode[node.pk] = node;
 		maps.nameToNode[node.fields.name] = node;
@@ -159,6 +178,14 @@ svg.model = (function($, undefined) {
 		for (var i = 0; i < numLinks; ++i) {
 			var link = data.links[i];
 			registerLink(link, false);
+		}
+	};
+	
+	var addNotes = function(notes) {
+		for (var i in notes) {
+			var n = notes[i];
+			var l = maps.keyToLink[n.fields.link];
+			l.derived.note = n.fields.content;
 		}
 	};
 	
@@ -284,6 +311,12 @@ svg.model = (function($, undefined) {
 			for (var i = 0; i < neighborNum; ++i) {
 				var neighborId = neighbors[i];
 				var neighborNode = maps.keyToNode[neighborId];
+/*				if ($.inArray(source.pk, neighborNode.derived.ancestors) > -1 || $.inArray(target.pk, neighborNode.derived.ancestors) > -1) {
+					continue;
+				}
+				if ($.inArray(neighborNode.pk, source.derived.ancestors) > -1 || $.inArray(neighborNode.pk, target.derived.ancestors) > -1) {
+					continue;
+				} */
 /*				if (neighborNode.fields.name === 'Ventral tegmental area') {
 					console.log('found');
 					console.log(neighborNode);
@@ -342,7 +375,8 @@ svg.model = (function($, undefined) {
 		maps: function() { return maps; },
 		calculatePaths: calculatePaths,
 		searchNodes: function() { return data.searchNodes; },
-		searchLinks: function() { return data.searchLinks; }
+		searchLinks: function() { return data.searchLinks; },
+		addConnNote: addConnNote
 	};
 
 }(jQuery));

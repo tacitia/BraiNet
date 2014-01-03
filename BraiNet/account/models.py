@@ -5,7 +5,8 @@ import connectivity.models
 class Account(models.Model):	
 	access_code = models.CharField(max_length=16, unique=True)
 	
-class Note(models.Model):
+class ConnNote(models.Model):
 	user_id = models.ForeignKey('Account')
+	dataset_id = models.ForeignKey('connectivity.Dataset')
 	link = models.ForeignKey('connectivity.Connection')
 	content = models.TextField()

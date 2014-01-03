@@ -25,6 +25,14 @@
     opacity: 1;
 }
 
+.node.selected-source {
+    stroke: #25fb3a;
+    stroke-width: 2px;
+}
+.node.selected-target {
+    stroke: #fa0615;
+    stroke-width: 2px;
+}
 
 /*  links (connections) */
 .link.nofocus {
@@ -92,13 +100,6 @@
 /*green*/
 .arc.source {
     fill: #2ca02c !important;
-}
-
-.arc.selected-source {
-    fill: #25fb3a;
-}
-.arc.selected-target {
-    fill: #fa0615;
 }
 
 .arc.selected {

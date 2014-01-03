@@ -28,7 +28,9 @@ svg.circular = (function($, undefined) {
 		mode: 'exploration', //Three possible values for mode: exploration, search, and fixation
 		selectedNode: null,
 		ignoredNodes: [],
-		datasetId: null
+		datasetId: null,
+		searchSource: null,
+		searchTarget: null
 	};
 	
 	var data = {
@@ -109,6 +111,7 @@ svg.circular = (function($, undefined) {
 	var clearCanvas = function() {
 		svgObjs.canvas.selectAll('.node').remove();
 		svgObjs.canvas.selectAll('.link').remove();
+		$('.node').qtip('hide');
 	}
 	
 	/* SVG Objects Interaction */
@@ -127,7 +130,14 @@ svg.circular = (function($, undefined) {
 			svg.force.deselectRegion(d);
 		}
 		else if (state.mode === 'search') {
-			state.selectedNode === null ? state.selectedNode = d : state.selectedNode = null;		
+			if (state.selectedNode === null) {
+				state.selectedNode = d;
+				svg.force.selectRegion(d);
+			}
+			else {
+				svg.force.deselectRegion(state.selectedNode);
+				state.selectedNode = null;
+			}
 		}
 		if (window.event.shiftKey === true) {
 			removeButtonClick();
@@ -166,7 +176,6 @@ svg.circular = (function($, undefined) {
 			.classed('hidden', function(d) {
 				return d.pk !== link.pk;
 			}); 	
-//		$('#circ-link-' + link.pk).qtip('show');
 		$('#circ-node-' + link.derived.source.pk).qtip('show');
 		$('#circ-node-' + link.derived.target.pk).qtip('show');
 	};
@@ -352,6 +361,11 @@ svg.circular = (function($, undefined) {
 			}
 		}
 	};
+	
+	var highlightSearchInput = function(id, node, isCancel) {
+		svgObjs.canvas.select('#circ-node-' + node.pk)
+			.classed('selected-' + id, !isCancel);
+	};
 
 	var enterNodes = function() {
 		svgObjs.canvas.selectAll('.node')
@@ -487,6 +501,8 @@ svg.circular = (function($, undefined) {
 	
 	var displaySearchResult = function(source, target) {
 		state.mode = 'search';
+		state.selectedSource = source;
+		state.selectedTarget = target;
 		state.selectedNode = null;
 		var searchNodes = svg.model.searchNodes();
 		var nodeIds = [];
@@ -500,9 +516,13 @@ svg.circular = (function($, undefined) {
 	var clearSearchResult = function() {
 		clearAllHighlight();
 		state.mode = 'exploration';
+		svgObjs.canvas.selectAll('.node')
+			.classed('selected-source', false);
+		svgObjs.canvas.selectAll('.node')
+			.classed('selected-target', false);
 	};
 
-	var dimNonSearchResults = function() {
+	var dimNonSearchResults = function(source, target) {
 		var searchNodes = svg.model.searchNodes();
 		var searchLinks = svg.model.searchLinks();
 		svgObjs.canvas.selectAll('.node')
@@ -513,9 +533,18 @@ svg.circular = (function($, undefined) {
 			.classed('hidden', function(d) {
 				return $.inArray(d, searchLinks) < 0;
 			});
+		svgObjs.canvas.selectAll('.node')
+			.classed('selected-source', function(d) {
+				return d.pk === state.selectedSource.pk;
+			});
+		svgObjs.canvas.selectAll('.node')
+			.classed('selected-target', function(d) {
+				return d.pk === state.selectedTarget.pk;
+			});
 		for (var i = 0; i < searchNodes.length; ++i) {
 			$('#circ-node-' + searchNodes[i].pk).qtip('show');
 		} 
+		
 	};
 	
 	
@@ -733,7 +762,7 @@ svg.circular = (function($, undefined) {
 
 	var displayNode = function(node) {
 		console.log('displaying');
-		console.log(node);
+		console.log(node.fields.name);
 		var maps = svg.model.maps();
 		if (!node.circular.isActive) {
 			var parent = findActiveParent(node);
@@ -741,6 +770,9 @@ svg.circular = (function($, undefined) {
 			if (parent === undefined) {
 				var activeDescs = findActiveDescends(node);
 				if (activeDescs.length > 0) {
+					if (state.mode === 'search' && ($.inArray(state.selectedSource, activeDescs) > -1 || $.inArray(state.selectedTarget, activeDescs) > -1)) {
+						return;
+					}
 					combineRegions(node, activeDescs);
 				}
 				else {
@@ -758,6 +790,9 @@ svg.circular = (function($, undefined) {
 			// In this case, the input is on a level lower than the visible nodes
 			else {
 				var siblings = findDescAtDepth(parent, node.fields.depth);
+				if (state.mode === 'search' && (parent.pk === state.selectedSource.pk || parent.pk === state.selectedTarget.pk)) {
+					return;
+				}
 				if (settings.regionSelectLinkedOnly) {
 					var inNeighbors = maps.keyToInNeighbors[node.pk];
 					var outNeighbors = maps.keyToOutNeighbors[node.pk];
@@ -934,6 +969,7 @@ svg.circular = (function($, undefined) {
 		showRegionMulti: showRegionMulti,
 		setMode: setMode,
 		highlightNode: highlightNode,
+		highlightSearchInput: highlightSearchInput,
 		findAllDesc: findAllDesc,
 		displaySearchResult: displaySearchResult,
 		clearSearchResult: clearSearchResult,

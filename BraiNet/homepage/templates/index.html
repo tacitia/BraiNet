@@ -38,6 +38,9 @@
               <div><span>Target</span>
                 <select id="target-list" data-placeholder="Select a target region" class="chzn-select inline"></select>
               </div>
+              <div><span>Max number of intermediate connections</span>
+                <input id="max-hop" type="range" min="0" max="3" value="1" step="1"><span id="max-hop-value"></span>
+              </div>
               <button id="search-button" class="btn"><i class="icon-search"></i>
               </button>
               <button id="clear-button" class="btn btn-danger"><i class="icon-remove"></i>
@@ -121,19 +124,14 @@
           <h5>Connection Information</h5>
           <p id="src-name">Source: no connection selected.</p>
           <p id="tgt-name">Target: no connection selected.</p>
-          <p id="no-note-msg">Notes: </p>
+          <p id="no-note-msg">Notes: no connection selected.</p>
           <div id="conn-notes" class="removed">
             <div style="margin-right:10px;" class="multi-col">
               <p>Notes</p>
             </div>
-            <div class="multi-col"><textarea id="conn-note-input" rows="3" class="removed">
-                <Add>a note...</Add></textarea>
-              <p id="conn-note-display" style="width:220px">
-                <No>notes found.</No>
-              </p>
-              <button class="btn btn-success removed">
-                <Save></Save>
-              </button>
+            <div class="multi-col"><textarea id="conn-note-input" rows="3" class="removed">Add a note...</textarea>
+              <p id="conn-note-display" style="width:220px">No notes found.</p>
+              <button id="conn-note-save" class="btn btn-success removed">Save</button>
             </div>
             <div class="multi-col"><i id="conn-note-edit" class="icon-edit"></i>
             </div>
@@ -178,7 +176,7 @@
     <div class="foot-section">
       <div id="loading-modal" class="modal hide fade">
         <div class="modal-body"><img src="/static/image/loading.gif">
-          <p id="message">Loading...</p>
+          <p id="message">Loading...Please wait.</p>
         </div>
       </div>
     </div>
