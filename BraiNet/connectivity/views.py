@@ -14,7 +14,7 @@ def getDatasets(request, user_id, dummy_user_id):
 	return HttpResponse(json.dumps(response_data), content_type='application/json')
 	
 
-def getDataset(request, user_id, dataset_id, max_depth):
+def getDataset(request, user_id, dataset_id, max_depth, dummy_user_id, dummy_dataset_id, dummy_max_depth):
 	# TODO: Check whether the request is legal (i.e. user id matches dataset id)
 #	print Connection.objects.filter(Q(dataset_id=dataset_id) & Q(source_id__depth__lte=max_depth) & Q(target_id__depth__lte=max_depth)).count()
 #	print Structure.objects.filter(Q(dataset_id=dataset_id) & Q(depth__lte=max_depth)).count()
