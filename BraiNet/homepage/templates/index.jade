@@ -140,6 +140,10 @@ html(lang="en")
         div.modal-body
           img(src="/static/image/loading.gif")
           p#message Loading...Please wait.
+      div(class="modal hide fade")#alert-modal
+        div.modal-body
+          p#message
+          button.btn(data-dismiss="modal") Ok
     script(src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js")
     script(src="/static/library/bootstrap/js/bootstrap.min.js")
     script(src="/static/library/d3/d3.v3.min.js")
@@ -161,6 +165,7 @@ html(lang="en")
     script(src="/static/javascript/ui/canvasReset.js")
     script(src="/static/javascript/ui/linkInfo.js")
     script(src="/static/javascript/ui/loadingModal.js")
+    script(src="/static/javascript/ui/alertModal.js")
     script(src="/static/javascript/svg/index.js")
     script(src="/static/javascript/svg/model.js")
     script(src="/static/javascript/svg/circular.js")

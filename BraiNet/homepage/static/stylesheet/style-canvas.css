@@ -33,6 +33,11 @@
     stroke: #fa0615;
     stroke-width: 2px;
 }
+.node.selected-struct {
+    stroke: #DAA520;
+    stroke-width: 2px;
+}
+
 
 /*  links (connections) */
 .link.nofocus {

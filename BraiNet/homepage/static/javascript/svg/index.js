@@ -39,9 +39,9 @@ svg.showRegionMulti = function(regionPk) {
 	svg.circular.showRegionMulti(regionPk);
 };
 
-svg.highlightSearchInput = function(id, node, isCancel) {
-	svg.circular.highlightSearchInput(id, node, isCancel);
-	svg.force.highlightSearchInput(id, node, isCancel);
+svg.highlightInput = function(id, node, isCancel) {
+	svg.circular.highlightInput(id, node, isCancel);
+	svg.force.highlightInput(id, node, isCancel);
 };
 
 svg.clearAllHighlight = function() {

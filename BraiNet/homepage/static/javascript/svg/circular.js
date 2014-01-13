@@ -82,7 +82,7 @@ svg.circular = (function($, undefined) {
 			content: 'Up one level in the anatomical hierarchy (or press ALT while clicking)'		
 		});	
 		$(doms.downButton).qtip({
-			content: 'Down one level in the anatomical hierarchy (or press META while clicking)'		
+			content: 'Down one level in the anatomical hierarchy (or press META/Command Key/Windows Key while clicking)'		
 		});	
 		$(doms.removeButton).qtip({
 			content: 'Remove a brain region from display (or press SHIFT while clicking)'		
@@ -362,7 +362,7 @@ svg.circular = (function($, undefined) {
 		}
 	};
 	
-	var highlightSearchInput = function(id, node, isCancel) {
+	var highlightInput = function(id, node, isCancel) {
 		svgObjs.canvas.select('#circ-node-' + node.pk)
 			.classed('selected-' + id, !isCancel);
 	};
@@ -969,7 +969,7 @@ svg.circular = (function($, undefined) {
 		showRegionMulti: showRegionMulti,
 		setMode: setMode,
 		highlightNode: highlightNode,
-		highlightSearchInput: highlightSearchInput,
+		highlightInput: highlightInput,
 		findAllDesc: findAllDesc,
 		displaySearchResult: displaySearchResult,
 		clearSearchResult: clearSearchResult,

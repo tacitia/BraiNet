@@ -146,10 +146,11 @@ svg.anatomy = (function($, undefined) {
 			if (queue.length < 1) { break; }
 		}
 		
-		console.log(id);
-		console.log(data.structToImg);
-		console.log(data.structToImg[id]);
-		console.log(state.currImgId);
+		
+		if (data.structToImg[id] === undefined) {
+			ui.alertModal.message('Anatomical image for the selected region is not available.');
+			ui.alertModal.show();
+		}
 	
 		if (data.structToImg[id] !== state.currImgId) {
 			state.currImgId = data.structToImg[id];

@@ -10,6 +10,7 @@ $(document).ready(function() {
 	ui.canvasReset.init();
 	ui.linkInfo.init();
 	ui.loadingModal.init();
+	ui.alertModal.init();
 	svg.circular.init();
 	svg.force.init();
 	svg.anatomy.init();

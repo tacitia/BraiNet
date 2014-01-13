@@ -377,7 +377,7 @@ svg.force = (function($, undefined) {
 			});  
 	};
 
-	var highlightSearchInput = function(id, node, isCancel) {
+	var highlightInput = function(id, node, isCancel) {
 		svgObjs.canvas.select('#force-node-' + node.pk)
 			.classed('selected-' + id, !isCancel);
 	};
@@ -860,7 +860,7 @@ svg.force = (function($, undefined) {
 		showRegion: showRegion,
 		setMode: setMode,
 		highightNode: highlightNode,
-		highlightSearchInput: highlightSearchInput,
+		highlightInput: highlightInput,
 		findAllDesc: findAllDesc,
 		populateActiveElements: populateActiveElements,
 		isActiveForceNode: isActiveForceNode,

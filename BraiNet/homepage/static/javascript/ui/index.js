@@ -8,5 +8,6 @@ ui.pathSearch = ui.pathSearch || {};
 ui.canvasReset = ui.canvasReset || {};
 ui.linkInfo = ui.linkInfo || {};
 ui.loadingModal = ui.loadingModal || {};
+ui.alertModal = ui.alertModal || {};
 
 //TODO: run selected ui modules using requireJS
