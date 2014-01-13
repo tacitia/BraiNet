@@ -66,7 +66,7 @@ ui.pathSearch = (function($, undefined) {
 	var cancelSelection = function(id, node) {
 		state[id].fixed = false;
 		svg.circular.highlightNode(state[id], true);
-		svg.highlightSearchInput(id, node, true);
+		svg.highlightInput(id, node, true);
 	};
 	
 	var setSelection = function(id, node) {
@@ -77,7 +77,7 @@ ui.pathSearch = (function($, undefined) {
 		else {
 			svg.showRegion(node.pk);
 		}
-		svg.highlightSearchInput(id, node, false);
+		svg.highlightInput(id, node, false);
 	};
 	
 	var searchButtonClick = function() {
