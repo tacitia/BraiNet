@@ -5,8 +5,7 @@ svg.force = (function($, undefined) {
 
 	var doms = {
 		canvas: '#force-pane .canvas',
-		controller: '#circular-pane .svg-controller',
-		regionName: '#force-pane .svg-controller #region-name'
+		regionName: '#force-pane .svg-controller #region-name',
 	};
 	
 	var settings = {};
@@ -17,6 +16,7 @@ svg.force = (function($, undefined) {
 	// TODO: The settings below should be exposed to the users later
 	settings.hideIsolated = true;
 	settings.regionSelectLinkedOnly = true; // Only display nodes that are connected to the node being searched for
+	settings.showAllRegionAtInit = false;
 	
 	var state = {
 		mode: 'exploration', //Three possible values for mode: exploration, search, and fixation
@@ -39,7 +39,8 @@ svg.force = (function($, undefined) {
 	var svgObjs = {
 		canvas: null,
 		links: null,
-		force: null
+		force: null,
+		noSearchMsg: null
 	};
 
 	var init = function() {
@@ -58,8 +59,13 @@ svg.force = (function($, undefined) {
 		data.links = d.links;
 		state.datasetId = datasetId;
 		// Initialize data.activeNodes to contain the top level nodes
-		initActiveElements();
-		updateLayout();
+		if (settings.showAllRegionAtInit) {
+			initActiveElements();
+			updateLayout();
+		}
+		else {
+			displayNoSearchMessage();
+		}
 		console.log("Force view rendered.");
 		amplify.publish('renderComplete');
 	};
@@ -215,13 +221,13 @@ svg.force = (function($, undefined) {
 			}
 			if (source !== undefined && d.pk === source.pk) {
 				d.fixed = true;
-				d.x = 150;
-				d.y = 350;
+				d.x = 100;
+				d.y = 280;
 			}
 			else if (target !== undefined && d.pk === target.pk) {
 				d.fixed = true;
-				d.x = 650;
-				d.y = 350;
+				d.x = 500;
+				d.y = 280;
 			}
 			else {
 				d.fixed = false;
@@ -262,7 +268,7 @@ svg.force = (function($, undefined) {
 					  : 10 * Math.max(l.source.derived.group != l.target.derived.group ? s[1] : 2/s[1],
 										l.source.derived.group != l.target.derived.group ? t[1] : 2/t[1]) + 20;
 				  })
-				  .linkStrength(1)
+				  .linkStrength(0.3)
 	              .gravity(gravity)
 				  .charge(charge)
 				  .friction(0.5);
@@ -293,14 +299,16 @@ svg.force = (function($, undefined) {
 		   .on('click', nodeClick)
 		   .on('mouseover', nodeMouseOver)
 		   .on('mouseout', nodeMouseOut);
+		   
+		node.call(svgObjs.force.drag);
 
-		node.call(svgObjs.force.drag().origin(function() {
+/*		node.call(svgObjs.force.drag().origin(function() {
         			var t = d3.transform(d3.select(this).attr("transform")).translate;
         			return {x: t[0], y: t[1]};
     			}).on("drag.force", function() {
         			svgObjs.force.stop();
         			d3.select(this).attr("transform", "translate(" + d3.event.x + "," + d3.event.y + ")");
-    			}));
+    			})); */
 
 		svgObjs.force.on("tick", function(e) {
 			  // To bundle nodes without links (useful)
@@ -431,6 +439,7 @@ svg.force = (function($, undefined) {
 	var displaySearchResult = function(source, target) {
 		state.mode = 'search';
 		state.selectedNode = null;
+		removeNoSearchMessage();
 		populateActiveElements();
 		updateLayout(source, target);		
 	};
@@ -439,12 +448,32 @@ svg.force = (function($, undefined) {
 		reset();
 	};
 	
+	var displayNoSearchMessage = function() {
+		svgObjs.noSearchMsg = d3.select(doms.canvas)
+								.append('g')
+								.attr('transform', 'translate(180,300)')
+								.append('svg:text')
+								.text('No active search')
+								.attr('font-size', 30)
+								.attr('fill', 'lightgray')
+								.attr('id', 'noSearchMsg');
+	};
+	
+	var removeNoSearchMessage = function() {
+		d3.select('#noSearchMsg').remove();
+	};
+	
 	var reset = function() {
 		console.log('Reset force');
 		state.mode = 'exploration';
 		clearCanvas();
-		initActiveElements();
-		updateLayout();
+		if (settings.showAllRegionAtInit) {
+			initActiveElements();
+			updateLayout();
+		}
+		else {
+			displayNoSearchMessage();
+		}
 		amplify.publish('resetComplete');
 	};
 	
@@ -468,6 +497,7 @@ svg.force = (function($, undefined) {
 	var initActiveElements = function() {
 		data.activeNodes = [];
 		data.activeLinks = [];
+		if (!settings.showAllRegionAtInit) { return; }
 		var minDepth = window.settings.dataset[state.datasetId].minDepth;
 		for (var i in data.nodes) {
 			var n = data.nodes[i];
@@ -497,31 +527,6 @@ svg.force = (function($, undefined) {
 			var l = searchLinks[i];
 			data.activeLinks.push(l);
 			l.force.isActive = true;
-		}
-	};
-
-	var initActiveNodes = function() {
-		var maps = svg.model.maps();
-		// TODO: change the name of the "settings" variables so there is no conflict between the global one and 
-		// the local ones
-		var minDepth = window.settings.dataset[state.datasetId].minDepth;
-		for (var key in maps.keyToNode) {
-			var n = maps.keyToNode[key];
-			if (n.fields.depth === minDepth && (!settings.hideIsolated || !n.derived.isIsolated)) {
-				n.circular.isActive = true;
-				data.activeNodes.push(n);
-			}
-		}
-	};
-	
-	var initActiveLinks = function() {
-		var maps = svg.model.maps();
-		var minDepth = window.settings.dataset[state.datasetId].minDepth;
-		for (var key in maps.keyToLink) {
-			var l = maps.keyToLink[key];
-			if (l.derived.source.fields.depth === minDepth && l.derived.target.fields.depth === minDepth) {
-				data.activeLinks.push(l);
-			}
 		}
 	};
 	
