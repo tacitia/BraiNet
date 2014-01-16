@@ -4,6 +4,7 @@
 $(document).ready(function() {
 
 	user.init();
+	
 	ui.datasetSelector.init(user.model.id());
 	ui.regionSelector.init();
 	ui.pathSearch.init();
@@ -11,6 +12,8 @@ $(document).ready(function() {
 	ui.linkInfo.init();
 	ui.loadingModal.init();
 	ui.alertModal.init();
+	ui.attrSelector.init();
+	
 	svg.circular.init();
 	svg.force.init();
 	svg.anatomy.init();

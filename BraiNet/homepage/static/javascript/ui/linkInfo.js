@@ -94,9 +94,10 @@ ui.linkInfo = (function($, undefined) {
 		var maps = svg.model.maps();
 		var attrKeys = [];
 		var avgs = {};
+		var attributes = null;
 		if (state.selectedLink.derived.isDerived) {
 			var leaves = state.selectedLink.derived.leaves;
-			var attributes = maps.keyToLink[leaves[0]].fields.attributes;
+			attributes = maps.keyToLink[leaves[0]].fields.attributes;
 			for (var key in attributes) {
 				attrKeys.push(key);
 				avgs[key] = [];
@@ -104,15 +105,15 @@ ui.linkInfo = (function($, undefined) {
 			for (i in leaves) {
 				var subLink = maps.keyToLink[leaves[i]];
 				for (var key in attributes) {
-					$.merge(avgs[key], subLink.fields.attributes[key]);
+					avgs[key].push(subLink.fields.attributes[key]);
 				}
 			}
 		}
 		else {
-			var attributes = state.selectedLink.fields.attributes;
+			attributes = state.selectedLink.fields.attributes;
 			for (var key in attributes) {
 				attrKeys.push(key);
-				avgs[key] = $.merge([], attributes[key]);
+				avgs[key] = [attributes[key]];
 			} 
 		}
 		
@@ -125,12 +126,17 @@ ui.linkInfo = (function($, undefined) {
 		contentHtml += '<tr>'
 		for (var key in attributes) {
 			contentHtml += '<td>';
-			var avg = 0;
-			for (var i in avgs[key]) {
-				avg += avgs[key][i];
+			if (isNaN(attributes[key])) {
+				contentHtml += state.selectedLink.derived.isDerived ? 'N/A' : attributes[key];
 			}
-			avg /= avgs[key].length;
-			contentHtml += avg;
+			else {
+				var avg = 0;
+				for (var i in avgs[key]) {
+					avg += avgs[key][i];
+				}
+				avg /= avgs[key].length;
+				contentHtml += avg;
+			}
 			contentHtml += '</td>';
 		}
 		contentHtml += '</tr>';

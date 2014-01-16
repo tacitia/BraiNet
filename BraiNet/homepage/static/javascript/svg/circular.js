@@ -431,6 +431,9 @@ svg.circular = (function($, undefined) {
 		   .exit().remove();
 	}
 	
+	var updateLinkColor = function() {
+	};
+	
 	var createNodeTooltips = function() {
 		for (var i = 0; i < data.activeNodes.length; ++i) {
 			var node = data.activeNodes[i];
@@ -981,7 +984,8 @@ svg.circular = (function($, undefined) {
 		reset: reset,
 		clearAllHighlight: clearAllHighlight,
 		selectRegion: selectRegion,
-		deselectRegion: deselectRegion
+		deselectRegion: deselectRegion,
+		updateLinkColor: updateLinkColor
 	};
 
 }(jQuery));

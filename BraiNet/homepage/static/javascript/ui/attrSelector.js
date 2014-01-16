@@ -5,34 +5,120 @@ ui.attrSelector = (function($, undefined) {
 
 	var dom = {
 		attrList: $('#legend-feature #attr-list'),
-		attrLegend: d3.select('#legend-feature #attr-legend')
+		attrLegend: d3.select('#legend-feature #attr-legend'),
+		gradient: null
 	};
 	
 	var state = {
 		selectedAttr: null
 	};
+	
+	var data = {
+		attrList: null,
+		attrSummary: null,
+		attrColorMap: null
+	};
 
 	var init = function(userId) {
 		dom.attrList.change(selectAttr);
-
+		dom.gradient = dom.attrLegend.append("svg:defs")
+			  .append("svg:linearGradient")
+				.attr("id", "gradient")
+				.attr("x1", "0%")
+				.attr("y1", "0%")
+				.attr("x2", "100%")
+				.attr("y2", "0%")
+				.attr("spreadMethod", "pad");
 		console.log('Attribute selector initialized.');
 	};
 	
 	var selectAttr = function() {
+		var attr = $("#attr-list option:selected").text();
+		updateAttrLegend(attr);
+		updateLinkColor(attr);
 	};
 	
 	var render = function(links) {
+		buildAttrMap(links);
+		assignAttrColor();
 		dom.attrList.find('option').remove();
 		var l = links[0];
-		console.log(l);
 		var attrs = l.fields.attributes;
 		var counter = 1;
+		dom.attrList.append(new Option('(None)', 0, false, false));
 		for (var key in attrs) {
 			dom.attrList.append(new Option(key, counter, false, false));
 			counter++;
 		}
+		$('#attr-list option[value="0"]').attr("selected",true);
 		$('.chzn-select').chosen({allow_single_deselect: true});
 		dom.attrList.trigger('liszt:updated');
+	};
+	
+	var buildAttrMap = function(links) {
+		data.attrList = [];
+		data.attrSummary = {};
+		var attrs = links[0].fields.attributes;
+		for (var key in attrs) {
+			data.attrList.push(key);
+			var attrType = isNaN(attrs[key]) ? 'text' : 'numeric';
+			data.attrSummary[key] = {min: Number.MAX_VALUE, max: Number.MIN_VALUE, type: attrType};
+		}
+		for (var i in links) {
+			var linkAttrs = links[i].fields.attributes;
+			for (var key in linkAttrs) {
+				data.attrSummary[key].min = Math.min(data.attrSummary[key].min, linkAttrs[key]);
+				data.attrSummary[key].max = Math.max(data.attrSummary[key].max, linkAttrs[key]);
+			}
+		}
+
+	}
+	
+	var assignAttrColor = function() {
+		var colorMap = d3.scale.category10().domain(data.attrList);
+		data.attrColorMap = {};
+		for (var key in data.attrSummary) {
+			data.attrColorMap[key] = colorMap(key);
+		}
+	};
+	
+	var updateAttrLegend = function(attrKey) {
+		console.log(data.attrSummary);
+		console.log(attrKey);
+		dom.attrLegend.selectAll('stop').remove();
+		dom.attrLegend.selectAll('g').remove();
+		dom.attrLegend.selectAll('rect').remove();
+		dom.attrLegend.selectAll('text').remove();
+		dom.gradient.append("svg:stop")
+			.attr("offset", "0%")
+			.attr("stop-color", "#fff")
+			.attr("stop-opacity", 1);
+
+		dom.gradient.append("svg:stop")
+			.attr("offset", "100%")
+			.attr("stop-color", data.attrColorMap[attrKey])
+			.attr("stop-opacity", 1);
+
+		dom.attrLegend.append("svg:rect")
+			.attr("width", 280)
+			.attr("height", 20)
+			.attr('transform', 'translate(0,10)')
+			.style("fill", "url(#gradient)");
+		
+		dom.attrLegend.append('g')
+			.attr('transform', 'translate(0,40)')
+			.append('svg:text')
+			.text(data.attrSummary[attrKey].min);
+
+		dom.attrLegend.append('g')
+			.attr('transform', 'translate(240,40)')
+			.append('svg:text')
+			.text(data.attrSummary[attrKey].max);
+	};
+	
+	var updateLinkColor = function(attr) {
+		var colorMap = d3.scale.linear().domain([data.attrSummary[attr].min, data.attrSummary[attr].max]).range(['#fff', data.attrColorMap[attr]]);
+		svg.updateLinkColor(colorMap);
 	};
 
 	return {

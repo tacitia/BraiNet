@@ -50,15 +50,13 @@ svg.linkAttr = (function($, undefined) {
 	  		var attrs = maps.keyToLink[l].fields.attributes;
 	  		for (var i in attrs) {
 				if (!data[i]) data[i] = [];
-				for (var j in attrs[i]) {
-					if (attrs[i][j] === 0) continue;
-					if ($.inArray(i, multipliers) > -1) {
-						data[i].push(Math.ceil(attrs[i][j] * 100000));
-					}
-					else {
-						data[i].push(Math.ceil(attrs[i][j]));
-					}					
+				if (attrs[i] === 0) continue;
+				if ($.inArray(i, multipliers) > -1) {
+					data[i].push(Math.ceil(attrs[i] * 100000));
 				}
+				else {
+					data[i].push(Math.ceil(attrs[i]));
+				}					
 			}
 	  	});		
 		console.log(data);

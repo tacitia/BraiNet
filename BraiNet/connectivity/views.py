@@ -26,13 +26,13 @@ def getDataset(request, user_id, dataset_id, max_depth):
 	connNotes = ConnNote.objects.filter(Q(dataset_id=dataset_id) & Q(user_id=user.id))
 	jsonCons = serializers.serialize('json', connections)
 	realJsonCons = json.loads(jsonCons)
-	for item in realJsonCons:
-		attrs = json.loads(item['fields']['attributes'])
-		for key in attrs:
-			avgArray = []
-			avgArray.append(numpy.mean(attrs[key]))
-			attrs[key] = avgArray
-		item['fields']['attributes'] = json.dumps(attrs)
+	print dataset_id
+	if dataset_id == '2':
+		for item in realJsonCons:
+			attrs = json.loads(item['fields']['attributes'])
+			for key in attrs:
+				attrs[key] = numpy.mean(attrs[key])
+			item['fields']['attributes'] = json.dumps(attrs)
 	dataset = {}
 	dataset['conns'] = json.dumps(realJsonCons)
 	dataset['structs'] = serializers.serialize('json', structures)
