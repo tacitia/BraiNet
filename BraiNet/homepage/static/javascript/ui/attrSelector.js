@@ -1,7 +1,7 @@
 // This module 
 // TODO: change this module to require setting.js and amplifyJS.js using requireJS
 
-ui.datasetSelector = (function($, undefined) {
+ui.attrSelector = (function($, undefined) {
 
 	var dom = {
 		datasetList: $('#dataset-selector #dataset-list'),

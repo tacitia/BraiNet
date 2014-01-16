@@ -16,6 +16,8 @@ svg.state = {
 };
 
 svg.render = function(userId, datasetId, maxDepth) {
+	ui.loadingModal.message('Loading connectivity datasets...');
+	ui.loadingModal.show();
 	svg.model.getDataset(userId, datasetId, maxDepth);
 };
 

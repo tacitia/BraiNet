@@ -26,7 +26,7 @@ ui.regionSelector = (function($, undefined) {
 		dom.regionList.find('option').remove();
 		for (i = 0; i < regionList.length; ++i) {
 			var r = regionList[i];
-			dom.regionList.append(new Option(r.fields.name, r.pk));
+			dom.regionList.append(new Option(r.fields.name, r.pk, false, false));
 		}
 		$('.chzn-select').chosen({allow_single_deselect: true});
 		dom.regionList.trigger('liszt:updated');	

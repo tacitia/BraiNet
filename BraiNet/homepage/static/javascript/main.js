@@ -16,7 +16,5 @@ $(document).ready(function() {
 	svg.anatomy.init();
 	svg.linkAttr.init();
 	
-	ui.loadingModal.message('Loading connectivity datasets...');
-	ui.loadingModal.show();
 	svg.render(user.model.id(), 2, 5);
 });

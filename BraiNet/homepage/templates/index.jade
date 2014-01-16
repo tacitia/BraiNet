@@ -18,6 +18,7 @@ html(lang="en")
             h5 Select dataset
             div
               select.chzn-select#dataset-list(data-placeholder="Select Dataset")
+              button.btn.btn-primary#load-button Load
           div.control-pane#region-selector
             h5 Select a brain region 
             div
@@ -59,6 +60,10 @@ html(lang="en")
                 div.clear
             div#legend-feature
               h6 Optional (by edge attributes)
+              div
+                span Attribute
+                select.chzn-select.inline#attr-list(data-placeholder="Select an attribute")
+              svg#attr-legend
         div.span5
           h5 Anatomy View
           div.card#anatomy-pane
