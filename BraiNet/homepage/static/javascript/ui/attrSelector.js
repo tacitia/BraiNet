@@ -31,13 +31,8 @@ ui.attrSelector = (function($, undefined) {
 			dom.attrList.append(new Option(key, counter, false, false));
 			counter++;
 		}
-/*		for (i = 0; i < attrList.length; ++i) {
-			var currDataset = datasetList[i];
-			dom.datasetList.append(new Option(currDataset.fields.name, currDataset.pk, false, false));
-		}
-		$('#dataset-list option[value="2"]').attr("selected",true);
 		$('.chzn-select').chosen({allow_single_deselect: true});
-		dom.attrList.trigger('liszt:updated');	*/
+		dom.attrList.trigger('liszt:updated');
 	};
 
 	return {

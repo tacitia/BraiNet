@@ -286,9 +286,9 @@ svg.circular = (function($, undefined) {
 		links.transition()
 			.duration(1000)
 			.attr("d", function(d) {
-					var coors = [{x: d.derived.source.circular.x, y:d.derived.source.circular.y}, 
+					var coors = [{x: d.derived.source.circular.linkX, y:d.derived.source.circular.linkY}, 
 								 {x: 0, y: 0},
-								 {x: d.derived.target.circular.x, y:d.derived.target.circular.y}];
+								 {x: d.derived.target.circular.linkX, y:d.derived.target.circular.linkY}];
 					return svgGens.curves(coors);
 		});
 	};
@@ -404,9 +404,9 @@ svg.circular = (function($, undefined) {
 			.data(data.activeLinks, function(d) {return d.pk;})
 			.enter().append("svg:path")
 			.attr("d", function(d) {
-					var coors = [{x: d.derived.source.circular.x, y:d.derived.source.circular.y}, 
+					var coors = [{x: d.derived.source.circular.linkX, y:d.derived.source.circular.linkY}, 
 								 {x: 0, y: 0},
-								 {x: d.derived.target.circular.x, y:d.derived.target.circular.y}];
+								 {x: d.derived.target.circular.linkX, y:d.derived.target.circular.linkY}];
 					return svgGens.curves(coors);
 				})
 			.attr("class", "link")
@@ -892,8 +892,9 @@ svg.circular = (function($, undefined) {
 		var angle = delta * (i + 0.5) + startAngle;
 		var radius = settings.arc.innerRadius + (settings.arc.outerRadius - settings.arc.innerRadius) / 2;
 		datum.circular.x = radius * Math.cos(Math.PI / 2 - angle);
+		datum.circular.linkX = settings.arc.innerRadius * Math.cos(Math.PI / 2 - angle);
 		datum.circular.y = -radius * Math.sin(Math.PI / 2 - angle);
-//		console.log(datum.circular);
+		datum.circular.linkY = -settings.arc.innerRadius * Math.sin(Math.PI / 2 - angle);
 	};
 
 	var findActiveParent = function(node) {
