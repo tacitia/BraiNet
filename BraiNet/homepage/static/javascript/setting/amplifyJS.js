@@ -36,6 +36,7 @@ amplify.request.define('addConnectionNote', 'ajax', {
 amplify.subscribe('datasetReady', function(data, datasetId) {
 	console.log("Dataset " + datasetId + " received.");
 	ui.regionSelector.render(data.nodes);
+	ui.attrSelector.render(data.links);
 	ui.pathSearch.render(data.nodes);
 //	ui.loadingModal.hide();
 	svg.renderViews(data, datasetId);

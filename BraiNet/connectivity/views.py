@@ -2,6 +2,7 @@ from connectivity.models import *
 from account.models import *
 from account.models import ConnNote
 import json
+import numpy
 from django.core import serializers
 from django.db.models import Q
 from django.http import HttpResponse
@@ -20,11 +21,20 @@ def getDataset(request, user_id, dataset_id, max_depth):
 #	print Connection.objects.filter(Q(dataset_id=dataset_id) & Q(source_id__depth__lte=max_depth) & Q(target_id__depth__lte=max_depth)).count()
 #	print Structure.objects.filter(Q(dataset_id=dataset_id) & Q(depth__lte=max_depth)).count()
 	user = Account.objects.get(access_code=user_id)
-	connections = Connection.objects.filter(Q(dataset_id=dataset_id) & Q(source_id__depth__lte=max_depth) & Q(target_id__depth__lte=max_depth))[:10000]
+	connections = Connection.objects.filter(Q(dataset_id=dataset_id) & Q(source_id__depth__lte=max_depth) & Q(target_id__depth__lte=max_depth))[:20000]
 	structures = Structure.objects.filter(Q(dataset_id=dataset_id))
 	connNotes = ConnNote.objects.filter(Q(dataset_id=dataset_id) & Q(user_id=user.id))
+	jsonCons = serializers.serialize('json', connections)
+	realJsonCons = json.loads(jsonCons)
+	for item in realJsonCons:
+		attrs = json.loads(item['fields']['attributes'])
+		for key in attrs:
+			avgArray = []
+			avgArray.append(numpy.mean(attrs[key]))
+			attrs[key] = avgArray
+		item['fields']['attributes'] = json.dumps(attrs)
 	dataset = {}
-	dataset['conns'] = serializers.serialize('json', connections)
+	dataset['conns'] = json.dumps(realJsonCons)
 	dataset['structs'] = serializers.serialize('json', structures)
 	dataset['connNotes'] = serializers.serialize('json', connNotes)
 	return HttpResponse(json.dumps(dataset), content_type='application/json')

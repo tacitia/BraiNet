@@ -202,10 +202,12 @@ svg.circular = (function($, undefined) {
 		svg.anatomy.selectStructure(state.selectedNode.fields.name, false);		
 	};
 	
-	var upButtonClick = function() {
+	var upButtonClick = function(e) {
+		e.preventDefault();
 		var n = state.selectedNode;
 		if (n === null) { return; }
-		if (n.fields.depth === 0) { return; } // Ignore top level nodes
+		var minDepth = window.settings.dataset[state.datasetId].minDepth;
+		if (n.fields.depth === minDepth) { return; } // Ignore top level nodes
 		var parent = n.derived.parent; 
 		var nodesToRemove = findActiveDescends(parent);
 		clearAllHighlight();
@@ -213,7 +215,8 @@ svg.circular = (function($, undefined) {
 		state.mode = 'exploration';
 	};
 	
-	var removeButtonClick = function() {
+	var removeButtonClick = function(e) {
+		e.preventDefault();
 		var n = state.selectedNode;
 		if (n === null) { return; }
 		// remove the selected node and associated links from svgData.circularNodes/circLinks
@@ -238,7 +241,8 @@ svg.circular = (function($, undefined) {
 		// add them back when needed
 	};
 	
-	var downButtonClick = function() {
+	var downButtonClick = function(e) {
+		e.preventDefault();
 		var n = state.selectedNode;
 		if (n === null) { return; }
 		var maps = svg.model.maps();

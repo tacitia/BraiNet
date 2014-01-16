@@ -16,5 +16,5 @@ $(document).ready(function() {
 	svg.anatomy.init();
 	svg.linkAttr.init();
 	
-	svg.render(user.model.id(), 2, 5);
+	svg.render(user.model.id(), 2, 6);
 });

@@ -185,6 +185,8 @@ svg.model = (function($, undefined) {
 		for (var i in notes) {
 			var n = notes[i];
 			var l = maps.keyToLink[n.fields.link];
+			// This will happen if the max depth allowed differs between the session in which the note was added and the current session
+			if (l === undefined) { continue; } 
 			l.derived.note = n.fields.content;
 		}
 	};

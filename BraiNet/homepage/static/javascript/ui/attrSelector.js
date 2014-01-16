@@ -4,60 +4,45 @@
 ui.attrSelector = (function($, undefined) {
 
 	var dom = {
-		datasetList: $('#dataset-selector #dataset-list'),
-		loadButton: $('#dataset-selector #load-button')
+		attrList: $('#legend-feature #attr-list'),
+		attrLegend: d3.select('#legend-feature #attr-legend')
 	};
 	
 	var state = {
-		selectedDatasetId: null
+		selectedAttr: null
 	};
 
-// TODO: check user module for the userId first and fall back to use default if user module does not have user inputs
 	var init = function(userId) {
-		getDatasetList(userId);
-		dom.datasetList.change(selectDataset);
-		dom.loadButton.click(loadDataset);
-		console.log('Dataset selector initialized.');
+		dom.attrList.change(selectAttr);
+
+		console.log('Attribute selector initialized.');
 	};
 	
-	var getDatasetList = function(userId) {
-		console.log('Requesting dataset list...');
-		amplify.request('getDatasetList',
-			{
-				userId: userId,
-			},
-			function(data) {
-				updateDatasetList($.parseJSON(data));
-			}
-		);
+	var selectAttr = function() {
 	};
 	
-	var loadDataset = function() {
-		svg.render(user.model.id(), state.selectedDatasetId, 5);
-	};
-	
-	var selectDataset = function() {
-		state.selectedDatasetId = this.value;
-	};
-	
-	var updateDatasetList = function(datasetList) {
-		dom.datasetList.find('option').remove();
-		for (i = 0; i < datasetList.length; ++i) {
+	var render = function(links) {
+		dom.attrList.find('option').remove();
+		var l = links[0];
+		console.log(l);
+		var attrs = l.fields.attributes;
+		var counter = 1;
+		for (var key in attrs) {
+			dom.attrList.append(new Option(key, counter, false, false));
+			counter++;
+		}
+/*		for (i = 0; i < attrList.length; ++i) {
 			var currDataset = datasetList[i];
 			dom.datasetList.append(new Option(currDataset.fields.name, currDataset.pk, false, false));
 		}
 		$('#dataset-list option[value="2"]').attr("selected",true);
 		$('.chzn-select').chosen({allow_single_deselect: true});
-		dom.datasetList.trigger('liszt:updated');	
-	};
-	
-	var update = function(userId) {
-		getDatasetList(userId);
+		dom.attrList.trigger('liszt:updated');	*/
 	};
 
 	return {
 		init: init,
-		update: update
+		render: render
 	};
 
 }(jQuery));
