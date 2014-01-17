@@ -47,6 +47,7 @@ ui.attrSelector = (function($, undefined) {
 		var counter = 1;
 		dom.attrList.append(new Option('(None)', 0, false, false));
 		for (var key in attrs) {
+			if (data.attrSummary[key].type !== 'numeric') { continue; }
 			dom.attrList.append(new Option(key, counter, false, false));
 			counter++;
 		}
@@ -89,14 +90,20 @@ ui.attrSelector = (function($, undefined) {
 		dom.attrLegend.selectAll('g').remove();
 		dom.attrLegend.selectAll('rect').remove();
 		dom.attrLegend.selectAll('text').remove();
+		
+		if (attrKey === '(None)') { return; }
+		
+		var endColor = data.attrColorMap[attrKey];
+		var startColor = d3.hsl(endColor).brighter(1.8);
+		
 		dom.gradient.append("svg:stop")
 			.attr("offset", "0%")
-			.attr("stop-color", "#fff")
+			.attr("stop-color", startColor)
 			.attr("stop-opacity", 1);
 
 		dom.gradient.append("svg:stop")
 			.attr("offset", "100%")
-			.attr("stop-color", data.attrColorMap[attrKey])
+			.attr("stop-color", endColor)
 			.attr("stop-opacity", 1);
 
 		dom.attrLegend.append("svg:rect")
@@ -117,8 +124,14 @@ ui.attrSelector = (function($, undefined) {
 	};
 	
 	var updateLinkColor = function(attr) {
-		var colorMap = d3.scale.linear().domain([data.attrSummary[attr].min, data.attrSummary[attr].max]).range(['#fff', data.attrColorMap[attr]]);
-		svg.updateLinkColor(colorMap);
+		if (attr === '(None)' ) {
+			svg.updateLinkColor(null, null);
+			return;
+		}
+		var endColor = data.attrColorMap[attr];
+		var startColor = d3.hsl(endColor).brighter(1.8);
+		var colorMap = d3.scale.sqrt().domain([data.attrSummary[attr].min, data.attrSummary[attr].max]).range([startColor, endColor]);
+		svg.updateLinkColor(attr, colorMap);
 	};
 
 	return {

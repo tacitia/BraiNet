@@ -31,7 +31,8 @@ svg.renderViews = function(data, datasetId) {
 	svg.anatomy.render();
 };
 
-svg.updateLinkColor = function() {
+svg.updateLinkColor = function(attr, colorMap) {
+	svg.circular.updateLinkColor(attr, colorMap);
 };
 
 // A shortcut for showing the selected region in all available svg modules

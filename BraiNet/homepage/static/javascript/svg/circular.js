@@ -30,7 +30,9 @@ svg.circular = (function($, undefined) {
 		ignoredNodes: [],
 		datasetId: null,
 		searchSource: null,
-		searchTarget: null
+		searchTarget: null,
+		selectedAttr: null,
+		attrColorMap: null
 	};
 	
 	var data = {
@@ -285,6 +287,24 @@ svg.circular = (function($, undefined) {
 		
 		links.transition()
 			.duration(1000)
+			.attr('stroke', function(d) { 
+				if (state.selectedAttr === null) { return '#ccc'; } 
+				var attrValue = 0;
+				if (d.derived.isDerived) {
+					var maps = svg.model.maps();
+					var leaves = d.derived.leaves;
+					var numLeaves = leaves.length;
+					for (var i in leaves) {
+						var l = maps.keyToLink[leaves[i]];
+						attrValue += l.fields.attributes[state.selectedAttr];
+					}
+					attrValue /= numLeaves;
+				}
+				else {
+					attrValue = d.fields.attributes[state.selectedAttr];
+				}
+				return state.attrColorMap(attrValue); 
+			})
 			.attr("d", function(d) {
 					var coors = [{x: d.derived.source.circular.linkX, y:d.derived.source.circular.linkY}, 
 								 {x: 0, y: 0},
@@ -410,6 +430,7 @@ svg.circular = (function($, undefined) {
 					return svgGens.curves(coors);
 				})
 			.attr("class", "link")
+			.attr('stroke', '#ccc')
 			.attr('stroke-width', function(d) { 
 				return Math.min(10, 1 + Math.ceil(d.derived.leaves.length / 50)) + 'px'; 
 			})
@@ -431,7 +452,34 @@ svg.circular = (function($, undefined) {
 		   .exit().remove();
 	}
 	
-	var updateLinkColor = function() {
+	var updateLinkColor = function(attr, colorMap) {
+	
+		state.selectedAttr = attr;
+		state.attrColorMap = colorMap;
+	
+		var links = svgObjs.canvas.selectAll(".link")
+			.data(data.activeLinks, function(d) {return d.pk;});
+		
+		links.transition()
+			.duration(1000)
+			.attr('stroke', function(d) { 
+				if (state.selectedAttr === null) { return '#ccc'; } 
+				var attrValue = 0;
+				if (d.derived.isDerived) {
+					var maps = svg.model.maps();
+					var leaves = d.derived.leaves;
+					var numLeaves = leaves.length;
+					for (var i in leaves) {
+						var l = maps.keyToLink[leaves[i]];
+						attrValue += l.fields.attributes[attr];
+					}
+					attrValue /= numLeaves;
+				}
+				else {
+					attrValue = d.fields.attributes[attr];
+				}
+				return colorMap(attrValue); 
+			});
 	};
 	
 	var createNodeTooltips = function() {
