@@ -15,10 +15,10 @@ svg.state = {
 	renderCompleted: 0	
 };
 
-svg.render = function(userId, datasetId, maxDepth) {
+svg.render = function(datasetId, maxDepth) {
 	ui.loadingModal.message('Loading connectivity datasets...');
 	ui.loadingModal.show();
-	svg.model.getDataset(userId, datasetId, maxDepth);
+	svg.model.getDataset(datasetId, maxDepth);
 };
 
 // A shortcut for rendering using all the available svg modules

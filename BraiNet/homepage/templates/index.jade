@@ -9,8 +9,13 @@ html(lang="en")
     link(rel="stylesheet", href="/static/stylesheet/style-canvas.css")
   body
     div.head-section
-      div.website-title
+      div.website-title.lf-col-left
         h1 BraiNet - a Brain Connectivity Explorer
+      div.control-bar.lf-col-right
+        div.control-bar-content.fit-size-to-content.lf-col-right
+          div#user-status.multi-col
+            a(href="/account/register",target="_blank") Register
+      div.clear
     div.content-section
       div#control-container.row-fluid
         div.span3

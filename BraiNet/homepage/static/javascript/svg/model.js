@@ -24,7 +24,7 @@ svg.model = (function($, undefined) {
 		LinkToPaper: null
 	};
 	
-	var getDataset = function(userId, datasetId, maxDepth) {
+	var getDataset = function(datasetId, maxDepth) {
 		console.log("Requesting dataset " + datasetId + "...");
 		if (datasetId == states.activeDatasetId) { 
 			amplify.publish('datasetReady', data);
@@ -33,7 +33,7 @@ svg.model = (function($, undefined) {
 			states.activeDatasetId = datasetId;
 			amplify.request('getDataset',
 				{
-					userId: userId,
+					userId: user.id(),
 					datasetId: datasetId,
 					maxDepth: maxDepth
 				},
@@ -46,7 +46,7 @@ svg.model = (function($, undefined) {
 		console.log('Adding conn note into database...');
 		amplify.request('addConnectionNote',
 			{
-				userId: user.model.id(),
+				userId: user.id(),
 				datasetId: states.activeDatasetId,
 				linkId: linkId,
 				content: notes,

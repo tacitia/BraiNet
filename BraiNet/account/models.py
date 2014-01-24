@@ -4,6 +4,7 @@ import connectivity.models
 # Use the default primary key 'id'
 class Account(models.Model):	
 	access_code = models.CharField(max_length=16, unique=True)
+	email = models.CharField(max_length=256)
 	
 class ConnNote(models.Model):
 	user_id = models.ForeignKey('Account')

@@ -22,7 +22,7 @@ ui.linkInfo = (function($, undefined) {
 		selectedLink: null
 	};
 
-	var init = function(userId) {
+	var init = function() {
 		state.mode = 'display';
 		$(dom.editButton).click(editNotes);
 		$(dom.saveButton).click(saveNotes);
@@ -60,7 +60,7 @@ ui.linkInfo = (function($, undefined) {
 		displayMetadata(link);
 		displayNotes();
 		switchMode('display');
-//		displayPublications();
+		displayPubMedInfo();
 		displayOriginRecords();
 		displayLinkChildren();
 	};
@@ -141,6 +141,18 @@ ui.linkInfo = (function($, undefined) {
 		}
 		contentHtml += '</tr>';
 		content.html(contentHtml);
+	};
+	
+	var displayPubMedInfo = function() {
+		d3.select(dom.paperContainer).selectAll('div').remove();
+		var content = d3.select(dom.paperContainer).append('div');
+		var contentHtml = '<p>PubMed links:</p>';
+		var searchTerm = state.selectedLink.derived.source.fields.name + '+' + state.selectedLink.derived.target.fields.name + '+projection';
+		searchTerm.replace(' ', '+');
+		contentHtml += '<a target="_blank" href="http://www.ncbi.nlm.nih.gov/pubmed?term=' +
+			searchTerm + 
+			'">Access publication search result page on PubMed</a>';
+		content.html(contentHtml);		
 	};
 
 	var displayLinkChildren = function() {

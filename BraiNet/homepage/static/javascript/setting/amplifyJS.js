@@ -51,5 +51,6 @@ amplify.subscribe('resetComplete', function() {
 	ui.pathSearch.resetComplete();
 })
 
-amplify.subscribe('modalShow', function() {
+amplify.subscribe('userValidationComplete', function() {
+	window.userValidated();
 })

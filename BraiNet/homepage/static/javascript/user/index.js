@@ -4,6 +4,14 @@ var user = user || {};
 
 user.model = user.model || {};
 
-user.init = function() {
-	user.model.init();
+user.init = function(userId) {
+	user.model.init(userId);
+};
+
+user.id = function() {
+	return user.model.id();
+};
+
+user.validate = function() {
+	user.model.validate();
 };

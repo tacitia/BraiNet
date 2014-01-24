@@ -6,11 +6,15 @@ import numpy
 from django.core import serializers
 from django.db.models import Q
 from django.http import HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
 
 # Get and post connectivity data based on user id and dataset id
 
 def getDatasets(request, user_id):
-	user = Account.objects.get(access_code=user_id)
+	try:
+		user = Account.objects.get(access_code=user_id)
+	except ObjectDoesNotExist:
+		return HttpResponse(json.dumps('{"error": "InvalidAccessCode"}'), content_type='application/json')
 	datasets = Dataset.objects.filter(Q(visibility='public') | Q(user_id=user.id))
 	response_data = serializers.serialize('json', datasets)
 	return HttpResponse(json.dumps(response_data), content_type='application/json')

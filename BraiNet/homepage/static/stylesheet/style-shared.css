@@ -1,0 +1,93 @@
+body,
+input,
+button,
+select,
+textarea,
+.navbar-search .search-query {
+	font-family: 'Actor', sans-serif !important;
+}
+
+a {
+	color: #76a7c8;
+	font-size: 15px;
+}
+
+h3 {
+	margin: 0 0 15px 0;
+}
+
+h4 {
+	margin: 5px 0 5px 0;
+}
+
+body {
+    /*make everything not selectable*/
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    font: 13px sans-serif;
+    background-color: rgba(0,0,0,.02);
+}
+html,body { height:100%; }
+
+.removed {
+	display: none;
+}
+
+#head-section {
+	width: 100%;
+	height: auto;
+	box-shadow: 2px 2px 1px rgba(0,0,0,0.5);
+	padding: 10px;
+}
+
+#webtitle {
+	margin: 0 auto;
+	width: 1260px;
+}
+
+#content {
+	width:1240px;
+	margin:30px auto;
+	position: relative;
+	height: 100%;
+}
+
+
+.card {
+	box-shadow: 2px 2px 1px #d8d8d8;
+	border-radius: 3px;
+	border: 1px solid #e5e5e5;
+	background-color: #fff;
+	margin: 10px 0 20px 0;
+}
+
+.multi-col {
+	position:relative;
+	float:left;	
+}
+
+.lf-col-left {
+	position:relative;
+	float:left;
+}
+
+.lf-col-right {
+	position:relative;
+	float:right;
+}
+
+.clear {
+	clear:both;
+}
+
+.10tb-padding {
+	padding: 10px 0;
+}
+
+/* @end */
+
+

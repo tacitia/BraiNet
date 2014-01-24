@@ -6,22 +6,44 @@ user.model = (function($, undefined) {
 		id: null 
 	};
 	
-	var id = function() {
-		return id;
+	var id = function(input) {
+		if (input) {data.id === input;}
+		return data.id;
+	};
+
+	var setUserId = function(userId) {	
+		data.id = userId ? userId : settings.userId;
 	};
 	
-	// TODO: get userId from url; if no value, fall back to use the default in settings
-	var setUserId = function() {
-		id = settings.userId;
+	var init = function(userId) {
+		setUserId(userId);
 	};
 	
-	var init = function() {
-		setUserId();
+	// TODO: add a real user validation function
+	var validate = function() {
+		amplify.request('getDatasetList',
+			{
+				userId: data.id,
+			},
+			function(data) {
+				parseValidationResult($.parseJSON(data));
+			}
+		);
+	};
+	
+	var parseValidationResult = function(d) {
+		if (d.error === 'InvalidAccessCode') { 
+			ui.alertModal.message('The access link is invalid. Will use the default datasets instead.');
+			ui.alertModal.show();
+			data.id = settings.userId;
+		}	
+		amplify.publish('userValidationComplete');
 	};
 
 	return {
 		init: init,
-		id: id
+		id: id,
+		validate: validate
 	};
 
 }(jQuery));
