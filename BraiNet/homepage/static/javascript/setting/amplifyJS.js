@@ -3,30 +3,30 @@
 /* Request definitions */
 
 amplify.request.define('getDatasetList', 'ajax', {
-	url: '/connectivity/datasets/{userId}',
+	url: '/connectivity/datasets/{userId}/',
 //	url: 'http://brainconnect.cs.brown.edu/connectivity/datasets/{userId}',
 	type: 'GET'
 })
 
 amplify.request.define('getDataset', 'ajax', {
-	url: '/connectivity/dataset/{userId}/{datasetId}/{maxDepth}',
+	url: '/connectivity/dataset/{userId}/{datasetId}/{maxDepth}/',
 //	url: 'http://brainconnect.cs.brown.edu/connectivity/dataset/{userId}/{datasetId}/{maxDepth}',
 	type: 'GET'
 })
 
 amplify.request.define('getStructImgMap', 'ajax', {
-	url: '/anatomy/structImgMap',
+	url: '/anatomy/structImgMap/',
 //	url: 'http://brainconnect.cs.brown.edu/anatomy/structImgMap',
 	type: 'GET'
 })
 
 amplify.request.define('getConnectionNotes', 'ajax', {
-	url: '/account/notes/connection/{userId}/{datasetId}',
+	url: '/account/notes/connection/{userId}/{datasetId}/',
 	type: 'GET'
 })
 
 amplify.request.define('addConnectionNote', 'ajax', {
-	url: '/account/notes/connection/add',
+	url: '/account/notes/connection/add/',
 	type: 'POST'
 })
 
