@@ -44,7 +44,8 @@ def generateAccessCode(request):
 	user.save()
 	message = 'Hello,\n\nPlease find below an access link to BraiNet:\n\nhttp://brainconnect.cs.brown.edu/?accesscode='+code+'\n\nWhen you visit BraiNet using your access link, changes you make will be saved and will be available every time you visit BraiNet using the same access link.\n\nThanks for using BraiNet! If you have any question or comment, please email hua_guo@brown.edu.\n\nYours Sincerely,\nBraiNet team'
 #	send_mail('Access link to BraiNet', message, 'hua_guo@brown.edu', [email], fail_silently=False)
-	subprocess.call(['mail -s test lillian.g621@gmail.com\n\nthis is a test\n.'])	
+	process = subprocess.Popen(['mail', '-s', 'test', 'lillian.g621@gmail.com'], stdin=subprocess.PIPE)
+	process.communicate(message)
 
 	result = Account.objects.get(access_code=code);
 	return HttpResponseRedirect('/account/register/success')
