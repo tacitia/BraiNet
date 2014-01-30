@@ -10,6 +10,7 @@ import random
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.core.mail import send_mail
+import subprocess
 
 def getConnectionNotes(request, user_id, dataset_id):
 	data = ConnNote.objects.filter(Q(dataset_id=dataset_id) & Q(user_id=user_id))
@@ -42,7 +43,8 @@ def generateAccessCode(request):
 	user = Account(access_code=code, email=email)
 	user.save()
 	message = 'Hello,\n\nPlease find below an access link to BraiNet:\n\nhttp://brainconnect.cs.brown.edu/?accesscode='+code+'\n\nWhen you visit BraiNet using your access link, changes you make will be saved and will be available every time you visit BraiNet using the same access link.\n\nThanks for using BraiNet! If you have any question or comment, please email hua_guo@brown.edu.\n\nYours Sincerely,\nBraiNet team'
-	send_mail('Access link to BraiNet', message, 'hua_guo@brown.edu', [email], fail_silently=False)
+#	send_mail('Access link to BraiNet', message, 'hua_guo@brown.edu', [email], fail_silently=False)
+	subprocess.call(['mail -s test lillian.g621@gmail.com\n\nthis is a test\n.'])	
 
 	result = Account.objects.get(access_code=code);
 	return HttpResponseRedirect('/account/register/success')

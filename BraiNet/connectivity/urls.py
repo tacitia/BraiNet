@@ -5,6 +5,6 @@ from connectivity.views import *
 urlpatterns = patterns('',
 	url(r'^datasets/(?P<user_id>[a-z]+)/$', getDatasets, name='getDatasets'),
 #	url(r'^datasets/(?P<user_id>[a-z]+)/connectivity/datasets/(?P<dummy_user_id>[a-z]+)/$', getDatasets, name='getDatasets'),
-	url(r'^dataset/(?P<user_id>[a-z]+)/(?P<dataset_id>\d+)/(?P<max_depth>\d+)$', getDataset, name='getDataset'),
+	url(r'^dataset/(?P<user_id>[a-z]+)/(?P<dataset_id>\d+)/(?P<max_depth>\d+)/$', getDataset, name='getDataset'),
 	#url(r'^dataset/(?P<user_id>[a-z]+)/(?P<dataset_id>\d+)/(?P<max_depth>\d+)/connectivity/dataset/(?P<dummy_user_id>[a-z]+)/(?P<dummy_dataset_id>\d+)/(?P<dummy_max_depth>\d+)/$', getDataset, name='getDataset'),
 )
