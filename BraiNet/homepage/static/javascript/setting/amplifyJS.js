@@ -30,6 +30,11 @@ amplify.request.define('addConnectionNote', 'ajax', {
 	type: 'POST'
 })
 
+amplify.request.define('addAction', 'ajax', {
+	url: '/action/add/',
+	type: 'POST'
+})
+
 
 /* Subscriptions */
 

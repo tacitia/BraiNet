@@ -94,6 +94,7 @@ svg.anatomy = (function($, undefined) {
 			state.activeTitle = null;
 			state.allActiveStructs.splice(state.allActiveStructs.indexOf(title), 1);
 			svg.circular.setMode('exploration');
+			util.action.add('deselect a region in the anatomy view', {region: title});
 		}			
 		else {
 			svg.showRegion(node.pk);
@@ -103,6 +104,7 @@ svg.anatomy = (function($, undefined) {
 			state.allActiveStructs.push(title);
 			svg.circular.setMode('fixation');
 			$(this).attr('isFixed', true);
+			util.action.add('select a region in the anatomy view', {region: title});
 		}
 	};
 

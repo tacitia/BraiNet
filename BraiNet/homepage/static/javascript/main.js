@@ -13,6 +13,10 @@ $(document).ready(function() {
 });
 
 function userValidated() {
+	util.action.init(user.id());
+	
+	util.action.add('test', {'dummyParam': 1});
+
 	ui.datasetSelector.init(user.id());
 	ui.regionSelector.init();
 	ui.pathSearch.init();

@@ -36,6 +36,7 @@ ui.attrSelector = (function($, undefined) {
 		var attr = $("#attr-list option:selected").text();
 		updateAttrLegend(attr);
 		updateLinkColor(attr);
+		util.action.add('select attribute for visualization', {attribute: attr})
 	};
 	
 	var render = function(links) {

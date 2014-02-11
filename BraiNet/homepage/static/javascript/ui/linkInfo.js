@@ -45,6 +45,10 @@ ui.linkInfo = (function($, undefined) {
 
 	var editNotes = function() {
 		switchMode('edit');
+		util.action.add('edit link notes', {
+			linkSource: state.selectedLink.derived.source.fields.name, 
+			linkTarget: state.selectedLink.derived.target.fields.name
+		});
 	};
 	
 	var saveNotes = function() {
@@ -53,6 +57,10 @@ ui.linkInfo = (function($, undefined) {
 		switchMode('display');
 		$(dom.notesDisplay).text(notes);
 		svg.model.addConnNote(state.selectedLink.pk, notes);
+		util.action.add('save link notes', {
+			linkSource: state.selectedLink.derived.source.fields.name, 
+			linkTarget: state.selectedLink.derived.target.fields.name
+		});
 	};
 	
 	var displayLinkInfo = function(link) {
@@ -182,6 +190,10 @@ ui.linkInfo = (function($, undefined) {
 		//console.log(cl.link.base_children);
 		var childLink = maps.keyToLink[state.selectedLink.derived.leaves[id_num]];
 		displayLinkInfo(childLink);
+		util.action.add('click child link', {
+			linkSource: childLink.derived.source.fields.name, 
+			linkTarget: childLink.derived.target.fields.name
+		});
 	}
 
 	return {

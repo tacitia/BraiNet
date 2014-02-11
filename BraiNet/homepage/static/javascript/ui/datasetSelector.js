@@ -34,10 +34,12 @@ ui.datasetSelector = (function($, undefined) {
 	
 	var loadDataset = function() {
 		svg.render(user.model.id(), state.selectedDatasetId, 5);
+		util.action.add('load dataset', {datasetId: state.selectedDatasetId});
 	};
 	
 	var selectDataset = function() {
 		state.selectedDatasetId = this.value;
+		util.action.add('select dataset', {datasetId: this.value});
 	};
 	
 	var updateDatasetList = function(datasetList) {

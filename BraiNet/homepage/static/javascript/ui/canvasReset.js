@@ -20,7 +20,6 @@ ui.canvasReset = (function($, undefined) {
 	};
 	
 	var reset = function() {
-		console.log('reset button click');
 		state.reset = true;
 		ui.loadingModal.message('Resetting...');
 		ui.loadingModal.show();
@@ -30,6 +29,7 @@ ui.canvasReset = (function($, undefined) {
 			svg.anatomy.reset();
 			ui.pathSearch.reset();
 		}, 500);
+		util.action.add('reset canvas', {});
 	};
 	
 	var resetComplete = function() {

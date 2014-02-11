@@ -37,16 +37,19 @@ ui.pathSearch = (function($, undefined) {
 	var selectSource = function() {
 		var inputKey = this.value;
 		processSelection(inputKey, 'source');
+		util.action.add('select source in path search', {source: svg.model.maps().keyToNode[inputKey].fields.name);
 	};
 	
 	var selectTarget = function() {
 		var inputKey = this.value;
 		processSelection(inputKey, 'target');
+		util.action.add('select target in path search', {target: svg.model.maps().keyToNode[inputKey].fields.name});
 	};
 	
 	var setMaxHop = function() {
 		setting.maxHop = this.value;
 		dom.maxHopValue.val(this.value);
+		util.action.add('set max hop', {maxHop: this.value});
 	};
 	
 	var processSelection = function(inputKey, id) {
@@ -83,6 +86,10 @@ ui.pathSearch = (function($, undefined) {
 	var searchButtonClick = function() {
 		var paths = svg.model.calculatePaths(state.source, state.target, setting.maxHop);
 		svg.displaySearchResult(state.source, state.target);
+		util.action.add('perform path search', {
+			source: state.source.fields.name,
+			target: state.target.fields.name
+		});
 	};
 	
 	var clearButtonClick = function() {
@@ -94,6 +101,10 @@ ui.pathSearch = (function($, undefined) {
 		setTimeout(function() {
 			svg.clearSearchResult();
 		}, 500);
+		util.action.add('clear path search result', {
+			source: state.source.fields.name,
+			target: state.target.fields.name
+		});
 	};
 	
 	var resetComplete = function() {
