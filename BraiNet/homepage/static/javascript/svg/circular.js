@@ -6,6 +6,7 @@ svg.circular = (function($, undefined) {
 	var doms = {
 		canvas: '#circular-pane .canvas',
 		controller: '#circular-pane .svg-controller',
+		configButton: '#circular-pane .svg-controller #configButton',
 		upButton: '#circular-pane .svg-controller #upButton',
 		downButton: '#circular-pane .svg-controller #downButton',
 		removeButton: '#circular-pane .svg-controller #removeButton',
@@ -23,6 +24,7 @@ svg.circular = (function($, undefined) {
 	// TODO: The settings below should be exposed to the users later
 	settings.hideIsolated = true;
 	settings.regionSelectLinkedOnly = true; // Only display nodes that are connected to the node being searched for
+	settings.weightArcAreaByNumSubRegions = false;
 	
 	var state = {
 		mode: 'exploration', //Three possible values for mode: exploration, search, and fixation
@@ -75,11 +77,16 @@ svg.circular = (function($, undefined) {
 				.attr('transform', 'translate(' + (settings.vis.width / 2) + ',' + (settings.vis.height / 2) + ')')
 				.append('g');
 	
+		$(doms.configButton).click(configButtonClick);
 		$(doms.upButton).click(upButtonClick);	
 		$(doms.downButton).click(downButtonClick);	
 		$(doms.removeButton).click(removeButtonClick);
 		$(doms.anatomyButton).click(anatomyButtonClick);
 		
+		
+		$(doms.configButton).qtip({
+			content: 'Settings'
+		});
 		$(doms.upButton).qtip({
 			content: 'Up one level in the anatomical hierarchy (or press ALT while clicking)'		
 		});	
@@ -124,21 +131,25 @@ svg.circular = (function($, undefined) {
 			state.selectedNode = d;
 			state.mode = 'fixation';
 			svg.force.selectRegion(d);
+			util.action.add('select region in circular view', d.fields.name);
 		}
 		else if (state.mode === 'fixation') {
 			state.selectedNode = null;
 			state.mode = 'exploration';
 			svg.anatomy.selectStructure(d.fields.name, true);
 			svg.force.deselectRegion(d);
+			util.action.add('deselect region in circular view', d.fields.name);		
 		}
 		else if (state.mode === 'search') {
 			if (state.selectedNode === null) {
 				state.selectedNode = d;
 				svg.force.selectRegion(d);
+				util.action.add('select region in circular view', d.fields.name);
 			}
 			else {
 				svg.force.deselectRegion(state.selectedNode);
 				state.selectedNode = null;
+				util.action.add('deselect region in circular view', d.fields.name);	
 			}
 		}
 		if (window.event.shiftKey === true) {
@@ -197,6 +208,7 @@ svg.circular = (function($, undefined) {
 	function linkClick(link) {
 		svg.linkAttr.render(link);
 		ui.linkInfo.displayLinkInfo(link);	
+		util.action.add('click link in circular view', {source: link.derived.source.fields.name, target: link.derived.target.fields.name});
 	}
 
 	
@@ -262,6 +274,21 @@ svg.circular = (function($, undefined) {
 		state.mode = 'exploration';			
 	};
 	
+	var configButtonClick = function(e) {
+		e.preventDefault();
+		ui.configModal.clear();
+		ui.configModal.addOption('arcArea', 'Region area proportional to region complexity', 'check', arcPropOptionUpdate, settings.weightArcAreaByNumSubRegions);
+		ui.configModal.show();
+	};
+	
+	var arcPropOptionUpdate = function(value) {
+		settings.weightArcAreaByNumSubRegions = value;
+		console.log(value);
+		var newNum = data.activeNodes.length;
+		var newDelta = 2 * Math.PI / newNum;
+		updateLayout(newNum, newDelta);
+	};
+	
 	 /* End of SVG Objects Interaction */
 	
 	/* Canvas Update */
@@ -322,9 +349,14 @@ svg.circular = (function($, undefined) {
 		enterLinks();    
 		enterNodes();
 
-		for (var i = 0; i < newNum; ++i) {
-			var datum = data.activeNodes[i];
-			calculateArcPositions(datum, 0, newDelta, i);
+		if (settings.weightArcAreaByNumSubRegions) {
+			computeNodesParametersWeighted();
+		}
+		else {
+			for (var i = 0; i < newNum; ++i) {
+				var datum = data.activeNodes[i];
+				calculateArcPositions(datum, 0, newDelta, i, 1);
+			}		
 		}
 
 		updateLinks();
@@ -419,7 +451,6 @@ svg.circular = (function($, undefined) {
 	};
 	
 	var enterLinks = function() {
-		console.log(data.activeLinks);
 		svgObjs.canvas.selectAll(".link")
 			.data(data.activeLinks, function(d) {return d.pk;})
 			.enter().append("svg:path")
@@ -738,6 +769,7 @@ svg.circular = (function($, undefined) {
 		var startAngle = d.circular.startAngle;
 		var endAngle = d.circular.endAngle;
 		var delta = (endAngle - startAngle) / subNum;
+		var unit = (endAngle - startAngle) / d.derived.leaves.length;
 
 		// Record neighbors of the node being removed
 		var inNeighbors = [];
@@ -772,9 +804,16 @@ svg.circular = (function($, undefined) {
 			ans[i] = ans[i-subNum+1];
 		}
 
+		var pastLeaves = 0;
 		for (var i = pos; i < pos + subNum; ++i) {
 			var datum = sub[i-pos];
-			calculateArcPositions(datum, startAngle, delta, i-pos);
+			if (settings.weightArcAreaByNumSubRegions) {
+				calculateArcPositions(datum, startAngle, unit, pastLeaves, datum.derived.leaves.length);
+				pastLeaves += datum.derived.leaves.length;
+			}
+			else {
+				calculateArcPositions(datum, startAngle, delta, i-pos, 1);
+			}
 //			datum.derived.color = d.derived.color;
 			datum.circular.isActive = true;
 			ans[i] = datum;
@@ -927,26 +966,59 @@ svg.circular = (function($, undefined) {
 	/* End of SVG Data Update */
 	
 	/* Computation */
-
-	var computeNodesParameters = function() {
-		var total = data.activeNodes.length;
-		var delta = 2 * Math.PI  / total;
-		for (var i = 0; i < total; ++i) {
+	
+	var computeNodesParametersWeighted = function() {
+		var totalLeaves = 0;
+		for (var i in data.activeNodes) {
 			var datum = data.activeNodes[i];
-			calculateArcPositions(datum, 0, delta, i);
+			totalLeaves += datum.derived.leaves.length;
+		}
+		var pastLeaves = 0;
+		var unit = 2 * Math.PI / totalLeaves;
+		for (var i in data.activeNodes) {
+			var datum = data.activeNodes[i];
+			calculateArcPositions(datum, 0, unit, pastLeaves, datum.derived.leaves.length);
+			pastLeaves += datum.derived.leaves.length;
 		}
 	};
 
-	var calculateArcPositions = function(datum, startAngle, delta, i) {
-		datum.circular.startAngle = startAngle + delta * i;
-		datum.circular.endAngle = startAngle + delta * (i+1);
-		var angle = delta * (i + 0.5) + startAngle;
+	var computeNodesParameters = function() {
+		console.log('arc area option');
+		console.log(settings.weightArcAreaByNumSubRegions);
+		if (settings.weightArcAreaByNumSubRegions) {
+			computeNodesParametersWeighted();
+		}
+		else {
+			var total = data.activeNodes.length;
+			var delta = 2 * Math.PI  / total;
+			for (var i = 0; i < total; ++i) {
+				var datum = data.activeNodes[i];
+				calculateArcPositions(datum, 0, delta, i, 1);
+			}			
+		}
+	};
+
+	var calculateArcPositions = function(datum, startAngle, unit, past, present) {
+		datum.circular.startAngle = startAngle + unit * past;
+		datum.circular.endAngle = startAngle + unit * (past + present);
+		var angle = unit * (past + present / 2) + startAngle;
 		var radius = settings.arc.innerRadius + (settings.arc.outerRadius - settings.arc.innerRadius) / 2;
 		datum.circular.x = radius * Math.cos(Math.PI / 2 - angle);
 		datum.circular.linkX = settings.arc.innerRadius * Math.cos(Math.PI / 2 - angle);
 		datum.circular.y = -radius * Math.sin(Math.PI / 2 - angle);
 		datum.circular.linkY = -settings.arc.innerRadius * Math.sin(Math.PI / 2 - angle);
 	};
+	
+/*	var calculateArcPositionsProp = function(datum, startAngle, unit, pastLeaves) {
+		datum.circular.startAngle = startAngle + unit * pastLeaves;
+		datum.circular.endAngle = startAngle + unit * (pastLeaves + datum.derived.leaves.length);
+		var angle = startAngle + unit * (pastLeaves + datum.derived.leaves.length / 2);
+		var radius = settings.arc.innerRadius + (settings.arc.outerRadius - settings.arc.innerRadius) / 2;
+		datum.circular.x = radius * Math.cos(Math.PI / 2 - angle);
+		datum.circular.linkX = settings.arc.innerRadius * Math.cos(Math.PI / 2 - angle);
+		datum.circular.y = -radius * Math.sin(Math.PI / 2 - angle);
+		datum.circular.linkY = -settings.arc.innerRadius * Math.sin(Math.PI / 2 - angle);
+	}; */
 
 	var findActiveParent = function(node) {
 		var maps = svg.model.maps();

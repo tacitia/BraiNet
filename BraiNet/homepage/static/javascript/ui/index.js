@@ -9,6 +9,7 @@ ui.canvasReset = ui.canvasReset || {};
 ui.linkInfo = ui.linkInfo || {};
 ui.loadingModal = ui.loadingModal || {};
 ui.alertModal = ui.alertModal || {};
+ui.configModal = ui.configModal || {};
 ui.attrSelector = ui.attrSelector || {};
 
 //TODO: run selected ui modules using requireJS

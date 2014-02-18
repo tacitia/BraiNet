@@ -90,6 +90,8 @@ html(lang="en")
             h5 Circular View
             div.card#circular-pane
               div.svg-controller
+                a.btn.right-align#configButton(href="#")
+                  i.icon-wrench
                 a.btn.right-align#upButton(href="#")
                   i.icon-arrow-up
                 a.btn.right-align#downButton(href="#")
@@ -154,6 +156,13 @@ html(lang="en")
         div.modal-body
           p#message
           button.btn(data-dismiss="modal") Ok
+      div(class="modal hide fade")#config-modal
+        div.modal-body
+          div#option-body
+            h4 Settings
+            table#option-table
+          button.btn#cancel(data-dismiss="modal") Cancel
+          button.btn.btn-primary#apply Apply
     script(src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js")
     script(src="/static/library/bootstrap/js/bootstrap.min.js")
     script(src="/static/library/d3/d3.v3.min.js")
@@ -178,6 +187,7 @@ html(lang="en")
     script(src="/static/javascript/ui/linkInfo.js")
     script(src="/static/javascript/ui/loadingModal.js")
     script(src="/static/javascript/ui/alertModal.js")
+    script(src="/static/javascript/ui/configModal.js")
     script(src="/static/javascript/svg/index.js")
     script(src="/static/javascript/svg/model.js")
     script(src="/static/javascript/svg/circular.js")

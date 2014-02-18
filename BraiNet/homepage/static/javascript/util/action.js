@@ -21,6 +21,7 @@ util.action = (function($, undefined) {
 	};
 	
 	var postAction = function(data) {
+		console.log('Logging action:' + data.name + ',' + data.parameters);
 		amplify.request('addAction',
 			data,
 			function(data) {

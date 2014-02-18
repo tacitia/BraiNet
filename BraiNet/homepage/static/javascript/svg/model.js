@@ -199,6 +199,25 @@ svg.model = (function($, undefined) {
 				parentNode.derived.children.push(node.pk);
 				node.derived.parent = parentNode;
 			}
+			node.derived.leaves = [];
+		}
+		populateLeaves();
+	};
+	
+	var populateLeaves = function() {
+		var leaves = [];
+		for (var key in maps.keyToNode) {
+			var node = maps.keyToNode[key];
+			if (node.derived.children.length === 0) {
+				leaves.push(node);
+			}
+		}
+		for (var i in leaves) {
+			var p = leaves[i].derived.parent;
+			while (p !== undefined && p !== null) {
+				p.derived.leaves.push(leaves[i]);
+				p = p.derived.parent;
+			}
 		}
 	};
 

@@ -37,7 +37,7 @@ ui.pathSearch = (function($, undefined) {
 	var selectSource = function() {
 		var inputKey = this.value;
 		processSelection(inputKey, 'source');
-		util.action.add('select source in path search', {source: svg.model.maps().keyToNode[inputKey].fields.name);
+		util.action.add('select source in path search', {source: svg.model.maps().keyToNode[inputKey].fields.name});
 	};
 	
 	var selectTarget = function() {

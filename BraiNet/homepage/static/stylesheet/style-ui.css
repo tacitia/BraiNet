@@ -205,6 +205,15 @@ html,body { height:100%; }
     overflow-y: scroll;
 }
 
+#option-body {
+	padding: 10px;
+	text-align: left;
+}
+
+#option-table {
+	width: 100%;
+}
+
 .table-custom {
     /*position: absolute;*/
     /*left: 20px;*/
