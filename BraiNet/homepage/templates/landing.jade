@@ -1,0 +1,42 @@
+!!! 5
+html(lang="en")
+  head
+    title="BraiNet"
+    link(rel="stylesheet", href="/static/library/bootstrap/css/bootstrap.min.css")
+    link(rel="stylesheet", href="/static/library/chosen/chosen.min.css")
+    link(rel="stylesheet", href="/static/library/qTip2/jquery.qtip.min.css")
+    link(rel="stylesheet", href="/static/stylesheet/style-ui.css")
+    link(rel="stylesheet", href="/static/stylesheet/style-canvas.css")
+  body
+    div.head-section
+      div.navbar
+        div.navbar-inner.navbar-top.main-nav
+          div.navbar-content
+            a.brand(href="#") braiNet
+            ul.nav
+              li
+                a(href="https://github.com/tacitia/BraiNet/wiki/Quick-Start", target="_blank") How to
+              li
+                a(href="/brainet") use braiNet
+              li
+                a(href="https://github.com/tacitia/BraiNet", target="_blank") Source code
+            ul.nav.pull-right
+              li
+                a(href="/account/register", target="_blank") Register
+    div.content-section
+      div.content-body#home
+        div.site-highlight
+          p BraiNet is an online visual explorer for brain connectivity networks. Using BraiNet, you can visualize public or your own connectivity datasets in the context of public neuroscience resources such as anatomical atlas or PubMed articles and annotate your findings.
+        div.center-content
+          div.feature-desc
+            h3 Visualize your data
+            p BraiNet lets you visualize connectivity data as either circular hierarchical networks or node-link graphs. Different visualizations help you think differently.
+            a(href) Learn more
+          div.feature-desc
+            h3 Put your data into context
+            p Visualizations in BraiNet are linked to public neuroscience resources including rat brain atlas from Allen Brain Institute and articles indexed in PubMed. This way, those resources are just one click away when you look at your data.
+            a(href) Learn more
+          div.feature-desc
+            h3 Manage your data
+            p Have noticed something interesting about your connection or a related publication? You can take notes of your findings immediately using the BraiNet interface.
+            a(href) Learn more

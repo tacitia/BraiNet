@@ -1,0 +1,219 @@
+!!! 5
+html(lang="en")
+  head
+    title="BraiNet"
+    link(rel="stylesheet", href="/static/library/bootstrap/css/bootstrap.min.css")
+    link(rel="stylesheet", href="/static/library/chosen/chosen.min.css")
+    link(rel="stylesheet", href="/static/library/qTip2/jquery.qtip.min.css")
+    link(rel="stylesheet", href="/static/stylesheet/style-ui.css")
+    link(rel="stylesheet", href="/static/stylesheet/style-canvas.css")
+  body
+    div.head-section
+      div.navbar
+        div.navbar-inner.navbar-top.main-nav
+          div.navbar-content
+            a.brand(href="#") braiNet
+            ul.nav
+              li
+                a(href="https://github.com/tacitia/BraiNet/wiki/Quick-Start",target="_blank") How to
+              li
+                a(href="/brainet") use braiNet
+              li
+                a(href="https://github.com/tacitia/BraiNet",target="_blank") Source code
+            ul.nav.pull-right
+              li
+                a(href="/account/register", target="_blank") Register
+    div.content-section
+      div.divider
+      div#control-container.center-content.sub-section.well
+        div.subsection-title
+          h4 Control Panel
+        div.row-fluid
+          div.span3
+            div.control-pane#dataset-selector.well.sub-sub-section
+              h5 Load dataset
+              div
+                div.single-line-div
+                  select.chzn-select#dataset-list(data-placeholder="Select Dataset")
+                div.single-line-div
+                  button.btn.btn-primary#load-button Load
+            div.control-pane#region-selector.well.sub-sub-section(style="height:105px")
+              h5 Locate a brain region 
+              div
+                select.chzn-select#region-list(data-placeholder="Select Brain Region")
+          div.span4
+            div.control-pane#path-search.well.sub-sub-section
+              h5 Search for indirect path
+              div
+                div.single-line-div
+                  label(for="source-list") Source
+                  select.chzn-select.inline#source-list(data-placeholder="Select a source region")
+                div.single-line-div
+                  label.control-label(for="target-list") Target
+                  select.chzn-select.inline#target-list(data-placeholder="Select a target region") 
+                div.single-line-div
+                  label.control-label(for="max-hop") Max number of intermediate connections
+                  input#max-hop(type="range", min=1, max=4, value=1, step=1)
+                  span#max-hop-value 1
+                div.single-line-div
+                  button.btn#search-button
+                    i.icon-search
+                  button.btn.btn-danger#clear-button
+                    i.icon-remove
+          div.span4
+            div.control-pane#legend.well.sub-sub-section
+              h5 Edge Color Legend
+              div#legend-primary
+                h6 Default (by directionality)
+                div
+                  div.legend-block.multi-col(style="background-color:#2ca02c;")
+                  div.legend-label.multi-col
+                    p Source region / Outgoing connecion
+                  div.clear
+                  div.legend-block.multi-col(style="background-color:#d62728;")
+                  div.legend-label.multi-col
+                    p Target region / Incoming connecion
+                  div.clear
+                  div.legend-block.multi-col(style="background-color:#062db8;")
+                  div.legend-label.multi-col
+                    p Bidirectional connection
+                  div.clear
+              div#legend-feature
+                h6 Optional (by edge attributes)
+                div
+                  span Attribute
+                  select.chzn-select.inline#attr-list(data-placeholder="Select an attribute")
+                svg#attr-legend
+          div.span1#resetDiv
+            button.btn.btn-danger#reset Reset
+      div.divider
+      div#svg-container.center-content.sub-section.well
+        h4 Visualizations
+        div.row-fluid
+          div.svg-pane.span6
+            h5 Circular View
+            div.card#circular-pane
+              div.svg-controller
+                a.btn.right-align#configButton(href="#")
+                  i.icon-wrench
+                a.btn.right-align#upButton(href="#")
+                  i.icon-arrow-up
+                a.btn.right-align#downButton(href="#")
+                  i.icon-arrow-down
+                a.btn.right-align#removeButton(href="#")
+                  i.icon-remove
+                a.btn.right-align#anatomyButton(href="#")
+                  i.icon-map-marker
+              svg.canvas
+          div.svg-pane.span6
+            h5 Force-directed View
+            div.card#force-pane
+              div.svg-controller
+                span#region-name
+              svg.canvas
+        div.row-fluid
+          div.span3
+            div#conn-info
+              h5 Connection Information
+              p#src-name Source: no connection selected.
+              p#tgt-name Target: no connection selected.
+              p#no-note-msg Notes: no connection selected.
+              div#conn-notes.removed
+                div.multi-col(style="margin-right:10px;")
+                  p Notes
+                div.multi-col
+                  textarea#conn-note-input.removed(rows="3") Add a note...
+                  p#conn-note-display(style="width:220px") No notes found.
+                  button#conn-note-save.btn.btn-success.removed Save
+                div.multi-col
+                  i#conn-note-edit.icon-edit
+                div.clear
+          div.span4
+            h5 Anatomy View
+            div.card#anatomy-pane
+              div.canvas
+                div#svg
+                div#img
+              div.svg-controller
+                div.btn-toolbar
+                  div.btn-group
+                    button.btn#left-arrow
+                      i.icon-arrow-left
+                    button.btn#right-arrow
+                      i.icon-arrow-right
+          div.span5
+            h5 Projection Statistics
+            div.card#link-pane
+      div.divider
+      div.row-fluid.center-content.sub-section.well
+        h4 Original records and publications
+        div.span12#conn-details
+          ul.nav.nav-tabs
+            li.active
+              a(href="#paper-list")(data-toggle="tab") Publications
+            li
+              a(href="#origin-list")(data-toggle="tab") Original records
+            li 
+              a(href="#sub-con-list")(data-toggle="tab") Sub-connections
+          div.tab-content(style="padding:20px")
+            div(class="tab-pane fade in active")#paper-list
+              p.search-results-exp.explanation
+                i Click on a connection or search for the connections between two brain regions and links to relevant literature will be displayed here.
+            div(class="tab-pane fade")#origin-list
+              p.search-results-exp.explanation
+                i Click on a connection or search for the connections between two brain regions and the records from the original connectivity data source will be displayed here.(Only available for pre-loaded datasets.)
+            div(class="tab-pane fade")#sub-con-list
+              p.search-results-exp.explanation
+                i Click on a connection or search for the connections between two brain regions and the underlying sub-connections will be displayed here.
+    div.foot-section
+      div.footer
+        div.copyright
+          p
+            &copy 2013-2014
+      div(class="modal hide fade")#loading-modal
+        div.modal-body
+          img(src="/static/image/loading.gif")
+          p#message Loading...Please wait.
+      div(class="modal hide fade")#alert-modal
+        div.modal-body
+          p#message
+          button.btn(data-dismiss="modal") Ok
+      div(class="modal hide fade")#config-modal
+        div.modal-body
+          div#option-body
+            h4 Settings
+            table#option-table
+          button.btn#cancel(data-dismiss="modal") Cancel
+          button.btn.btn-primary#apply Apply
+    script(src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js")
+    script(src="/static/library/bootstrap/js/bootstrap.min.js")
+    script(src="/static/library/d3/d3.v3.min.js")
+    script(src="/static/library/d3/box.js")
+    script(src="/static/library/amplify.min.js")
+    script(src="/static/library/chosen/chosen.jquery.min.js")
+    script(src="/static/library/chosen/fuse.js")
+    script(src="/static/library/qTip2/jquery.qtip.min.js")
+    script(src="/static/javascript/setting/amplifyJS.js")
+    script(src="/static/javascript/setting/setting.js")
+    script(src="/static/javascript/util/index.js")
+    script(src="/static/javascript/util/generic.js")
+    script(src="/static/javascript/util/action.js")
+    script(src="/static/javascript/user/index.js")
+    script(src="/static/javascript/user/model.js")
+    script(src="/static/javascript/ui/index.js")
+    script(src="/static/javascript/ui/datasetSelector.js")
+    script(src="/static/javascript/ui/regionSelector.js")
+    script(src="/static/javascript/ui/attrSelector.js")
+    script(src="/static/javascript/ui/pathSearch.js")
+    script(src="/static/javascript/ui/canvasReset.js")
+    script(src="/static/javascript/ui/linkInfo.js")
+    script(src="/static/javascript/ui/loadingModal.js")
+    script(src="/static/javascript/ui/alertModal.js")
+    script(src="/static/javascript/ui/configModal.js")
+    script(src="/static/javascript/svg/index.js")
+    script(src="/static/javascript/svg/model.js")
+    script(src="/static/javascript/svg/circular.js")
+    script(src="/static/javascript/svg/force.js")
+    script(src="/static/javascript/svg/anatomy.js")
+    script(src="/static/javascript/svg/linkAttr.js")
+    script(src="/static/javascript/main.js")

@@ -1,5 +1,6 @@
 /* @group base elements */
 
+/*
 body,
 input,
 button,
@@ -7,7 +8,7 @@ select,
 textarea,
 .navbar-search .search-query {
 	font-family: 'Actor', sans-serif !important;
-}
+} */
 
 a {
 	color: #76a7c8;
@@ -35,7 +36,6 @@ body {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    font: 13px sans-serif;
 }
 html,body { height:100%; }
 
@@ -86,11 +86,15 @@ html,body { height:100%; }
 /* @group sections */
 
 .head-section {
-	width: 1400;
+	height: 80px;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #cccccc;
+/*	width: 1400;
 	height: auto;
 	box-shadow: 2px 2px 1px rgba(0,0,0,0.5);
 	padding: 10px;
-	margin: auto;
+	margin: auto; */
 }
 
 #website-title {
@@ -98,12 +102,83 @@ html,body { height:100%; }
 	width: 1260px;
 }
 
-.content-section {
+.navbar-content {
+	width: 80%;
+	margin: auto;
+}
+
+/* .content-section {
 	width:1300px;
 	margin:30px auto;
 	position: relative;
 	height: 100%;
+} */
+
+.main-nav {
+	padding: 20px;
 }
+
+.content-body {
+	margin: auto;
+}
+
+.center-content {
+	width: 80%;
+	margin: auto;
+	padding: 20px;
+}
+
+.site-highlight {
+	padding: 40px 40px 40px 40px;
+	height: 200px;
+	background-color: #53a1b8;
+	color: white;
+}
+
+.site-highlight > p {
+	font-size: 22px;
+	line-height: 140%;
+}
+
+.divider {
+	height: 20px;
+}
+
+.feature-desc {
+	padding: 10px;
+}
+
+.feature-desc > p {
+	font-size: 14px;
+}
+
+#conn-details {
+	height: 200px;
+	overflow-y: scroll;
+}
+
+.sub-sub-section {
+	margin: 5px;
+}
+
+.single-line-div {
+	margin: 15px 0px 15px 0px;
+}
+
+.foot-section {
+	margin: 50px 0px 0px 0px;
+}
+
+.footer {
+	height: 50px;
+	background: #f5f5f5;
+}
+
+.copyright {
+	text-align: center;
+	padding: 15px 0px 0px 0px;
+}
+
 /* @group containers */
 
 /* @group panes */
@@ -118,13 +193,13 @@ html,body { height:100%; }
 }
 
 #circular-pane {
-	width:600px;
-	height:600px;
+	width:550px;
+	height:550px;
 }
 
 #force-pane {
-	width:600px;
-	height:600px;
+	width:550px;
+	height:550px;
 }
 
 #link-pane {
@@ -147,7 +222,7 @@ html,body { height:100%; }
 
 #attr-legend {
 	width: 300px;
-	height: 100px;
+	height: 50px;
 }
 
 /* @group anatomy-pane */

@@ -171,6 +171,7 @@ svg.anatomy = (function($, undefined) {
 		state.currImgId = data.images[state.currImgKey];
 		$(doms.canvas).css("background","");
 		updateImages(settings.args);
+		util.action.add('choose anatomical image in the anatomy view', {direction: 'left'});
 	};
 	
 	var rightArrowClick = function() {
@@ -178,6 +179,7 @@ svg.anatomy = (function($, undefined) {
 		state.currImgId = data.images[state.currImgKey];
 		$(doms.canvas).css("background","");
 		updateImages(settings.args);
+		util.action.add('choose anatomical image in the anatomy view', {direction: 'right'});
 	};
 	
 	/* End of SVG Objects Interaction */

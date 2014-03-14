@@ -13,8 +13,7 @@ ui.pathSearch = (function($, undefined) {
 	};
 	
 	var setting = {
-		maxHop: 3
-		// TODO: add max hop slider
+		maxHop: 1
 	};
 	
 	var state = {
@@ -47,8 +46,8 @@ ui.pathSearch = (function($, undefined) {
 	};
 	
 	var setMaxHop = function() {
-		setting.maxHop = this.value;
-		dom.maxHopValue.val(this.value);
+		setting.maxHop = parseInt(this.value);
+		doms.maxHopValue.text(this.value);
 		util.action.add('set max hop', {maxHop: this.value});
 	};
 	

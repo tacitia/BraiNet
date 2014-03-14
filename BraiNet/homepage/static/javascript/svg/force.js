@@ -10,8 +10,8 @@ svg.force = (function($, undefined) {
 	
 	var settings = {};
 	settings.vis = {
-		width: 600,
-		height: 600
+		width: 550,
+		height: 550
 	};
 	// TODO: The settings below should be exposed to the users later
 	settings.hideIsolated = true;
@@ -84,6 +84,7 @@ svg.force = (function($, undefined) {
 			state.mode = 'fixation';
 			svg.circular.showRegion(d.pk);
 			svg.circular.selectRegion(d);
+			util.action.add('select region in force view', {region: d.fields.name});
 		}
 		else if (state.mode === 'fixation') {
 			state.selectedNode = null;
@@ -92,15 +93,6 @@ svg.force = (function($, undefined) {
 		}
 		else if (state.mode === 'search') {
 			state.selectedNode === null ? state.selectedNode = d : state.selectedNode = null;		
-		}
-		if (window.event.shiftKey === true) {
-			removeButtonClick();
-		}
-		if (window.event.metaKey === true) {
-			downButtonClick();
-		}
-		if (window.event.altKey === true) {
-			upButtonClick();
 		}
 	};
 	
@@ -248,7 +240,7 @@ svg.force = (function($, undefined) {
 		var showAll = true;
 		
 		if (source !== undefined && target !== undefined) {
-			gravity = 0;
+			gravity = 0.5;
 			charge = -6000;
 			showAll = false;
 		}
@@ -281,7 +273,11 @@ svg.force = (function($, undefined) {
 			   .data(data.activeLinks, function(d) { return d.pk; })
 		   .enter().append("svg:line")
 		   .attr("class", "force link")
-		   .style("stroke-width", 3)
+		   .style("stroke-width", 1)
+		   .attr('stroke', '#ccc')
+		   .attr('stroke-width', function(d) { 
+				return Math.min(10, 1 + Math.ceil(d.derived.leaves.length / 50)) + 'px'; 
+		   })
 		   .on('click', linkClick)
 		   .on('mouseover', linkMouseOver)
 		   .on('mouseout', linkMouseOut);

@@ -8,6 +8,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'homepage.views.index', name='index'),
+    url(r'^brainet', 'homepage.views.brainet', name='brainet'),
     url(r'^connectivity/', include('connectivity.urls')),
     url(r'^anatomy/', include('anatomy.urls')),
     url(r'^account/', include('account.urls')),

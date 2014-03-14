@@ -15,8 +15,8 @@ svg.circular = (function($, undefined) {
 	
 	var settings = {};
 	settings.vis = {
-		width: 600,
-		height: 600
+		width: 550,
+		height: 550
 	};
 	settings.arc = {};
 	settings.arc.innerRadius = Math.min(settings.vis.width, settings.vis.height) * 0.35,
@@ -131,25 +131,25 @@ svg.circular = (function($, undefined) {
 			state.selectedNode = d;
 			state.mode = 'fixation';
 			svg.force.selectRegion(d);
-			util.action.add('select region in circular view', d.fields.name);
+			util.action.add('select region in circular view', {region: d.fields.name});
 		}
 		else if (state.mode === 'fixation') {
 			state.selectedNode = null;
 			state.mode = 'exploration';
 			svg.anatomy.selectStructure(d.fields.name, true);
 			svg.force.deselectRegion(d);
-			util.action.add('deselect region in circular view', d.fields.name);		
+			util.action.add('deselect region in circular view', {region: d.fields.name});		
 		}
 		else if (state.mode === 'search') {
 			if (state.selectedNode === null) {
 				state.selectedNode = d;
 				svg.force.selectRegion(d);
-				util.action.add('select region in circular view', d.fields.name);
+				util.action.add('select region in circular view', {region: d.fields.name});
 			}
 			else {
 				svg.force.deselectRegion(state.selectedNode);
 				state.selectedNode = null;
-				util.action.add('deselect region in circular view', d.fields.name);	
+				util.action.add('deselect region in circular view', {region: d.fields.name});	
 			}
 		}
 		if (window.event.shiftKey === true) {
@@ -213,7 +213,8 @@ svg.circular = (function($, undefined) {
 
 	
 	var anatomyButtonClick = function() {
-		svg.anatomy.selectStructure(state.selectedNode.fields.name, false);		
+		svg.anatomy.selectStructure(state.selectedNode.fields.name, false);	
+		util.action.add('update anatomical slice from the circular view', {region: state.selectedNode.fields.name})	
 	};
 	
 	var upButtonClick = function(e) {
@@ -227,6 +228,7 @@ svg.circular = (function($, undefined) {
 		clearAllHighlight();
 		combineRegions(parent, nodesToRemove);	
 		state.mode = 'exploration';
+		util.action.add('go up in the hierarchy in circular view', {region: n.fields.name});
 	};
 	
 	var removeButtonClick = function(e) {
@@ -253,6 +255,7 @@ svg.circular = (function($, undefined) {
 		state.mode = 'exploration';	
 		// Todo: have a list that displays the removed nodes, so that the user can 
 		// add them back when needed
+		util.action.add('remove a region in circular view', {region: d.fields.name});
 	};
 	
 	var downButtonClick = function(e) {
@@ -271,7 +274,8 @@ svg.circular = (function($, undefined) {
 		}
 		clearAllHighlight();
 		expandRegion(n, children);	
-		state.mode = 'exploration';			
+		state.mode = 'exploration';
+		util.action.add('go down in the hierarchy in circular view', {region: d.fields.name});
 	};
 	
 	var configButtonClick = function(e) {
@@ -279,6 +283,7 @@ svg.circular = (function($, undefined) {
 		ui.configModal.clear();
 		ui.configModal.addOption('arcArea', 'Region area proportional to region complexity', 'check', arcPropOptionUpdate, settings.weightArcAreaByNumSubRegions);
 		ui.configModal.show();
+		util.action.add('open config window in circular view', {region: d.fields.name});
 	};
 	
 	var arcPropOptionUpdate = function(value) {
@@ -769,7 +774,8 @@ svg.circular = (function($, undefined) {
 		var startAngle = d.circular.startAngle;
 		var endAngle = d.circular.endAngle;
 		var delta = (endAngle - startAngle) / subNum;
-		var unit = (endAngle - startAngle) / d.derived.leaves.length;
+		var leafLength = 1;
+		var unit = (endAngle - startAngle) / Math.max(d.derived.leaves.length, 1);
 
 		// Record neighbors of the node being removed
 		var inNeighbors = [];
@@ -808,8 +814,8 @@ svg.circular = (function($, undefined) {
 		for (var i = pos; i < pos + subNum; ++i) {
 			var datum = sub[i-pos];
 			if (settings.weightArcAreaByNumSubRegions) {
-				calculateArcPositions(datum, startAngle, unit, pastLeaves, datum.derived.leaves.length);
-				pastLeaves += datum.derived.leaves.length;
+				calculateArcPositions(datum, startAngle, unit, pastLeaves, Math.max(datum.derived.leaves.length, 1));
+				pastLeaves += Math.max(datum.derived.leaves.length, 1);
 			}
 			else {
 				calculateArcPositions(datum, startAngle, delta, i-pos, 1);
@@ -971,14 +977,14 @@ svg.circular = (function($, undefined) {
 		var totalLeaves = 0;
 		for (var i in data.activeNodes) {
 			var datum = data.activeNodes[i];
-			totalLeaves += datum.derived.leaves.length;
+			totalLeaves += Math.max(datum.derived.leaves.length, 1);
 		}
 		var pastLeaves = 0;
 		var unit = 2 * Math.PI / totalLeaves;
 		for (var i in data.activeNodes) {
 			var datum = data.activeNodes[i];
-			calculateArcPositions(datum, 0, unit, pastLeaves, datum.derived.leaves.length);
-			pastLeaves += datum.derived.leaves.length;
+			calculateArcPositions(datum, 0, unit, pastLeaves, Math.max(datum.derived.leaves.length, 1));
+			pastLeaves += Math.max(datum.derived.leaves.length, 1);
 		}
 	};
 
@@ -1024,7 +1030,8 @@ svg.circular = (function($, undefined) {
 		var maps = svg.model.maps();
 		var result = node;
 		while (result !== undefined && result !== null) {
-			if (result.circular.isActive) {
+//			if (result.circular.isActive) {
+			if ($.inArray(result, data.activeNodes) > -1) {
 				return result;
 			}
 			result = result.derived.parent;
