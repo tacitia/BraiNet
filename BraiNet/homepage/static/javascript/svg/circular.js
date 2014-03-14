@@ -283,7 +283,7 @@ svg.circular = (function($, undefined) {
 		ui.configModal.clear();
 		ui.configModal.addOption('arcArea', 'Region area proportional to region complexity', 'check', arcPropOptionUpdate, settings.weightArcAreaByNumSubRegions);
 		ui.configModal.show();
-		util.action.add('open config window in circular view', {region: d.fields.name});
+		util.action.add('open config window in circular view', {});
 	};
 	
 	var arcPropOptionUpdate = function(value) {
