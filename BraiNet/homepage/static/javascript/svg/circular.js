@@ -126,6 +126,8 @@ svg.circular = (function($, undefined) {
 	/* SVG Objects Interaction */
 	
 	var nodeClick = function(d) {
+           console.log(d);
+           console.log(svg.model.maps().keyToOutNeighbors[d.pk]);
 		// Fix on the clicked node
 		if (state.mode === 'exploration') {
 			state.selectedNode = d;
@@ -152,19 +154,14 @@ svg.circular = (function($, undefined) {
 				util.action.add('deselect region in circular view', {region: d.fields.name});	
 			}
 		}
-		if (window.event.shiftKey === true) {
-			removeButtonClick();
-		}
-		else if (window.event.metaKey === true) {
-			downButtonClick();
-		}
-		else if (window.event.altKey === true) {
-			upButtonClick();
-		}
+		if (window.event.shiftKey === true) { removeButtonClick(); }
+		else if (window.event.metaKey === true) { downButtonClick(); }
+		else if (window.event.altKey === true) { upButtonClick(); }
 	};
 	
 	// When mousing over, highlight itself and the neighbors
 	var nodeMouseOver = function(node) {
+        console.log(node.fields.depth);
 		if (state.mode === 'fixation') { return; }
 		if (state.mode === 'search' && state.selectedNode !== null && state.selectedNode !== node) { return; }
   		highlightNode(node, false);
@@ -206,8 +203,16 @@ svg.circular = (function($, undefined) {
 	};
 
 	function linkClick(link) {
+		amplify.request('getLeaves',
+			{
+				connId: link.pk
+			},
+			function(leaves) {
+                svg.model.addLinks(leaves, 3);
+				ui.linkInfo.displayLinkInfo(link, leaves);
+			}
+		);
 		svg.linkAttr.render(link);
-		ui.linkInfo.displayLinkInfo(link);	
 		util.action.add('click link in circular view', {source: link.derived.source.fields.name, target: link.derived.target.fields.name});
 	}
 
@@ -257,7 +262,12 @@ svg.circular = (function($, undefined) {
 		// add them back when needed
 		util.action.add('remove a region in circular view', {region: d.fields.name});
 	};
-	
+
+    /*
+     * This function:
+     * 1. calls expandRegion to expand the selected region into its children regions and expand associated links
+     * into children links
+     */
 	var downButtonClick = function(e) {
 		e.preventDefault();
 		var n = state.selectedNode;
@@ -275,7 +285,7 @@ svg.circular = (function($, undefined) {
 		clearAllHighlight();
 		expandRegion(n, children);	
 		state.mode = 'exploration';
-		util.action.add('go down in the hierarchy in circular view', {region: d.fields.name});
+		util.action.add('go down in the hierarchy in circular view', {region: state.selectedNode.fields.name});
 	};
 	
 	var configButtonClick = function(e) {
@@ -468,7 +478,10 @@ svg.circular = (function($, undefined) {
 			.attr("class", "link")
 			.attr('stroke', '#ccc')
 			.attr('stroke-width', function(d) { 
-				return Math.min(10, 1 + Math.ceil(d.derived.leaves.length / 50)) + 'px'; 
+                var width = d.derived.isDerived
+                        ? Math.min(10, 1 + Math.ceil(d.derived.leaves.length / 50)) + 'px'
+                        : 1 + 'px';
+                return width;
 			})
 			.attr("id", function(d) { return "circ-link-" + d.pk; })
 			.on("mouseover", linkMouseOver)
@@ -541,18 +554,35 @@ svg.circular = (function($, undefined) {
 		var inNeighbors = maps.keyToInNeighbors[regionPk];
 		var outNeighbors = maps.keyToOutNeighbors[regionPk];
 		if (inNeighbors.length === 0 && outNeighbors.length === 0) {
-			// TODO: show dialog whether users still want to see a region with no connections
+			console.log('call getLocalConnections');
+			amplify.request('getLocalConnections',
+				{
+					structId: regionPk,
+                    depth: Math.min(region.fields.depth, 3)
+				},
+				function(data) { 
+					console.log(data);
+					svg.model.addLinks(data);
+					showRegionCallBack(region); 
+				}
+			);
 		}
+		else {
+			showRegionCallBack(region);
+		}
+	};
+	
+	var showRegionCallBack = function(region) {
 		clearAllHighlight();
-		displayNode(region);
+		displayNodes([region]);
 		svgObjs.canvas.selectAll('.node')
 			.classed('nofocus', function(d) {
 				return d !== region;
 			});
 		
-		$('#circ-node-' + region.pk).qtip('show');
+		$('#circ-node-' + region.pk).qtip('show');	
 	};
-	
+		
 	var showRegionMulti = function(regionPks) {
 		clearAllHighlight();
 		var maps = svg.model.maps();
@@ -560,8 +590,8 @@ svg.circular = (function($, undefined) {
 		for (i in regionPks) {
 			region = maps.keyToNode[regionPks[i]];
 			regions.push(region);
-			displayNode(region);
 		}
+		displayNodes(regions);
 		svgObjs.canvas.selectAll('.node')
 			.classed('nofocus', function(d) {
 				return $.inArray(d, regions) < 0;
@@ -695,6 +725,7 @@ svg.circular = (function($, undefined) {
 				data.activeLinks.push(l);
 			}
 		}
+		console.log(data.activeLinks);
 	};
 	
 /*	var assignColor = function() {
@@ -762,6 +793,11 @@ svg.circular = (function($, undefined) {
 		updateLayout(newNum, newDelta);
 	};
 
+    /*
+     * This function:
+     * 1. expands the node d into sub as well as adjust the links accordingly
+     * 2. calls the function to cache links for the new active links
+     */
 	var expandRegion = function(d, sub) {
 		var maps = svg.model.maps();
 		var ans = data.activeNodes;
@@ -811,6 +847,7 @@ svg.circular = (function($, undefined) {
 		}
 
 		var pastLeaves = 0;
+        var newLinks = [];
 		for (var i = pos; i < pos + subNum; ++i) {
 			var datum = sub[i-pos];
 			if (settings.weightArcAreaByNumSubRegions) {
@@ -828,7 +865,8 @@ svg.circular = (function($, undefined) {
 				var keyPair = neighbor.pk + "_" + datum.pk;
 				var link = maps.nodeToLink[keyPair];
 				if (link !== undefined) {
-					als.push(link);
+                    als.push(link);
+					newLinks.push(link);
 				}
 			}
 			for (var j = 0; j < outNeighborNum; ++j) {
@@ -836,7 +874,8 @@ svg.circular = (function($, undefined) {
 				var keyPair = datum.pk + "_" + neighbor.pk;
 				var link = maps.nodeToLink[keyPair];
 				if (link !== undefined) {
-					als.push(link);
+                    als.push(link);
+					newLinks.push(link);
 				}
 			}
 		}
@@ -846,20 +885,119 @@ svg.circular = (function($, undefined) {
 				var keyPair = sub[i].pk + '_' + sub[j].pk;
 				var link = maps.nodeToLink[keyPair];
 				if (link !== undefined) {
-					als.push(link);
+                    als.push(link);
+					newLinks.push(link);
 				}
 				keyPair = sub[j].pk + '_' + sub[i].pk;
 				link = maps.nodeToLink[keyPair];
 				if (link !== undefined) {
-					als.push(link);
+                    als.push(link);
+					newLinks.push(link);
 				}
 
 			}
 		}
+//        als = als.concat(newLinks);
+        svg.model.cacheSubConnections(newLinks);
 
 		updateLayout(newNum, newDelta);
 	};
 
+
+
+	/* 
+	 * Display a node so that the visualization only shows the given node and nodes that are 
+	 * linked to it
+	 * NOTE: this assumes that it is fine that we only display neighbors of the chosen node
+	 */
+	var displayNodes = function(nodes) {
+		var maps = svg.model.maps();
+		// 1. Put the incoming nodes and their neighbors into an array, which will be the new 
+		// data.activeNodes
+		// 2. Put the links associated with the incoming nodes into an array, which will be the
+		// new data.activeLinks.
+		var newActiveNodes = [];
+		var newActiveLinks = [];
+		for (var i in nodes) {
+			var n = nodes[i];
+			newActiveNodes.push(n);
+			var inNeighborIds = maps.keyToInNeighbors[n.pk];
+			var outNeighborIds = maps.keyToOutNeighbors[n.pk];
+			for (var j in inNeighborIds) {
+				var id = inNeighborIds[j];
+                var neighbor = maps.keyToNode[id];
+                if (neighbor.fields.depth <= window.settings.defaultDisplayDepth) {
+                    newActiveNodes.push(neighbor);
+                }
+			}
+			for (var j in outNeighborIds) {
+				var id = outNeighborIds[j];
+                var neighbor = maps.keyToNode[id];
+                if (neighbor.fields.depth <= window.settings.defaultDisplayDepth) {
+                    newActiveNodes.push(neighbor);
+                }
+            }
+		}
+		// 3. Clean up the new active nodes array
+		var sortByName = function(a, b) {
+			var an = a.fields.name.toLowerCase();
+			var bn = b.fields.name.toLowerCase();
+			if (an > bn) { return 1; }
+			if (an < bn) { return -1; }
+			return 0;
+		}
+		newActiveNodes = util.generic.createSortedUniqueArray(newActiveNodes, sortByName);
+		// 4. Cluster new active nodes by group	
+		var groups = {};
+		for (var i in newActiveNodes) {
+			var g = newActiveNodes[i].derived.group;
+			if (groups[g] === undefined) {
+				groups[g] = [];
+			}
+			groups[g].push(newActiveNodes[i]);
+		}
+		// 5. Get the ordering of groups in the current active nodes
+		var groupIndex = [];
+		var an = data.activeNodes;
+		var currentGroups = {}; // Store a mapping from group ID to nodes in the current active nodes
+		groupIndex.push(an[0].derived.group);
+		currentGroups[an[0].derived.group] = [];	
+		for (var i in an) {
+			i = parseInt(i);
+			// If the next element in the active nodes has a ground id that differs from the current element
+			if (an[i+1] && an[i+1].derived.group !== an[i].derived.group) {
+				groupIndex.push(an[i+1].derived.group);
+				currentGroups[an[i+1].derived.group] = [];
+			}
+			currentGroups[an[i].derived.group].push(an[i]);
+		}
+		// 6. Substitute current active nodes with the new ones
+		newActiveNodes.length = 0;
+		for (var i in groupIndex) {
+			var g = groupIndex[i];
+			newActiveNodes = groups[g] ? 
+				newActiveNodes.concat(groups[g]) :
+				newActiveNodes.concat(currentGroups[g]);
+		}
+		// 7. Add in links for active nodes that haven't been covered
+		for (var i in newActiveNodes) {
+			for (var j in newActiveNodes) {
+				var n1Id = newActiveNodes[i].pk;
+				var n2Id = newActiveNodes[j].pk;
+				var forward = maps.nodeToLink[n1Id + '_' + n2Id];
+				var backward = maps.nodeToLink[n2Id + '_' + n1Id];
+				if (forward) { newActiveLinks = newActiveLinks.concat(forward); }
+				if (backward) { newActiveLinks = newActiveLinks.concat(backward); }
+			}
+		}
+		// 8. Finalize
+		data.activeNodes = newActiveNodes;
+		data.activeLinks = newActiveLinks;
+		computeNodesParameters();	
+		updateLayout(data.activeNodes.length, 2 * Math.PI / data.activeNodes.length);
+	};
+	
+/*
 	var displayNode = function(node) {
 		console.log('displaying');
 		console.log(node.fields.name);
@@ -908,6 +1046,7 @@ svg.circular = (function($, undefined) {
 			}
 		}
 	};
+*/
 	
 	var removeDisconnectedNode = function(node) {
 		var maps = svg.model.maps();

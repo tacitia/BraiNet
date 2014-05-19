@@ -55,9 +55,9 @@ svg.clearAllHighlight = function() {
 	svg.force.clearAllHighlight();
 };
 
-svg.displaySearchResult = function(source, target) {
-	svg.circular.displaySearchResult(source, target);
-	svg.force.displaySearchResult(source, target);
+svg.displaySearchResult = function(source, target, paths) {
+	svg.circular.displaySearchResult(source, target, paths);
+	svg.force.displaySearchResult(source, target, paths);
 };
 
 svg.clearSearchResult = function() {

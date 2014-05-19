@@ -14,7 +14,7 @@ ui.linkInfo = (function($, undefined) {
 		notesInput: '#conn-notes #conn-note-input',
 		editButton: '#conn-notes #conn-note-edit',
 		saveButton: '#conn-notes #conn-note-save',
-		noNoteMsg: '#conn-info #no-note-msg'
+		noNoteMsg: '#conn-info #no-note-msg',
 	};
 	
 	var state = {
@@ -63,15 +63,16 @@ ui.linkInfo = (function($, undefined) {
 		});
 	};
 	
-	var displayLinkInfo = function(link) {
+	var displayLinkInfo = function(link, leaves) {
 		state.selectedLink = link;
 		displayMetadata(link);
 		displayNotes();
 		switchMode('display');
 		displayPubMedInfo();
-		displayOriginRecords();
-		displayLinkChildren();
+		displayOriginRecords(leaves);
+		displayLinkChildren(leaves);
 	};
+	
 
 	var displayMetadata = function(link) {
 		$(dom.srcName).text('Source: ' + link.derived.source.fields.name);
@@ -93,7 +94,52 @@ ui.linkInfo = (function($, undefined) {
 			$(dom.notesDisplay).text(state.selectedLink.derived.note === undefined ? "No notes found." : state.selectedLink.derived.note);
 		}
 	};
+
+	var displayOriginRecords = function(leaves) {
+		d3.select(dom.recordContainer).selectAll('div').remove();
+		var content = d3.select(dom.recordContainer).append('div');
+		var contentHtml = '<p>Connection statistics:</p>';
+		contentHtml += '<table class="table table-bordered table-striped table-condensed"><tr class="tableTitle">';
+		var maps = svg.model.maps();
+		var attrKeys = [];
+		var avgs = {};
+		var attributes = state.selectedLink.fields.attributes;
+		for (var key in attributes) {
+			attrKeys.push(key);
+		}
+        if (state.selectedLink.derived.isDerived) {
+            contentHtml += '<tr><td></td><td>Mean</td><td>Median</td><td>Standard deviation</td></tr>'
+            for (var i in attrKeys) {
+                contentHtml += '<tr><td>' + attrKeys[i] + '</td><td>';
+                contentHtml += state.selectedLink.fields.attributes[attrKeys[i]].mean;
+                contentHtml += '</td><td>';
+                contentHtml += state.selectedLink.fields.attributes[attrKeys[i]].median;
+                contentHtml += '</td><td>';
+                contentHtml += state.selectedLink.fields.attributes[attrKeys[i]].sd;
+                contentHtml += '</td></tr>';
+            }
+        }
+        else {
+            contentHtml += '<tr>';
+            for (var i in attrKeys) {
+                contentHtml += '<td>';
+                contentHtml += attrKeys[i];
+                contentHtml += '</td>';
+            }
+            contentHtml += '</tr><tr>';
+            for (var i in attrKeys) {
+                contentHtml += '<td>';
+                contentHtml += state.selectedLink.fields.attributes[attrKeys[i]];
+                contentHtml += '</td>';
+            }
+            contentHtml += '</tr>';
+        }
+		content.html(contentHtml);
+	};
 	
+	
+	/* Deprecated */
+	/*
 	var displayOriginRecords = function() {
 		d3.select(dom.recordContainer).selectAll('div').remove();
 		var content = d3.select(dom.recordContainer).append('div');
@@ -150,20 +196,80 @@ ui.linkInfo = (function($, undefined) {
 		contentHtml += '</tr>';
 		content.html(contentHtml);
 	};
+	*/
 	
 	var displayPubMedInfo = function() {
+		// Clear previous contents and initialize new contents
 		d3.select(dom.paperContainer).selectAll('div').remove();
 		var content = d3.select(dom.paperContainer).append('div');
+
+		// Add a link to PubMed
 		var contentHtml = '<p>PubMed links:</p>';
 		var searchTerm = state.selectedLink.derived.source.fields.name + '+' + state.selectedLink.derived.target.fields.name + '+projection';
 		searchTerm.replace(' ', '+');
 		contentHtml += '<a target="_blank" href="http://www.ncbi.nlm.nih.gov/pubmed?term=' +
 			searchTerm + 
 			'">Access publication search result page on PubMed</a>';
-		content.html(contentHtml);		
+		
+		// Display the button for add new publications
+		contentHtml += '<div><button class="btn right-align" title="Suggest a publication for this connection"><i class="icon-plus"></i></button></div>'
+		
+		// Display publications added by other users
+		var publicPubRecords = [];
+		contentHtml += '<table class="table table-bordered table-striped table-condensed"><tr class="tableTitle"><td>Publication</td><td>Contributor</td></tr>';
+		for (var i in publicPubRecords) {
+			contentHtml += '<tr>';
+			if (publicRecords.link !== undefined) {
+				contentHtml += '<td><a target="_blank" href="' + publicRecords.link + '">' + publicPubRecords.title + '</td>'
+			}
+			else {
+				contentHtml += '<td>' + publicRecords.title + '</td>';
+			}
+			contentHtml += '<td>' + publicRecords.contributor + '</td>';			
+			contentHtml += '</tr>';
+		}
+		if (publicPubRecords.length === 0) {
+			contentHtml += '<tr><td><i>No user tagged publications found.</i></td></tr>';
+		}
+		contentHtml += '</table>';
+		
+
+		// Update the div
+		content.html(contentHtml);
 	};
 
-	var displayLinkChildren = function() {
+
+	var displayLinkChildren = function(leaves) {
+		d3.select(dom.leavesContainer).selectAll('div').remove();
+		d3.select(dom.leavesContainer).selectAll('p').remove();
+		var content = d3.select(dom.leavesContainer).append('div');
+		var maps = svg.model.maps();
+
+		if (!leaves) { // There is no leaves for, well, leaf links
+           content.html('<p>This is an actual connection record with no sub-connections.</p>');
+            return;
+        }
+
+        var contentHtml = '<p>Children links:</p>';
+        contentHtml += '<table class="table table-bordered table-striped table-condensed"><tr class="tableTitle"><td>Source</td><td>Target</td><td>Notes</td></tr>';
+        var numLeaves = leaves.length;
+		for (var i = 0; i < numLeaves; ++i) {
+			var l = leaves[i];
+			var source = l.derived.source;
+			var target = l.derived.target;
+			contentHtml += '<tr class="childRow" id="childRow-' + i + '"><td>' + source.fields.name + '</td><td>' + target.fields.name +
+				'</td><td>' + ' ' + '</td></tr>';
+		}
+		contentHtml += '</table>';
+		content.html(contentHtml);
+		
+		d3.selectAll('.childRow').on('click', childLinkClick);
+	}
+
+	/*
+	 * Deprecated
+	 */
+	/*	var displayLinkChildren = function(leaves) {
 		d3.select(dom.leavesContainer).selectAll('div').remove();
 		d3.select(dom.leavesContainer).selectAll('p').remove();
 		var content = d3.select(dom.leavesContainer).append('div');
@@ -180,7 +286,7 @@ ui.linkInfo = (function($, undefined) {
 		content.html(contentHtml);
 		
 		d3.selectAll('.childRow').on('click', childLinkClick);
-	}
+	} */
 
 	var childLinkClick = function() {
 		var id = $(this).attr('id');
@@ -189,7 +295,7 @@ ui.linkInfo = (function($, undefined) {
 		//console.log(id_num);
 		//console.log(cl.link.base_children);
 		var childLink = maps.keyToLink[state.selectedLink.derived.leaves[id_num]];
-		displayLinkInfo(childLink);
+		displayLinkInfo(childLink, null);
 		util.action.add('click child link', {
 			linkSource: childLink.derived.source.fields.name, 
 			linkTarget: childLink.derived.target.fields.name

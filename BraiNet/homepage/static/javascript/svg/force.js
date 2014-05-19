@@ -6,6 +6,10 @@ svg.force = (function($, undefined) {
 	var doms = {
 		canvas: '#force-pane .canvas',
 		regionName: '#force-pane .svg-controller #region-name',
+        upButton: '#force-pane .svg-controller #upButton',
+        downButton: '#force-pane .svg-controller #downButton',
+        removeButton: '#force-pane .svg-controller #removeButton',
+        anatomyButton: '#force-pane .svg-controller #anatomyButton'
 	};
 	
 	var settings = {};
@@ -22,7 +26,10 @@ svg.force = (function($, undefined) {
 		mode: 'exploration', //Three possible values for mode: exploration, search, and fixation
 		selectedNode: null,
 		ignoredNodes: [],
-		datasetId: null
+		datasetId: null,
+        source: null,
+        target: null,
+        paths: null
 	};
 	
 	var data = {
@@ -51,7 +58,25 @@ svg.force = (function($, undefined) {
 				.attr('height', settings.vis.height)
 				.append('g');
 
-		console.log('Force view initialized.');
+        $(doms.upButton).click(upButtonClick);
+        $(doms.downButton).click(downButtonClick);
+        $(doms.removeButton).click(removeButtonClick);
+        $(doms.anatomyButton).click(anatomyButtonClick);
+
+        $(doms.upButton).qtip({
+            content: 'Up one level in the anatomical hierarchy (or press ALT while clicking)'
+        });
+        $(doms.downButton).qtip({
+            content: 'Down one level in the anatomical hierarchy (or press META/Command Key/Windows Key while clicking)'
+        });
+        $(doms.removeButton).qtip({
+            content: 'Remove a brain region from display (or press SHIFT while clicking)'
+        });
+        $(doms.anatomyButton).qtip({
+            content: 'Highlight the selected brain region in the anatomical view'
+        });
+
+        console.log('Force view initialized.');
 	};
 	
 	var render = function(d, datasetId) {
@@ -82,6 +107,7 @@ svg.force = (function($, undefined) {
 		if (state.mode === 'exploration') {
 			state.selectedNode = d;
 			state.mode = 'fixation';
+            highlightPath(d);
 			svg.circular.showRegion(d.pk);
 			svg.circular.selectRegion(d);
 			util.action.add('select region in force view', {region: d.fields.name});
@@ -89,26 +115,27 @@ svg.force = (function($, undefined) {
 		else if (state.mode === 'fixation') {
 			state.selectedNode = null;
 			state.mode = 'exploration';
+            clearAllHighlight();
 			svg.circular.deselectRegion(d);
 		}
-		else if (state.mode === 'search') {
+/*		else if (state.mode === 'search') {
 			state.selectedNode === null ? state.selectedNode = d : state.selectedNode = null;		
-		}
+		} */
 	};
 	
 	// When mousing over, highlight itself and the neighbors
 	var nodeMouseOver = function(node) {
 		console.log(node);
 		$(doms.regionName).text(node.fields.name);
-		if (state.mode === 'fixation') { return; }
-		if (state.mode === 'search' && state.selectedNode !== null) { return; }
+		if (state.mode === 'fixation' && state.selectedNode !== null) { return; }
+//		if (state.mode === 'search' && state.selectedNode !== null) { return; }
   		highlightNode(node, false);
 	};
 
 	var nodeMouseOut = function(node) {
 		$(doms.regionName).text('');
-		if (state.mode === 'fixation') { return; }
-		if (state.mode === 'search' && state.selectedNode !== null) { return; }
+		if (state.mode === 'fixation' && state.selectedNode !== null) { return; }
+//		if (state.mode === 'search' && state.selectedNode !== null) { return; }
 		highlightNode(node, true);
 	};
 
@@ -118,6 +145,7 @@ svg.force = (function($, undefined) {
 	};
 
 	var linkMouseOver = function(link) {
+
 		if (state.mode === 'fixation') { return; }
 		svgObjs.canvas.selectAll('.node')
 			.classed('nofocus', function(d) {
@@ -131,13 +159,49 @@ svg.force = (function($, undefined) {
 	
 	var linkMouseOut = function(link) {
 		if (state.mode === 'fixation') { return; }
-		if (state.mode === 'search') { 
-			return; 
-		}
+//		if (state.mode === 'search') { return; }
 		svgObjs.canvas.selectAll('.node').classed('nofocus', false);
 		svgObjs.canvas.selectAll('.link').classed('hidden', false);
 	};
-	
+
+    var upButtonClick = function(e) {
+        e.preventDefault();
+        var n = state.selectedNode;
+        if (n === null) { return; }
+        var parent = n.derived.parent;
+        if ($.inArray(parent, svg.model.searchNodes()) < 0) { return; } // Ignore top level nodes
+        var nodesToRemove = [];
+        for (var i in data.activeNodes) {
+            var sub = data.activeNodes[i];
+            if (sub.derived.parent.pk === parent.pk) {
+                nodesToRemove.push(sub);
+            }
+        }
+        clearAllHighlight();
+        combineRegions(parent, nodesToRemove);
+        state.mode = 'exploration';
+        util.action.add('go up in the hierarchy in force view', {region: n.fields.name});
+    };
+
+    var downButtonClick = function(e) {
+        e.preventDefault();
+        var n = state.selectedNode;
+        if (n === null) { return; }
+        var maps = svg.model.maps();
+        var searchNodes = svg.model.searchNodes();
+        var children = [];
+        for (var i in searchNodes) {
+            var sn = searchNodes[i];
+            if (sn.fields.parent_id === n.pk) {
+                children.push(sn);
+            }
+        }
+        clearAllHighlight();
+        expandRegion(n, children);
+        state.mode = 'exploration';
+        util.action.add('go down in the hierarchy in force view', {region: state.selectedNode.fields.name});
+    };
+
 	var removeButtonClick = function() {
 		var n = state.selectedNode;
 		if (n === null) { return; }
@@ -162,39 +226,76 @@ svg.force = (function($, undefined) {
 		// Todo: have a list that displays the removed nodes, so that the user can 
 		// add them back when needed
 	};
+
+    var anatomyButtonClick = function() {
+        svg.anatomy.selectStructure(state.selectedNode.fields.name, false);
+        util.action.add('update anatomical slice from the force view', {region: state.selectedNode.fields.name})
+    };
 	
 	 /* End of SVG Objects Interaction */
 	
 	/* Canvas Update */
-	
-	var updateNodes = function() {
-		svgObjs.canvas.selectAll(".node")
-			.data(data.activeNodes, function(d) {return d.pk;})
-			.transition()
-			.duration(1000)
-			.attr("d", svgGens.arcs);
 
-		svgObjs.canvas.selectAll('.mark')
-			.data(data.activeNodes, function(d) {return d.pk;})
-			.transition()
-			.duration(1000)
-			.attr('cx', function(d) { return d.circular.x; })
-			.attr('cy', function(d) { return d.circular.y; });
-	};
+    var updateForceElements = function() {
 
-	var updateLinks = function() {
-		var links = svgObjs.canvas.selectAll(".link")
-			.data(data.activeLinks, function(d) {return d.pk;});
-		
-		links.transition()
-			.duration(1000)
-			.attr("d", function(d) {
-					var coors = [{x: d.derived.source.circular.x, y:d.derived.source.circular.y}, 
-								 {x: 0, y: 0},
-								 {x: d.derived.target.circular.x, y:d.derived.target.circular.y}];
-					return svgGens.curves(coors);
-		});
-	};
+        var forceNodes = svgObjs.force.nodes();
+        var forceLinks = svgObjs.force.links();
+        // Copy source and target into top level of the links
+        console.log('check active link format');
+        for (var i in forceLinks) {
+            var l = forceLinks[i];
+            l.source = $.inArray(l.derived.source, forceNodes);
+            l.target = $.inArray(l.derived.target, forceNodes);
+        }
+
+        var link = svgObjs.canvas.selectAll(".force.link")
+            .data(forceLinks, function(d) { return d.pk; });
+
+        var node = svgObjs.canvas.selectAll(".force.node")
+            .data(forceNodes, function(d) { return d.pk; });
+
+        link.enter().append("svg:line")
+            .attr("class", "force link")
+            .style("stroke-width", 1)
+            .attr('stroke', '#ccc')
+            .attr('stroke-width', function(d) {
+                return Math.min(10, 1 + Math.ceil(d.derived.leaves.length / 50)) + 'px';
+            })
+            .on('click', linkClick)
+            .on('mouseover', linkMouseOver)
+            .on('mouseout', linkMouseOut);
+
+        node.enter().append("svg:circle")
+            .attr("class", "force node")
+            .attr('id', function(d) { return 'force-node-' + d.pk; })
+            .attr("cx", function(d) { return d.x; })
+            .attr("cy", function(d) { return d.y; })
+            .attr("r", function(d) { return (d === state.source || d === state.target) ? 20 : 10; })
+            .style("fill", function(d) {return d.derived.color;})
+            .on('click', nodeClick)
+            .on('mouseover', nodeMouseOver)
+            .on('mouseout', nodeMouseOut)
+            .call(svgObjs.force.drag);
+
+
+        node.exit().remove();
+        link.exit().remove();
+
+
+        svgObjs.force.on("tick", function(e) {
+
+            link.attr("x1", function(d) { return d.source.x; })
+                .attr("y1", function(d) { return d.source.y; })
+                .attr("x2", function(d) { return d.target.x; })
+                .attr("y2", function(d) { return d.target.y; });
+
+            node.attr("cx", function(d) { return d.x; })
+                .attr("cy", function(d) { return d.y; });
+
+        });
+
+        svgObjs.force.start();
+    };
 
 	var updateLayout = function(source, target) {
 		//this should be incorporated in the node data
@@ -339,6 +440,66 @@ svg.force = (function($, undefined) {
 //		createNodeTooltips(); 
 	};
 
+    var highlightPath = function(d) {
+        console.log('inside highlightPath');
+        console.log(state.paths);
+        clearAllHighlight();
+        // 1. Find out all the paths involving d
+        var nodes = [state.source, state.target];
+        var links = [];
+        var maps = svg.model.maps();
+        for (var i in state.paths) {
+            var p = state.paths[i];
+            if ($.inArray(d.pk, p)) {
+                for (var j in p) {
+                    j = parseInt(j);
+                    var nKey = p[j];
+                    var n = maps.keyToNode[nKey];
+                    if ($.inArray(n, nodes) < 0) { nodes.push(n); }
+                    // Special treatments for the first and last node in the path
+                    if (j === 0) {
+                        var linkKey = state.source.pk + '_' + n.pk;
+                        var l = maps.nodeToLink[linkKey];
+                        if ($.inArray(l, links) < 0) { links.push(l); }
+                    }
+                    var nNextKey = null;
+                    if (j === p.length-1) {
+                        nNextKey = state.target.pk;
+                    }
+                    else {
+                        nNextKey = p[j+1];
+                    }
+                    var linkKey = nKey + '_' + nNextKey;
+                    var l = maps.nodeToLink[linkKey];
+                    if ($.inArray(l, links) < 0) { links.push(l); }
+                }
+            }
+        }
+        // 2. Highlight all the nodes and links on those paths
+        var canvas = svgObjs.canvas;
+        canvas.selectAll('.link')
+            .classed('biLink', function(d) {
+                var reversedLink = maps.nodeToLink[d.fields.target_id + '_' + d.fields.source_id];
+                return $.inArray(d, links) >= 0 && $.inArray(reversedLink, links) >= 0;
+            });
+        canvas.selectAll('.link')
+            .classed('outLink', function(d) {
+                return $.inArray(d, links) >= 0 && $.inArray(reversedLink, links) < 0;
+            });
+        canvas.selectAll('.link')
+            .classed('hidden', function(d) {
+                return $.inArray(d, links) < 0;
+            });
+        canvas.selectAll('node')
+            .classed('nofocus', function(d){
+                return $.inArray(d, nodes) < 0;
+            });
+        canvas.selectAll('node')
+            .classed('highlight', function(d) {
+                return $.inArray(d, nodes) >= 0;
+            });
+    };;
+
 	var highlightNode = function(node, isCancel) {
 		var canvas = svgObjs.canvas;
 		var maps = svg.model.maps();
@@ -432,9 +593,13 @@ svg.force = (function($, undefined) {
 		$('.node').qtip('hide');
 	};
 	
-	var displaySearchResult = function(source, target) {
-		state.mode = 'search';
+	var displaySearchResult = function(source, target, paths) {
+        state.mode = 'exploration';
+//		state.mode = 'search';
 		state.selectedNode = null;
+        state.source = source;
+        state.target = target;
+        state.paths = paths;
 		removeNoSearchMessage();
 		populateActiveElements();
 		updateLayout(source, target);		
@@ -463,6 +628,9 @@ svg.force = (function($, undefined) {
 		console.log('Reset force');
 		state.mode = 'exploration';
 		clearCanvas();
+        state.selectedNode = null;
+        state.source = null;
+        state.target = null;
 		if (settings.showAllRegionAtInit) {
 			initActiveElements();
 			updateLayout();
@@ -535,145 +703,96 @@ svg.force = (function($, undefined) {
 	};
 
 	var combineRegions = function(newNode, nodesToRemove) {
-		var maps = svg.model.maps();
-		// Iterate through all the active nodes and remove the links associated 
-		// with the nodes to be removed
-		var nodes = data.activeNodes;
-		var links = data.activeLinks;
-		var numToRemove = nodesToRemove.length;
-		var linkLength = links.length;
-		while (linkLength--) {
-			var l = links[linkLength];
-			// Iterate through all the siblings and remove associated links
-			for (var i = 0; i < numToRemove; ++i) {
-				var d = nodesToRemove[i];
-				if (l.derived.source === d || l.derived.target === d) {
-					links.splice(linkLength, 1);
-				}
-			}
-		}
-		// Remove the nodes and add the parent node
-		var firstPos = $.inArray(nodesToRemove[0], nodes);
-		var removeFirst = nodes[firstPos];
-		removeFirst.circular.isActive = false;
-		newNode.circular = removeFirst.circular;
-		newNode.circular.isActive = true;
-		nodes[firstPos] = newNode;
-		for (var i = 1; i < numToRemove; ++i) {
-			var n = nodesToRemove[i];
-			n.circular.isActive = false;
-			var pos = $.inArray(n, nodes);
-			nodes.splice(pos, 1);
-		}
-		// Update the positions of the nodes
-		var newNum = nodes.length;
-		var newDelta = 2 * Math.PI / newNum;
-		// Add in links for the parent
-		var newKey = newNode.pk;
-		for (var i = 0; i < newNum; ++i) {
-			var k = nodes[i].pk;
-			var keyPair = newKey + '_' + k;
-			var link = maps.nodeToLink[keyPair];
-			if (link !== undefined) {
-				links.push(link);
-			}
-			keyPair = k + '_' + newKey;
-			link = maps.nodeToLink[keyPair];
-			if (link !== undefined) {
-				links.push(link);
-			}
-		}
+        var forceNodes = svgObjs.force.nodes();
+        var forceLinks = svgObjs.force.links();
+		// 1. add new node to and remove old nodes from active nodes
+        var nodeLength = forceNodes.length;
+        while (nodeLength--) {
+            var n = forceNodes[nodeLength];
+            n.fixed = true;
+            if ($.inArray(n, nodesToRemove) > -1) {
+                n.force.isActive = false;
+                forceNodes.splice(nodeLength, 1);
+            }
+        }
+        forceNodes.push(newNode);
+        newNode.force.isActive = true;
+        newNode.fixed = false;
+        // 2. remove old links
+        var linkLength = forceLinks.length;
+        while (linkLength--) {
+            var l = forceLinks[linkLength];
+            if ($.inArray(l.derived.source, nodesToRemove) > -1 || $.inArray(l.derived.target, nodesToRemove) > -1) {
+                l.force.isActive = false;
+                forceLinks.splice(linkLength, 1);
+            }
+        }
+        // 3. add new links
+        var searchLinks = svg.model.searchLinks();
+        for (var i in searchLinks) {
+            var l = searchLinks[i];
+            if (l.derived.source.pk === newNode.pk && $.inArray(l.derived.target, forceNodes) > -1 ||
+                l.derived.target.pk === newNode.pk && $.inArray(l.derived.source, forceNodes) > -1) {
+                l.force.isActive = true;
+                forceLinks.push(l);
+            }
+        }
 		// Update the layout
-		updateLayout(newNum, newDelta);
+        updateForceElements();
 	};
 
 	var expandRegion = function(d, sub) {
-		var maps = svg.model.maps();
-		var ans = data.activeNodes;
-		var als = data.activeLinks;
-		// First check the children. If no children, do nothing and return.
-		var subNum = sub.length;
-		if (subNum < 1) {return;}
-
-		// Add the sub-regions of the original region that has been chosen to be expanded
-		var startAngle = d.circular.startAngle;
-		var endAngle = d.circular.endAngle;
-		var delta = (endAngle - startAngle) / subNum;
-
-		// Record neighbors of the node being removed
-		var inNeighbors = [];
-		var outNeighbors = [];
-		var linkLength = als.length;
-	
-		// Iterate through all the active links and locate those associated with d
-		// Remove the expanded node from the data nodes and the corresponding 
-		// links from the data links
-		while (linkLength--) {
-			var l = als[linkLength];
-			if (l.derived.source === d) {
-				outNeighbors.push(l.derived.target);
-				als.splice(linkLength, 1);
-			}
-			else if (l.derived.target === d) {
-				inNeighbors.push(l.derived.source);
-				als.splice(linkLength, 1);
-			}
-		}
-
-		var pos = $.inArray(d, ans);
-		ans[pos].circular.isActive = false;
-	
-		var inNeighborNum = inNeighbors.length;
-		var outNeighborNum = outNeighbors.length;
-		var oldNum = ans.length;
-		var newNum = oldNum + subNum - 1;
-		var newDelta = 2 * Math.PI / newNum;
-
-		for (var i = newNum-1; i > pos; --i) {
-			ans[i] = ans[i-subNum+1];
-		}
-
-		for (var i = pos; i < pos + subNum; ++i) {
-			var datum = sub[i-pos];
-			calculateArcPositions(datum, startAngle, delta, i-pos);
-			datum.color = d.color;
-			datum.circular.isActive = true;
-			ans[i] = datum;
-			for (var j = 0; j < inNeighborNum; ++j) {
-				var neighbor = inNeighbors[j];
-				var keyPair = neighbor.pk + "_" + datum.pk;
-				var link = maps.nodeToLink[keyPair];
-				if (link !== undefined) {
-					als.push(link);
-				}
-			}
-			for (var j = 0; j < outNeighborNum; ++j) {
-				var neighbor = outNeighbors[j];
-				var keyPair = datum.pk + "_" + neighbor.pk;
-				var link = maps.nodeToLink[keyPair];
-				if (link !== undefined) {
-					als.push(link);
-				}
-			}
-		}
-		// Add new links between new nodes
-		for (var i = 0; i < subNum; ++i) {
-			for (var j = i + 1; j < subNum; ++j) {
-				var keyPair = sub[i].pk + '_' + sub[j].pk;
-				var link = maps.nodeToLink[keyPair];
-				if (link !== undefined) {
-					als.push(link);
-				}
-				keyPair = sub[j].pk + '_' + sub[i].pk;
-				link = maps.nodeToLink[keyPair];
-				if (link !== undefined) {
-					als.push(link);
-				}
-
-			}
-		}
-
-		updateLayout(newNum, newDelta);
+        // 0. compute new links added due to the expansion
+        var forceNodes = svgObjs.force.nodes();
+        var forceLinks = svgObjs.force.links();
+        var searchLinks = svg.model.searchLinks();
+        var newLinks = [];
+        for (var i in searchLinks) {
+            var l = searchLinks[i];
+            if (($.inArray(l.derived.source, sub) >= 0 && $.inArray(l.derived.target, forceNodes) >= 0) ||
+                ($.inArray(l.derived.target, sub) >= 0 && $.inArray(l.derived.source, forceNodes) >= 0)) {
+                l.force.isActive = true;
+                newLinks.push(l);
+            }
+        }
+        if (newLinks.length === 0) {
+            return;
+            // TODO: notify the user that there is no more sub-connections and the region will therefore not be expanded
+        }
+        // 1. remove the original node from active nodes and add the new ones into it
+        var index = $.inArray(d, forceNodes);
+        forceNodes[index].force.isActive = false;
+        forceNodes.splice(index, 1);
+        for (var i in forceNodes) {
+            var en = forceNodes[i];
+//            en.fixed = true;
+        }
+        for (var i in sub) {
+            var subn = sub[i];
+            subn.force.isActive = true;
+//            subn.fixed = false;
+            subn.x = d.x;
+            subn.y = d.y;
+            subn.px = d.px;
+            subn.py = d.py;
+            forceNodes.push(subn);
+        }
+        // 2. remove links associated with the original node
+        var linkLength = forceLinks.length;
+        while (linkLength--) {
+            var l = forceLinks[linkLength];
+            if (l.fields.source_id === d.pk || l.fields.target_id === d.pk) {
+                forceLinks[linkLength].force.isActive = false;
+                forceLinks.splice(linkLength, 1);
+            }
+        }
+        // 3. add links associated with the new nodes
+        for (var i in newLinks) {
+            forceLinks.push(newLinks[i]);
+        }
+        // 4. cache new links
+        svg.model.cacheSubConnections(newLinks);
+        updateForceElements();
 	};
 
 	var displayNode = function(node) {
@@ -768,15 +887,6 @@ svg.force = (function($, undefined) {
 	/* End of SVG Data Update */
 	
 	/* Computation */
-
-	var computeNodesParameters = function() {
-		var total = data.activeNodes.length;
-		var delta = 2 * Math.PI  / total;
-		for (var i = 0; i < total; ++i) {
-			var datum = data.activeNodes[i];
-			calculateArcPositions(datum, 0, delta, i);
-		}
-	};
 
 	var findActiveParent = function(node) {
 		var maps = svg.model.maps();

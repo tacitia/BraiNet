@@ -83,17 +83,43 @@ ui.pathSearch = (function($, undefined) {
 	};
 	
 	var searchButtonClick = function() {
-		var paths = svg.model.calculatePaths(state.source, state.target, setting.maxHop);
-		svg.displaySearchResult(state.source, state.target);
+//		var paths = svg.model.calculatePaths(state.source, state.target, setting.maxHop);
+        ui.loadingModal.message('Computing indirect paths...');
+        ui.loadingModal.show();
+        amplify.request('getPaths',
+            {
+                sourceId: state.source.pk,
+                targetId: state.target.pk,
+                maxHop: setting.maxHop
+            },
+            function(data) {
+                ui.loadingModal.hide();
+                console.log(data);
+                if (data.paths.length === 0) {
+                    ui.alertModel.message('No indirect paths found with the given source, target, and number of hops allowed.');
+                    ui.alertModel.show();
+                }
+                else {
+                    svg.model.cacheSubConnections(data.links, function(d) {
+                        svg.model.addSearchLinks(d);
+                    });
+                    svg.model.saveSearchElements(data, state.source, state.target);
+                    svg.displaySearchResult(state.source, state.target, data.paths);
+                }
+            }
+        );
 		util.action.add('perform path search', {
 			source: state.source.fields.name,
 			target: state.target.fields.name
 		});
 	};
+
 	
 	var clearButtonClick = function() {
 		state.source = null;
 		state.target = null;
+        doms.sourceList.val('').trigger('liszt:updated');
+        doms.targetList.val('').trigger('liszt:updated');
 		ui.loadingModal.message('Clearing search result...');
 		ui.loadingModal.show();	
 		state.clearing = true;
@@ -115,6 +141,8 @@ ui.pathSearch = (function($, undefined) {
 	var render = function(regionList) {
 		doms.sourceList.find('option').remove();
 		doms.targetList.find('option').remove();
+        doms.sourceList.append(new Option('', ''));
+        doms.targetList.append(new Option('', ''));
 		for (i = 0; i < regionList.length; ++i) {
 			var r = regionList[i];
 			doms.sourceList.append(new Option(r.fields.name, r.pk));

@@ -14,6 +14,26 @@ amplify.request.define('getDataset', 'ajax', {
 	type: 'GET'
 })
 
+amplify.request.define('getSubConnections', 'ajax', {
+	url: '/connectivity/connections/subs/{connId}/',
+	type: 'GET'
+})
+
+amplify.request.define('getLeaves', 'ajax', {
+	url: '/connectivity/connections/leaves/{connId}/',
+	type: 'GET'
+})
+
+amplify.request.define('getLocalConnections', 'ajax', {
+	url: '/connectivity/connections/local/{structId}/{depth}',
+	type: 'GET'
+})
+
+amplify.request.define('getPaths', 'ajax', {
+	url: '/connectivity/connections/paths/{sourceId}/{targetId}/{maxHop}/',
+	type: 'GET'
+})
+
 amplify.request.define('getStructImgMap', 'ajax', {
 	url: '/anatomy/structImgMap/',
 //	url: 'http://brainconnect.cs.brown.edu/anatomy/structImgMap',

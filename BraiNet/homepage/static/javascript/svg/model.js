@@ -6,27 +6,28 @@ svg.model = (function($, undefined) {
 	var states = {
 		activeDatasetId: null
 	};
-	
+
 	var data = {
 		nodes: null,
 		links: null,
 		searchNodes: null,
-		searchLinks: null
+		searchLinks: null,
+        searchPaths: null
 	};
-	
+
 	var maps = {
 		keyToNode: null,
 		nameToNode: null,
 		keyToInNeighbors: null,
-		keyToOutNeighbors: null,	
+		keyToOutNeighbors: null,
 		keyToLink: null,
 		nodeToLink: null,
 		LinkToPaper: null
 	};
-	
+
 	var getDataset = function(datasetId, maxDepth) {
-		console.log("Requesting dataset " + datasetId + "...");
-		if (datasetId == states.activeDatasetId) { 
+		console.log("Requesting dataset " + datasetId + " with max depth " + maxDepth + '...');
+		if (datasetId == states.activeDatasetId) {
 			amplify.publish('datasetReady', data);
 		}
 		else {
@@ -41,7 +42,7 @@ svg.model = (function($, undefined) {
 			);
 		}
 	};
-	
+
 	var addConnNote = function(linkId, notes) {
 		console.log('Adding conn note into database...');
 		amplify.request('addConnectionNote',
@@ -53,8 +54,9 @@ svg.model = (function($, undefined) {
 				csrfmiddlewaretoken: '{{ csrf_token }}'
 			});
 	};
-	
+
 	var datasetReceived = function(d) {
+		console.log('dataset received');
 		d.conns = $.parseJSON(d.conns);
 		d.structs = $.parseJSON(d.structs);
 		d.connNotes = $.parseJSON(d.connNotes);
@@ -74,7 +76,7 @@ svg.model = (function($, undefined) {
 		buildLinksMaps();
 		addNotes(d.connNotes);
 		console.log('# of links before creating derived links: ' + data.links.length);
-		buildLinkHierarchy();
+//		buildLinkHierarchy();
 		console.log('# of links after creating derived links: ' + data.links.length);
 		amplify.publish('datasetReady', data, states.activeDatasetId);
 		console.log(maps);
@@ -87,42 +89,52 @@ svg.model = (function($, undefined) {
 		node.force = {};
 		node.derived = {};
 		node.derived.children = [];
-		
+
 		node.derived.isIsolated = true; // Initialization; node with connection will be marked as false in registerLink
-		
+
 		node.derived.ancestors = $.parseJSON(node.fields.struct_id_path);
 		for (var i in node.derived.ancestors) {
 			node.derived.ancestors[i] = states.activeDatasetId + '-' + node.derived.ancestors[i];
 		}
-		
+
 		maps.keyToNode[node.pk] = node;
 		maps.nameToNode[node.fields.name] = node;
 		maps.keyToInNeighbors[node.pk] = [];
 		maps.keyToOutNeighbors[node.pk] = [];
 	};
 
-	var registerLink = function(link, isDerived) {
+	var registerLink = function(link, isDerived, priority) {
 		var targetKey = link.fields.target_id;
 		var sourceKey = link.fields.source_id;
 		var keyPair = sourceKey + "_" + targetKey;
-		
-		link.circular = {};
-		link.force = {};
+
 		link.derived = {};
-		link.derived.source = maps.keyToNode[sourceKey];
-		link.derived.target = maps.keyToNode[targetKey];
+		var source = link.derived.source = maps.keyToNode[sourceKey];
+		var target = link.derived.target = maps.keyToNode[targetKey];
+
+        // Don't register the link if it connects a node with its descendant
+        // TODO: test and remove this when proper server side validation is implemented
+        if ($.inArray(target.pk, source.derived.ancestors) > 0 || $.inArray(source.pk, target.derived.ancestors) > 0) {
+            return;
+        }
+
 		link.derived.children = [];
-		link.derived.leaves = [];
+		link.derived.leaves = $.parseJSON(link.fields.leaves); // This is just to remain consistency with code from previous version (before computation is offloaded onto the server)
 		link.derived.isDerived = isDerived;
-		
+        link.derived.priority = priority;
+
 		link.derived.source.derived.isIsolated = false;
 		link.derived.target.derived.isIsolated = false;
-		
+
+        link.circular = {};
+        link.force = {};
+
+        (typeof link.fields.attributes == 'string') && (link.fields.attributes = $.parseJSON(link.fields.attributes));
+
 		maps.keyToLink[link.pk] = link;
 		maps.nodeToLink[keyPair] = link;
 		maps.keyToInNeighbors[targetKey].push(sourceKey);
 		maps.keyToOutNeighbors[sourceKey].push(targetKey);
-//		link_paper_map[link.key] = [];		
 	}
 
 	var buildNodesMaps = function() {
@@ -136,7 +148,7 @@ svg.model = (function($, undefined) {
 			registerNode(node);
 		}
 	};
-	
+
 	var assignGroups = function() {
 		var palette = d3.scale.category20b();
 		var queue = [];
@@ -165,11 +177,11 @@ svg.model = (function($, undefined) {
 	};
 
 
-	var buildLinksMaps = function() {    
+	var buildLinksMaps = function() {
 		maps.keyToLink = {};
 		maps.nodeToLink = {};
 		maps.LinkToPaper = {};
-		
+
 		var inNeighborMap = maps.keyToInNeighbors;
 		var outNeighborMap = maps.keyToOutNeighbors;
 
@@ -177,24 +189,37 @@ svg.model = (function($, undefined) {
 		var numLinks = data.links.length;
 		for (var i = 0; i < numLinks; ++i) {
 			var link = data.links[i];
-			registerLink(link, false);
+			var isDerived = link.fields.is_derived == 0 ? false : true;
+			registerLink(link, isDerived);
 		}
 	};
-	
+
+	var addLinks = function(links, priority) {
+		for (var i in links) {
+			var l = links[i];
+            if ($.inArray(l, data.links) < 0) {
+                data.links.push(l);
+                var isDerived = l.fields.is_derived == 0 ? false : true;
+                registerLink(l, isDerived, priority);
+            }
+		}
+	};
+
+
 	var addNotes = function(notes) {
 		for (var i in notes) {
 			var n = notes[i];
 			var l = maps.keyToLink[n.fields.link];
 			// This will happen if the max depth allowed differs between the session in which the note was added and the current session
-			if (l === undefined) { continue; } 
+			if (l === undefined) { continue; }
 			l.derived.note = n.fields.content;
 		}
 	};
-	
+
 	var buildNodeHierarchy = function() {
 		for (var key in maps.keyToNode) {
 			var node = maps.keyToNode[key];
-			if (node.fields.parent_id !== null) { 
+			if (node.fields.parent_id !== null) {
 				var parentNode = maps.keyToNode[node.fields.parent_id];
 				parentNode.derived.children.push(node.pk);
 				node.derived.parent = parentNode;
@@ -203,7 +228,7 @@ svg.model = (function($, undefined) {
 		}
 		populateLeaves();
 	};
-	
+
 	var populateLeaves = function() {
 		var leaves = [];
 		for (var key in maps.keyToNode) {
@@ -222,8 +247,9 @@ svg.model = (function($, undefined) {
 	};
 
 	/*
-	 * TODO: could use some performance improvement
+	 * Deprecated: computation offloaded to the server
 	 */
+/*
 	var buildLinkHierarchy = function() {
 		var numLink = data.links.length;
 		var maxLinkKey = 0;
@@ -245,13 +271,13 @@ svg.model = (function($, undefined) {
 			var srcParentNode = maps.keyToNode[srcParentId];
 			var tgtParentNode = maps.keyToNode[tgtParentId];
 			var leaves = [];
-			var numLeaves = link.derived.leaves.length;  
+			var numLeaves = link.derived.leaves.length;
 			util.generic.copySimpleArray(link.derived.leaves, leaves);
 			if (!link.derived.isDerived) {
 				leaves.push(link.pk);
 				numLeaves += 1;
 			}
-			if (srcParentId !== null && srcParentId !== target.pk && 
+			if (srcParentId !== null && srcParentId !== target.pk &&
 					$.inArray(target.pk, srcParentNode.derived.children) < 0) {
 				var keyPair = srcParentId + "_" + target.pk;
 				var srcParentLink = maps.nodeToLink[keyPair];
@@ -270,7 +296,7 @@ svg.model = (function($, undefined) {
 					maxLinkKey += 1;
 					numLink += 1;
 				}
-			} 
+			}
 			if (srcParentId !== null && tgtParentId !== null && srcParentId !== tgtParentId &&
 					$.inArray(target.pk, srcParentNode.derived.children) < 0 &&
 					$.inArray(source.pk, tgtParentNode.derived.children) < 0) {
@@ -281,16 +307,17 @@ svg.model = (function($, undefined) {
 					maxLinkKey += 1;
 					numLink += 1;
 				}
-			} 
+			}
 		}
 	};
-	
+*/
+
 	var createParentLink = function(maxLinkKey, link, parentLink, srcId, tgtId, leaves) {
 		var result = false;
 		if (parentLink === undefined) {
 			result = true;
 			var parentLink = {
-				pk: maxLinkKey + 1, 
+				pk: maxLinkKey + 1,
 				fields: {}
 			};
 			parentLink.fields.source_id = srcId;
@@ -304,6 +331,12 @@ svg.model = (function($, undefined) {
 		}
 		util.generic.copySimpleArray(leaves, parentLink.derived.leaves);
 		return result;
+	};
+
+	var calculatePathsRemote = function() {
+		amplify.request(''
+
+		);
 	};
 
 	var calculatePaths = function(source, target, numHop) {
@@ -341,7 +374,7 @@ svg.model = (function($, undefined) {
 /*				if (neighborNode.fields.name === 'Ventral tegmental area') {
 					console.log('found');
 					console.log(neighborNode);
-					break; 
+					break;
 				} */
 				if (neighborNode.fields.depth >= minDepth && neighborNode.fields.depth <= maxDepth) {
 					var newPath = currPath.concat(neighborNode);
@@ -356,7 +389,7 @@ svg.model = (function($, undefined) {
 				}
 			}
 			counter++;
-			if (counter > 5000) { 
+			if (counter > 5000) {
 //				userAction.trackAction(null, 'Warning', 'Path size limit reached', selected_source.name + '-' + selected_target + '-' + max_hop);
 				console.log("Reached path limit."); break;
 			}
@@ -364,7 +397,27 @@ svg.model = (function($, undefined) {
 		saveSearchElements(results);
 		return results;
 	};
-	
+
+    var saveSearchElements = function(serverData, source, target) {
+        data.searchNodes = [];
+        data.searchLinks = [];
+        for (var i in serverData.stops) {
+            var nodeId = serverData.stops[i];
+            var node = maps.keyToNode[nodeId];
+            data.searchNodes.push(node);
+        }
+        data.searchLinks = serverData.links;
+        data.searchPaths = serverData.paths;
+        data.searchNodes.push(source);
+        data.searchNodes.push(target);
+        console.log(data.searchNodes);
+        console.log(data.searchLinks);
+        addLinks(serverData.links, 3);
+    };
+
+
+    /* Deprecated */
+/*
 	var saveSearchElements = function(paths) {
 		data.searchNodes = [];
 		data.searchLinks = [];
@@ -390,6 +443,40 @@ svg.model = (function($, undefined) {
 		}
 		console.log(data.searchNodes.length);
 	};
+	*/
+
+    var cacheSubConnections = function(links, callback) {
+        for (var i in links) {
+            var l = links[i];
+            amplify.request('getSubConnections',
+                {
+                    connId: l.pk
+                },
+                function(subConns) {
+                    subConns = $.parseJSON(subConns);
+                    addLinks(subConns, 4);
+                    if (callback !== undefined) {
+                        callback(subConns);
+                    }
+                }
+            );
+        }
+    };
+
+    var addSearchLinks = function(links) {
+        data.searchLinks = data.searchLinks.concat(links);
+        for (var i in links) {
+            var l = links[i];
+            var source = l.derived.source;
+            var target = l.derived.target;
+            if ($.inArray(source, data.searchNodes) < 0) {
+                data.searchNodes.push(source);
+            }
+            if ($.inArray(target, data.searchNodes) < 0) {
+                data.searchNodes.push(target);
+            }
+        }
+    };
 
 	return {
 		getDataset: getDataset,
@@ -397,7 +484,11 @@ svg.model = (function($, undefined) {
 		calculatePaths: calculatePaths,
 		searchNodes: function() { return data.searchNodes; },
 		searchLinks: function() { return data.searchLinks; },
-		addConnNote: addConnNote
+		addConnNote: addConnNote,
+		addLinks: addLinks,
+        cacheSubConnections: cacheSubConnections,
+        saveSearchElements: saveSearchElements,
+        addSearchLinks: addSearchLinks
 	};
 
 }(jQuery));

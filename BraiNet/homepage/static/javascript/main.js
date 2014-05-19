@@ -28,7 +28,7 @@ function userValidated() {
 	svg.anatomy.init();
 	svg.linkAttr.init();
 	
-	svg.render(2, 6);
+	svg.render(2, 4);
 };
 
 function getURLParams() {

@@ -10,8 +10,20 @@ util.generic = (function($, undefined) {
 		}
 	};
 	
+	var createSortedUniqueArray = function(data, sortFunc) {
+		var arr;
+		// input must be sorted for this to work
+		arr = data.sort(sortFunc);
+		for (var i = arr.length; i--; i > -1) {
+			arr[i] && arr[i-1] && arr[i].pk === arr[i-1].pk && arr.splice(i,1); // remove duplicate item
+		}
+
+		return arr;
+	};
+	
 	return {
-		copySimpleArray: copySimpleArray
+		copySimpleArray: copySimpleArray,
+		createSortedUniqueArray: createSortedUniqueArray
 	};
 
 }(jQuery));

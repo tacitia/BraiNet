@@ -25,9 +25,7 @@ ui.loadingModal = (function($, undefined) {
 	};
 	
 	var message = function(msg) {
-		if (!msg) return state.message; 
-		console.log('message called');
-		console.log(msg);
+		if (!msg) return state.message;
 		doms.message.text(msg);
 		state.message = msg;
 	};

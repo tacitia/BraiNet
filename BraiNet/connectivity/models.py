@@ -21,7 +21,18 @@ class Connection(models.Model):
 	user_id = models.ForeignKey('account.Account')
 	dataset_id = models.ForeignKey('Dataset')
 	attributes = JSONField()
-
+	is_derived = models.IntegerField()
+	leaves = JSONField()
+	source_depth = models.IntegerField()
+	target_depth = models.IntegerField()
+	
+class Path(models.Model):
+	source_id = models.ForeignKey('Structure', to_field='id', related_name='path_source')
+	sink_id = models.ForeignKey('Structure', to_field='id', related_name='path_target')
+	hop = models.IntegerField()
+	stops = JSONField()
+	paths = JSONField()
+	
 # Use the default primary key 'id'
 class AttributeType(models.Model):
 	NUMERIC = 'num'
