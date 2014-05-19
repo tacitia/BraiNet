@@ -444,8 +444,8 @@ svg.force = (function($, undefined) {
         console.log(state.paths);
         clearAllHighlight();
         // 1. Find out all the paths involving d
-        var nodes = [state.source, state.target];
-        var links = [];
+        var nodePks = [state.source.pk, state.target.pk];
+        var linkPks = [];
         var maps = svg.model.maps();
         for (var i in state.paths) {
             var p = state.paths[i];
@@ -453,13 +453,12 @@ svg.force = (function($, undefined) {
                 for (var j in p) {
                     j = parseInt(j);
                     var nKey = p[j];
-                    var n = maps.keyToNode[nKey];
-                    if ($.inArray(n, nodes) < 0) { nodes.push(n); }
+                    if ($.inArray(nKey, nodePks) < 0) { nodePks.push(nKey); }
                     // Special treatments for the first and last node in the path
                     if (j === 0) {
-                        var linkKey = state.source.pk + '_' + n.pk;
+                        var linkKey = state.source.pk + '_' + nKey;
                         var l = maps.nodeToLink[linkKey];
-                        if ($.inArray(l, links) < 0) { links.push(l); }
+                        if ($.inArray(l.pk, linkPks) < 0) { linkPks.push(l.pk); }
                     }
                     var nNextKey = null;
                     if (j === p.length-1) {
@@ -470,7 +469,7 @@ svg.force = (function($, undefined) {
                     }
                     var linkKey = nKey + '_' + nNextKey;
                     var l = maps.nodeToLink[linkKey];
-                    if ($.inArray(l, links) < 0) { links.push(l); }
+                    if ($.inArray(l.pk, linkPks) < 0) { linkPks.push(l.pk); }
                 }
             }
         }
@@ -479,24 +478,24 @@ svg.force = (function($, undefined) {
         canvas.selectAll('.link')
             .classed('biLink', function(d) {
                 var reversedLink = maps.nodeToLink[d.fields.target_id + '_' + d.fields.source_id];
-                return $.inArray(d, links) >= 0 && $.inArray(reversedLink, links) >= 0;
+                return $.inArray(d.pk, linkPks) >= 0 && $.inArray(reversedLink.pk, linkPks) >= 0;
             });
         canvas.selectAll('.link')
             .classed('outLink', function(d) {
                 var reversedLink = maps.nodeToLink[d.fields.target_id + '_' + d.fields.source_id];
-                return $.inArray(d, links) >= 0 && $.inArray(reversedLink, links) < 0;
+                return $.inArray(d.pk, linkPks) >= 0 && $.inArray(reversedLink.pk, linkPks) < 0;
             });
         canvas.selectAll('.link')
             .classed('hidden', function(d) {
-                return $.inArray(d, links) < 0;
+                return $.inArray(d.pk, linkPks) < 0;
             });
         canvas.selectAll('node')
             .classed('nofocus', function(d){
-                return $.inArray(d, nodes) < 0;
+                return $.inArray(d.pk, nodePks) < 0;
             });
         canvas.selectAll('node')
             .classed('highlight', function(d) {
-                return $.inArray(d, nodes) >= 0;
+                return $.inArray(d.pk, nodePks) >= 0;
             });
     };
 
