@@ -98,7 +98,7 @@ svg.force = (function($, undefined) {
 	var clearCanvas = function() {
 		svgObjs.canvas.selectAll('.node').remove();
 		svgObjs.canvas.selectAll('.link').remove();
-	}
+	};
 	
 	/* SVG Objects Interaction */
 	
@@ -187,7 +187,6 @@ svg.force = (function($, undefined) {
         e.preventDefault();
         var n = state.selectedNode;
         if (n === null) { return; }
-        var maps = svg.model.maps();
         var searchNodes = svg.model.searchNodes();
         var children = [];
         for (var i in searchNodes) {
@@ -282,7 +281,7 @@ svg.force = (function($, undefined) {
         link.exit().remove();
 
 
-        svgObjs.force.on("tick", function(e) {
+        svgObjs.force.on("tick", function() {
 
             link.attr("x1", function(d) { return d.source.x; })
                 .attr("y1", function(d) { return d.source.y; })
@@ -407,7 +406,7 @@ svg.force = (function($, undefined) {
         			d3.select(this).attr("transform", "translate(" + d3.event.x + "," + d3.event.y + ")");
     			})); */
 
-		svgObjs.force.on("tick", function(e) {
+		svgObjs.force.on("tick", function() {
 			  // To bundle nodes without links (useful)
 			  /*
 			  var k = 8 * e.alpha;
@@ -484,6 +483,7 @@ svg.force = (function($, undefined) {
             });
         canvas.selectAll('.link')
             .classed('outLink', function(d) {
+                var reversedLink = maps.nodeToLink[d.fields.target_id + '_' + d.fields.source_id];
                 return $.inArray(d, links) >= 0 && $.inArray(reversedLink, links) < 0;
             });
         canvas.selectAll('.link')
@@ -498,7 +498,7 @@ svg.force = (function($, undefined) {
             .classed('highlight', function(d) {
                 return $.inArray(d, nodes) >= 0;
             });
-    };;
+    };
 
 	var highlightNode = function(node, isCancel) {
 		var canvas = svgObjs.canvas;
