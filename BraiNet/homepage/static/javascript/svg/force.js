@@ -495,7 +495,7 @@ svg.force = (function($, undefined) {
             });
         canvas.selectAll('node')
             .classed('highlight', function(d) {
-                return $.inArray(d.pk, nodePks) >= 0;
+                return d.pk === state.selectedNode.pk;
             });
     };
 
