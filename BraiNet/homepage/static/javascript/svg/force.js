@@ -478,7 +478,7 @@ svg.force = (function($, undefined) {
         canvas.selectAll('.link')
             .classed('biLink', function(d) {
                 var reversedLink = maps.nodeToLink[d.fields.target_id + '_' + d.fields.source_id];
-                return $.inArray(d.pk, linkPks) >= 0 && (reversedLink === undefined || $.inArray(reversedLink.pk, linkPks) >= 0);
+                return $.inArray(d.pk, linkPks) >= 0 && reversedLink !== undefined || $.inArray(reversedLink.pk, linkPks) >= 0;
             });
         canvas.selectAll('.link')
             .classed('outLink', function(d) {
