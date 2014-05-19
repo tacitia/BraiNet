@@ -154,8 +154,10 @@ ui.pathSearch = (function($, undefined) {
 	};
 	
 	var reset = function() {
-		state.source = null;
-		state.target = null;
+        state.source = null;
+        state.target = null;
+        doms.sourceList.val('').trigger('liszt:updated');
+        doms.targetList.val('').trigger('liszt:updated');
 	};
 
 	return {
