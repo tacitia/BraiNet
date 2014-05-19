@@ -489,11 +489,11 @@ svg.force = (function($, undefined) {
             .classed('hidden', function(d) {
                 return $.inArray(d.pk, linkPks) < 0;
             });
-        canvas.selectAll('node')
+        canvas.selectAll('.node')
             .classed('nofocus', function(d){
                 return $.inArray(d.pk, nodePks) < 0;
             });
-        canvas.selectAll('node')
+        canvas.selectAll('.node')
             .classed('highlight', function(d) {
                 return d.pk === state.selectedNode.pk;
             });
