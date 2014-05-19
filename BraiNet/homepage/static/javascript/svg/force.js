@@ -449,7 +449,7 @@ svg.force = (function($, undefined) {
         var maps = svg.model.maps();
         for (var i in state.paths) {
             var p = state.paths[i];
-            if ($.inArray(d.pk, p)) {
+            if ($.inArray(d.pk, p) >= 0) {
                 for (var j in p) {
                     j = parseInt(j);
                     var nKey = p[j];
