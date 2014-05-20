@@ -34,7 +34,9 @@ svg.circular = (function($, undefined) {
 		searchSource: null,
 		searchTarget: null,
 		selectedAttr: null,
-		attrColorMap: null
+		attrColorMap: null,
+        localConnRetrievalCounter: 0,
+        localConnCache: []
 	};
 	
 	var data = {
@@ -563,6 +565,7 @@ svg.circular = (function($, undefined) {
 				function(data) { 
 					console.log(data);
 					svg.model.addLinks(data);
+                    svg.model.cacheSubConnections(data);
 					showRegionCallBack(region);
                     callback1();
 				}
@@ -586,23 +589,60 @@ svg.circular = (function($, undefined) {
 
 	};
 		
-	var showRegionMulti = function(regionPks) {
-		clearAllHighlight();
+	var showRegionMulti = function(regionPks, callback1) {
 		var maps = svg.model.maps();
 		var regions = [];
+        var regionWoLocalConns = [];
 		for (i in regionPks) {
 			region = maps.keyToNode[regionPks[i]];
 			regions.push(region);
+            var inNeighbors = maps.keyToInNeighbors[regionPks[i]];
+            var outNeighbors = maps.keyToOutNeighbors[regionPks[i]];
+            if (inNeighbors.length === 0 && outNeighbors.length === 0) {
+                regionWoLocalConns.push(regionPks[i]);
+            }
 		}
-		displayNodes(regions);
-		svgObjs.canvas.selectAll('.node')
-			.classed('nofocus', function(d) {
-				return $.inArray(d, regions) < 0;
-			});
-		for (i in regionPks) {
-			$('#circ-node-' + regionPks[i]).qtip('show');
-		}
+        if (regionWoLocalConns.length > 0) {
+            state.localConnRetrievalCounter = regionWoLocalConns.length;
+            for (var i=0; i < regionWoLocalConns.length; ++i) {
+                var regionPk = regionWoLocalConns[i];
+                amplify.request('getLocalConnections',
+                    {
+                        structIds:regionPk,
+                        depth: Math.min(region.fields.depth, 3)
+                    },
+                    function(data) {
+                        state.localConnCache = state.localConnCache.concat(data);
+                        state.localConnRetrievalCounter -= 1;
+                        if (state.localConnRetrievalCounter === 0) {
+                            svg.model.addLinks(state.localConnCache);
+                            svg.model.cacheSubConnections(state.localConnCache);
+                            showRegionMultiCallBack(regions);
+                            callback1();
+                        }
+                    }
+                )
+            }
+
+        }
+        else {
+            showRegionMultiCallback(regions);
+            callback1();
+        }
+
 	};
+
+    var showRegionMultiCallBack = function(regions) {
+        clearAllHighlight();
+        displayNodes(regions);
+        svgObjs.canvas.selectAll('.node')
+            .classed('nofocus', function(d) {
+                return $.inArray(d, regions) < 0;
+            });
+        for (i in regionPks) {
+            $('#circ-node-' + regionPks[i]).qtip('show');
+        }
+    };
 	
 	var resetRegion = function(regionPk) {
 		var maps = svg.model.maps();
