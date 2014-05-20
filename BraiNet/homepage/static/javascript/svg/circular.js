@@ -567,13 +567,13 @@ svg.circular = (function($, undefined) {
 					svg.model.addLinks(data);
                     svg.model.cacheSubConnections(data);
 					showRegionCallBack(region);
-                    callback1();
+                    if (callback1 !== undefined) { callback1(); }
 				}
 			);
 		}
 		else {
 			showRegionCallBack(region);
-            callback1();
+            if (callback1 !== undefined) { callback1(); }
 		}
 	};
 	
@@ -618,7 +618,7 @@ svg.circular = (function($, undefined) {
                             svg.model.addLinks(state.localConnCache);
                             svg.model.cacheSubConnections(state.localConnCache);
                             showRegionMultiCallBack(regions);
-                            callback1();
+                            if (callback1 !== undefined) { callback1(); }
                         }
                     }
                 )
@@ -627,7 +627,7 @@ svg.circular = (function($, undefined) {
         }
         else {
             showRegionMultiCallBack(regions);
-            callback1();
+            if (callback1 !== undefined) { callback1(); }
         }
 
 	};
