@@ -10,7 +10,7 @@ svg.circular = (function($, undefined) {
 		upButton: '#circular-pane .svg-controller #upButton',
 		downButton: '#circular-pane .svg-controller #downButton',
 		removeButton: '#circular-pane .svg-controller #removeButton',
-		anatomyButton: '#circular-pane .svg-controller #anatomyButton',
+		anatomyButton: '#circular-pane .svg-controller #anatomyButton'
 	};
 	
 	var settings = {};
@@ -536,13 +536,13 @@ svg.circular = (function($, undefined) {
 			var node = data.activeNodes[i];
 			$('#circ-node-' + node.pk).qtip({
 				style: {
-					classes: 'qtip-bootstrap'
+					classes: 'qtip-light'
 				},
 				position: {
 					my: 'bottom right',
 					at: 'top left',
-					target: $('#circ-mark-' + node.pk),
-				},
+					target: $('#circ-mark-' + node.pk)
+				}
 			});
 		}
 	};
