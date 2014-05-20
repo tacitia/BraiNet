@@ -77,9 +77,8 @@ ui.pathSearch = (function($, undefined) {
 			svg.showRegionMulti([state.source.pk, state.target.pk]);
 		}
 		else {
-			svg.showRegion(node.pk);
+			svg.showRegion(node.pk, function() { svg.highlightInput(id, node, false); });
 		}
-		svg.highlightInput(id, node, false);
 	};
 	
 	var searchButtonClick = function() {
@@ -100,11 +99,10 @@ ui.pathSearch = (function($, undefined) {
                     ui.alertModal.show();
                 }
                 else {
-                    svg.model.addLinks(data.links);
+                    svg.model.saveSearchElements(data, state.source, state.target);
                     svg.model.cacheSubConnections(data.links, function(d) {
                         svg.model.addSearchLinks(d);
                     });
-                    svg.model.saveSearchElements(data, state.source, state.target);
                     svg.displaySearchResult(state.source, state.target, data.paths);
                 }
             }

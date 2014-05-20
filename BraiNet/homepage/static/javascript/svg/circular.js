@@ -548,7 +548,7 @@ svg.circular = (function($, undefined) {
 	};
 	
 	// Display a node and set it as in focus
-	var showRegion = function(regionPk) {
+	var showRegion = function(regionPk, callback1) {
 		var maps = svg.model.maps();
 		var region = maps.keyToNode[regionPk];
 		var inNeighbors = maps.keyToInNeighbors[regionPk];
@@ -563,12 +563,14 @@ svg.circular = (function($, undefined) {
 				function(data) { 
 					console.log(data);
 					svg.model.addLinks(data);
-					showRegionCallBack(region); 
+					showRegionCallBack(region);
+                    callback1();
 				}
 			);
 		}
 		else {
 			showRegionCallBack(region);
+            callback1();
 		}
 	};
 	
@@ -580,7 +582,8 @@ svg.circular = (function($, undefined) {
 				return d !== region;
 			});
 		
-		$('#circ-node-' + region.pk).qtip('show');	
+		$('#circ-node-' + region.pk).qtip('show');
+
 	};
 		
 	var showRegionMulti = function(regionPks) {
