@@ -626,7 +626,7 @@ svg.circular = (function($, undefined) {
 
         }
         else {
-            showRegionMultiCallback(regions);
+            showRegionMultiCallBack(regions);
             callback1();
         }
 
