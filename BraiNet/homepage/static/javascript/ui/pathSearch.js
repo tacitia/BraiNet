@@ -96,10 +96,11 @@ ui.pathSearch = (function($, undefined) {
                 ui.loadingModal.hide();
                 console.log(data);
                 if (data.paths.length === 0) {
-                    ui.alertModel.message('No indirect paths found with the given source, target, and number of hops allowed.');
-                    ui.alertModel.show();
+                    ui.alertModal.message('No indirect paths found with the given source, target, and number of hops allowed.');
+                    ui.alertModal.show();
                 }
                 else {
+                    svg.model.addLinks(data.links);
                     svg.model.cacheSubConnections(data.links, function(d) {
                         svg.model.addSearchLinks(d);
                     });
