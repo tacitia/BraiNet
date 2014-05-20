@@ -41,8 +41,8 @@ svg.showRegion = function(regionPk,callback) {
 	svg.force.showRegion(regionPk, callback);
 };
 
-svg.showRegionMulti = function(regionPk) {
-	svg.circular.showRegionMulti(regionPk);
+svg.showRegionMulti = function(regionPk, callback) {
+	svg.circular.showRegionMulti(regionPk, callback);
 };
 
 svg.highlightInput = function(id, node, isCancel) {
