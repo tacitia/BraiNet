@@ -36,9 +36,9 @@ svg.updateLinkColor = function(attr, colorMap) {
 };
 
 // A shortcut for showing the selected region in all available svg modules
-svg.showRegion = function(regionPk) {
-	svg.circular.showRegion(regionPk);
-	svg.force.showRegion(regionPk);
+svg.showRegion = function(regionPk,callback) {
+	svg.circular.showRegion(regionPk, callback);
+	svg.force.showRegion(regionPk, callback);
 };
 
 svg.showRegionMulti = function(regionPk) {
