@@ -639,8 +639,8 @@ svg.circular = (function($, undefined) {
             .classed('nofocus', function(d) {
                 return $.inArray(d, regions) < 0;
             });
-        for (i in regionPks) {
-            $('#circ-node-' + regionPks[i]).qtip('show');
+        for (i in regions) {
+            $('#circ-node-' + regions[i].pk).qtip('show');
         }
     };
 	
