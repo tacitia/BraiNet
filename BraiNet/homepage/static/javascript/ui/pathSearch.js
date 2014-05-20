@@ -74,7 +74,10 @@ ui.pathSearch = (function($, undefined) {
 	var setSelection = function(id, node) {
 		state[id] = node;
 		if (state.source !== null && state.target !== null) {
-			svg.showRegionMulti([state.source.pk, state.target.pk]);
+			svg.showRegionMulti([state.source.pk, state.target.pk], function() {
+                svg.highlightInput('source', state['source'], false);
+                svg.highlightInput('target', state['target'], false);
+            });
 		}
 		else {
 			svg.showRegion(node.pk, function() { svg.highlightInput(id, node, false); });
