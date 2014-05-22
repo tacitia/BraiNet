@@ -97,14 +97,15 @@ svg.anatomy = (function($, undefined) {
 			util.action.add('deselect a region in the anatomy view', {region: title});
 		}			
 		else {
-			svg.showRegion(node.pk);
-			var oldSel = $("#anatomy-pane path[oldtitle='" + state.activeTitle + "']");
-			emphStructure(oldSel, true);
-			state.activeTitle = title;
-			state.allActiveStructs.push(title);
-			svg.circular.setMode('fixation');
-			$(this).attr('isFixed', true);
-			util.action.add('select a region in the anatomy view', {region: title});
+			svg.showRegion(node.pk, function() {
+                var oldSel = $("#anatomy-pane path[oldtitle='" + state.activeTitle + "']");
+                emphStructure(oldSel, true);
+                state.activeTitle = title;
+                state.allActiveStructs.push(title);
+                svg.circular.setMode('fixation');
+                $(this).attr('isFixed', true);
+                util.action.add('select a region in the anatomy view', {region: title});
+            });
 		}
 	};
 

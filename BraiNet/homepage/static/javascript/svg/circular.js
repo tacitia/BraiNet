@@ -278,6 +278,11 @@ svg.circular = (function($, undefined) {
 		var children = [];
 		var ids = n.derived.children;
 		var length = ids.length;
+        if (length === 0) {
+            ui.alertModal.message(n.fields.name + ' cannot be further divided into finer structures.');
+            ui.alertModal.show();
+            return;
+        }
 		for (var i = 0; i < length; ++i) {
 			var c = maps.keyToNode[ids[i]];
 			if (!settings.hideIsolated || !c.derived.isIsolated) {
