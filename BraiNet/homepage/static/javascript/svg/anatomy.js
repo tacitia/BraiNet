@@ -104,7 +104,8 @@ svg.anatomy = (function($, undefined) {
                 state.allActiveStructs.push(title);
                 svg.clearAllHighlight();
                 svg.highlightInput('struct', null, true);
-                svg.highlightInput('struct', node, false);
+//                svg.highlightInput('struct', node, false);
+                svg.highlightNode(node, false);
                 svg.circular.setMode('fixation');
                 $(this).attr('isFixed', true);
                 util.action.add('select a region in the anatomy view', {region: title});
