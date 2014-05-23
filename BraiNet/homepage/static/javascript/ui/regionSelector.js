@@ -12,9 +12,9 @@ ui.regionSelector = (function($, undefined) {
 	};
 	
 	var selectRegion = function() {
+        var maps = svg.model.maps();
+        var node = maps.keyToNode[this.value];
 		svg.showRegion(this.value, function() {
-            var maps = svg.model.maps();
-            var node = maps.keyToNode[this.value];
             var regionName = node.fields.name;
             console.log(regionName);
             svg.anatomy.selectStructure(regionName, false);
