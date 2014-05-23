@@ -542,6 +542,10 @@ svg.force = (function($, undefined) {
 	};
 
 	var highlightInput = function(id, node, isCancel) {
+        if (node === null) {
+            svgObjs.canvas.selectAll('.node').classed('selected-' + id, !isCancel);
+            return;
+        }
 		svgObjs.canvas.select('#force-node-' + node.pk)
 			.classed('selected-' + id, !isCancel);
 	};

@@ -441,6 +441,10 @@ svg.circular = (function($, undefined) {
 	};
 	
 	var highlightInput = function(id, node, isCancel) {
+        if (node === null) {
+            svgObjs.canvas.selectAll('.node').classed('selected-' + id, !isCancel);
+            return;
+        }
 		svgObjs.canvas.select('#circ-node-' + node.pk)
 			.classed('selected-' + id, !isCancel);
 	};

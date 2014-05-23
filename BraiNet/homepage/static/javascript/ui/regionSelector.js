@@ -19,6 +19,7 @@ ui.regionSelector = (function($, undefined) {
 		console.log(regionName);
 		svg.anatomy.selectStructure(regionName, false);
         svg.clearAllHighlight();
+        svg.highlightInput('struct', null, true);
 		svg.highlightInput('struct', node, false);
 		util.action.add('select region using dropdown', {region: regionName});
 	};
