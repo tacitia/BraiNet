@@ -12,16 +12,17 @@ ui.regionSelector = (function($, undefined) {
 	};
 	
 	var selectRegion = function() {
-		svg.showRegion(this.value);
-		var maps = svg.model.maps();
-		var node = maps.keyToNode[this.value];
-		var regionName = node.fields.name;
-		console.log(regionName);
-		svg.anatomy.selectStructure(regionName, false);
-        svg.clearAllHighlight();
-        svg.highlightInput('struct', null, true);
-		svg.highlightInput('struct', node, false);
-		util.action.add('select region using dropdown', {region: regionName});
+		svg.showRegion(this.value, function() {
+            var maps = svg.model.maps();
+            var node = maps.keyToNode[this.value];
+            var regionName = node.fields.name;
+            console.log(regionName);
+            svg.anatomy.selectStructure(regionName, false);
+            svg.clearAllHighlight();
+            svg.highlightInput('struct', null, true);
+            svg.highlightInput('struct', node, false);
+            util.action.add('select region using dropdown', {region: regionName});
+        });
 	};
 	
 	var render = function(regionList) {
