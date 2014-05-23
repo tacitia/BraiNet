@@ -190,6 +190,7 @@ svg.circular = (function($, undefined) {
 			}); 	
 		$('#circ-node-' + link.derived.source.pk).qtip('show');
 		$('#circ-node-' + link.derived.target.pk).qtip('show');
+        console.log(link.derived.leaves.length);
 	};
 	
 	var linkMouseOut = function(link) {
