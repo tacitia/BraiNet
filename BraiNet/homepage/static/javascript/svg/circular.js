@@ -490,7 +490,7 @@ svg.circular = (function($, undefined) {
 			.attr('stroke', '#ccc')
 			.attr('stroke-width', function(d) { 
                 var width = d.derived.isDerived
-                        ? Math.min(10, 1 + Math.ceil(d.derived.leaves.length / 50)) + 'px'
+                        ? Math.min(10, 1 + Math.ceil(d.derived.leaves.length / 20)) + 'px'
                         : 1 + 'px';
                 return width;
 			})
