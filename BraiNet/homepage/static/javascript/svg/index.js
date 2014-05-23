@@ -52,7 +52,7 @@ svg.highlightInput = function(id, node, isCancel) {
 
 svg.highlightNode = function(node, isCancel) {
     svg.circular.highlightNode(node, isCancel);
-    svg.force.highlightNode(node, isCancel);
+//    svg.force.highlightNode(node, isCancel);
 };
 
 svg.clearAllHighlight = function() {
