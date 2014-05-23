@@ -102,6 +102,7 @@ svg.anatomy = (function($, undefined) {
                 emphStructure(oldSel, true);
                 state.activeTitle = title;
                 state.allActiveStructs.push(title);
+                svg.clearAllHighlight();
                 svg.highlightInput('struct', node, false);
                 svg.circular.setMode('fixation');
                 $(this).attr('isFixed', true);
