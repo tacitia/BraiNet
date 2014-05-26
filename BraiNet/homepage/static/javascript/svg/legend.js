@@ -25,9 +25,23 @@ svg.legend = (function($, undefined) {
 	};
 	
 	var render = function() {
-        svgObjs.canvas.append('svg:line')
+        svgObjs.canvas.append('g')
+            .attr('transform', 'translate(50, 50)')
+            .append('svg:line')
             .attr('stroke-width', 3)
-            .attr('stroke', 'black');
+            .classed('inLink');
+
+        svgObjs.canvas.append('g')
+            .attr('transform', 'translate(100, 50)')
+            .append('svg:line')
+            .attr('stroke-width', 3)
+            .classed('outLink');
+
+        svgObjs.canvas.append('g')
+            .attr('transform', 'translate(150, 50)')
+            .append('svg:line')
+            .attr('stroke-width', 3)
+            .classed('biLink');
 	};
 
 	return {
