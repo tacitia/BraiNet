@@ -12,7 +12,7 @@ svg.legend = (function($, undefined) {
     };
 
     localSettings.vis.width = 600;
-    localSettings.vis.height = 100;
+    localSettings.vis.height = 50;
 	
 	var svgObjs = {
 		canvas: null
@@ -23,37 +23,65 @@ svg.legend = (function($, undefined) {
 			.style('width', localSettings.vis.width)
 			.style('height', localSettings.vis.height);
 	};
-	
+
+    var appendCircle = function(group, cl, label) {
+        group.append('svg:circle')
+            .attr('r', 5)
+            .attr('fill', 'white')
+            .attr('class', cl);
+
+        group.append('svg:text')
+            .text(label)
+            .attr('font-size', '14px')
+            .attr('dx', '20px');
+    };
+
+    var appendLine = function(gropu, cl, label) {
+        group.append('svg:line')
+            .attr('x1', 0)
+            .attr('y1',20)
+            .attr('x2', 60)
+            .attr('y2', 20)
+            .style('stroke-width', 3)
+            .attr('class', cl);
+
+        group.append('svg:text')
+            .text(label)
+            .attr('font-size', '14px')
+            .attr('dx', '20px');
+    };
+
 	var render = function() {
-        svgObjs.canvas.append('g')
-            .attr('transform', 'translate(50, 50)')
-            .append('svg:line')
-            .attr('x1', 5)
-            .attr('y1', 5)
-            .attr('x2', 50)
-            .attr('y2', 5)
-            .style('stroke-width', 3)
-            .attr('class', 'link inLink');
+        var g = svgObjs.canvas.append('g')
+            .attr('transform', 'translate(0, 50)');
 
-        svgObjs.canvas.append('g')
-            .attr('transform', 'translate(100, 50)')
-            .append('svg:line')
-            .attr('x1', 5)
-            .attr('y1', 5)
-            .attr('x2', 50)
-            .attr('y2', 5)
-            .style('stroke-width', 3)
-            .attr('class', 'link outLink');
+        appendLine(g, 'link inLink', 'incoming');
 
-        svgObjs.canvas.append('g')
-            .attr('transform', 'translate(150, 50)')
-            .append('svg:line')
-            .attr('x1', 5)
-            .attr('y1', 5)
-            .attr('x2', 50)
-            .attr('y2', 5)
-            .style('stroke-width', 3)
-            .attr('class', 'link biLink');
+        var g = svgObjs.canvas.append('g')
+            .attr('transform', 'translate(80, 50)');
+
+        appendLine(g, 'link outLink', 'outgoing');
+
+        var g = svgObjs.canvas.append('g')
+            .attr('transform', 'translate(160, 50)');
+
+        appendLine(g, 'link biLink', 'bidirectional');
+
+        var g = svgObjs.canvas.append('g')
+            .attr('transform', 'translate(240, 50)');
+
+        appendCircle(g, 'node selected-source', 'selected source');
+
+        var g = svgObjs.canvas.append('g')
+            .attr('transform', 'translate(280, 50)');
+
+        appendCircle(g, 'node selected-target', 'selected target');
+
+        var g = svgObjs.canvas.append('g')
+            .attr('transform', 'translate(320, 50)');
+
+        appendCircle(g, 'node selected-struct', 'selected structure');
+
 	};
 
 	return {
