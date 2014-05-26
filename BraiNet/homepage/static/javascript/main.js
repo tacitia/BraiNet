@@ -27,6 +27,7 @@ function userValidated() {
 	svg.force.init();
 	svg.anatomy.init();
 	svg.linkAttr.init();
+    svg.legend.init();
 	
 	svg.render(2, 4);
 };
