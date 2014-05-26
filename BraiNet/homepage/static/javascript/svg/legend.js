@@ -28,27 +28,28 @@ svg.legend = (function($, undefined) {
         group.append('svg:circle')
             .attr('r', 5)
             .attr('fill', 'white')
+            .attr('fill-opacity', 0)
             .attr('class', cl);
 
         group.append('svg:text')
             .text(label)
             .attr('font-size', '14px')
-            .attr('dx', '20px');
+            .attr('x', 20);
     };
 
     var appendLine = function(group, cl, label) {
         group.append('svg:line')
             .attr('x1', 0)
-            .attr('y1',20)
+            .attr('y1',0)
             .attr('x2', 60)
-            .attr('y2', 20)
+            .attr('y2', 0)
             .style('stroke-width', 3)
             .attr('class', cl);
 
         group.append('svg:text')
             .text(label)
             .attr('font-size', '14px')
-            .attr('dx', '20px');
+            .attr('x', 20);
     };
 
 	var render = function() {
