@@ -56,38 +56,7 @@
             </div>
           </div>
         </div>
-        <div class="span3">
-          <div id="legend" class="control-pane">
-            <h5>Edge Color Legend</h5>
-            <div id="legend-primary">
-              <h6>Default (by directionality)</h6>
-              <div>
-                <div style="background-color:#2ca02c;" class="legend-block multi-col"></div>
-                <div class="legend-label multi-col">
-                  <p>Source region / Outgoing connecion</p>
-                </div>
-                <div class="clear"></div>
-                <div style="background-color:#d62728;" class="legend-block multi-col"></div>
-                <div class="legend-label multi-col">
-                  <p>Target region / Incoming connecion</p>
-                </div>
-                <div class="clear"></div>
-                <div style="background-color:#062db8;" class="legend-block multi-col"></div>
-                <div class="legend-label multi-col">
-                  <p>Bidirectional connection</p>
-                </div>
-                <div class="clear"></div>
-              </div>
-            </div>
-            <div id="legend-feature">
-              <h6>Optional (by edge attributes)</h6>
-              <div><span>Attribute</span>
-                <select id="attr-list" data-placeholder="Select an attribute" class="chzn-select inline"></select>
-              </div>
-              <svg id="attr-legend"></svg>
-            </div>
-          </div>
-        </div>
+        <div class="span3"></div>
         <div class="span5">
           <h5>Anatomy View</h5>
           <div id="anatomy-pane" class="card">
@@ -127,6 +96,40 @@
               <div class="svg-controller"><span id="region-name"></span>
               </div>
               <svg class="canvas"></svg>
+            </div>
+          </div>
+        </div>
+        <div class="row-fluid">
+          <div class="span12">
+            <div id="legend" class="control-pane">
+              <h5>Edge Color Legend</h5>
+              <div id="legend-primary">
+                <h6>Default (by directionality)</h6>
+                <div>
+                  <div style="background-color:#2ca02c;" class="legend-block multi-col"></div>
+                  <div class="legend-label multi-col">
+                    <p>Source region / Outgoing connecion</p>
+                  </div>
+                  <div class="clear"></div>
+                  <div style="background-color:#d62728;" class="legend-block multi-col"></div>
+                  <div class="legend-label multi-col">
+                    <p>Target region / Incoming connecion</p>
+                  </div>
+                  <div class="clear"></div>
+                  <div style="background-color:#062db8;" class="legend-block multi-col"></div>
+                  <div class="legend-label multi-col">
+                    <p>Bidirectional connection</p>
+                  </div>
+                  <div class="clear"></div>
+                </div>
+              </div>
+              <div id="legend-feature">
+                <h6>Optional (by edge attributes)</h6>
+                <div><span>Attribute</span>
+                  <select id="attr-list" data-placeholder="Select an attribute" class="chzn-select inline"></select>
+                </div>
+                <svg id="attr-legend"></svg>
+              </div>
             </div>
           </div>
         </div>

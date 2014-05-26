@@ -46,29 +46,7 @@ html(lang="en")
               button.btn.btn-danger#clear-button
                 i.icon-remove
         div.span3
-          div.control-pane#legend
-            h5 Edge Color Legend
-            div#legend-primary
-              h6 Default (by directionality)
-              div
-                div.legend-block.multi-col(style="background-color:#2ca02c;")
-                div.legend-label.multi-col
-                  p Source region / Outgoing connecion
-                div.clear
-                div.legend-block.multi-col(style="background-color:#d62728;")
-                div.legend-label.multi-col
-                  p Target region / Incoming connecion
-                div.clear
-                div.legend-block.multi-col(style="background-color:#062db8;")
-                div.legend-label.multi-col
-                  p Bidirectional connection
-                div.clear
-            div#legend-feature
-              h6 Optional (by edge attributes)
-              div
-                span Attribute
-                select.chzn-select.inline#attr-list(data-placeholder="Select an attribute")
-              svg#attr-legend
+
         div.span5
           h5 Anatomy View
           div.card#anatomy-pane
@@ -107,6 +85,31 @@ html(lang="en")
               div.svg-controller
                 span#region-name
               svg.canvas
+        div.row-fluid
+          div.span12
+            div.control-pane#legend
+              h5 Edge Color Legend
+              div#legend-primary
+                h6 Default (by directionality)
+                div
+                  div.legend-block.multi-col(style="background-color:#2ca02c;")
+                  div.legend-label.multi-col
+                    p Source region / Outgoing connecion
+                  div.clear
+                  div.legend-block.multi-col(style="background-color:#d62728;")
+                  div.legend-label.multi-col
+                    p Target region / Incoming connecion
+                  div.clear
+                  div.legend-block.multi-col(style="background-color:#062db8;")
+                  div.legend-label.multi-col
+                    p Bidirectional connection
+                  div.clear
+              div#legend-feature
+                h6 Optional (by edge attributes)
+                div
+                  span Attribute
+                  select.chzn-select.inline#attr-list(data-placeholder="Select an attribute")
+                svg#attr-legend
       div.row-fluid
         div.span12#conn-info
           h5 Connection Information
