@@ -36,7 +36,7 @@ svg.legend = (function($, undefined) {
             .attr('dx', '20px');
     };
 
-    var appendLine = function(gropu, cl, label) {
+    var appendLine = function(group, cl, label) {
         group.append('svg:line')
             .attr('x1', 0)
             .attr('y1',20)
