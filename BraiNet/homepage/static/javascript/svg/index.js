@@ -30,6 +30,7 @@ svg.renderViews = function(data, datasetId) {
 	svg.circular.render(data, datasetId);
 	svg.force.render(data, datasetId);
 	svg.anatomy.render();
+    svg.legend.render();
 };
 
 svg.updateLinkColor = function(attr, colorMap) {
