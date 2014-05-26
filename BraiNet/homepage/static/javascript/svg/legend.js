@@ -33,7 +33,7 @@ svg.legend = (function($, undefined) {
             .attr('x2', 50)
             .attr('y2', 5)
             .attr('stroke-width', 3)
-            .attr('class', 'inLink');
+            .attr('class', 'link inLink');
 
         svgObjs.canvas.append('g')
             .attr('transform', 'translate(100, 50)')
@@ -43,7 +43,7 @@ svg.legend = (function($, undefined) {
             .attr('x2', 50)
             .attr('y2', 5)
             .attr('stroke-width', 3)
-            .attr('class', 'outLink');
+            .attr('class', 'link outLink');
 
         svgObjs.canvas.append('g')
             .attr('transform', 'translate(150, 50)')
@@ -53,7 +53,7 @@ svg.legend = (function($, undefined) {
             .attr('x2', 50)
             .attr('y2', 5)
             .attr('stroke-width', 3)
-            .attr('class', 'biLink');
+            .attr('class', 'link biLink');
 	};
 
 	return {
