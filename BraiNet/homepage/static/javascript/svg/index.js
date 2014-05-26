@@ -7,6 +7,7 @@ svg.force = svg.force || {};
 svg.anatomy = svg.anatomy || {};
 svg.linkAttr = svg.linkAttr || {};
 svg.model = svg.model || {};
+svg.legend = svg.legend || {};
 
 //TODO: run selected svg modules using requireJS
 
