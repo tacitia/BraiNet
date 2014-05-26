@@ -11,8 +11,8 @@ svg.legend = (function($, undefined) {
         vis: {}
     };
 
-    vis.width = 600;
-    vis.height = 100;
+    localSettings.vis.width = 600;
+    localSettings.vis.height = 100;
 	
 	var svgObjs = {
 		canvas: null
