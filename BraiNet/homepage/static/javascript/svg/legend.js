@@ -28,18 +28,30 @@ svg.legend = (function($, undefined) {
         svgObjs.canvas.append('g')
             .attr('transform', 'translate(50, 50)')
             .append('svg:line')
+            .attr('x1', 5)
+            .attr('y1', 5)
+            .attr('x2', 50)
+            .attr('y2', 5)
             .attr('stroke-width', 3)
             .classed('inLink');
 
         svgObjs.canvas.append('g')
             .attr('transform', 'translate(100, 50)')
             .append('svg:line')
+            .attr('x1', 5)
+            .attr('y1', 5)
+            .attr('x2', 50)
+            .attr('y2', 5)
             .attr('stroke-width', 3)
             .classed('outLink');
 
         svgObjs.canvas.append('g')
             .attr('transform', 'translate(150, 50)')
             .append('svg:line')
+            .attr('x1', 5)
+            .attr('y1', 5)
+            .attr('x2', 50)
+            .attr('y2', 5)
             .attr('stroke-width', 3)
             .classed('biLink');
 	};
