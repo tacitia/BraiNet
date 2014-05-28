@@ -11,8 +11,8 @@ svg.legend = (function($, undefined) {
         vis: {}
     };
 
-    localSettings.vis.width = 600;
-    localSettings.vis.height = 50;
+    localSettings.vis.width = 500;
+    localSettings.vis.height = 60;
 	
 	var svgObjs = {
 		canvas: null
@@ -26,15 +26,23 @@ svg.legend = (function($, undefined) {
 
     var appendCircle = function(group, cl, label) {
         group.append('svg:circle')
-            .attr('r', 5)
+            .attr('r', 10)
             .attr('fill', 'white')
             .attr('fill-opacity', 0)
-            .attr('class', cl);
+            .attr('class', cl)
+	    .attr('transform', 'translate(40, 0)');
+
+        group.append('svg:text')
+            .text('selected')
+            .attr('font-size', '14px')
+            .attr('x', 10)
+	    .attr('y', 25);
 
         group.append('svg:text')
             .text(label)
             .attr('font-size', '14px')
-            .attr('x', 20);
+            .attr('x', 10)
+	    .attr('y', 40);
     };
 
     var appendLine = function(group, cl, label) {
@@ -49,39 +57,40 @@ svg.legend = (function($, undefined) {
         group.append('svg:text')
             .text(label)
             .attr('font-size', '14px')
-            .attr('x', 20);
+            .attr('x', 0)
+	    .attr('y', 25);
     };
 
 	var render = function() {
         var g = svgObjs.canvas.append('g')
-            .attr('transform', 'translate(0, 50)');
+            .attr('transform', 'translate(0, 15)');
 
         appendLine(g, 'link inLink', 'incoming');
 
         var g = svgObjs.canvas.append('g')
-            .attr('transform', 'translate(80, 50)');
+            .attr('transform', 'translate(80, 15)');
 
         appendLine(g, 'link outLink', 'outgoing');
 
         var g = svgObjs.canvas.append('g')
-            .attr('transform', 'translate(160, 50)');
+            .attr('transform', 'translate(160, 15)');
 
         appendLine(g, 'link biLink', 'bidirectional');
 
         var g = svgObjs.canvas.append('g')
-            .attr('transform', 'translate(240, 50)');
+            .attr('transform', 'translate(240, 15)');
 
-        appendCircle(g, 'node selected-source', 'selected source');
-
-        var g = svgObjs.canvas.append('g')
-            .attr('transform', 'translate(280, 50)');
-
-        appendCircle(g, 'node selected-target', 'selected target');
+        appendCircle(g, 'node selected-source', 'source');
 
         var g = svgObjs.canvas.append('g')
-            .attr('transform', 'translate(320, 50)');
+            .attr('transform', 'translate(320, 15)');
 
-        appendCircle(g, 'node selected-struct', 'selected structure');
+        appendCircle(g, 'node selected-target', 'target');
+
+        var g = svgObjs.canvas.append('g')
+            .attr('transform', 'translate(400, 15)');
+
+        appendCircle(g, 'node selected-struct', 'structure');
 
 	};
 
