@@ -108,10 +108,10 @@ svg.circular = (function($, undefined) {
 		data.links = d.links;
 		state.datasetId = datasetId;
 		// Initialize data.activeNodes to contain the top level nodes
+        clearCanvas();
 		initActiveNodes();
 		initActiveLinks();
 		computeNodesParameters();
-		clearCanvas();
 		enterLinks();
 		enterNodes();
 //		createNodeTooltips();
