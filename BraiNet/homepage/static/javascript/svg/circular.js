@@ -19,7 +19,7 @@ svg.circular = (function($, undefined) {
 		height: 550
 	};
 	settings.arc = {};
-	settings.arc.innerRadius = Math.min(settings.vis.width, settings.vis.height) * 0.35,
+	settings.arc.innerRadius = Math.min(settings.vis.width, settings.vis.height) * 0.35;
 	settings.arc.outerRadius = settings.arc.innerRadius * 1.2;
 	// TODO: The settings below should be exposed to the users later
 	settings.hideIsolated = true;
@@ -120,9 +120,10 @@ svg.circular = (function($, undefined) {
 	};
 
 	var clearCanvas = function() {
-//        $('.node').qtip('destroy');
-        $('.node').remove();
+        $('.node').qtip('destroy');
+//        $('.node').remove();
 		svgObjs.canvas.selectAll('.node').remove();
+        svgObjs.canvas.selectAll('.mark').remove();
 		svgObjs.canvas.selectAll('.link').remove();
 	};
 	
