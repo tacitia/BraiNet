@@ -120,7 +120,7 @@ svg.circular = (function($, undefined) {
 	};
 
 	var clearCanvas = function() {
-        $('.node').qtip('hide');
+        $('.node').qtip('destroy');
 		svgObjs.canvas.selectAll('.node').remove();
 		svgObjs.canvas.selectAll('.link').remove();
 	}
