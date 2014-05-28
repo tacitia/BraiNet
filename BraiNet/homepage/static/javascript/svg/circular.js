@@ -114,7 +114,7 @@ svg.circular = (function($, undefined) {
 		clearCanvas();
 		enterLinks();
 		enterNodes();
-		createNodeTooltips();
+//		createNodeTooltips();
 		console.log("Circular view rendered.");
 		amplify.publish('renderComplete');		
 	};
