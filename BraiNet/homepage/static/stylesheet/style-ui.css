@@ -185,7 +185,7 @@ html,body { height:100%; }
 
 .svg-pane {
 	width: 600px;
-	height: 650px;
+	height: auto;
 }
 
 .control-pane {

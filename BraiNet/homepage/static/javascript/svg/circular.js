@@ -129,7 +129,6 @@ svg.circular = (function($, undefined) {
 	
 	var nodeClick = function(d) {
            console.log(d);
-           console.log(svg.model.maps().keyToOutNeighbors[d.pk]);
 		// Fix on the clicked node
 		if (state.mode === 'exploration') {
 			state.selectedNode = d;
@@ -163,7 +162,6 @@ svg.circular = (function($, undefined) {
 	
 	// When mousing over, highlight itself and the neighbors
 	var nodeMouseOver = function(node) {
-        console.log(node.fields.depth);
 		if (state.mode === 'fixation') { return; }
 		if (state.mode === 'search' && state.selectedNode !== null && state.selectedNode !== node) { return; }
   		highlightNode(node, false);
@@ -191,6 +189,7 @@ svg.circular = (function($, undefined) {
 		$('#circ-node-' + link.derived.source.pk).qtip('show');
 		$('#circ-node-' + link.derived.target.pk).qtip('show');
         console.log(link.derived.leaves.length);
+	console.log(link.pk);
 	};
 	
 	var linkMouseOut = function(link) {
@@ -306,7 +305,6 @@ svg.circular = (function($, undefined) {
 	
 	var arcPropOptionUpdate = function(value) {
 		settings.weightArcAreaByNumSubRegions = value;
-		console.log(value);
 		var newNum = data.activeNodes.length;
 		var newDelta = 2 * Math.PI / newNum;
 		updateLayout(newNum, newDelta);
@@ -778,7 +776,6 @@ svg.circular = (function($, undefined) {
 				data.activeLinks.push(l);
 			}
 		}
-		console.log(data.activeLinks);
 	};
 	
 /*	var assignColor = function() {
@@ -1136,7 +1133,6 @@ svg.circular = (function($, undefined) {
 		var length = data.activeNodes.length;
 		while (length--) {
 			var n = data.activeNodes[length];
-			console.log(n);
 			if (n !== node && $.inArray(n.pk, neighbors) < 0) {
 				data.activeNodes.splice(length, 1);
 			}
@@ -1154,7 +1150,6 @@ svg.circular = (function($, undefined) {
 				data.activeLinks.splice(length, 1);
 			}
 		}
-		console.log(data.activeNodes);
 		var newNum = data.activeNodes.length;
 		var newDelta = 2 * Math.PI / newNum;
 		updateLayout(newNum, newDelta);
@@ -1181,8 +1176,6 @@ svg.circular = (function($, undefined) {
 	};
 
 	var computeNodesParameters = function() {
-		console.log('arc area option');
-		console.log(settings.weightArcAreaByNumSubRegions);
 		if (settings.weightArcAreaByNumSubRegions) {
 			computeNodesParametersWeighted();
 		}
