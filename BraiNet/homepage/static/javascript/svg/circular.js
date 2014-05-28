@@ -730,7 +730,7 @@ svg.circular = (function($, undefined) {
 //		assignColor();
 		enterLinks();
 		enterNodes();
-//		createNodeTooltips();
+		createNodeTooltips();
 		state.mode = 'exploration';
 		amplify.publish('resetComplete');
 	};
