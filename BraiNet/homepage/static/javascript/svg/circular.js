@@ -545,6 +545,9 @@ svg.circular = (function($, undefined) {
 	var createNodeTooltips = function() {
 		for (var i = 0; i < data.activeNodes.length; ++i) {
 			var node = data.activeNodes[i];
+            if ($('#circ-node-' + node.pk).data('qtip')) {
+                console.log('creating qtip for existing node ' + node.fields.name);
+            }
 			$('#circ-node-' + node.pk).qtip({
 				style: {
 					classes: 'qtip-light'
