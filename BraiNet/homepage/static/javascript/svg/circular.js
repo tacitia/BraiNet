@@ -108,13 +108,13 @@ svg.circular = (function($, undefined) {
 		data.links = d.links;
 		state.datasetId = datasetId;
 		// Initialize data.activeNodes to contain the top level nodes
-        clearCanvas();
 		initActiveNodes();
 		initActiveLinks();
 		computeNodesParameters();
+		clearCanvas();
 		enterLinks();
 		enterNodes();
-//		createNodeTooltips();
+		createNodeTooltips();
 		console.log("Circular view rendered.");
 		amplify.publish('renderComplete');		
 	};
@@ -124,7 +124,7 @@ svg.circular = (function($, undefined) {
         $('.node').remove();
 		svgObjs.canvas.selectAll('.node').remove();
 		svgObjs.canvas.selectAll('.link').remove();
-	}
+	};
 	
 	/* SVG Objects Interaction */
 	
@@ -723,14 +723,14 @@ svg.circular = (function($, undefined) {
 	
 	var reset = function() {
 		console.log('Reset circular');
+        clearCanvas();
 		initActiveNodes();
 		initActiveLinks();
 		computeNodesParameters();
 //		assignColor();
-		clearCanvas();
 		enterLinks();
 		enterNodes();
-		createNodeTooltips();
+//		createNodeTooltips();
 		state.mode = 'exploration';
 		amplify.publish('resetComplete');
 	};
