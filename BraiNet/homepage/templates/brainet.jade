@@ -61,6 +61,13 @@ html(lang="en")
                   button.btn.btn-danger#clear-button
                     i.icon-remove
           div.span4
+            div.control-pane#legend.well.sub-sub-section
+              div#legend-feature
+                h5 Color edges by connection attributes
+                div
+                  span Attribute
+                  select.chzn-select.inline#attr-list(data-placeholder="Select an attribute")
+                svg#attr-legend
           div.span1#resetDiv
             button.btn.btn-danger#reset Reset
       div.divider
@@ -99,28 +106,11 @@ html(lang="en")
         div.row-fluid
           div.span12
             div.control-pane#legend.well.sub-sub-section
-              h5 Edge Color Legend
-              div#legend-primary
-                h6 Default (by directionality)
-                div#legend-canvas
-                  div.legend-block.multi-col(style="background-color:#2ca02c;")
-                  div.legend-label.multi-col
-                    p Source region / Outgoing connecion
-                  div.clear
-                  div.legend-block.multi-col(style="background-color:#d62728;")
-                  div.legend-label.multi-col
-                    p Target region / Incoming connecion
-                  div.clear
-                  div.legend-block.multi-col(style="background-color:#062db8;")
-                  div.legend-label.multi-col
-                    p Bidirectional connection
-                  div.clear
-              div#legend-feature
-                h6 Optional (by edge attributes)
-                div
-                  span Attribute
-                  select.chzn-select.inline#attr-list(data-placeholder="Select an attribute")
-                svg#attr-legend
+              div.multi-col(style="padding-right:30px")
+                h5 Legend
+              div#legend-primary.multi-col
+                svg#legend-canvas
+              div.clear
         div.row-fluid
           div.span3
             div#conn-info
