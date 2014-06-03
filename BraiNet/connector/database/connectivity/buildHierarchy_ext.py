@@ -13,8 +13,8 @@ from django.core.exceptions import ObjectDoesNotExist
 super_user = Account.objects.get(access_code='abcdefgh')
 
 min_depth = 1
-max_depth = 9
-for dataset in [2]:
+max_depth = 11
+for dataset in [1]:
 	dataset_instance = Dataset.objects.get(id=dataset)
 	
 	for m in range(min_depth, max_depth+1):

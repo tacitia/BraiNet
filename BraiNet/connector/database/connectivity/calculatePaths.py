@@ -10,7 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist
 super_user = Account.objects.get(access_code='abcdefgh')
 hop_limit = 1
 
-for dataset in [2]:
+for dataset in [1]:
 	structures = Structure.objects.filter(dataset_id=dataset)
 	# loop through all pairs of structures that are not ancestors / descendants and compute 
 	# paths

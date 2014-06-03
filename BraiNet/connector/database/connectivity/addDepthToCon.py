@@ -8,7 +8,7 @@ from django.db.models import Q
 
 super_user = Account.objects.get(access_code='abcdefgh')
 
-for dataset in [2]:
+for dataset in [1]:
 	connections = Connection.objects.filter(dataset_id=dataset)
 	# Populate the source_depth and target_depth fields
 	max_depth = -1

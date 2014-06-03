@@ -61,20 +61,25 @@ ui.attrSelector = (function($, undefined) {
 		data.attrList = [];
 		data.attrSummary = {};
 		var attrs = links[0].fields.attributes;
+		buildAttrMapHelper[window.settings.activeDataset](links, attrs);
+	}
+	
+	var buildAttrMapHelper = {};
+	buildAttrMapHelper[1] = function(links, attrs) {
+	};
+	buildAttrMapHelper[2] = function(links, attrs) {
 		for (var key in attrs) {
 			data.attrList.push(key);
-			var attrType = isNaN(attrs[key]) ? 'text' : 'numeric';
-			data.attrSummary[key] = {min: Number.MAX_VALUE, max: Number.MIN_VALUE, type: attrType};
+			data.attrSummary[key] = {min: Number.MAX_VALUE, max: Number.MIN_VALUE, type: 'numeric'};
 		}
 		for (var i in links) {
 			var linkAttrs = links[i].fields.attributes;
 			for (var key in linkAttrs) {
-				data.attrSummary[key].min = Math.min(data.attrSummary[key].min, linkAttrs[key]);
-				data.attrSummary[key].max = Math.max(data.attrSummary[key].max, linkAttrs[key]);
+				data.attrSummary[key].min = Math.min(data.attrSummary[key].min, linkAttrs[key].mean);
+				data.attrSummary[key].max = Math.max(data.attrSummary[key].max, linkAttrs[key].mean);
 			}
 		}
-
-	}
+	};
 	
 	var assignAttrColor = function() {
 		var colorMap = d3.scale.category10().domain(data.attrList);

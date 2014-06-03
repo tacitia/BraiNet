@@ -212,6 +212,10 @@ svg.circular = (function($, undefined) {
 				connId: link.pk
 			},
 			function(leaves) {
+				// Not sure why the server sometimes returns json objects and sometimes string
+				if (typeof leaves == 'string' || leaves instanceof String) {
+					leaves = $.parseJSON(leaves);
+				}
                 svg.model.addLinks(leaves, 3);
 				ui.linkInfo.displayLinkInfo(link, leaves);
 			}
@@ -527,14 +531,7 @@ svg.circular = (function($, undefined) {
 				if (state.selectedAttr === null) { return '#ccc'; } 
 				var attrValue = 0;
 				if (d.derived.isDerived) {
-					var maps = svg.model.maps();
-					var leaves = d.derived.leaves;
-					var numLeaves = leaves.length;
-					for (var i in leaves) {
-						var l = maps.keyToLink[leaves[i]];
-						attrValue += l.fields.attributes[attr];
-					}
-					attrValue /= numLeaves;
+					attrValue = d.fields.attributes[attr].mean;
 				}
 				else {
 					attrValue = d.fields.attributes[attr];

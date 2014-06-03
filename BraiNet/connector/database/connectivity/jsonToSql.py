@@ -14,7 +14,7 @@ index_file_name = 'connector/database/connectivity/index.json'
 
 datasets = json.load(open(index_file_name))
 
-startId = 140000
+startId = 0
 
 for d in datasets:
 	conn_file_name = os.path.join(conn_dir, d['dir'], conn_file_loc)

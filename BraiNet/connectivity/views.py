@@ -49,7 +49,8 @@ def getLeaves(request, conn_id):
 		leaf = Connection.objects.get(id=lid)
 		leaves.append(leaf)
 	leaves = serializers.serialize('json', leaves)
-	leaves = averageAttributes(leaves)
+	if parent_conn.dataset_id == 2:
+		leaves = averageAttributes(leaves)
 	print leaves
 	return HttpResponse(json.dumps(leaves), content_type='application/json')
 
@@ -58,7 +59,8 @@ def getLocalConnections(request, struct_id, depth):
 	connections = Connection.objects.filter((Q(source_id=struct_id) & Q(target_id__depth=depth)) | (Q(target_id=struct_id) & Q(source_id__depth=depth)))
 	print connections.count()
 	response_data = serializers.serialize('json', connections)
-	response_data = averageAttributes(response_data)
+	if connections[0].dataset_id == 2:
+		response_data = averageAttributes(response_data)
 	return HttpResponse(json.dumps(response_data), content_type='application/json')	
 
 def getPaths(request, source_id, target_id, max_hop):
