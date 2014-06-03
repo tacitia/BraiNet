@@ -99,6 +99,7 @@ svg.anatomy = (function($, undefined) {
 		else {
             var oldSel = $("#anatomy-pane path[oldtitle='" + state.activeTitle + "']");
             emphStructure(oldSel, true);
+            state.allActiveStructs.splice(state.allActiveStructs.indexOf(state.activeTitle), 1);
             state.activeTitle = title;
             state.allActiveStructs.push(title);
             $(this).attr('isFixed', true);
