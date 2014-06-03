@@ -572,8 +572,10 @@ svg.circular = (function($, undefined) {
 					structId: regionPk,
                     depth: Math.min(region.fields.depth, 3)
 				},
-				function(data) { 
-					console.log(data);
+				function(data) {
+                    if (typeof data == 'string' || data instanceof String) {
+                        data = $.parseJSON(data);
+                    }
 					svg.model.addLinks(data);
                     svg.model.cacheSubConnections(data);
 					showRegionCallBack(region);
@@ -622,6 +624,9 @@ svg.circular = (function($, undefined) {
                         depth: Math.min(region.fields.depth, 3)
                     },
                     function(data) {
+                        if (typeof data == 'string' || data instanceof String) {
+                            data = $.parseJSON(data);
+                        }
                         state.localConnCache = state.localConnCache.concat(data);
                         state.localConnRetrievalCounter -= 1;
                         if (state.localConnRetrievalCounter === 0) {
