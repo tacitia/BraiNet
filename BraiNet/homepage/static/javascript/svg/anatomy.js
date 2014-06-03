@@ -97,17 +97,17 @@ svg.anatomy = (function($, undefined) {
 			util.action.add('deselect a region in the anatomy view', {region: title});
 		}			
 		else {
+            var oldSel = $("#anatomy-pane path[oldtitle='" + state.activeTitle + "']");
+            emphStructure(oldSel, true);
+            state.activeTitle = title;
+            state.allActiveStructs.push(title);
+            $(this).attr('isFixed', true);
 			svg.showRegion(node.pk, function() {
-                var oldSel = $("#anatomy-pane path[oldtitle='" + state.activeTitle + "']");
-                emphStructure(oldSel, true);
-                state.activeTitle = title;
-                state.allActiveStructs.push(title);
                 svg.clearAllHighlight();
                 svg.highlightInput('struct', null, true);
 //                svg.highlightInput('struct', node, false);
                 svg.highlightNode(node, false);
                 svg.circular.setMode('fixation');
-                $(this).attr('isFixed', true);
                 util.action.add('select a region in the anatomy view', {region: title});
             });
 		}
@@ -241,7 +241,8 @@ svg.anatomy = (function($, undefined) {
 			target.css('fill', state.originColor[title]);
 			target.css('fill-opacity', '1');
 			target.css('stroke-width', '0');
-			target.attr('isEmph', false);
+            target.attr('isEmph', false);
+            target.attr('isFixed', false);
 			state.emphStructs.splice( $.inArray(target, state.emphStructs), 1 );
 		}
 		else {
