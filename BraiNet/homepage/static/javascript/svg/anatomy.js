@@ -196,7 +196,9 @@ svg.anatomy = (function($, undefined) {
 	function highlightStructure(structName) {
 		var structSelector = $("#anatomy-pane path[oldtitle='" + structName + "']");
 		if (structSelector.length > 0) {
-			state.allActiveStructs.push(structName);
+			if ($.inArray(structName, state.allActiveStructs) < 0) {
+				state.allActiveStructs.push(structName);
+			}
 			structSelector.attr('isFixed', true);
 			emphStructure(structSelector, false);
 			structSelector.qtip('toggle', true);		
@@ -209,7 +211,9 @@ svg.anatomy = (function($, undefined) {
 			var desc = descs[i];
 			var descSelector = $("#anatomy-pane path[oldtitle='" + desc.fields.name + "']");
 			if (descSelector.length > 0) {
-				state.allActiveStructs.push(desc.fields.name);
+				if ($.inArray(desc.fields.name, state.allActiveStructs) < 0) {
+					state.allActiveStructs.push(desc.fields.name);
+				}
 				descSelector.attr('isFixed', true);
 				emphStructure(descSelector, false);
 				descSelector.qtip('toggle', true);
@@ -224,7 +228,9 @@ svg.anatomy = (function($, undefined) {
 				if (parentSelector.length > 0) {
 					console.log(parentSelector);
 					emphStructure(parentSelector, false);
-					state.allActiveStructs.push(parentNode.fields.name);
+					if ($.inArray(parentNode.fields.name, state.allActiveStructs) < 0) {
+						state.allActiveStructs.push(parentNode.fields.name);
+					}
 					parentSelector.attr('isFixed', true);
 					parentSelector.qtip('toggle', true);
 					break;
@@ -245,6 +251,8 @@ svg.anatomy = (function($, undefined) {
             target.attr('isEmph', false);
             target.attr('isFixed', false);
 			state.emphStructs.splice( $.inArray(target, state.emphStructs), 1 );
+			target.qtip('toggle', false);		
+
 		}
 		else {
 			state.originColor[title] = target.css('fill');
@@ -253,6 +261,7 @@ svg.anatomy = (function($, undefined) {
 			target.css('stroke-width', '24');
 			target.attr('isEmph', true);
 			state.emphStructs.push(target);
+			target.qtip('toggle', true);
 		}
 	}
 	
