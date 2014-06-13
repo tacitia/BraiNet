@@ -120,7 +120,7 @@ svg.circular = (function($, undefined) {
 	};
 
 	var clearCanvas = function() {
-        $('.node').qtip('destroy');
+        $('.circular.node').qtip('destroy');
 //        $('.node').remove();
 		svgObjs.canvas.selectAll('.node').remove();
         svgObjs.canvas.selectAll('.mark').remove();
@@ -216,8 +216,8 @@ svg.circular = (function($, undefined) {
 				if (typeof leaves == 'string' || leaves instanceof String) {
 					leaves = $.parseJSON(leaves);
 				}
-                svg.model.addLinks(leaves, 3);
-				ui.linkInfo.displayLinkInfo(link, leaves);
+                var registeredLeaves = svg.model.addLinks(leaves, 3);
+				ui.linkInfo.displayLinkInfo(link, registeredLeaves);
 			}
 		);
 		svg.linkAttr.render(link);
@@ -460,7 +460,7 @@ svg.circular = (function($, undefined) {
 			.enter().append('svg:path')
 			.style('fill', function(d) { return d.derived.color;} )
 			.attr('d', svgGens.arcs)
-			.attr('class', 'node')
+			.attr('class', 'circular node')
 			.attr('id', function(d) { return 'circ-node-' + d.pk; })
 			.attr('title', function(d) { return d.fields.name; })
 			.on('click', nodeClick)
@@ -472,7 +472,7 @@ svg.circular = (function($, undefined) {
 			.data(data.activeNodes, function(d) {return d.pk;})
 			.enter().append('circle')
 			.attr('id', function(d) { return 'circ-mark-' + d.pk; })
-			.attr('class', 'mark')
+			.attr('class', 'circular mark')
 			.attr('cx', function(d) { return d.circular.x; })
 			.attr('cy', function(d) { return d.circular.y; })
 			.attr('r', 1)
@@ -491,7 +491,7 @@ svg.circular = (function($, undefined) {
 								 {x: d.derived.target.circular.linkX, y:d.derived.target.circular.linkY}];
 					return svgGens.curves(coors);
 				})
-			.attr("class", "link")
+			.attr("class", "circular link")
 			.attr('stroke', '#ccc')
 			.attr('stroke-width', function(d) { 
                 var width = d.derived.isDerived
@@ -543,9 +543,6 @@ svg.circular = (function($, undefined) {
 	var createNodeTooltips = function() {
 		for (var i = 0; i < data.activeNodes.length; ++i) {
 			var node = data.activeNodes[i];
-            if ($('#circ-node-' + node.pk).data('qtip')) {
-                console.log('creating qtip for existing node ' + node.fields.name);
-            }
 			$('#circ-node-' + node.pk).qtip({
 				style: {
 					classes: 'qtip-light'
@@ -675,7 +672,7 @@ svg.circular = (function($, undefined) {
 		svgObjs.canvas.selectAll('.link').classed('inLink', false);
 		svgObjs.canvas.selectAll('.link').classed('outLink', false);
 		svgObjs.canvas.selectAll('.link').classed('biLink', false);
-		$('.node').qtip('hide');
+		$('.circular.node').qtip('hide');
 	};
 	
 	var displaySearchResult = function(source, target) {

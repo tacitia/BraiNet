@@ -34,6 +34,14 @@ ui.linkInfo = (function($, undefined) {
 				$(dom.notesDisplay).addClass('removed');
 				$(dom.notesInput).removeClass('removed');
 				$(dom.saveButton).removeClass('removed');
+				var currentNote = state.selectedLink.derived.note;
+				if (currentNote !== undefined) {
+					$(dom.notesInput).text(currentNote);
+				}
+				else {
+					// TODO: debug why this is not working
+					$(dom.notesInput).text('Add a note...');
+				}
 				break;				
 			case "display":
 				$(dom.notesDisplay).removeClass('removed');
@@ -107,6 +115,48 @@ ui.linkInfo = (function($, undefined) {
 		for (var key in attributes) {
 			attrKeys.push(key);
 		}
+		contentHtml += displayOriginRecordsHelper[window.settings.activeDataset](attrKeys);
+		content.html(contentHtml);
+	};
+	
+	var displayOriginRecordsHelper = {};
+	
+	displayOriginRecordsHelper[1] = function(attrKeys) {
+		var contentHtml = '';
+        if (state.selectedLink.derived.isDerived) {
+            contentHtml += '<tr><td></td><td>Summary of records for the sub-connections</td></tr>'
+            for (var i in attrKeys) {
+                contentHtml += '<tr><td>' + attrKeys[i] + '</td><td>';
+                var details = state.selectedLink.fields.attributes[attrKeys[i]];
+                for (var key in details) {
+                	contentHtml += key;
+                	contentHtml += ': ';
+                	contentHtml += details[key];
+                	contentHtml += '; ';
+                }
+                contentHtml += '</td></tr>';
+            }
+        }
+        else {
+            contentHtml += '<tr>';
+            for (var i in attrKeys) {
+                contentHtml += '<td>';
+                contentHtml += attrKeys[i];
+                contentHtml += '</td>';
+            }
+            contentHtml += '</tr><tr>';
+            for (var i in attrKeys) {
+                contentHtml += '<td>';
+                contentHtml += state.selectedLink.fields.attributes[attrKeys[i]];
+                contentHtml += '</td>';
+            }
+            contentHtml += '</tr>';
+        }
+        return contentHtml;
+	};
+	
+	displayOriginRecordsHelper[2] = function(attrKeys) {
+		var contentHtml = '';
         if (state.selectedLink.derived.isDerived) {
             contentHtml += '<tr><td></td><td>Mean</td><td>Median</td><td>Standard deviation</td></tr>'
             for (var i in attrKeys) {
@@ -134,7 +184,7 @@ ui.linkInfo = (function($, undefined) {
             }
             contentHtml += '</tr>';
         }
-		content.html(contentHtml);
+        return contentHtml;
 	};
 	
 	

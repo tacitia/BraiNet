@@ -10,6 +10,7 @@ svg.model = (function($, undefined) {
 	var data = {
 		nodes: null,
 		links: null,
+		notes: {},
 		searchNodes: null,
 		searchLinks: null,
         searchPaths: null
@@ -69,11 +70,11 @@ svg.model = (function($, undefined) {
 			d.structs[i].fields.attributes = $.parseJSON(d.structs[i].fields.attributes);
 		}
 		data.nodes = d.structs;
-		data.links = d.conns;
+		data.links = [];
 		buildNodesMaps();
 		buildNodeHierarchy();
 		assignGroups();
-		buildLinksMaps();
+		buildLinksMaps(d.conns);
 		addNotes(d.connNotes);
 		console.log('# of links before creating derived links: ' + data.links.length);
 //		buildLinkHierarchy();
@@ -104,10 +105,12 @@ svg.model = (function($, undefined) {
 	};
 
 	var registerLink = function(link, isDerived, priority) {
+		if (maps.keyToLink[link.pk] !== undefined) { return maps.keyToLink[link.pk]; }
+
 		var targetKey = link.fields.target_id;
 		var sourceKey = link.fields.source_id;
 		var keyPair = sourceKey + "_" + targetKey;
-
+		
 		link.derived = {};
 		var source = link.derived.source = maps.keyToNode[sourceKey];
 		var target = link.derived.target = maps.keyToNode[targetKey];
@@ -131,10 +134,15 @@ svg.model = (function($, undefined) {
 
         (typeof link.fields.attributes == 'string') && (link.fields.attributes = $.parseJSON(link.fields.attributes));
 
+		data.links.push(link);
 		maps.keyToLink[link.pk] = link;
 		maps.nodeToLink[keyPair] = link;
 		maps.keyToInNeighbors[targetKey].push(sourceKey);
 		maps.keyToOutNeighbors[sourceKey].push(targetKey);
+		if (data.notes[link.pk] !== undefined) {
+			link.derived.note = data.notes[link.pk].fields.content;
+		}	
+		return link;
 	}
 
 	var buildNodesMaps = function() {
@@ -177,7 +185,7 @@ svg.model = (function($, undefined) {
 	};
 
 
-	var buildLinksMaps = function() {
+	var buildLinksMaps = function(links) {
 		maps.keyToLink = {};
 		maps.nodeToLink = {};
 		maps.LinkToPaper = {};
@@ -186,33 +194,35 @@ svg.model = (function($, undefined) {
 		var outNeighborMap = maps.keyToOutNeighbors;
 
 		// Further process links
-		var numLinks = data.links.length;
+		var numLinks = links.length;
 		for (var i = 0; i < numLinks; ++i) {
-			var link = data.links[i];
+			var link = links[i];
 			var isDerived = link.fields.is_derived == 0 ? false : true;
 			registerLink(link, isDerived);
 		}
 	};
 
+	/*
+	 * Register each of the given link and return an array of registered links
+	 */
 	var addLinks = function(links, priority) {
+		var registeredLinks = [];
 		for (var i in links) {
 			var l = links[i];
-            if ($.inArray(l, data.links) < 0) {
-                data.links.push(l);
-                var isDerived = l.fields.is_derived == 0 ? false : true;
-                registerLink(l, isDerived, priority);
+            var isDerived = l.fields.is_derived == 0 ? false : true;
+            var newL = registerLink(l, isDerived, priority);
+            if (newL !== undefined) {
+            	registeredLinks.push(newL);
             }
 		}
+		return registeredLinks;
 	};
 
 
 	var addNotes = function(notes) {
 		for (var i in notes) {
 			var n = notes[i];
-			var l = maps.keyToLink[n.fields.link];
-			// This will happen if the max depth allowed differs between the session in which the note was added and the current session
-			if (l === undefined) { continue; }
-			l.derived.note = n.fields.content;
+			data.notes[n.fields.link] = n;
 		}
 	};
 
@@ -323,7 +333,6 @@ svg.model = (function($, undefined) {
 			parentLink.fields.source_id = srcId;
 			parentLink.fields.target_id = tgtId;
 //			processMetaLink(srcParentLink, dataset.link_map, dataset.attr_map);
-			data.links.push(parentLink);
 			registerLink(parentLink, true);
 		}
 		if ($.inArray(link.pk, parentLink.derived.children) < 0) {
@@ -399,6 +408,8 @@ svg.model = (function($, undefined) {
 	};
 
     var saveSearchElements = function(serverData, source, target) {
+    	if (data.searchNodes !== null) { data.searchNodes.length = 0; }
+        if (data.searchLinks !== null) { data.searchLinks.length = 0; }
         data.searchNodes = [];
         data.searchLinks = [];
         for (var i in serverData.stops) {
@@ -406,13 +417,21 @@ svg.model = (function($, undefined) {
             var node = maps.keyToNode[nodeId];
             data.searchNodes.push(node);
         }
-        data.searchLinks = serverData.links;
+
         data.searchPaths = serverData.paths;
         data.searchNodes.push(source);
         data.searchNodes.push(target);
-        console.log(data.searchNodes);
-        console.log(data.searchLinks);
+//        console.log(data.searchNodes);
+//        console.log(data.searchLinks);
         addLinks(serverData.links, 3);
+        for (var i in serverData.links) {
+        	var linkPk = serverData.links[i].pk;
+        	var l = maps.keyToLink[linkPk];
+        	// Need to check this since the model can skip registering a link - for example if 
+        	// the link connects a node with its ancestor / descendent
+        	if (l === undefined) { continue; }
+        	data.searchLinks.push(l);
+        }
     };
 
 
@@ -464,9 +483,16 @@ svg.model = (function($, undefined) {
     };
 
     var addSearchLinks = function(links) {
-        data.searchLinks = data.searchLinks.concat(links);
-        for (var i in links) {
-            var l = links[i];
+    	var newLinks = [];
+    	for (var i in links) {
+    		var l = links[i];
+    		l = registerLink(l);
+    		if (l === undefined) { continue; }
+    		data.searchLinks.push(l);
+    		newLinks.push(l);
+    	}
+        for (var i in newLinks) {
+            var l = newLinks[i];
             var source = l.derived.source;
             var target = l.derived.target;
             if ($.inArray(source, data.searchNodes) < 0) {

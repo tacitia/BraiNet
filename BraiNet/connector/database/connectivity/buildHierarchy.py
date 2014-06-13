@@ -14,7 +14,7 @@ super_user = Account.objects.get(access_code='abcdefgh')
 
 min_depth = 1
 max_depth = 11
-for dataset in [1]:
+for dataset in [1,2]:
 	dataset_instance = Dataset.objects.get(id=dataset)
 	
 	for m in range(min_depth, max_depth+1):

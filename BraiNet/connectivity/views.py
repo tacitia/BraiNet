@@ -64,15 +64,13 @@ def getLocalConnections(request, struct_id, depth):
 	return HttpResponse(json.dumps(response_data), content_type='application/json')	
 
 def getPaths(request, source_id, target_id, max_hop):
-	print source_id
-	print target_id
 	max_depth = 3
 	s1 = Structure.objects.get(id=source_id)
 	s2 = Structure.objects.get(id=target_id)
 	source_neighbors = Connection.objects.filter(Q(source_id=s1) & ~Q(target_id=s1) & (Q(target_depth=max_depth) | (Q(target_depth__lt=max_depth) & Q(is_derived=0)))).iterator()
 	target_neighbors = Connection.objects.filter(Q(target_id=s2) & ~Q(source_id=s2) & (Q(source_depth=max_depth) | (Q(source_depth__lt=max_depth) & Q(is_derived=0)))).iterator()
-	sn_ids = [c.target_id.id for c in source_neighbors]
-	tn_ids = [c.source_id.id for c in target_neighbors]
+	sn_ids = [c.target_id.id for c in source_neighbors if c.target_id.struct_id not in s1.struct_id_path and s1.struct_id not in c.target_id.struct_id_path]
+	tn_ids = [c.source_id.id for c in target_neighbors if c.source_id.struct_id not in s2.struct_id_path and s2.struct_id not in c.source_id.struct_id_path]
 	stops = []
 	links = []
 	paths = []
@@ -111,6 +109,40 @@ def getPaths(request, source_id, target_id, max_hop):
 					paths.append([n1, n2])
 				except ObjectDoesNotExist:
 					continue
+	if m >= 3:
+		for n1 in sn_ids:
+			for n2 in tn_ids:
+				print n1
+				print n2
+				if n1 == n2:
+					continue
+				n1_object = Structure.objects.get(id=n1)
+				n2_object = Structure.objects.get(id=n2)
+				n1_neighbors = Connection.objects.filter(Q(source_id=n1) & ~Q(target_id=n1) & (Q(target_depth=max_depth) | (Q(target_depth__lt=max_depth) & Q(is_derived=0)))).iterator()
+				n2_neighbors = Connection.objects.filter(Q(target_id=n2) & ~Q(source_id=n2) & (Q(source_depth=max_depth) | (Q(source_depth__lt=max_depth) & Q(is_derived=0)))).iterator()
+				n1n_ids = [c.target_id.id for c in n1_neighbors if c.target_id.struct_id not in n1_object.struct_id_path and n1_object.struct_id not in c.target_id.struct_id_path]
+				n2n_ids = [c.source_id.id for c in n2_neighbors if c.source_id.struct_id not in n2_object.struct_id_path and n2_object.struct_id not in c.source_id.struct_id_path]	
+				mid_stops = [val for val in n1n_ids if val in n2n_ids]
+				if len(mid_stops) > 0:
+					l1 = Connection.objects.filter(Q(source_id=s1) & Q(target_id=n1))
+					l2 = Connection.objects.filter(Q(source_id=n2) & Q(target_id=s2))
+					for l in l1:
+						addConnModelToList(l, links)
+					for l in l2:
+						addConnModelToList(l, links)
+					stops.extend([n1, n2])
+				else:
+					continue
+				for val in mid_stops:
+					l3 = Connection.objects.filter(Q(source_id=n1) & Q(target_id=val))
+					l4 = Connection.objects.filter(Q(source_id=val) & Q(target_id=n2))
+					for l in l3:
+						addConnModelToList(l, links)
+					for l in l4:
+						addConnModelToList(l, links)	
+					stops.append(val)
+					paths.append([n1, val, n2])
+								
 	stops = list(set(stops))
 	response_data = {}
 	response_data['stops'] = stops

@@ -66,6 +66,10 @@ ui.attrSelector = (function($, undefined) {
 	
 	var buildAttrMapHelper = {};
 	buildAttrMapHelper[1] = function(links, attrs) {
+		for (var key in attrs) {
+			data.attrList.push(key);
+			data.attrSummary[key] = {type: 'nominal'};
+		}
 	};
 	buildAttrMapHelper[2] = function(links, attrs) {
 		for (var key in attrs) {

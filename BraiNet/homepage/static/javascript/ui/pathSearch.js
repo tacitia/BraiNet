@@ -88,6 +88,11 @@ ui.pathSearch = (function($, undefined) {
 //		var paths = svg.model.calculatePaths(state.source, state.target, setting.maxHop);
         ui.loadingModal.message('Computing indirect paths...');
         ui.loadingModal.show();
+        if (state.source === null || state.target === null) {
+        	ui.alertModal.message('Please specify a source and a target region.');
+        	ui.alertModal.show();
+        	return;
+        }
         amplify.request('getPaths',
             {
                 sourceId: state.source.pk,

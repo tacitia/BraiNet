@@ -11,6 +11,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.core.mail import send_mail
 import subprocess
+from django.core.exceptions import ObjectDoesNotExist
 
 def getConnectionNotes(request, user_id, dataset_id):
 	data = ConnNote.objects.filter(Q(dataset_id=dataset_id) & Q(user_id=user_id))
@@ -23,13 +24,18 @@ def addConnectionNote(request):
 	user_id = request.POST['userId']
 	dataset_id = request.POST['datasetId']
 	content = request.POST['content']
-	note = ConnNote(
-		user_id=Account.objects.get(access_code=user_id),
-		dataset_id=Dataset.objects.get(id=dataset_id),
-		link=Connection.objects.get(id=link_id),
-		content=content
-	)
-	note.save()
+	try:
+		note = ConnNote.objects.get(link=link_id)
+		note.content = content
+		note.save()
+	except ObjectDoesNotExist:	
+		note = ConnNote(
+			user_id=Account.objects.get(access_code=user_id),
+			dataset_id=Dataset.objects.get(id=dataset_id),
+			link=Connection.objects.get(id=link_id),
+			content=content
+		)
+		note.save()
 	return HttpResponse()
 	
 def register(request):
