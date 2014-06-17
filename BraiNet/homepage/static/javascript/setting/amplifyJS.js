@@ -25,7 +25,7 @@ amplify.request.define('getLeaves', 'ajax', {
 })
 
 amplify.request.define('getLocalConnections', 'ajax', {
-	url: '/connectivity/connections/local/{structId}/{depth}',
+	url: '/connectivity/connections/local/{structId}/{depth}/',
 	type: 'GET'
 })
 
