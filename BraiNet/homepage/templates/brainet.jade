@@ -12,7 +12,7 @@ html(lang="en")
       div.navbar
         div.navbar-inner.navbar-top.main-nav
           div.navbar-content
-            a.brand(href="#") braiNet
+            a.brand(href="/") braiNet
             ul.nav
               li
                 a(href="https://github.com/tacitia/BraiNet/wiki/Quick-Start",target="_blank") How to
@@ -118,6 +118,8 @@ html(lang="en")
               p#src-name Source: no connection selected.
               p#tgt-name Target: no connection selected.
               p#no-note-msg Notes: no connection selected.
+              div#reverse-st-div
+                button.btn.btn-info#reverse-st(disabled="disabled") Reverse source and target
               div#conn-notes.removed
                 div.multi-col(style="margin-right:10px;")
                   p Notes

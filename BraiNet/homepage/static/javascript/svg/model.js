@@ -114,7 +114,14 @@ svg.model = (function($, undefined) {
 		link.derived = {};
 		var source = link.derived.source = maps.keyToNode[sourceKey];
 		var target = link.derived.target = maps.keyToNode[targetKey];
-
+		
+		if (source.fields.parent_id === "2-1097") {
+			console.log('here');
+		}
+		if (target.fields.parent_id === "2-1097") {
+			console.log('here');
+		}
+		
         // Don't register the link if it connects a node with its descendant
         // TODO: test and remove this when proper server side validation is implemented
         if ($.inArray(target.pk, source.derived.ancestors) > 0 || $.inArray(source.pk, target.derived.ancestors) > 0) {

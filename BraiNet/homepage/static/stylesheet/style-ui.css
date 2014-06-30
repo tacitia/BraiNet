@@ -153,8 +153,8 @@ html,body { height:100%; }
 }
 
 #conn-details {
-	height: 200px;
-	overflow-y: scroll;
+	height: 350px;
+	overflow: hidden;
 }
 
 .sub-sub-section {
@@ -409,6 +409,11 @@ html,body { height:100%; }
 
 .modal-body {
 	text-align: center;
+}
+
+.contact {
+	margin: 10px;
+	margin-top: 30px;
 }
 
 /* @end */

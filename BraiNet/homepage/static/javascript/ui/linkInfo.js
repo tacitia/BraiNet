@@ -15,6 +15,8 @@ ui.linkInfo = (function($, undefined) {
 		editButton: '#conn-notes #conn-note-edit',
 		saveButton: '#conn-notes #conn-note-save',
 		noNoteMsg: '#conn-info #no-note-msg',
+		reverseDiv: '#reverse-st-div',
+		reverseButton: '#reverse-st'
 	};
 	
 	var state = {
@@ -26,6 +28,7 @@ ui.linkInfo = (function($, undefined) {
 		state.mode = 'display';
 		$(dom.editButton).click(editNotes);
 		$(dom.saveButton).click(saveNotes);
+		$(dom.reverseButton).click(reverseLink);
 	};
 
 	function switchMode(mode) {
@@ -71,7 +74,43 @@ ui.linkInfo = (function($, undefined) {
 		});
 	};
 	
+	var reverseLink = function() {
+		var reversedLinkId = state.selectedLink.fields.target_id + '_' + state.selectedLink.fields.source_id;
+		var reversedLink = svg.model.maps().nodeToLink[reversedLinkId];
+		if (reversedLink === undefined) { return; }
+		amplify.request('getLeaves',
+			{
+				connId: reversedLink.pk
+			},
+			function(leaves) {
+				// Not sure why the server sometimes returns json objects and sometimes string
+				if (typeof leaves == 'string' || leaves instanceof String) {
+					leaves = $.parseJSON(leaves);
+				}
+                var registeredLeaves = svg.model.addLinks(leaves, 3);
+				ui.linkInfo.displayLinkInfo(reversedLink, registeredLeaves);
+			}
+		);
+/*		var leaves = [];
+		var leaveIDs = reversedLink.derived.leaves;
+		var keyToLink = svg.model.maps().keyToLink;
+		for (var i = 0; i < leaveIDs.length; ++i) {
+			var l = keyToLink[leaveIDs[i]];
+			if (l === undefined) { continue; }
+			leaves.push(l);
+		}
+		displayLinkInfo(reversedLink, leaves); */
+	};
+	
 	var displayLinkInfo = function(link, leaves) {
+		var reversedLinkId = link.fields.target_id + '_' + link.fields.source_id;
+		var reversedLink = svg.model.maps().nodeToLink[reversedLinkId];
+		if (reversedLink === undefined) {
+			$(dom.reverseButton).attr('disabled', 'disabled');
+		}
+		else {
+			$(dom.reverseButton).removeAttr('disabled');
+		}
 		state.selectedLink = link;
 		displayMetadata(link);
 		displayNotes();

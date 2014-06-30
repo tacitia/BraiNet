@@ -493,11 +493,17 @@ svg.circular = (function($, undefined) {
 				})
 			.attr("class", "circular link")
 			.attr('stroke', '#ccc')
-			.attr('stroke-width', function(d) { 
-                var width = d.derived.isDerived
-                        ? Math.min(10, 1 + Math.ceil(d.derived.leaves.length / 20)) + 'px'
-                        : 1 + 'px';
-                return width;
+			.attr('stroke-width', function(d) {
+				var reversedLinkId = d.fields.target_id + '_' + d.fields.source_id;
+				var reversedLink = svg.model.maps().nodeToLink[reversedLinkId];
+                var width1 = d.derived.isDerived
+                        ? Math.min(10, 1 + Math.ceil(d.derived.leaves.length / 20))
+                        : 1;
+                var width2 = (reversedLink === undefined) ? 0 : 
+                		(reversedLink.derived.isDerived
+                        ? Math.min(10, 1 + Math.ceil(d.derived.leaves.length / 20))
+                        : 1);
+                return (width1 + width2) + 'px';
 			})
 			.attr("id", function(d) { return "circ-link-" + d.pk; })
 			.on("mouseover", linkMouseOver)
@@ -574,7 +580,7 @@ svg.circular = (function($, undefined) {
                         data = $.parseJSON(data);
                     }
 					svg.model.addLinks(data);
-                    svg.model.cacheSubConnections(data);
+//                    svg.model.cacheSubConnections(data);
 					showRegionCallBack(region);
                     if (callback1 !== undefined) { callback1(); }
 				}
@@ -628,7 +634,7 @@ svg.circular = (function($, undefined) {
                         state.localConnRetrievalCounter -= 1;
                         if (state.localConnRetrievalCounter === 0) {
                             svg.model.addLinks(state.localConnCache);
-                            svg.model.cacheSubConnections(state.localConnCache);
+//                            svg.model.cacheSubConnections(state.localConnCache);
                             showRegionMultiCallBack(regions);
                             if (callback1 !== undefined) { callback1(); }
                         }
@@ -992,6 +998,32 @@ svg.circular = (function($, undefined) {
                 }
             }
 		}
+		// 2.5 Remove parent-child redundancy
+		var toBeRemoved = [];
+		for (var i in newActiveNodes) {
+			for (var j in newActiveNodes) {
+				if (i === j) { continue; }
+				var n1 = newActiveNodes[i];
+				var n2 = newActiveNodes[j];
+				var struct_path_1 = $.parseJSON(n1.fields.struct_id_path);
+				var struct_path_2 = $.parseJSON(n2.fields.struct_id_path);
+				if ($.inArray(n1.fields.struct_id, struct_path_2) > -1) {
+					// n1 is a parent of n2; push n1 into the to-be-remove array
+					toBeRemoved.push(n1);
+				}
+				if ($.inArray(n2.fields.struct_id, struct_path_1) > -1) {
+					// n2 is a parent of n1; push n2 into the to-be-remove array 
+					toBeRemoved.push(n2);
+				}
+			}
+		} 
+		var length = newActiveNodes.length;
+		while (length--) {
+			var n = newActiveNodes[length];
+			if ($.inArray(n, toBeRemoved) > -1) {
+				newActiveNodes.splice(length, 1);
+			}
+		}
 		// 3. Clean up the new active nodes array
 		var sortByName = function(a, b) {
 			var an = a.fields.name.toLowerCase();
@@ -1047,6 +1079,7 @@ svg.circular = (function($, undefined) {
 		// 8. Finalize
 		data.activeNodes = newActiveNodes;
 		data.activeLinks = newActiveLinks;
+		svg.model.cacheSubConnections(newActiveLinks);
 		computeNodesParameters();	
 		updateLayout(data.activeNodes.length, 2 * Math.PI / data.activeNodes.length);
 	};
