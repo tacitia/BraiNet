@@ -141,8 +141,26 @@ svg.force = (function($, undefined) {
 	};
 
 	var linkClick = function(link) {
+		amplify.request('getLeaves',
+			{
+				connId: link.pk
+			},
+			function(leaves) {
+				// Not sure why the server sometimes returns json objects and sometimes string
+				if (typeof leaves == 'string' || leaves instanceof String) {
+					leaves = $.parseJSON(leaves);
+				}
+				if (leaves.error === 'NoLeaves') {
+					ui.linkInfo.displayLinkInfo(link, null);
+				}
+				else {
+					var registeredLeaves = svg.model.addLinks(leaves, 3);
+					ui.linkInfo.displayLinkInfo(link, registeredLeaves);
+				}
+			}
+		);
 		svg.linkAttr.render(link);
-		ui.linkInfo.displayLinkInfo(link);	
+		util.action.add('click link in force view', {source: link.derived.source.fields.name, target: link.derived.target.fields.name});
 	};
 
 	var linkMouseOver = function(link) {
