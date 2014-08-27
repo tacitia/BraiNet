@@ -501,7 +501,7 @@ svg.circular = (function($, undefined) {
                         : 1;
                 var width2 = (reversedLink === undefined) ? 0 : 
                 		(reversedLink.derived.isDerived
-                        ? Math.min(10, 1 + Math.ceil(d.derived.leaves.length / 20))
+                        ? Math.min(10, 1 + Math.ceil(reversedLink.derived.leaves.length / 20))
                         : 1);
                 return (width1 + width2) + 'px';
 			})
