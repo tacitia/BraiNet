@@ -216,8 +216,13 @@ svg.circular = (function($, undefined) {
 				if (typeof leaves == 'string' || leaves instanceof String) {
 					leaves = $.parseJSON(leaves);
 				}
-                var registeredLeaves = svg.model.addLinks(leaves, 3);
-				ui.linkInfo.displayLinkInfo(link, registeredLeaves);
+				if (leaves.error === 'NoLeaves') {
+					ui.linkInfo.displayLinkInfo(link, null);
+				}
+				else {
+					var registeredLeaves = svg.model.addLinks(leaves, 3);
+					ui.linkInfo.displayLinkInfo(link, registeredLeaves);
+				}
 			}
 		);
 		svg.linkAttr.render(link);
@@ -295,6 +300,10 @@ svg.circular = (function($, undefined) {
 				children.push(c);
 			}
 		}
+		if (length !== 0 && settings.hideIsolated && children.length === 0) {
+			ui.alertModal.message('Structures within ' + n.fields.name + ' are not connected with any other structure. If you want to show isolated structures, please uncheck the "Hide isolated structures" option in settings and try again.');
+			ui.alertModal.show();
+		}
 		clearAllHighlight();
 		expandRegion(n, children);	
 		state.mode = 'exploration';
@@ -305,6 +314,7 @@ svg.circular = (function($, undefined) {
 		e.preventDefault();
 		ui.configModal.clear();
 		ui.configModal.addOption('arcArea', 'Region area proportional to region complexity', 'check', arcPropOptionUpdate, settings.weightArcAreaByNumSubRegions);
+		ui.configModal.addOption('isolated', 'Hide isolated structures', 'check', showIsolatedStructOptionUpdate, settings.hideIsolated);
 		ui.configModal.show();
 		util.action.add('open config window in circular view', {});
 	};
@@ -314,6 +324,10 @@ svg.circular = (function($, undefined) {
 		var newNum = data.activeNodes.length;
 		var newDelta = 2 * Math.PI / newNum;
 		updateLayout(newNum, newDelta);
+	};
+	
+	var showIsolatedStructOptionUpdate = function(value) {
+		settings.hideIsolated = value;
 	};
 	
 	 /* End of SVG Objects Interaction */
@@ -498,11 +512,11 @@ svg.circular = (function($, undefined) {
 				var reversedLink = svg.model.maps().nodeToLink[reversedLinkId];
                 var width1 = d.derived.isDerived
                         ? Math.min(10, 1 + Math.ceil(d.derived.leaves.length / 20))
-                        : 1;
+                        : 2;
                 var width2 = (reversedLink === undefined) ? 0 : 
                 		(reversedLink.derived.isDerived
                         ? Math.min(10, 1 + Math.ceil(reversedLink.derived.leaves.length / 20))
-                        : 1);
+                        : 2);
                 return (width1 + width2) + 'px';
 			})
 			.attr("id", function(d) { return "circ-link-" + d.pk; })
