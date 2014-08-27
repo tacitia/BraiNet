@@ -260,23 +260,28 @@ svg.force = (function($, undefined) {
 
         link.enter().append("svg:line")
             .attr("class", "force link")
-            .style("stroke-width", 1)
             .attr('stroke', '#ccc')
-            .attr('stroke-width', function(d) {
-                return Math.min(10, 1 + Math.ceil(d.derived.leaves.length / 50)) + 'px';
+            .style('stroke-width', function(d) {
+                return d.derived.isDerived
+                        ? Math.min(10, 2 + Math.ceil(d.derived.leaves.length / 20))
+                        : 2;
             })
             .on('click', linkClick)
             .on('mouseover', linkMouseOver)
             .on('mouseout', linkMouseOut);
 
         node.enter().append("svg:circle")
-            .attr("class", "force node")
+            .attr("class", function(d) {
+            	if (d === state.source) return 'force node selected-source';
+            	if (d === state.target) return 'force node selected-target';
+            	return 'force node';
+            })
             .attr('id', function(d) { return 'force-node-' + d.pk; })
             .attr("cx", function(d) { return d.x; })
             .attr("cy", function(d) { return d.y; })
             .attr("r", function(d) { return (d === state.source || d === state.target) ? 20 : 10; })
 			.attr('title', function(d) { return d.fields.name; })
-            .style("fill", function(d) {return d.derived.color;})
+            .style('fill', function(d) {return d.derived.color;})
             .on('click', nodeClick)
             .on('mouseover', nodeMouseOver)
             .on('mouseout', nodeMouseOut)
@@ -379,12 +384,11 @@ svg.force = (function($, undefined) {
 			   .data(data.activeLinks, function(d) { return d.pk; })
 		   .enter().append("svg:line")
 		   .attr("class", "force link")
-		   .style("stroke-width", 1)
 		   .attr('stroke', '#ccc')
-		   .attr('stroke-width', function(d) { 
+		   .style('stroke-width', function(d) { 
                 var width = d.derived.isDerived
-                        ? Math.min(10, 1 + Math.ceil(d.derived.leaves.length / 20)) + 'px'
-                        : 1 + 'px';
+                        ? Math.min(10, 2 + Math.ceil(d.derived.leaves.length / 20)) + 'px'
+                        : 2 + 'px';
 				return width; 
 		   })
 		   .on('click', linkClick)
@@ -395,7 +399,11 @@ svg.force = (function($, undefined) {
 		var node = svgObjs.canvas.selectAll(".force.node")
 		   .data(data.activeNodes, function(d) { return d.pk; })
 		   .enter().append("svg:circle")
-		   .attr("class", "force node")
+            .attr("class", function(d) {
+            	if (d === state.source) return 'force node selected-source';
+            	if (d === state.target) return 'force node selected-target';
+            	return 'force node';
+            })
 		   .attr('id', function(d) { return 'force-node-' + d.pk; })
 		   .attr("cx", function(d) { return d.x; })
 		   .attr("cy", function(d) { return d.y; })

@@ -31,8 +31,8 @@ svg.circular = (function($, undefined) {
 		selectedNode: null,
 		ignoredNodes: [],
 		datasetId: null,
-		searchSource: null,
-		searchTarget: null,
+		selectedSource: null,
+		selectedTarget: null,
 		selectedAttr: null,
 		attrColorMap: null,
         localConnRetrievalCounter: 0,
@@ -511,11 +511,11 @@ svg.circular = (function($, undefined) {
 				var reversedLinkId = d.fields.target_id + '_' + d.fields.source_id;
 				var reversedLink = svg.model.maps().nodeToLink[reversedLinkId];
                 var width1 = d.derived.isDerived
-                        ? Math.min(10, 1 + Math.ceil(d.derived.leaves.length / 20))
+                        ? Math.min(10, 2 + Math.ceil(d.derived.leaves.length / 20))
                         : 2;
                 var width2 = (reversedLink === undefined) ? 0 : 
                 		(reversedLink.derived.isDerived
-                        ? Math.min(10, 1 + Math.ceil(reversedLink.derived.leaves.length / 20))
+                        ? Math.min(10, 2 + Math.ceil(reversedLink.derived.leaves.length / 20))
                         : 2);
                 return (width1 + width2) + 'px';
 			})
@@ -986,6 +986,7 @@ svg.circular = (function($, undefined) {
 	 */
 	var displayNodes = function(nodes) {
 		var maps = svg.model.maps();
+		var contains = util.generic.arrayContains;
 		// 1. Put the incoming nodes and their neighbors into an array, which will be the new 
 		// data.activeNodes
 		// 2. Put the links associated with the incoming nodes into an array, which will be the
@@ -1021,13 +1022,22 @@ svg.circular = (function($, undefined) {
 				var n2 = newActiveNodes[j];
 				var struct_path_1 = $.parseJSON(n1.fields.struct_id_path);
 				var struct_path_2 = $.parseJSON(n2.fields.struct_id_path);
-				if ($.inArray(n1.fields.struct_id, struct_path_2) > -1) {
-					// n1 is a parent of n2; push n1 into the to-be-remove array
-					toBeRemoved.push(n1);
+				if (contains(struct_path_2, n1.fields.struct_id)) {
+					// n1 is a parent of n2; push n1 into the to-be-remove array unless its selected node / source / target
+					if (isNodeSelected(n1)) {
+						if (contains(toBeRemoved, n2)) toBeRemoved.push(n2);
+					}
+					else {
+						if (contains(toBeRemoved, n1)) toBeRemoved.push(n1);
+					}
 				}
-				if ($.inArray(n2.fields.struct_id, struct_path_1) > -1) {
-					// n2 is a parent of n1; push n2 into the to-be-remove array 
-					toBeRemoved.push(n2);
+				if (contains(struct_path_1, n2.fields.struct_id)) {
+					if (isNodeSelected(n2)) {
+						if (contains(toBeRemoved, n1)) toBeRemoved.push(n1);
+					}
+					else {
+						if (contains(toBeRemoved, n2)) toBeRemoved.push(n2);
+					}
 				}
 			}
 		} 
@@ -1096,6 +1106,14 @@ svg.circular = (function($, undefined) {
 		svg.model.cacheSubConnections(newActiveLinks);
 		computeNodesParameters();	
 		updateLayout(data.activeNodes.length, 2 * Math.PI / data.activeNodes.length);
+	};
+	
+	var isNodeSelected = function(node) {
+		var result = false;
+		if (state.selectedNode && node.pk === state.selectedNode.pk) { result = true; }
+		if (state.selectedSource && node.pk === state.selectedSource.pk) { result = true; }
+		if (state.selectedTarget && node.pk === state.selectedTarget.pk) { result = true; }
+		return result;
 	};
 	
 /*

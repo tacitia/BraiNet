@@ -21,9 +21,14 @@ util.generic = (function($, undefined) {
 		return arr;
 	};
 	
+	var arrayContains = function(array, elem) {
+		return $.inArray(elem, array) > -1;
+	};
+	
 	return {
 		copySimpleArray: copySimpleArray,
-		createSortedUniqueArray: createSortedUniqueArray
+		createSortedUniqueArray: createSortedUniqueArray,
+		arrayContains: arrayContains
 	};
 
 }(jQuery));
