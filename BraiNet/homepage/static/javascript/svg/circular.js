@@ -578,6 +578,8 @@ svg.circular = (function($, undefined) {
 	
 	// Display a node and set it as in focus
 	var showRegion = function(regionPk, callback1) {
+		ui.loadingModal.message('Retrieving connections for selected region...');
+		ui.loadingModal.show();
 		var maps = svg.model.maps();
 		var region = maps.keyToNode[regionPk];
 		var inNeighbors = maps.keyToInNeighbors[regionPk];
@@ -593,7 +595,9 @@ svg.circular = (function($, undefined) {
                     if (typeof data == 'string' || data instanceof String) {
                         data = $.parseJSON(data);
                     }
-					svg.model.addLinks(data);
+                    if (data.error !== 'NoConnections') {
+						svg.model.addLinks(data);
+                    }
 //                    svg.model.cacheSubConnections(data);
 					showRegionCallBack(region);
                     if (callback1 !== undefined) { callback1(); }
@@ -615,10 +619,12 @@ svg.circular = (function($, undefined) {
 			});
 		
 		$('#circ-node-' + region.pk).qtip('show');
-
+		ui.loadingModal.hide();
 	};
 		
 	var showRegionMulti = function(regionPks, callback1) {
+		ui.loadingModal.message('Retrieving connections for selected region...');
+		ui.loadingModal.show();
 		var maps = svg.model.maps();
 		var regions = [];
         var regionWoLocalConns = [];
@@ -644,7 +650,9 @@ svg.circular = (function($, undefined) {
                         if (typeof data == 'string' || data instanceof String) {
                             data = $.parseJSON(data);
                         }
-                        state.localConnCache = state.localConnCache.concat(data);
+                        if (data.error !== 'NoConnections') {
+	                        state.localConnCache = state.localConnCache.concat(data);
+	                    }
                         state.localConnRetrievalCounter -= 1;
                         if (state.localConnRetrievalCounter === 0) {
                             svg.model.addLinks(state.localConnCache);
@@ -661,7 +669,6 @@ svg.circular = (function($, undefined) {
             showRegionMultiCallBack(regions);
             if (callback1 !== undefined) { callback1(); }
         }
-
 	};
 
     var showRegionMultiCallBack = function(regions) {
@@ -674,6 +681,7 @@ svg.circular = (function($, undefined) {
         for (i in regions) {
             $('#circ-node-' + regions[i].pk).qtip('show');
         }
+		ui.loadingModal.hide();
     };
 	
 	var resetRegion = function(regionPk) {

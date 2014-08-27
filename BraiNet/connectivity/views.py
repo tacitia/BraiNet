@@ -58,6 +58,8 @@ def getLeaves(request, conn_id):
 def getLocalConnections(request, struct_id, depth):
 	connections = Connection.objects.filter((Q(source_id=struct_id) & Q(target_id__depth=depth)) | (Q(target_id=struct_id) & Q(source_id__depth=depth)))
 	print connections.count()
+	if connections.count() == 0:
+		return HttpResponse(json.dumps('{"error": "NoConnections"}'), content_type='application/json')	
 	response_data = serializers.serialize('json', connections)
 	if connections[0].dataset_id == 2:
 		response_data = averageAttributes(response_data)
