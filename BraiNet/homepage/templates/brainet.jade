@@ -61,13 +61,18 @@ html(lang="en")
                   button.btn.btn-danger#clear-button
                     i.icon-remove
           div.span4
-            div.control-pane#legend.well.sub-sub-section
-              div#legend-feature
-                h5 Color edges by connection attributes
-                div
-                  span Attribute
-                  select.chzn-select.inline#attr-list(data-placeholder="Select an attribute")
-                svg#attr-legend
+            h5 Anatomy View
+            div.card#anatomy-pane
+              div.canvas
+                div#svg
+                div#img
+              div.svg-controller
+                div.btn-toolbar
+                  div.btn-group
+                    button.btn#left-arrow
+                      i.icon-arrow-left
+                    button.btn#right-arrow
+                      i.icon-arrow-right
           div.span1#resetDiv
             button.btn.btn-danger#reset Reset
       div.divider
@@ -104,16 +109,8 @@ html(lang="en")
                     i.icon-map-marker
               svg.canvas
         div.row-fluid
-          div.span12
-            div.control-pane#legend.well.sub-sub-section
-              div.multi-col(style="padding-right:30px")
-                h5 Legend
-              div#legend-primary.multi-col
-                svg#legend-canvas
-              div.clear
-        div.row-fluid
           div.span3
-            div#conn-info
+            div#conn-info.well.sub-sub-section
               h5 Connection Information
               p#src-name Source: no connection selected.
               p#tgt-name Target: no connection selected.
@@ -130,20 +127,21 @@ html(lang="en")
                 div.multi-col
                   i#conn-note-edit.icon-edit
                 div.clear
+          div.span3
+            div#legend.well.sub-sub-section
+              div.multi-col(style="padding-right:30px")
+                h5 Legend
+              div#legend-primary.multi-col
+                svg#legend-canvas
+              div.clear
           div.span4
-            h5 Anatomy View
-            div.card#anatomy-pane
-              div.canvas
-                div#svg
-                div#img
-              div.svg-controller
-                div.btn-toolbar
-                  div.btn-group
-                    button.btn#left-arrow
-                      i.icon-arrow-left
-                    button.btn#right-arrow
-                      i.icon-arrow-right
-          div.span5
+            div.well.sub-sub-section
+              div#legend-feature
+                h5 Color edges by connection attributes
+                div
+                  span Attribute
+                  select.chzn-select.inline#attr-list(data-placeholder="Select an attribute")
+                svg#attr-legend          
       div.divider
       div.row-fluid.center-content.sub-section.well
         h4 Original records and publications

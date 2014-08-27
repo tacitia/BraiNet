@@ -91,15 +91,6 @@ ui.linkInfo = (function($, undefined) {
 				ui.linkInfo.displayLinkInfo(reversedLink, registeredLeaves);
 			}
 		);
-/*		var leaves = [];
-		var leaveIDs = reversedLink.derived.leaves;
-		var keyToLink = svg.model.maps().keyToLink;
-		for (var i = 0; i < leaveIDs.length; ++i) {
-			var l = keyToLink[leaveIDs[i]];
-			if (l === undefined) { continue; }
-			leaves.push(l);
-		}
-		displayLinkInfo(reversedLink, leaves); */
 	};
 	
 	var displayLinkInfo = function(link, leaves) {
@@ -210,18 +201,27 @@ ui.linkInfo = (function($, undefined) {
         }
         else {
             contentHtml += '<tr>';
+            contentHtml += '<td>Experiment</td>';
             for (var i in attrKeys) {
                 contentHtml += '<td>';
                 contentHtml += attrKeys[i];
                 contentHtml += '</td>';
             }
-            contentHtml += '</tr><tr>';
-            for (var i in attrKeys) {
-                contentHtml += '<td>';
-                contentHtml += state.selectedLink.fields.attributes[attrKeys[i]];
-                contentHtml += '</td>';
-            }
             contentHtml += '</tr>';
+            var attributes = state.selectedLink.fields.attributes;
+            var numExp = attributes[attrKeys[i]].length;
+            console.log(numExp);
+            for (var eo = 0; eo < numExp; ++eo) {
+            	contentHtml += '<tr><td>';
+            	contentHtml += (eo + 1);
+            	contentHtml += '</td>';
+				for (var i in attrKeys) {
+					contentHtml += '<td>';
+					contentHtml += state.selectedLink.fields.attributes[attrKeys[i]][eo];
+					contentHtml += '</td>';
+				}
+				contentHtml += '</tr>';
+			}
         }
         return contentHtml;
 	};

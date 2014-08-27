@@ -11,8 +11,8 @@ svg.legend = (function($, undefined) {
         vis: {}
     };
 
-    localSettings.vis.width = 500;
-    localSettings.vis.height = 60;
+    localSettings.vis.width = 240;
+    localSettings.vis.height = 120;
 	
 	var svgObjs = {
 		canvas: null
@@ -63,32 +63,32 @@ svg.legend = (function($, undefined) {
 
 	var render = function() {
         var g = svgObjs.canvas.append('g')
-            .attr('transform', 'translate(0, 15)');
+            .attr('transform', 'translate(0, 10)');
 
         appendLine(g, 'link inLink', 'incoming');
 
         var g = svgObjs.canvas.append('g')
-            .attr('transform', 'translate(80, 15)');
+            .attr('transform', 'translate(80, 10)');
 
         appendLine(g, 'link outLink', 'outgoing');
 
         var g = svgObjs.canvas.append('g')
-            .attr('transform', 'translate(160, 15)');
+            .attr('transform', 'translate(160, 10)');
 
         appendLine(g, 'link biLink', 'bidirectional');
 
         var g = svgObjs.canvas.append('g')
-            .attr('transform', 'translate(240, 15)');
+            .attr('transform', 'translate(-10, 60)');
 
         appendCircle(g, 'node selected-source', 'source');
 
         var g = svgObjs.canvas.append('g')
-            .attr('transform', 'translate(320, 15)');
+            .attr('transform', 'translate(70, 60)');
 
         appendCircle(g, 'node selected-target', 'target');
 
         var g = svgObjs.canvas.append('g')
-            .attr('transform', 'translate(400, 15)');
+            .attr('transform', 'translate(150, 60)');
 
         appendCircle(g, 'node selected-struct', 'structure');
 

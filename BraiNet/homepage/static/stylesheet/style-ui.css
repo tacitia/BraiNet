@@ -253,6 +253,11 @@ html,body { height:100%; }
 	top: 10px;
 }  
 
+/* @group visualization control */
+#legend {
+	width: 240px;
+}
+
 /* @group unclassified */
 
 .tab-content {
