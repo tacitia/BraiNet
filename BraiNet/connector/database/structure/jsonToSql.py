@@ -21,7 +21,6 @@ for d in datasets:
 	dataset_model = Dataset.objects.get(name=d['name'])
 	for s in structures:
 		try:
-			print str(s['name'])
 			s_model = Structure(
 						id=str(dataset_model.id) + '-' + str(s['id']),
 						name=str(s['name']), 

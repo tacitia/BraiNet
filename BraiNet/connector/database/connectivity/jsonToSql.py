@@ -5,6 +5,7 @@ from account.models import Account
 import json
 import os
 from django.db.models import Q
+import sys
 
 super_user = Account.objects.get(access_code='abcdefgh')
 
@@ -38,8 +39,14 @@ for d in datasets:
 						target_id=c_tgt_model,
 						user_id=super_user,
 						dataset_id=dataset_model,
-						attributes=c['attributes']
+						attributes=c['attributes'],
+						is_derived=0,
+						source_depth=c_src_model.depth,
+						target_depth=c_tgt_model.depth
 					)
 			c_model.save()
 		except IntegrityError:
+			type, value, traceback = sys.exc_info()
+			print type
+			print value
 			continue

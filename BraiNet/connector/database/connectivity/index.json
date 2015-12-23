@@ -2,5 +2,9 @@
 	{
 		"dir": "bams",
 		"name": "Brain Architecture Management System"
+	},
+	{
+		"dir": "allen",
+		"name": "Allen Mouse Brain Connectivity Atlas"
 	}
 ]
